@@ -63,7 +63,6 @@ export default function Signin() {
     if (x?.error) {
       //handle
       console.log(x.error);
-      
     }
 
     // const user = await supabaseClient.auth.signInWithPassword({
