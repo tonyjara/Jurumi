@@ -7,7 +7,9 @@ import {
   InputGroup,
   InputLeftElement,
 } from '@chakra-ui/react';
+import { Prisma } from '@prisma/client';
 import React from 'react';
+import CurrencyInput from 'react-currency-input-field';
 import type {
   Control,
   FieldErrorsImpl,
@@ -15,7 +17,6 @@ import type {
   Path,
 } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { NumericFormat } from 'react-number-format';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -26,11 +27,11 @@ interface InputProps<T extends FieldValues> {
   maxLength?: number;
   inputRight?: any;
   inputLeft?: any;
-  prefix?: string;
+  prefix: string;
   hidden?: boolean;
 }
 
-const FormControlledNumberInput = <T extends FieldValues>({
+const FormControlledMoneyInput = <T extends FieldValues>({
   control,
   name,
   errors,
@@ -56,22 +57,28 @@ const FormControlledNumberInput = <T extends FieldValues>({
                 {inputLeft}
               </InputLeftElement>
             )}
-            <NumericFormat
-              value={field.value}
-              thousandSeparator=","
-              decimalScale={0}
-              prefix={prefix}
-              onValueChange={(v: any) => {
-                field.onChange(v?.floatValue ?? 0);
-              }}
-              onFocus={(e: any) => {
-                e.target.select();
-              }}
+            <CurrencyInput
+              id="input-example"
               customInput={Input}
-              borderColor={'gray.300'}
+              // placeholder="Please enter a number"
+              // defaultValue={1000}
+              name={name}
+              value={field.value}
+              decimalScale={2} // precision
+              fixedDecimalLength={2}
+              groupSeparator=","
+              decimalSeparator="."
+              prefix={prefix ?? 'Gs. '}
+              onValueChange={(value) => {
+                if (value?.endsWith('.')) {
+                  return field.onChange(value);
+                }
+                return value
+                  ? field.onChange(new Prisma.Decimal(value))
+                  : field.onChange('');
+              }}
             />
-
-            {inputRight}
+            ;{inputRight}
           </InputGroup>
         )}
       />
@@ -85,4 +92,4 @@ const FormControlledNumberInput = <T extends FieldValues>({
   );
 };
 
-export default FormControlledNumberInput;
+export default FormControlledMoneyInput;

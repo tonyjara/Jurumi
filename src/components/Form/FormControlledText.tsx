@@ -9,13 +9,13 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import React from 'react';
-import {
+import type {
   Control,
-  Controller,
   FieldErrorsImpl,
   FieldValues,
   Path,
 } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -29,6 +29,7 @@ interface InputProps<T extends FieldValues> {
   inputLeft?: any;
   isTextArea?: boolean;
   hidden?: boolean;
+  autoFocus?: boolean;
 }
 
 const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
@@ -44,6 +45,7 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
     inputLeft,
     isTextArea,
     hidden,
+    autoFocus,
   } = props;
   return (
     <FormControl hidden={hidden} isInvalid={!!errors[name]}>
@@ -67,6 +69,7 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
                 value={field.value}
                 onChange={field.onChange}
                 type={type}
+                autoFocus={autoFocus}
               />
             )}
             {isTextArea && (
@@ -75,6 +78,7 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
                 maxLength={maxLength}
                 value={field.value}
                 onChange={field.onChange}
+                autoFocus={autoFocus}
               />
             )}
             {inputRight}

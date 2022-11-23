@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 // Prisma adapter for NextAuth, optional and can be removed
 import bcrypt from 'bcryptjs';
 import { prisma } from '../../../server/db/client';
+import type { Account } from '@prisma/client';
 
 // CALLBACKS GET EVERY TIME THE APP GETS REFRESHED
 
@@ -30,7 +31,8 @@ export const authOptions: NextAuthOptions = {
       token has the same info as the jwt, it has the user with the authorize return and iat, exp and jti
       
       */
-      session.user = token.user as any;
+
+      session.user = token.user as Account;
       return session;
     },
   },

@@ -4,15 +4,16 @@ import {
   FormHelperText,
   FormErrorMessage,
 } from '@chakra-ui/react';
+import { Select } from 'chakra-react-select';
 import React from 'react';
-import {
+import type {
   Control,
-  Controller,
   FieldErrorsImpl,
   FieldValues,
   Path,
 } from 'react-hook-form';
-import Select from 'react-select';
+import { Controller } from 'react-hook-form';
+// import Select from 'react-select';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;

@@ -15,11 +15,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/router';
 import type { GetServerSideProps } from 'next';
 import FormControlledText from '../components/Form/FormControlledText';
-import type { signinData } from '../lib/validations/signinValidation';
+import type { signinData } from '../lib/validations/auth.signin.validate';
 import {
   defaultSigninData,
   signinValidation,
-} from '../lib/validations/signinValidation';
+} from '../lib/validations/auth.signin.validate';
 import { signIn, useSession } from 'next-auth/react';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
