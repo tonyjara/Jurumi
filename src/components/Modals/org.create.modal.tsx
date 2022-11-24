@@ -11,7 +11,6 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Organization } from '@prisma/client';
-import { useSession } from 'next-auth/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
@@ -27,7 +26,6 @@ const CreateOrgModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { data: session } = useSession();
   const context = trpcClient.useContext();
   const {
     handleSubmit,
@@ -35,7 +33,7 @@ const CreateOrgModal = ({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<Organization>({
-    defaultValues: { createdById: session?.user?.id ?? '', displayName: '' },
+    defaultValues: { createdById: '', displayName: '' },
     resolver: zodResolver(validateOrgCreate),
   });
 
@@ -51,9 +49,6 @@ const CreateOrgModal = ({
   );
 
   const submitFunc = async (data: Organization) => {
-    const user = session?.user;
-    if (!user) return;
-    data.createdById = user.id;
     mutate(data);
   };
 

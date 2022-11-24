@@ -22,15 +22,13 @@ const stringMinMax = (min: number, max: number) =>
 export const validateBankAccountCreate: z.ZodType<BankAccount> = z.lazy(() =>
   z.object({
     accountNumber: stringReqMinMax('Favor ingrese el número de cuenta.', 3, 64),
-    archived: z.boolean(),
     balance: z
       .instanceof(Prisma.Decimal)
       .transform((value) => new Prisma.Decimal(value)),
+    type: z.nativeEnum(BankAccountType),
     bankName: z.nativeEnum(BankNamesPy),
     city: stringReqMinMax('Favor seleccione una ciudad.', 3, 64),
     country: stringReqMinMax('Favor seleccione una país.', 3, 64),
-    createdAt: z.date(),
-    createdById: z.string(),
     currency: z.nativeEnum(Currency),
     id: z.string(),
     ownerContactNumber: stringMinMax(10, 20).nullable(),
@@ -38,9 +36,11 @@ export const validateBankAccountCreate: z.ZodType<BankAccount> = z.lazy(() =>
     ownerDocType: z.nativeEnum(BankDocType),
     ownerName: stringReqMinMax('Favor ingrese el nombre del titular', 2, 64),
     softDeleted: z.boolean(),
-    type: z.nativeEnum(BankAccountType),
     updatedAt: z.date().nullable(),
     updatedById: z.string().nullable(),
+    archived: z.boolean(),
+    createdAt: z.date(),
+    createdById: z.string(),
   })
 );
 

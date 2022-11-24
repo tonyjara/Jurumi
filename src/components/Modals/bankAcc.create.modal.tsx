@@ -8,27 +8,31 @@ import {
   ModalFooter,
   Button,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { BankAccount } from '@prisma/client';
-import { Organization, Prisma } from '@prisma/client';
-import { useSession } from 'next-auth/react';
 import React from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { parsedPrefix } from '../../lib/utils/ParsedEnums';
-import { bankNameOptions } from '../../lib/utils/SelectOptions';
+import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
+import {
+  bankNameOptions,
+  currencyOptions,
+  ownerDocTypeOptions,
+} from '../../lib/utils/SelectOptions';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import {
   defaultBankAccountValues,
   validateBankAccountCreate,
 } from '../../lib/validations/bankAcc.create.validate';
-import { validateOrgCreate } from '../../lib/validations/org.create.validate';
 import FormControlledMoneyInput from '../Form/FormControlledMoneyInput';
-import FormControlledNumberInput from '../Form/FormControlledNumberInput';
 import FormControlledSelect from '../Form/FormControlledSelect';
 import FormControlledText from '../Form/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { DevTool } from '@hookform/devtools';
+import FormControlledPhoneInput from '../Form/FormControlledPhoneInput';
+import FormControlledRadioButtons from '../Form/FormControlledRadioButtons';
 
 const CreateBankAccountModal = ({
   isOpen,
@@ -37,7 +41,6 @@ const CreateBankAccountModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { data: session } = useSession();
   const context = trpcClient.useContext();
   const {
     handleSubmit,
@@ -49,24 +52,19 @@ const CreateBankAccountModal = ({
     resolver: zodResolver(validateBankAccountCreate),
   });
 
-  const { error, mutate, isLoading } = trpcClient.org.create.useMutation(
+  const { error, mutate, isLoading } = trpcClient.bankAcc.create.useMutation(
     handleUseMutationAlerts({
       successText: 'Su cuenta bancaria ha sido creada! 🔥',
       callback: () => {
         onClose();
         reset();
-        // context.org.getMany.invalidate();
+        context.bankAcc.getMany.invalidate();
       },
     })
   );
 
   const submitFunc = async (data: BankAccount) => {
-    console.log(data.balance);
-
-    // const user = session?.user;
-    // if (!user) return;
-    // data.createdById = user.id;
-    // mutate(data);
+    mutate(data);
   };
 
   const currency = useWatch({ control, name: 'currency' });
@@ -80,28 +78,74 @@ const CreateBankAccountModal = ({
           <ModalCloseButton />
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-
-            <FormControlledText
-              control={control}
-              errors={errors}
-              name="ownerName"
-              label="Nombre y Apellido del titular"
-              autoFocus={true}
-            />
-            <FormControlledSelect
-              control={control}
-              errors={errors}
-              name="bankName"
-              label="Nombre y Apellido del titular"
-              options={bankNameOptions}
-            />
-            <FormControlledMoneyInput
-              control={control}
-              errors={errors}
-              name="balance"
-              label="Balance Inicial"
-              prefix={parsedPrefix(currency)}
-            />
+            <VStack spacing={5}>
+              <FormControlledSelect
+                control={control}
+                errors={errors}
+                name="bankName"
+                label="Seleccione el banco"
+                options={bankNameOptions}
+              />
+              <FormControlledText
+                control={control}
+                errors={errors}
+                name="ownerName"
+                label="Nombre y Apellido del titular"
+                autoFocus={true}
+              />
+              <FormControlledText
+                control={control}
+                errors={errors}
+                name="accountNumber"
+                label="Número de cuenta"
+              />
+              <FormControlledSelect
+                control={control}
+                errors={errors}
+                name="ownerDocType"
+                label="Tipo de documento"
+                options={ownerDocTypeOptions}
+              />
+              <FormControlledText
+                control={control}
+                errors={errors}
+                name="ownerDoc"
+                label="Documento del titular"
+              />
+              <FormControlledPhoneInput
+                control={control}
+                errors={errors}
+                name="ownerContactNumber"
+                label="Celular del titular (Opcional)."
+                helperText="Ej: 0981 123 123"
+              />
+              <FormControlledRadioButtons
+                control={control}
+                errors={errors}
+                name="currency"
+                label="Moneda"
+                options={currencyOptions}
+              />
+              <FormControlledMoneyInput
+                control={control}
+                errors={errors}
+                name="balance"
+                label="Balance Inicial"
+                prefix={translateCurrencyPrefix(currency)}
+              />
+              <FormControlledText
+                control={control}
+                errors={errors}
+                name="country"
+                label="País"
+              />
+              <FormControlledText
+                control={control}
+                errors={errors}
+                name="city"
+                label="Ciudad"
+              />
+            </VStack>
           </ModalBody>
 
           <ModalFooter>
@@ -119,6 +163,7 @@ const CreateBankAccountModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
+      <DevTool control={control} />
     </Modal>
   );
 };

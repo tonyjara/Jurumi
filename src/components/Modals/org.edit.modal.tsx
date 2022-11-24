@@ -11,7 +11,6 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Organization } from '@prisma/client';
-import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
@@ -31,7 +30,6 @@ const EditOrgModal = ({
   id: string;
   displayName: string;
 }) => {
-  const { data: session } = useSession();
   const context = trpcClient.useContext();
   const {
     handleSubmit,
@@ -64,9 +62,6 @@ const EditOrgModal = ({
   );
 
   const submitFunc = async (data: Organization) => {
-    const user = session?.user;
-    if (!user) return;
-    data.updatedById = user.id;
     mutate(data);
   };
 

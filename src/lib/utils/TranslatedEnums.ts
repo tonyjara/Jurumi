@@ -1,6 +1,6 @@
-import type { BankNamesPy, Currency } from '@prisma/client';
+import type { BankDocType, BankNamesPy, Currency } from '@prisma/client';
 
-export const parsedPrefix = (currency: Currency) => {
+export const translateCurrencyPrefix = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
     PYG: 'Gs. ',
     USD: '$. ',
@@ -8,7 +8,25 @@ export const parsedPrefix = (currency: Currency) => {
 
   return prefixes[currency] ?? 'Gs. ';
 };
-export const parsedBanks = (bankName: BankNamesPy) => {
+export const translateCurrency = (currency: Currency) => {
+  const prefixes: { [key in Currency]?: string } = {
+    PYG: 'Guaranies ',
+    USD: 'Dólares ',
+  };
+
+  return prefixes[currency] ?? 'Guaranies ';
+};
+export const translateBankDocTypes = (docType: BankDocType) => {
+  const docTypes: { [key in BankDocType]?: string } = {
+    CI: 'Cédula de identidad. ',
+    CRC: 'Crc',
+    PASSPORT: 'Pasaporte',
+    RUC: 'Ruc',
+  };
+
+  return docTypes[docType] ?? 'Cédula de identidad. ';
+};
+export const translateBankNames = (bankName: BankNamesPy) => {
   const bankNames: { [key in BankNamesPy]?: string } = {
     BANCOP: 'Bancop',
     BANCO_ATLAS: 'Banco Atlas',
