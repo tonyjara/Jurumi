@@ -7,6 +7,7 @@
     "dev": "NODE_ENV=development && next dev ",
     "lint": "next lint",
     "start": "next start",
+    "test": "vitest",
     "postinstall": "prisma generate",
     "ts-lint": "tsc --noEmit --incremental --watch"
   },
@@ -46,17 +47,23 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
     "@types/react-lottie": "^1.2.6",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
+    "@vitejs/plugin-react": "^2.2.0",
     "eslint": "^8.26.0",
     "eslint-config-next": "13.0.2",
+    "jsdom": "^20.0.3",
     "prisma": "^4.5.0",
     "typescript": "^4.8.4",
+    "vite": "^3.2.4",
+    "vitest": "^0.25.3",
     "zod-prisma": "^0.5.4"
   },
   "ct3aMetadata": {
