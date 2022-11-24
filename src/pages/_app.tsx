@@ -1,9 +1,11 @@
-import { type AppType } from "next/app";
-import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
+import { type AppType } from 'next/app';
+import { type Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
 import { ChakraProvider } from '@chakra-ui/react';
+import { trpcClient } from '../lib/utils/trpcClient';
 
-import "../styles/globals.css";
+import '../styles/globals.css';
+import { Toaster } from 'react-hot-toast';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -11,12 +13,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-         <ChakraProvider>
-
-      <Component {...pageProps} />
-         </ChakraProvider>
+      <ChakraProvider>
+        <Toaster />
+        <Component {...pageProps} />
+      </ChakraProvider>
     </SessionProvider>
   );
 };
 
-export default MyApp;
+export default trpcClient.withTRPC(MyApp);

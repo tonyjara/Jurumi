@@ -4,6 +4,7 @@ import { Button, Divider } from '@chakra-ui/react';
 import uploadFileToBlob, {
   isStorageConfigured,
 } from '../../lib/utils/azure-storage-blob';
+import DarkModeButton from '../../components/Buttons/DarkModeButton';
 
 const storageConfigured = isStorageConfigured();
 
@@ -69,7 +70,8 @@ const Home = () => {
   );
   return (
     <div>
-      <h1>WELCOME HOME ON STAGING BRANCH BOI REDEPLOYYYY</h1>
+      <h1>WELCOME HOME</h1>
+      <DarkModeButton />
       <Button onClick={() => signOut()}>Signout</Button>
       <Divider mt={100} />
       <div>

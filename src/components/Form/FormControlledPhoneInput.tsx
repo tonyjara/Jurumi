@@ -9,13 +9,8 @@ import {
   InputRightElement,
 } from '@chakra-ui/react';
 import React from 'react';
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  FieldValues,
-  Path,
-} from 'react-hook-form';
+import type { Control, FieldErrors, FieldValues, Path } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { PatternFormat } from 'react-number-format';
 
 interface InputProps<T extends FieldValues> {

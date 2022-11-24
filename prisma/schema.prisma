@@ -1,5 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator zod {
+  provider              = "zod-prisma"
+  output                = "./zod"
+  relationModel         = true
+  modelCase             = "PascalCase"
+  modelSuffix           = "Model"
+  useDecimalJs          = true
+  imports               = null
+  prismaJsonNullability = true
+}
 
 generator client {
   provider = "prisma-client-js"
@@ -7,36 +15,261 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-  // Further reading:
-  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
 }
+
 //Tips
 // To add new fields, first add them as optionsl next to the type, ex: String?. Then add the missing fields from studio then take the ? out and re run the migration.
+// use a .env to store everything, prisma doesn't like the .env.local
 
+model Account {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  email       String    @unique
+  displayName String    @unique
+  password    String
+  role        Role      @default(USER)
 
-model account {
-  id        String       @id @default(cuid())
-  createdAt DateTime     @default(now())
-  email     String       @unique
-  name      String       @unique
-  password  String       
-  role      Role         @default(USER)
+  profile Profile?
+
+  organizations Organization[]
+  disbursements Disbursement[]
+  transactions  Transaction[]
+  projects      Project[]      @relation("accountProjects")
 }
 
-// model Post {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   published Boolean  @default(false)
-//   title     String   @db.VarChar(255)
-//   author    User?    @relation(fields: [authorId], references: [id])
-//   authorId  Int?
-// }
+model Profile {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  avatarUrl String
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId String    @unique
+}
+
+// Users added here can see all projects
+model Organization {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdById String
+  updatedById String?
+  displayName String    @unique
+
+  bankAccounts BankAccount[]
+  projects     Project[]
+  account      Account       @relation(fields: [accountId], references: [id])
+  accountId    String
+
+  allowedUsers String[]
+  archived     Boolean  @default(false)
+  softDeleted  Boolean  @default(false)
+}
+
+//USERS are not allowed access
+model BankAccount {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdById String
+  updatedById String?
+
+  //Transference info
+  bankName           BankNamesPy
+  accountNumber      String      @unique
+  ownerName          String
+  ownerDocType       BankDocType @default(RUC)
+  ownerDoc           String
+  ownerContactNumber String?
+
+  currency Currency        @default(PYG)
+  type     BankAccountType @default(SAVINGS)
+  country  String
+  city     String
+  balance  Decimal         @default(0) @db.Decimal(12, 4)
+
+  projects     Project[]
+  transactions Transaction[]
+  imbursements Imbursement[]
+  organization Organization[]
+
+  archived    Boolean @default(false)
+  softDeleted Boolean @default(false)
+}
+
+// Project model REQUIRED BANK
+
+// USERS CAN R, but not ses the amount left
+// If user is added straight to the project it can see all the disbursements
+model Project {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdById String
+  updatedById String?
+  displayName String    @unique
+
+  disbursements Disbursement[]
+  transactions  Transaction[]
+
+  bankId         String
+  bank           BankAccount  @relation(fields: [bankId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  accountId      String
+  account        Account      @relation("accountProjects", fields: [accountId], references: [id])
+
+  allowedUsers String[]
+  archived     Boolean  @default(false)
+  softDeleted  Boolean  @default(false)
+}
+
+// Imbursement is how money gets transfered from donors to bank accounts
+
+// USERS CANT ACCESS
+model Imbursement {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdById String
+  updatedById String?
+  concept     String    @unique
+  currency    Currency  @default(PYG)
+  amount      Decimal   @default(0) @db.Decimal(12, 4)
+
+  bankId     String
+  bank       BankAccount @relation(fields: [bankId], references: [id])
+  taxPayerId String
+  taxPayer   TaxPayer    @relation(fields: [taxPayerId], references: [id])
+
+  allowedUsers String[]
+  archived     Boolean  @default(false)
+  softDeleted  Boolean  @default(false)
+}
+
+// Disbursement is how projects get money, ex: Concept: money for graphic designer.
+//USERS R 
+model Disbursement {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?     @updatedAt
+  createdById  String
+  updatedById  String?
+  concept      String        @unique
+  currency     Currency      @default(PYG)
+  amount       Decimal       @default(0) @db.Decimal(12, 4)
+  projectId    String
+  project      Project       @relation(fields: [projectId], references: [id])
+  transactions Transaction[]
+  account      Account       @relation(fields: [accountId], references: [id])
+  accountId    String
+
+  allowedUsers String[]
+  archived     Boolean  @default(false)
+  softDeleted  Boolean  @default(false)
+}
+
+// Has auto-create capabilities
+// USERS: C R U
+model TaxPayer {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?     @updatedAt
+  createdById  String
+  updatedById  String?
+  razonSocial  String        @unique
+  ruc          String        @unique
+  fantasyName  String?
+  transactions Transaction[]
+  imbursements Imbursement[]
+
+  archived    Boolean @default(false)
+  softDeleted Boolean @default(false)
+}
+
+// Transactions can be done stright on bank, projects or activities. They must always be linked to at list a bank account
+// There cannot be transactions with the same ruc and facturanumber
+// Transaction may be done with no taxpayer.
+// Connect can be used to add to existing database of taxpayers
+model Transaction {
+  id          String            @id @default(cuid())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime?         @updatedAt
+  createdBy   String
+  description String
+  text        String //Scanned text from OCR API
+  pictureUrl  String // Url from blob storage
+  status      TransactionStatus
+  updatedBy   String?
+
+  accountId      String
+  account        Account       @relation(fields: [accountId], references: [id])
+  taxPayerId     String?
+  taxPayer       TaxPayer?     @relation(fields: [taxPayerId], references: [id])
+  facturanumber  String
+  bankId         String
+  bank           BankAccount   @relation(fields: [bankId], references: [id])
+  projectId      String?
+  project        Project?      @relation(fields: [projectId], references: [id])
+  disbursementId String?
+  disbursement   Disbursement? @relation(fields: [disbursementId], references: [id])
+
+  archived    Boolean @default(false)
+  softDeleted Boolean @default(false)
+
+  @@unique([taxPayerId, facturanumber])
+}
 
 enum Role {
+  ADMIN // full access to crud and testing/seed
+  MODERATOR
+  // can create everything but not hard delete. 
+  // Can change status.
   USER
-  ADMIN
+  // Has to be specificly assigned to read or write.
+  // Can't see any amount of money left.
+  // Cannot change status.
+}
+
+enum BankAccountType {
+  SAVINGS
+  CURRENT
+}
+
+enum BankNamesPy {
+  ITAU
+  BANCO_GNB
+  BANCO_CONTINENTAL
+  BANCO_ATLAS
+  BANCO_REGIONAL
+  BANCO_FAMILIAR
+  VISION_BANCO
+  BANCO_NACIONAL_DE_FOMENTO
+  SUDAMERIS
+  BANCO_BASA
+  INTERFISA_BANCO
+  BANCOP
+  BANCO_RIO
+  CITIBANK
+  BANCO_DO_BRASIL
+  BANCO_DE_LA_NACION_ARGENTINA
+}
+
+enum BankDocType {
+  CI
+  CRC
+  PASSPORT
+  RUC
+}
+
+enum Currency {
+  USD
+  PYG
+}
+
+enum TransactionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
