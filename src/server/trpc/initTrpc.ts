@@ -33,9 +33,9 @@ const isAdmin = t.middleware(({ next, ctx }) => {
     },
   });
 });
-
 export const middleware = t.middleware;
 export const router = t.router;
+// export const caller = router.createCaller({});
 
 export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(isAuthed);

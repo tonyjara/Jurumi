@@ -1,4 +1,4 @@
-import { httpBatchLink } from '@trpc/client';
+import { getFetch, httpBatchLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import type { NextPageContext } from 'next';
@@ -67,6 +67,14 @@ export const trpcClient = createTRPCNext<AppRouter, SSRContext>({
         // }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          //& FETCH IS EXPREIMENTAL FOR TESTING
+          fetch: async (input, init?) => {
+            const fetch = getFetch();
+            return fetch(input, {
+              ...init,
+              // credentials: 'include',
+            });
+          },
           /**
            * Set custom request headers on every request from tRPC
            * @link https://trpc.io/docs/ssr

@@ -15,16 +15,21 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import { validateOrgCreate } from '../../lib/validations/org.create.validate';
+import {
+  defaultOrgData,
+  validateOrgCreate,
+} from '../../lib/validations/org.create.validate';
 import FormControlledText from '../Form/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
 const CreateOrgModal = ({
   isOpen,
   onClose,
+  onSubmit,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit?: any;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -33,7 +38,7 @@ const CreateOrgModal = ({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<Organization>({
-    defaultValues: { createdById: '', displayName: '' },
+    defaultValues: defaultOrgData,
     resolver: zodResolver(validateOrgCreate),
   });
 
@@ -54,7 +59,7 @@ const CreateOrgModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <form onSubmit={handleSubmit(submitFunc)} noValidate>
+      <form onSubmit={handleSubmit(onSubmit ?? submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Crear una organización</ModalHeader>

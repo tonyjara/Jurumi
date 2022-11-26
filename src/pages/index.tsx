@@ -1,19 +1,15 @@
-import React, { useEffect } from 'react';
+import type { ChangeEventHandler } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
-  Flex,
   Box,
   Stack,
   Button,
   Heading,
   useColorModeValue,
-  Text,
 } from '@chakra-ui/react';
-import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/router';
-import type { GetServerSideProps } from 'next';
 import FormControlledText from '../components/Form/FormControlledText';
 import type { signinData } from '../lib/validations/auth.signin.validate';
 import {
@@ -21,23 +17,22 @@ import {
   signinValidation,
 } from '../lib/validations/auth.signin.validate';
 import { signIn, useSession } from 'next-auth/react';
-import { unstable_getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]';
 
-export default function Signin() {
+// import type { GetServerSideProps } from 'next';
+// import { getServerAuthSession } from '../server/common/get-server-auth-session';
+
+export default function Signin({ onSubmit }: { onSubmit?: any }) {
   const router = useRouter();
-  // const destination = router.query.p?.toString();
-  // const supabaseClient = useSupabaseClient();
-  // const {  status } = useSession();
-  // console.log(status);
 
-  // useEffect(() => {
-  //   if (status === 'authenticated') {
-  //     router.push('/home');
-  //   }
-  //   return () => {};
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [status]);
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/home');
+    }
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   const {
     handleSubmit,
@@ -54,7 +49,6 @@ export default function Signin() {
       email,
       password,
     });
-    console.log(x);
     if (!x?.error) {
       //redirect
       router.push('/home');
@@ -64,18 +58,10 @@ export default function Signin() {
       //handle
       console.log(x.error);
     }
-
-    // const user = await supabaseClient.auth.signInWithPassword({
-    //   email,
-    //   password,
-    // });
-    // if (!user.error) {
-    //   router.push('/home');
-    // }
   };
 
   return (
-    <form onSubmit={handleSubmit(submitSigning)} noValidate>
+    <form onSubmit={handleSubmit(onSubmit ?? submitSigning)} noValidate>
       <Stack spacing={2} py={{ base: 5, md: 10 }}>
         <Heading
           textAlign={'center'}
@@ -132,15 +118,7 @@ export default function Signin() {
                 >
                   Ingresar
                 </Button>
-                {/* <Text>O también puedes:</Text>
-                <GoogleSinginButton />
-                <FacebookSigninButton /> */}
               </Stack>
-              <Link href={'/auth/forgotpassword'}>
-                <Button color={'InfoText'} variant={'ghost'}>
-                  Olvidaste tu contraseña?
-                </Button>
-              </Link>
             </Stack>
           </Stack>
         </Box>
@@ -149,31 +127,28 @@ export default function Signin() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { p = '/' } = ctx.query;
+//MAKES TESTS CRASH
+// export const getServerSideProps: GetServerSideProps = async (ctx) => {
+//   const { p = '/' } = ctx.query;
 
-  const session = await unstable_getServerSession(
-    ctx.req,
-    ctx.res,
-    authOptions
-  );
+// const session = await getServerAuthSession(ctx);
 
-  const destination = () => {
-    if (p.toString().length === 1) return '/home';
-    return p.toString();
-  };
+// const destination = () => {
+//   if (p.toString().length === 1) return '/home';
+//   return p.toString();
+// };
 
-  if (session) {
-    return {
-      redirect: {
-        destination: destination(),
-        permanent: false,
-      },
-      props: {},
-    };
-  }
+// if (session) {
+//   return {
+//     redirect: {
+//       destination: destination(),
+//       permanent: false,
+//     },
+//     props: {},
+//   };
+// }
 
-  return {
-    props: {},
-  };
-};
+//   return {
+//     props: {},
+//   };
+// };

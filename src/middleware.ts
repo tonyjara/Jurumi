@@ -13,30 +13,6 @@ export async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith('/home')) {
     if (!session) return redirect('/');
   }
-  //checkout
-  // if (req.nextUrl.pathname.includes('checkout')) {
-  //   if (!session) return redirect('/auth/signin');
-  // }
-  //NGO
-  //   if (req.nextUrl.pathname.startsWith('/myngo')) {
-  //     if (!session) return redirect('/auth/signin');
-  //     const user = session.user as UserProfile;
-
-  //     if (!user.isNgo) return redirect('/home');
-  //   }
-  //   if (req.nextUrl.pathname.startsWith('/home/join')) {
-  //     if (!session) return redirect('/auth/signin');
-  //     const user = session.user as UserProfile;
-  //     if (user.isNgo) return redirect('/myngo');
-  //   }
-
-  //   //ADMIN
-  //   if (req.nextUrl.pathname.startsWith('/admin')) {
-  //     if (!session) return redirect('/auth/signin');
-  //     const user = session.user as UserProfile;
-
-  //     if (user.role !== 'admin') return redirect('/home');
-  //   }
 
   return;
 }
