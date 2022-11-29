@@ -45,3 +45,6 @@ yarn-error.log*
 
 
 prisma/zod
+/test-results/
+/playwright-report/
+/playwright/.cache/

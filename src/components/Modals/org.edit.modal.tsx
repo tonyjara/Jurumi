@@ -16,7 +16,7 @@ import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { validateOrgEdit } from '../../lib/validations/org.edit.validate';
-import FormControlledText from '../Form/FormControlledText';
+import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
 const EditOrgModal = ({

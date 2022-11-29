@@ -1,9 +1,9 @@
 import type { Organization } from '@prisma/client';
 import { prismaMock } from '../TestUtils/MockPrisma';
-import prisma from '../../server/db/client';
+// import prisma from '../../server/db/client';
 
 async function createOrg(org: Organization) {
-  return await prisma.organization.create({
+  return await prismaMock.organization.create({
     data: org,
   });
 }

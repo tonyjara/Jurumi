@@ -19,11 +19,13 @@ const stringMinMax = (min: number, max: number) =>
     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
     .max(max, `Has superado el límite de caractérs (${max})`);
 
+//@ts-ignore
 export const validateBankAccountCreate: z.ZodType<BankAccount> = z.lazy(() =>
   z.object({
     accountNumber: stringReqMinMax('Favor ingrese el número de cuenta.', 3, 64),
     balance: z
-      .instanceof(Prisma.Decimal)
+      .any()
+      .or(z.number())
       .transform((value) => new Prisma.Decimal(value)),
     type: z.nativeEnum(BankAccountType),
     bankName: z.nativeEnum(BankNamesPy),

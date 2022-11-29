@@ -7,10 +7,16 @@ import CreateBankAccountModal from '../Modals/bankAcc.create.modal';
 import CreateOrgModal from '../Modals/org.create.modal';
 import ErrorBotLottie from '../Spinners-Loading/ErrorBotLottie';
 import LoadingPlantLottie from '../Spinners-Loading/LoadiingPlantLottie';
+import BankAccCard from './Cards/bankAcc.card';
 import OrgCard from './Cards/org.card';
 
 const MainOverview = () => {
   const { data: orgs, isLoading, error } = trpcClient.org.getMany.useQuery();
+  const {
+    data: bankAccs,
+    isLoading: isBankLoading,
+    error: isBankError,
+  } = trpcClient.bankAcc.getMany.useQuery();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: bankAccIsOpen,
@@ -45,6 +51,13 @@ const MainOverview = () => {
           onClose={onBankAccClose}
         />
       </HStack>
+      {!isBankLoading && (
+        <HStack>
+          {bankAccs?.map((bankAcc) => (
+            <BankAccCard key={bankAcc.id} {...bankAcc} />
+          ))}
+        </HStack>
+      )}
       {!isLoading && (
         <HStack>
           {orgs?.map((org) => (
@@ -59,6 +72,7 @@ const MainOverview = () => {
           ))}
         </HStack>
       )}
+
       {isLoading && <LoadingPlantLottie />}
       {error && <ErrorBotLottie />}
     </VStack>

@@ -1,28 +1,24 @@
-import { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
 import type { inferProcedureInput } from '@trpc/server';
+import { mockDeep } from 'jest-mock-extended';
 import type { Session } from 'next-auth';
-import { createContextInner } from '../../server/trpc/context';
 import type { AppRouter } from '../../server/trpc/routers/router';
 import { appRouter } from '../../server/trpc/routers/router';
 import { mockSessionWithRole } from '../TestUtils/MockNextAuth';
-import { prismaMock } from '../TestUtils/MockPrisma';
 
-//! BOKEN: PRISMA UNDEFINED
+jest.mock('@prisma/client', () => ({
+  __esModule: true,
+  default: mockDeep<PrismaClient>(),
+  // prisma: () => new PrismaClient(),
+}));
+//! BROKEN TESTS
 test.skip('unit test trpc routes', async () => {
-  // const ctx = await createContextInner({
-  //   session: {
-  //     expires: '',
-  //     user: mockSessionWithRole('ADMIN').user,
-  //     status: 'authenticated',
-  //   } as Session,
-  // });
-
   const caller = appRouter.createCaller({
     session: {
       expires: '',
       user: mockSessionWithRole('ADMIN').user,
       status: 'authenticated',
-    } as Session,
+    },
   });
 
   const orgInput: inferProcedureInput<AppRouter['org']['create']> = {

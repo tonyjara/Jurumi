@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { validateOrgCreate } from '../../lib/validations/org.create.validate';
-import FormControlledText from '../Form/FormControlledText';
+import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
 const CreateProjectModal = ({

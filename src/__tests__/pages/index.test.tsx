@@ -11,6 +11,18 @@ jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(),
 }));
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str,
+      i18n: {
+        changeLanguage: () => new Promise(() => {}),
+      },
+    };
+  },
+}));
+
 const user = userEvent.setup(); // always at the start of a file
 
 test('Signin submit', async () => {
@@ -19,11 +31,11 @@ test('Signin submit', async () => {
   const { getByRole, getByLabelText } = render(<Home onSubmit={onSubmit} />);
 
   const emailInput = getByRole('textbox', {
-    name: /correo electrónico/i,
+    name: 'forms:email',
   });
-  const passwordInput = getByLabelText('Contraseña');
+  const passwordInput = getByLabelText('forms:password');
   const signinButton = getByRole('button', {
-    name: /ingresar/i,
+    name: 'common:buttons.save',
   });
 
   await user.type(emailInput, 'tony@tony.com');
@@ -46,17 +58,17 @@ test('Signin email valid', async () => {
   const { getByRole, getByText } = render(<Home onSubmit={onSubmit} />);
 
   const emailInput = getByRole('textbox', {
-    name: /correo electrónico/i,
+    name: 'forms:email',
   });
   const signinButton = getByRole('button', {
-    name: /ingresar/i,
+    name: 'common:buttons.save',
   });
 
   await user.type(emailInput, 'tony');
   await user.click(signinButton);
 
   await waitFor(() => {
-    expect(getByText(/su correo no es válido\./i)).toBeInTheDocument();
+    expect(getByText('validation:invalidEmail')).toBeInTheDocument();
     expect(onSubmit).toHaveBeenCalledTimes(0);
   });
 });
@@ -67,16 +79,16 @@ test('Signin password valid', async () => {
     <Home onSubmit={onSubmit} />
   );
 
-  const passwordInput = getByLabelText('Contraseña');
+  const passwordInput = getByLabelText('forms:email');
   const signinButton = getByRole('button', {
-    name: /ingresar/i,
+    name: 'common:buttons.save',
   });
 
   await user.type(passwordInput, 'tony');
   await user.click(signinButton);
 
   await waitFor(() => {
-    expect(getByText(/Debe tener al menos 6 caractéres./i)).toBeInTheDocument();
+    expect(getByText('validation:minPassword')).toBeInTheDocument();
     expect(onSubmit).toHaveBeenCalledTimes(0);
   });
 });

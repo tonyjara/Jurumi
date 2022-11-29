@@ -19,7 +19,7 @@ import {
   defaultOrgData,
   validateOrgCreate,
 } from '../../lib/validations/org.create.validate';
-import FormControlledText from '../Form/FormControlledText';
+import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
 const CreateOrgModal = ({

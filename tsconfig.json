@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "allowJs": true,
     "esModuleInterop": true,
@@ -6,7 +7,11 @@
     "incremental": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -14,14 +19,25 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es5"
+    "target": "es5",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
-    "next.config.js"
+    "next.config.js",
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "prisma/zod", "jest.config.js", "jest.setup.js"]
+  "exclude": [
+    "node_modules",
+    "prisma/zod",
+    "jest.config.js",
+    "jest.setup.js"
+  ]
 }

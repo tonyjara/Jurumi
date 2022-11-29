@@ -7,6 +7,7 @@ import {
   InputGroup,
   InputLeftElement,
 } from '@chakra-ui/react';
+import type { Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import React from 'react';
 import CurrencyInput from 'react-currency-input-field';
@@ -29,6 +30,7 @@ interface InputProps<T extends FieldValues> {
   inputLeft?: any;
   prefix: string;
   hidden?: boolean;
+  currency: Currency;
 }
 
 const FormControlledMoneyInput = <T extends FieldValues>({
@@ -41,6 +43,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
   inputLeft,
   prefix,
   hidden,
+  currency,
 }: InputProps<T>) => {
   return (
     <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
@@ -60,22 +63,21 @@ const FormControlledMoneyInput = <T extends FieldValues>({
             <CurrencyInput
               id="input-example"
               customInput={Input}
-              // placeholder="Please enter a number"
-              // defaultValue={1000}
               name={name}
               value={field.value}
-              decimalScale={2} // precision
-              // fixedDecimalLength={2}
+              decimalScale={currency === 'PYG' ? 0 : 2} // precision
+              //This makes the input crash have errors
+              // fixedDecimalLength={currency === 'PYG' ? 0 : 2}
               groupSeparator=","
               decimalSeparator="."
               prefix={prefix ?? 'Gs. '}
               onValueChange={(value) => {
-                if (value?.endsWith('.')) {
+                if (value?.endsWith('.') && currency === 'USD') {
                   return field.onChange(value);
                 }
                 return value
                   ? field.onChange(new Prisma.Decimal(value))
-                  : field.onChange('');
+                  : field.onChange(0);
               }}
             />
             ;{inputRight}

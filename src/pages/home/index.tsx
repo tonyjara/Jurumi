@@ -1,15 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { Button, Divider } from '@chakra-ui/react';
 import uploadFileToBlob, {
   isStorageConfigured,
 } from '../../lib/utils/azure-storage-blob';
-import DarkModeButton from '../../components/Buttons/DarkModeButton';
-import type { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 
 const storageConfigured = isStorageConfigured();
-
 const Home = () => {
+  const router = useRouter();
   // const { locale, LL, setLocale } = useContext(I18nContext);
 
   const [blobList, setBlobList] = useState<string[]>([]);
@@ -20,16 +19,6 @@ const Home = () => {
   // UI/form management
   const [uploading, setUploading] = useState(false);
   const [inputKey, setInputKey] = useState(Math.random().toString(36));
-
-  // const onLocaleSelected: ChangeEventHandler<HTMLSelectElement> = async ({
-  //   target,
-  // }) => {
-  //   const locale = target.value as Locales;
-  //   localStorage.setItem('lang', locale);
-  //   await loadLocaleAsync(locale);
-  //   setLocale(locale);
-  //   router.push({}, {}, { locale });
-  // };
 
   const onFileChange = (event: any) => {
     // capture file into state
@@ -84,21 +73,9 @@ const Home = () => {
   return (
     <div>
       <h1>WELCOME HOME</h1>
-      {/* <label>
-        {LL.SELECTED_LOCALE()}
-        <select value={locale || ''} onChange={onLocaleSelected}>
-          <option value="" disabled>
-            {LL.CHOOSE_LOCALE()}
-          </option>
-          {locales.map((locale) => (
-            <option key={locale} value={locale}>
-              {locale}
-            </option>
-          ))}
-        </select>
-      </label> */}
-      <DarkModeButton />
+
       <Button onClick={() => signOut()}>Signout</Button>
+      <Button onClick={() => router.push('/home/views/main')}>Views</Button>
       <Divider mt={100} />
       <div>
         <h1>Upload file to Azure Blob Storage</h1>

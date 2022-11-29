@@ -87,7 +87,7 @@ model BankAccount {
   type     BankAccountType @default(SAVINGS)
   country  String
   city     String
-  balance  Decimal         @default(0) @db.Decimal(12, 4)
+  balance  Decimal         @default(0) @db.Decimal(19, 4)
 
   projects     Project[]
   transactions Transaction[]

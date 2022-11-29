@@ -11,14 +11,14 @@ export const mockSessionWithRole = (role: Role) => {
   return {
     expires: '',
     user: {
-      createdAt: '2022-11-23T01:39:53.782Z',
+      createdAt: new Date(),
       displayName: 'Tony',
       email: 'tony@tony.com',
       id: 'claszae5y00008xq0u4wnkiav',
       role,
-      updatedAt: '2022-11-23T01:39:04.741Z',
+      updatedAt: new Date(),
     },
-  } as Session;
+  };
 };
 
 export const unauthenticatedMock = () =>
@@ -29,6 +29,7 @@ export const unauthenticatedMock = () =>
     }
   );
 export const authenticateAdmindMock = () =>
+  //@ts-ignore
   nextAuthReactMocked.useSession.mockImplementation(() => {
     return {
       data: mockSessionWithRole('ADMIN'),
@@ -36,6 +37,7 @@ export const authenticateAdmindMock = () =>
     };
   });
 export const authenticateUserMock = () =>
+  //@ts-ignore
   nextAuthReactMocked.useSession.mockImplementation(() => {
     return {
       data: mockSessionWithRole('USER'),

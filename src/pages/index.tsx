@@ -1,5 +1,4 @@
-import type { ChangeEventHandler } from 'react';
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Stack,
@@ -10,29 +9,31 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/router';
-import FormControlledText from '../components/Form/FormControlledText';
+import FormControlledText from '../components/FormControlled/FormControlledText';
 import type { signinData } from '../lib/validations/auth.signin.validate';
 import {
   defaultSigninData,
   signinValidation,
 } from '../lib/validations/auth.signin.validate';
 import { signIn, useSession } from 'next-auth/react';
-
-// import type { GetServerSideProps } from 'next';
-// import { getServerAuthSession } from '../server/common/get-server-auth-session';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
+import type { GetServerSideProps } from 'next';
+import { getServerAuthSession } from '../server/common/get-server-auth-session';
 
 export default function Signin({ onSubmit }: { onSubmit?: any }) {
   const router = useRouter();
+  const { t } = useTranslation(['signin', 'common', 'validation', 'forms']);
 
-  const { status } = useSession();
+  // const { status } = useSession();
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/home');
-    }
-    return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  // useEffect(() => {
+  //   if (status === 'authenticated') {
+  //     router.push('/home');
+  //   }
+  //   return () => {};
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [status]);
 
   const {
     handleSubmit,
@@ -40,7 +41,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
     formState: { errors, isSubmitting },
   } = useForm<signinData>({
     defaultValues: defaultSigninData,
-    resolver: zodResolver(signinValidation),
+    resolver: zodResolver(signinValidation(t)),
   });
 
   const submitSigning = async ({ email, password }: signinData) => {
@@ -62,13 +63,14 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit ?? submitSigning)} noValidate>
+      {/* <TopNavbar /> */}
       <Stack spacing={2} py={{ base: 5, md: 10 }}>
         <Heading
           textAlign={'center'}
           py={{ base: 0, md: 5 }}
           fontSize={{ base: '2xl', md: '4xl' }}
         >
-          Ingresar
+          {t('signin:heading')}
         </Heading>
 
         <Box
@@ -85,20 +87,21 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
         >
           <Stack spacing={2}>
             <FormControlledText
-              label="Correo electrónico"
+              label={t('forms:email')}
               errors={errors}
               control={control}
               name="email"
               type="email"
-              helperText="Ej: correo@gmail.com"
+              helperText={t('forms:emailHelper')}
+              data-testid="forms:email"
             />
             <FormControlledText
-              label="Contraseña"
+              label={t('forms:password')}
               errors={errors}
               control={control}
               name="password"
-              helperText=""
               type="password"
+              data-testid="forms:password"
             />
 
             <Stack spacing={5}>
@@ -116,7 +119,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
                     bg: 'blue.500',
                   }}
                 >
-                  Ingresar
+                  {t('common:buttons.save')}
                 </Button>
               </Stack>
             </Stack>
@@ -127,28 +130,35 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
   );
 }
 
-//MAKES TESTS CRASH
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   const { p = '/' } = ctx.query;
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { p = '/' } = ctx.query;
 
-// const session = await getServerAuthSession(ctx);
+  const session = await getServerAuthSession(ctx);
 
-// const destination = () => {
-//   if (p.toString().length === 1) return '/home';
-//   return p.toString();
-// };
+  const destination = () => {
+    if (p.toString().length === 1) return '/home';
+    return p.toString();
+  };
 
-// if (session) {
-//   return {
-//     redirect: {
-//       destination: destination(),
-//       permanent: false,
-//     },
-//     props: {},
-//   };
-// }
+  if (session) {
+    return {
+      redirect: {
+        destination: destination(),
+        permanent: false,
+      },
+      props: {},
+    };
+  }
 
-//   return {
-//     props: {},
-//   };
-// };
+  return {
+    props: {
+      ...(await serverSideTranslations(ctx.locale ?? 'es', [
+        'signin',
+        'common',
+        'validation',
+        'forms',
+      ])),
+      // Will be passed to the page component as props
+    },
+  };
+};

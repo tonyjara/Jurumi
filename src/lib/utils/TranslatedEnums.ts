@@ -1,12 +1,14 @@
 import type { BankDocType, BankNamesPy, Currency } from '@prisma/client';
+import type { Decimal } from '@prisma/client/runtime';
+import DecimalFormat from 'decimal-format';
 
 export const translateCurrencyPrefix = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
-    PYG: 'Gs. ',
-    USD: '$. ',
+    PYG: 'Gs ',
+    USD: 'Usd ',
   };
 
-  return prefixes[currency] ?? 'Gs. ';
+  return prefixes[currency] ?? 'Gs ';
 };
 export const translateCurrency = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
@@ -16,6 +18,24 @@ export const translateCurrency = (currency: Currency) => {
 
   return prefixes[currency] ?? 'Guaranies ';
 };
+export const translateCurrencyShort = (currency: Currency) => {
+  const prefixes: { [key in Currency]?: string } = {
+    PYG: 'Gs. ',
+    USD: 'Dólares ',
+  };
+
+  return prefixes[currency] ?? 'Guaranies ';
+};
+
+export const decimalFormat = (x: Decimal, y: Currency) => {
+  if (y === 'USD') {
+    const df = new DecimalFormat(`${translateCurrencyPrefix(y)} #,##0.00#`);
+    return df.format(x.toString());
+  }
+  const df = new DecimalFormat(`${translateCurrencyPrefix(y)} #,##0.#`);
+  return df.format(x.toString());
+};
+
 export const translateBankDocTypes = (docType: BankDocType) => {
   const docTypes: { [key in BankDocType]?: string } = {
     CI: 'Cédula de identidad. ',
