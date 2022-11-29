@@ -1,80 +1,101 @@
-import { Button, HStack, Icon, useDisclosure, VStack } from '@chakra-ui/react';
+import { HStack, Text, VStack } from '@chakra-ui/react';
+import type { BankAccount } from '@prisma/client';
 import React from 'react';
-import { MdOutlineAdd } from 'react-icons/md';
 import { Tree, TreeNode } from 'react-organizational-chart';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import CreateBankAccountModal from '../Modals/bankAcc.create.modal';
-import CreateOrgModal from '../Modals/org.create.modal';
 import ErrorBotLottie from '../Spinners-Loading/ErrorBotLottie';
 import LoadingPlantLottie from '../Spinners-Loading/LoadiingPlantLottie';
 import BankAccCard from './Cards/bankAcc.card';
 import OrgCard from './Cards/org.card';
+import ProjectCard from './Cards/project.card';
 
 const MainOverview = () => {
-  const { data: orgs, isLoading, error } = trpcClient.org.getMany.useQuery();
+  //orgs
+  const { data: orgs, isLoading, error } = trpcClient.org.getMany.useQuery(); //bankAccs
   const {
     data: bankAccs,
     isLoading: isBankLoading,
-    error: isBankError,
+    error: bankError,
   } = trpcClient.bankAcc.getMany.useQuery();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  //projects
   const {
-    isOpen: bankAccIsOpen,
-    onOpen: onBankAccOpen,
-    onClose: onBankAccClose,
-  } = useDisclosure();
+    data: projects,
+    isLoading: isProjectsLoading,
+    error: projectError,
+  } = trpcClient.project.getMany.useQuery();
+
+  const reduceToGs = (bankAccs?: BankAccount[]) =>
+    bankAccs
+      ?.reduce((acc, bankAcc) => {
+        if (bankAcc.currency === 'PYG') {
+          return (acc += parseFloat(bankAcc.balance.toString()));
+        }
+        return acc;
+      }, 0)
+      .toLocaleString('es');
+  const reduceToUsd = (bankAccs?: BankAccount[]) =>
+    bankAccs
+      ?.reduce((acc, bankAcc) => {
+        if (bankAcc.currency === 'USD') {
+          return (acc += parseFloat(bankAcc.balance.toString()));
+        }
+        return acc;
+      }, 0)
+      .toLocaleString('en-US');
 
   return (
-    <VStack>
-      <HStack alignSelf={'end'}>
-        <Button
-          onClick={onOpen}
-          rightIcon={<Icon boxSize={6} as={MdOutlineAdd} />}
-          aria-label={'Add Org'}
-          size="sm"
-          alignSelf={'end'}
-        >
-          Crear Org
-        </Button>
-        <CreateOrgModal isOpen={isOpen} onClose={onClose} />
-        <Button
-          onClick={onBankAccOpen}
-          rightIcon={<Icon boxSize={6} as={MdOutlineAdd} />}
-          aria-label={'Add bank acc'}
-          size="sm"
-          alignSelf={'end'}
-        >
-          Crear Cuenta Bancaria
-        </Button>
-        <CreateBankAccountModal
-          isOpen={bankAccIsOpen}
-          onClose={onBankAccClose}
-        />
-      </HStack>
-      {!isBankLoading && (
-        <HStack>
-          {bankAccs?.map((bankAcc) => (
-            <BankAccCard key={bankAcc.id} {...bankAcc} />
-          ))}
-        </HStack>
-      )}
-      {!isLoading && (
-        <HStack>
-          {orgs?.map((org) => (
-            <Tree
-              key={org.id}
-              label={<OrgCard displayName={org.displayName} id={org.id} />}
-            >
-              <TreeNode label={<div>Child 1</div>}>
-                <TreeNode label={<div>Grand Child</div>} />
-              </TreeNode>
-            </Tree>
-          ))}
-        </HStack>
-      )}
+    <VStack transform={'scale(0.5)'}>
+      <>
+        {!isBankLoading && (
+          <fieldset
+            style={{
+              borderWidth: '1px',
+              borderRadius: '8px',
+              padding: '10px',
+              borderStyle: 'solid',
+              borderColor: 'purple',
+              margin: '10px',
+            }}
+          >
+            <Text fontWeight={'bold'} as={'legend'}>
+              Cuentas bancarias. Total Dólares: {reduceToUsd(bankAccs)} Total
+              Guaraníes: {reduceToGs(bankAccs)}
+            </Text>
+            <HStack>
+              {bankAccs?.map((bankAcc) => (
+                <BankAccCard key={bankAcc.id} {...bankAcc} />
+              ))}
+            </HStack>
+          </fieldset>
+        )}
+        {!isLoading && (
+          <HStack>
+            {orgs?.map((org) => (
+              <Tree
+                key={org.id}
+                label={<OrgCard displayName={org.displayName} id={org.id} />}
+              >
+                {projects
+                  ?.filter((x) => x.organizationId === org.id)
+                  .map((project) => (
+                    <TreeNode
+                      key={project.id}
+                      label={<ProjectCard {...project} />}
+                    >
+                      <TreeNode label={<div>Grand Child</div>} />
+                    </TreeNode>
+                  ))}
+              </Tree>
+            ))}
+          </HStack>
+        )}
 
-      {isLoading && <LoadingPlantLottie />}
-      {error && <ErrorBotLottie />}
+        {(isLoading || isBankLoading || isProjectsLoading) && (
+          <LoadingPlantLottie />
+        )}
+        {(error || bankError || projectError) && <ErrorBotLottie />}
+      </>
     </VStack>
   );
 };

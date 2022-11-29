@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { validateBankAccountCreate } from '../../../lib/validations/bankAcc.create.validate';
+import { validateBankAccountCreate } from '../../../lib/validations/bankAcc.validate';
 import { adminProcedure, protectedProcedure, router } from '../initTrpc';
 
 export const bankAccRouter = router({

@@ -10,28 +10,28 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { BankAccount } from '@prisma/client';
+import type { Disbursement } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
-
 import { trpcClient } from '../../lib/utils/trpcClient';
-import {
-  defaultBankAccountValues,
-  validateBankAccountCreate,
-} from '../../lib/validations/bankAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
-import { bankAccMock } from '../../__tests__/mocks/Mocks';
-import BankAccForm from '../Forms/BankAcc.form';
+import { disbursmentMock } from '../../__tests__/mocks/Mocks';
+import {
+  defaultDisbursmentValues,
+  validateDisbursment,
+} from '../../lib/validations/disbursment.validate';
+import DisbursmentForm from '../Forms/Disbursment.form';
 
-const CreateBankAccountModal = ({
+const CreateDisbursmentModal = ({
   isOpen,
   onClose,
+  projectId,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  projectId: string;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -39,26 +39,29 @@ const CreateBankAccountModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<BankAccount>({
-    defaultValues: defaultBankAccountValues,
-    resolver: zodResolver(validateBankAccountCreate),
+  } = useForm<Disbursement>({
+    defaultValues: defaultDisbursmentValues,
+    resolver: zodResolver(validateDisbursment),
   });
   const handleOnClose = () => {
-    reset(defaultBankAccountValues);
+    reset(defaultDisbursmentValues);
     onClose();
   };
 
-  const { error, mutate, isLoading } = trpcClient.bankAcc.create.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Su cuenta bancaria ha sido creada! 🔥',
-      callback: () => {
-        handleOnClose();
-        context.bankAcc.getMany.invalidate();
-      },
-    })
-  );
+  const { error, mutate, isLoading } =
+    trpcClient.disbursment.create.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Su desembolso ha sido creado!',
+        callback: () => {
+          handleOnClose();
+          context.disbursment.getMany.invalidate();
+        },
+      })
+    );
 
-  const submitFunc = async (data: BankAccount) => {
+  const submitFunc = async (data: Disbursement) => {
+    data.projectId = projectId;
+
     mutate(data);
   };
 
@@ -67,12 +70,12 @@ const CreateBankAccountModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una cuenta bancaria</ModalHeader>
+          <ModalHeader>Crear un desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={bankAccMock} />
+            <SeedButton reset={reset} mock={disbursmentMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <BankAccForm control={control} errors={errors} />
+            <DisbursmentForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
@@ -90,9 +93,8 @@ const CreateBankAccountModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
-      <DevTool control={control} />
     </Modal>
   );
 };
 
-export default CreateBankAccountModal;
+export default CreateDisbursmentModal;

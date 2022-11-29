@@ -28,7 +28,6 @@ export const orgRouter = router({
         data: {
           createdById: user.id,
           displayName: input.displayName,
-          account: { connect: { id: user.id } },
         },
       });
       return org;

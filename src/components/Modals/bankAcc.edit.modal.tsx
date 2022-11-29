@@ -19,11 +19,11 @@ import { trpcClient } from '../../lib/utils/trpcClient';
 import {
   defaultBankAccountValues,
   validateBankAccountCreate,
-} from '../../lib/validations/bankAcc.create.validate';
+} from '../../lib/validations/bankAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
-import { bankAccMock } from '../../__tests__/mocks/bankAcc.mocks';
+import { bankAccMock } from '../../__tests__/mocks/Mocks';
 import BankAccForm from '../Forms/BankAcc.form';
 
 const EditBankAccModal = ({

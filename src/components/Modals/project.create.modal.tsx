@@ -10,69 +10,72 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Organization } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+import type { Project } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import { validateOrgCreate } from '../../lib/validations/org.create.validate';
-import FormControlledText from '../FormControlled/FormControlledText';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
-const CreateProjectModal = ({
+import { trpcClient } from '../../lib/utils/trpcClient';
+import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { DevTool } from '@hookform/devtools';
+import SeedButton from '../DevTools/SeedButton';
+import { projectMock } from '../../__tests__/mocks/Mocks';
+import ProjectForm from '../Forms/Project.form';
+import {
+  defaultProjectValues,
+  validateProject,
+} from '../../lib/validations/project.validate';
+
+const ProjectCreateModal = ({
   isOpen,
   onClose,
+  orgId,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  orgId: string;
 }) => {
-  const { data: session } = useSession();
   const context = trpcClient.useContext();
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Organization>({
-    defaultValues: { createdById: session?.user?.id ?? '', displayName: '' },
-    resolver: zodResolver(validateOrgCreate),
+  } = useForm<Project>({
+    defaultValues: defaultProjectValues,
+    resolver: zodResolver(validateProject),
   });
+  const handleOnClose = () => {
+    reset(defaultProjectValues);
+    onClose();
+  };
 
-  const { error, mutate, isLoading } = trpcClient.org.create.useMutation(
+  const { error, mutate, isLoading } = trpcClient.project.create.useMutation(
     handleUseMutationAlerts({
-      successText: 'Su organización ha sido creada! 🔥',
+      successText: 'Su proyecto ha sido creada! 🔥',
       callback: () => {
-        onClose();
-        reset();
-        context.org.getMany.invalidate();
+        handleOnClose();
+        context.project.getMany.invalidate();
       },
     })
   );
 
-  const submitFunc = async (data: Organization) => {
-    const user = session?.user;
-    if (!user) return;
-    data.createdById = user.id;
+  const submitFunc = async (data: Project) => {
+    data.organizationId = orgId;
     mutate(data);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear un Proyecto</ModalHeader>
+          <ModalHeader>Crear un proyecto</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <SeedButton reset={reset} mock={projectMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-
-            <FormControlledText
-              control={control}
-              errors={errors}
-              name="displayName"
-              label="Nombre de su organización"
-            />
+            <ProjectForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
@@ -90,8 +93,9 @@ const CreateProjectModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
+      <DevTool control={control} />
     </Modal>
   );
 };
 
-export default CreateProjectModal;
+export default ProjectCreateModal;

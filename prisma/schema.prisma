@@ -33,10 +33,7 @@ model Account {
 
   profile Profile?
 
-  organizations Organization[]
   disbursements Disbursement[]
-  transactions  Transaction[]
-  projects      Project[]      @relation("accountProjects")
 }
 
 model Profile {
@@ -59,8 +56,6 @@ model Organization {
 
   bankAccounts BankAccount[]
   projects     Project[]
-  account      Account       @relation(fields: [accountId], references: [id])
-  accountId    String
 
   allowedUsers String[]
   archived     Boolean  @default(false)
@@ -89,10 +84,11 @@ model BankAccount {
   city     String
   balance  Decimal         @default(0) @db.Decimal(19, 4)
 
-  projects     Project[]
-  transactions Transaction[]
-  imbursements Imbursement[]
-  organization Organization[]
+  disbursement      Disbursement[]
+  imbursements      Imbursement[]
+  organization      Organization[]
+  moneyExchangeFrom MoneyTransferOperation[] @relation("exchangeFrom")
+  moneyExchangeTo   MoneyTransferOperation[] @relation("exchangeTo")
 
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
@@ -103,22 +99,19 @@ model BankAccount {
 // USERS CAN R, but not ses the amount left
 // If user is added straight to the project it can see all the disbursements
 model Project {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  createdById String
-  updatedById String?
-  displayName String    @unique
+  id                    String    @id @default(cuid())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime? @updatedAt
+  createdById           String
+  updatedById           String?
+  displayName           String    @unique
+  assignedMoney         Decimal   @default(0) @db.Decimal(19, 4)
+  assignedMoneyCurrency Currency
 
   disbursements Disbursement[]
-  transactions  Transaction[]
 
-  bankId         String
-  bank           BankAccount  @relation(fields: [bankId], references: [id])
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
-  accountId      String
-  account        Account      @relation("accountProjects", fields: [accountId], references: [id])
 
   allowedUsers String[]
   archived     Boolean  @default(false)
@@ -148,77 +141,94 @@ model Imbursement {
   softDeleted  Boolean  @default(false)
 }
 
-// Disbursement is how projects get money, ex: Concept: money for graphic designer.
-//USERS R 
-model Disbursement {
-  id           String        @id @default(cuid())
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime?     @updatedAt
-  createdById  String
-  updatedById  String?
-  concept      String        @unique
-  currency     Currency      @default(PYG)
-  amount       Decimal       @default(0) @db.Decimal(12, 4)
-  projectId    String
-  project      Project       @relation(fields: [projectId], references: [id])
-  transactions Transaction[]
-  account      Account       @relation(fields: [accountId], references: [id])
-  accountId    String
-
-  allowedUsers String[]
-  archived     Boolean  @default(false)
-  softDeleted  Boolean  @default(false)
-}
-
 // Has auto-create capabilities
 // USERS: C R U
 model TaxPayer {
-  id           String        @id @default(cuid())
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime?     @updatedAt
-  createdById  String
-  updatedById  String?
-  razonSocial  String        @unique
-  ruc          String        @unique
-  fantasyName  String?
-  transactions Transaction[]
-  imbursements Imbursement[]
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?      @updatedAt
+  createdById   String
+  updatedById   String?
+  razonSocial   String         @unique
+  ruc           String         @unique
+  fantasyName   String?
+  disbursements Disbursement[]
+  imbursements  Imbursement[]
 
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
 }
 
-// Transactions can be done stright on bank, projects or activities. They must always be linked to at list a bank account
-// There cannot be transactions with the same ruc and facturanumber
-// Transaction may be done with no taxpayer.
+// Disbursements can be done stright on bank, projects or activities. They must always be linked to at list a bank account
+// There cannot be Disbursements with the same ruc and facturanumber
+// Disbursement may be done with no taxpayer.
 // Connect can be used to add to existing database of taxpayers
-model Transaction {
-  id          String            @id @default(cuid())
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime?         @updatedAt
-  createdBy   String
-  description String
-  text        String //Scanned text from OCR API
-  pictureUrl  String // Url from blob storage
-  status      TransactionStatus
-  updatedBy   String?
+model Disbursement {
+  id               String             @id @default(cuid())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+  createdById      String
+  updatedById      String?
+  description      String
+  scannedText      String //Scanned text from OCR API
+  pictureUrl       String // Url from blob storage
+  facturaNumber    String
+  status           DisbursementStatus
+  disbursementType DisbursementType
 
-  accountId      String
-  account        Account       @relation(fields: [accountId], references: [id])
-  taxPayerId     String?
-  taxPayer       TaxPayer?     @relation(fields: [taxPayerId], references: [id])
-  facturanumber  String
-  bankId         String
-  bank           BankAccount   @relation(fields: [bankId], references: [id])
-  projectId      String?
-  project        Project?      @relation(fields: [projectId], references: [id])
-  disbursementId String?
-  disbursement   Disbursement? @relation(fields: [disbursementId], references: [id])
+  currency Currency
+  amount   Decimal  @default(0) @db.Decimal(12, 4)
+
+  accountId   String
+  account     Account      @relation(fields: [accountId], references: [id])
+  taxPayerId  String?
+  taxPayer    TaxPayer?    @relation(fields: [taxPayerId], references: [id])
+  bankId      String?
+  bank        BankAccount? @relation(fields: [bankId], references: [id])
+  pettyCashId String?
+  pettyCash   PettyCash?   @relation(fields: [pettyCashId], references: [id])
+  projectId   String?
+  project     Project?     @relation(fields: [projectId], references: [id])
 
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
 
-  @@unique([taxPayerId, facturanumber])
+  @@unique([taxPayerId, facturaNumber])
+}
+
+model MoneyTransferOperation {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  createdBy String
+  updatedBy String?
+
+  fromCurrency Currency
+  fromAmount   Decimal  @default(0) @db.Decimal(12, 4)
+  toCurrency   Currency
+  toAmount     Decimal  @default(0) @db.Decimal(12, 4)
+
+  echangeRate Decimal @default(0) @db.Decimal(12, 4)
+
+  bankFromId    String
+  bankFrom      BankAccount  @relation("exchangeFrom", fields: [bankFromId], references: [id])
+  bankToId      String?
+  bankTo        BankAccount? @relation("exchangeTo", fields: [bankToId], references: [id])
+  pettyCashToId String?
+  pettyCash     PettyCash?   @relation(fields: [pettyCashToId], references: [id])
+}
+
+model PettyCash {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdBy   String
+  updatedBy   String?
+  displayName String
+
+  amount         Decimal                  @default(0) @db.Decimal(12, 4)
+  moneyExchanges MoneyTransferOperation[]
+  Disbursement   Disbursement[]
 }
 
 enum Role {
@@ -268,8 +278,14 @@ enum Currency {
   PYG
 }
 
-enum TransactionStatus {
+enum DisbursementStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+enum DisbursementType {
+  ADVANCE
+  MONEY_ORDER
+  REIMBURSMENT_ORDER
 }

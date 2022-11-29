@@ -28,7 +28,6 @@ export const defaultOrgData: orgCreateData = {
   createdById: '',
   updatedById: null,
   displayName: '',
-  accountId: '',
   allowedUsers: [],
   archived: false,
   softDeleted: false,

@@ -103,7 +103,11 @@ const OrgCard = ({ displayName, id }: { displayName: string; id: string }) => {
         isOpen={isEditOpen}
         onClose={onEditClose}
       />
-      <CreateProjectModal isOpen={isProjectOpen} onClose={onProjectClose} />
+      <CreateProjectModal
+        orgId={id}
+        isOpen={isProjectOpen}
+        onClose={onProjectClose}
+      />
     </Container>
   );
 };

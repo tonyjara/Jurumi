@@ -17,7 +17,7 @@ import FormControlledText from '../FormControlled/FormControlledText';
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<any>;
+  errors: FieldErrorsImpl<T>;
 }
 
 const BankAccForm = ({ control, errors }: formProps<BankAccount>) => {

@@ -1,7 +1,6 @@
 import type { PrismaClient } from '@prisma/client';
 import type { inferProcedureInput } from '@trpc/server';
 import { mockDeep } from 'jest-mock-extended';
-import type { Session } from 'next-auth';
 import type { AppRouter } from '../../server/trpc/routers/router';
 import { appRouter } from '../../server/trpc/routers/router';
 import { mockSessionWithRole } from '../TestUtils/MockNextAuth';
@@ -28,7 +27,6 @@ test.skip('unit test trpc routes', async () => {
     createdById: '',
     updatedById: null,
     displayName: 'org123',
-    accountId: '',
     allowedUsers: [],
     archived: false,
     softDeleted: false,
