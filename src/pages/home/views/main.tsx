@@ -1,11 +1,11 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { Box, Button, Container, Flex, HStack } from '@chakra-ui/react';
+import { Button, Flex, HStack } from '@chakra-ui/react';
 import {
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
-import CreateModalButtons from './_CreateButtonts';
+import CreateTablesSelect from './_CreateTablesSelect';
 
 const Overview = dynamic(
   () => import('../../../components/OrgCharts/orgChart.view.main'),
@@ -20,7 +20,7 @@ const MainView = () => {
       // initialPositionY={-100}
       initialScale={1.5}
     >
-      {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+      {({ zoomIn, zoomOut, resetTransform }) => (
         <Flex>
           <HStack
             p={'10px'}
@@ -38,7 +38,7 @@ const MainView = () => {
               RESET
             </Button>
           </HStack>
-          <CreateModalButtons />
+          <CreateTablesSelect />
           <TransformComponent>
             <Flex left={0} w={'100vw'} height={'100vh'}>
               <Overview />

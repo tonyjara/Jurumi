@@ -1,5 +1,5 @@
 import { VStack } from '@chakra-ui/react';
-import type { Disbursement } from '@prisma/client';
+import type { PettyCash } from '@prisma/client';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
@@ -14,7 +14,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<T>;
 }
 
-const DisbursmentForm = ({ control, errors }: formProps<Disbursement>) => {
+const PettyCashForm = ({ control, errors }: formProps<PettyCash>) => {
   const currency = useWatch({ control, name: 'currency' });
 
   return (
@@ -22,9 +22,9 @@ const DisbursmentForm = ({ control, errors }: formProps<Disbursement>) => {
       <FormControlledText
         control={control}
         errors={errors}
-        name="concept"
-        isTextArea={true}
-        label="Concepto del desembolso"
+        name="displayName"
+        label="Nombre de la caja chica"
+        autoFocus={true}
       />
 
       <FormControlledRadioButtons
@@ -38,8 +38,7 @@ const DisbursmentForm = ({ control, errors }: formProps<Disbursement>) => {
         control={control}
         errors={errors}
         name="amount"
-        label="Dinero asignado."
-        helperText="El dinero asignado no afecta las cuentas bancarias. Se usa para tener una referencia del total disponible."
+        label="Balance Inicial"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
       />
@@ -47,4 +46,4 @@ const DisbursmentForm = ({ control, errors }: formProps<Disbursement>) => {
   );
 };
 
-export default DisbursmentForm;
+export default PettyCashForm;

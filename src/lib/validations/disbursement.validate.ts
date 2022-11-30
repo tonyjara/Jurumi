@@ -9,10 +9,20 @@ const stringReqMinMax = (reqText: string, min: number, max: number) =>
     .string({ required_error: reqText })
     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
     .max(max, `Has superado el límite de caractérs (${max})`);
+const stringOptMinMax = (min: number, max: number) =>
+  z
+    .union([
+      z.string().length(0, `El campo debe tener al menos (${min}) caractéres.`),
+      z
+        .string()
+        .min(min, `El campo debe tener al menos (${min}) caractéres.`)
+        .max(max, `Has superado el límite de caractérs (${max})`),
+    ])
+    .transform((e) => (e === '' ? '' : e));
 
 type withMoney = Omit<Disbursement, 'amount'> & { amount?: any };
 
-export const validateDisbursment: z.ZodType<withMoney> = z.lazy(() =>
+export const validateDisbursement: z.ZodType<withMoney> = z.lazy(() =>
   z.object({
     id: z.string(),
     createdAt: z.date(),
@@ -27,26 +37,24 @@ export const validateDisbursment: z.ZodType<withMoney> = z.lazy(() =>
     ),
     scannedText: z.string(),
     pictureUrl: z.string(),
-    facturaNumber: z.string(),
+    facturaNumber: stringOptMinMax(15, 15),
     status: z.nativeEnum(DisbursementStatus),
     disbursementType: z.nativeEnum(DisbursementType),
     currency: z.nativeEnum(Currency),
     amount: z.any().transform((value) => new Prisma.Decimal(value)),
     accountId: z.string(),
     taxPayerId: z.string().nullable(),
-    bankId: z.string(),
-    projectId: z.string({
-      required_error: 'Favor seleccione una proyecto.',
-    }),
-    pettyCashId: z.string(),
+    bankId: z.string().nullable(),
+    projectId: z.string().nullable(),
+    pettyCashId: z.string().nullable(),
     softDeleted: z.boolean(),
     archived: z.boolean(),
   })
 );
 
-export type disbursmentValidateData = z.infer<typeof validateDisbursment>;
+export type disbursementValidateData = z.infer<typeof validateDisbursement>;
 
-export const defaultDisbursmentValues: disbursmentValidateData = {
+export const defaultDisbursementValues: disbursementValidateData = {
   id: '',
   createdAt: new Date(),
   updatedAt: null,

@@ -1,4 +1,9 @@
-import type { BankAccount, Disbursement, Project } from '@prisma/client';
+import type {
+  BankAccount,
+  Disbursement,
+  PettyCash,
+  Project,
+} from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -24,6 +29,20 @@ export const bankAccMock: () => BankAccount = () => {
     softDeleted: false,
   };
 };
+export const pettyCashMock: () => PettyCash = () => {
+  return {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    createdById: '',
+    updatedById: null,
+    displayName: faker.commerce.department(),
+    amount: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+    currency: 'PYG',
+    archived: false,
+    softDeleted: false,
+  };
+};
 export const projectMock: () => Project = () => {
   return {
     id: '',
@@ -41,7 +60,7 @@ export const projectMock: () => Project = () => {
     softDeleted: false,
   };
 };
-export const disbursmentMock: () => Disbursement = () => {
+export const disbursementMock: () => Disbursement = () => {
   return {
     accountId: '',
     amount: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),

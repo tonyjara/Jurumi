@@ -14,7 +14,6 @@ export const validateOrgCreate: z.ZodType<Organization> = z.lazy(() =>
     archived: z.boolean(),
     createdAt: z.date(),
     createdById: z.string(),
-    accountId: z.string(),
     allowedUsers: z.string().array(),
   })
 );

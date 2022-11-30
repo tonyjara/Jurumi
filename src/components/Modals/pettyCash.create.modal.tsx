@@ -10,28 +10,28 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Disbursement } from '@prisma/client';
+import type { PettyCash } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
+
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
-import { disbursmentMock } from '../../__tests__/mocks/Mocks';
+import { pettyCashMock } from '../../__tests__/mocks/Mocks';
+import PettyCashForm from '../Forms/PettyCash.form';
 import {
-  defaultDisbursmentValues,
-  validateDisbursment,
-} from '../../lib/validations/disbursment.validate';
-import DisbursmentForm from '../Forms/Disbursment.form';
+  defaultPettyCashValues,
+  validatePettyCash,
+} from '../../lib/validations/pettyCash.validate';
 
-const CreateDisbursmentModal = ({
+const CreatePettyCashModal = ({
   isOpen,
   onClose,
-  projectId,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  projectId: string;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -39,30 +39,28 @@ const CreateDisbursmentModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Disbursement>({
-    defaultValues: defaultDisbursmentValues,
-    resolver: zodResolver(validateDisbursment),
+  } = useForm<PettyCash>({
+    defaultValues: defaultPettyCashValues,
+    resolver: zodResolver(validatePettyCash),
   });
   const handleOnClose = () => {
-    reset(defaultDisbursmentValues);
+    reset(defaultPettyCashValues);
     onClose();
   };
 
-  const { error, mutate, isLoading } =
-    trpcClient.disbursment.create.useMutation(
-      handleUseMutationAlerts({
-        successText: 'Su desembolso ha sido creado!',
-        callback: () => {
-          handleOnClose();
-          context.disbursment.getMany.invalidate();
-        },
-      })
-    );
+  const { error, mutate, isLoading } = trpcClient.pettyCash.create.useMutation(
+    handleUseMutationAlerts({
+      successText: 'Su caja chica ha sido creada! 🔥',
+      callback: () => {
+        handleOnClose();
+        context.pettyCash.getMany.invalidate();
+      },
+    })
+  );
 
-  const submitFunc = async (data: Disbursement) => {
-    data.projectId = projectId;
-
+  const submitFunc = async (data: PettyCash) => {
     mutate(data);
+    console.log(data);
   };
 
   return (
@@ -70,12 +68,12 @@ const CreateDisbursmentModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear un desembolso</ModalHeader>
+          <ModalHeader>Crear una caja chica</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={disbursmentMock} />
+            <SeedButton reset={reset} mock={pettyCashMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <DisbursmentForm control={control} errors={errors} />
+            <PettyCashForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
@@ -93,8 +91,9 @@ const CreateDisbursmentModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
+      <DevTool control={control} />
     </Modal>
   );
 };
 
-export default CreateDisbursmentModal;
+export default CreatePettyCashModal;

@@ -10,6 +10,7 @@ const SeedButton = ({ reset, mock }: { reset: any; mock: () => object }) => {
     <>
       {dev && (
         <Button
+          m={'10px'}
           onClick={() => {
             reset(mock());
           }}

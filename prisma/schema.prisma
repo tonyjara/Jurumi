@@ -197,11 +197,11 @@ model Disbursement {
 }
 
 model MoneyTransferOperation {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  createdBy String
-  updatedBy String?
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdById String
+  updatedById String?
 
   fromCurrency Currency
   fromAmount   Decimal  @default(0) @db.Decimal(12, 4)
@@ -216,19 +216,26 @@ model MoneyTransferOperation {
   bankTo        BankAccount? @relation("exchangeTo", fields: [bankToId], references: [id])
   pettyCashToId String?
   pettyCash     PettyCash?   @relation(fields: [pettyCashToId], references: [id])
+
+  archived    Boolean @default(false)
+  softDeleted Boolean @default(false)
 }
 
 model PettyCash {
   id          String    @id @default(cuid())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
-  createdBy   String
-  updatedBy   String?
+  createdById String
+  updatedById String?
   displayName String
 
   amount         Decimal                  @default(0) @db.Decimal(12, 4)
+  currency       Currency
   moneyExchanges MoneyTransferOperation[]
   Disbursement   Disbursement[]
+
+  archived    Boolean @default(false)
+  softDeleted Boolean @default(false)
 }
 
 enum Role {

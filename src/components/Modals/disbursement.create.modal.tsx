@@ -10,72 +10,80 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Organization } from '@prisma/client';
+import type { Disbursement } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import {
-  defaultOrgData,
-  validateOrgCreate,
-} from '../../lib/validations/org.create.validate';
-import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import SeedButton from '../DevTools/SeedButton';
+import { disbursementMock } from '../../__tests__/mocks/Mocks';
+import {
+  defaultDisbursementValues,
+  validateDisbursement,
+} from '../../lib/validations/disbursement.validate';
+import DisbursementForm from '../Forms/Disbursement.form';
+import { useSession } from 'next-auth/react';
 
-const CreateOrgModal = ({
+const CreateDisbursementModal = ({
   isOpen,
   onClose,
-  onSubmit,
+  projectId,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: any;
+  projectId: string;
 }) => {
   const context = trpcClient.useContext();
+  const { data: session } = useSession();
   const {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<Organization>({
-    defaultValues: defaultOrgData,
-    resolver: zodResolver(validateOrgCreate),
+  } = useForm<Disbursement>({
+    defaultValues: defaultDisbursementValues,
+    resolver: zodResolver(validateDisbursement),
   });
   const handleOnClose = () => {
-    reset(defaultOrgData);
+    reset(defaultDisbursementValues);
     onClose();
   };
-  const { error, mutate, isLoading } = trpcClient.org.create.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Su organización ha sido creada! 🔥',
-      callback: () => {
-        handleOnClose();
-        reset();
-        context.org.getMany.invalidate();
-      },
-    })
-  );
 
-  const submitFunc = async (data: Organization) => {
+  const { error, mutate, isLoading } =
+    trpcClient.disbursement.create.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Su desembolso ha sido creado!',
+        callback: () => {
+          handleOnClose();
+          context.disbursement.getMany.invalidate();
+        },
+      })
+    );
+
+  const submitFunc = async (data: Disbursement) => {
+    //Admins and moderators add projectId Manually
+    const isUser = session?.user.role === 'USER';
+    data.projectId = isUser ? projectId : data.projectId;
+
     mutate(data);
   };
 
   return (
     <Modal isOpen={isOpen} onClose={handleOnClose}>
-      <form onSubmit={handleSubmit(onSubmit ?? submitFunc)} noValidate>
+      <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una organización</ModalHeader>
+          <ModalHeader>Crear un desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <SeedButton reset={reset} mock={disbursementMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-
-            <FormControlledText
+            <DisbursementForm
+              setValue={setValue}
               control={control}
               errors={errors}
-              name="displayName"
-              label="Nombre de su organización"
-              autoFocus={true}
             />
           </ModalBody>
 
@@ -98,4 +106,4 @@ const CreateOrgModal = ({
   );
 };
 
-export default CreateOrgModal;
+export default CreateDisbursementModal;

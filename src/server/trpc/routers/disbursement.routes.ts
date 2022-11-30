@@ -1,15 +1,15 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { validateDisbursment } from '../../../lib/validations/disbursment.validate';
+import { validateDisbursement } from '../../../lib/validations/disbursement.validate';
 import { adminProcedure, protectedProcedure, router } from '../initTrpc';
 
-export const disbursmentRouter = router({
+export const disbursementRouter = router({
   getMany: protectedProcedure.query(async () => {
     return await prisma?.disbursement.findMany();
   }),
   create: protectedProcedure
-    .input(validateDisbursment)
+    .input(validateDisbursement)
     .mutation(async ({ input, ctx }) => {
       // console.log(input);
 
@@ -40,7 +40,7 @@ export const disbursmentRouter = router({
       return x;
     }),
   edit: protectedProcedure
-    .input(validateDisbursment)
+    .input(validateDisbursement)
     .mutation(async ({ input, ctx }) => {
       const x = await prisma?.disbursement.update({
         where: { id: input.id },

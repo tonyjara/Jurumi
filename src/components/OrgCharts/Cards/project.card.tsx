@@ -20,7 +20,7 @@ import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import type { Project } from '@prisma/client';
 import { decimalFormat } from '../../../lib/utils/TranslatedEnums';
 import EditProjectModal from '../../Modals/project.edit.modal';
-import CreateDisbursmentModal from '../../Modals/disbursment.create.modal';
+import CreateDisbursementModal from '../../Modals/disbursement.create.modal';
 
 const ProjectCard = (project: Project) => {
   const context = trpcClient.useContext();
@@ -31,9 +31,9 @@ const ProjectCard = (project: Project) => {
     onClose: onEditClose,
   } = useDisclosure();
   const {
-    isOpen: isDisbursmentOpen,
-    onOpen: onDisbursmentOpen,
-    onClose: onDisbursmentClose,
+    isOpen: isDisbursementOpen,
+    onOpen: onDisbursementOpen,
+    onClose: onDisbursmeentClose,
   } = useDisclosure();
 
   const { mutate, isLoading } = trpcClient.project.deleteById.useMutation(
@@ -70,9 +70,9 @@ const ProjectCard = (project: Project) => {
             <Divider mb={2} mt={2} />
             <HStack justifyContent={'end'}>
               <Button
-                onClick={onDisbursmentOpen}
+                onClick={onDisbursementOpen}
                 rightIcon={<Icon boxSize={6} as={MdOutlineAdd} />}
-                aria-label={'Add Disbursment'}
+                aria-label={'Add Disbursement'}
                 size="sm"
                 // alignSelf={'end'}
               >
@@ -101,10 +101,10 @@ const ProjectCard = (project: Project) => {
         isOpen={isEditOpen}
         onClose={onEditClose}
       />
-      <CreateDisbursmentModal
+      <CreateDisbursementModal
         projectId={project.id}
-        isOpen={isDisbursmentOpen}
-        onClose={onDisbursmentClose}
+        isOpen={isDisbursementOpen}
+        onClose={onDisbursmeentClose}
       />
     </Container>
   );
