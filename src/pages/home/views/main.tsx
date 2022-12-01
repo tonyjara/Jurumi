@@ -17,12 +17,13 @@ const MainView = () => {
   return (
     <TransformWrapper
       // initialPositionX={-500}
-      // initialPositionY={-100}
+      initialPositionY={-100}
+      // velocityAnimation={{ animationType: 'easeInQuad', equalToMove: false }}
       initialScale={1.5}
     >
-      {({ zoomIn, zoomOut, resetTransform }) => (
-        <Flex>
-          <HStack
+      {/* {({ zoomIn, zoomOut, resetTransform }) => ( */}
+      <>
+        {/* <HStack
             p={'10px'}
             backgroundColor={'gray.900'}
             zIndex={2}
@@ -37,15 +38,17 @@ const MainView = () => {
             <Button size="sm" onClick={() => resetTransform()}>
               RESET
             </Button>
-          </HStack>
-          <CreateTablesSelect />
-          <TransformComponent>
-            <Flex left={0} w={'100vw'} height={'100vh'}>
-              <Overview />
-            </Flex>
-          </TransformComponent>
-        </Flex>
-      )}
+          </HStack> */}
+        {/* <Flex> */}
+        <CreateTablesSelect />
+        <TransformComponent>
+          <Flex w={'100vw'} height={'100vh'}>
+            <Overview />
+          </Flex>
+        </TransformComponent>
+        {/* </Flex> */}
+      </>
+      {/* )} */}
     </TransformWrapper>
   );
 };

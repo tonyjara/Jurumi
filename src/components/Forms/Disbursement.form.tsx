@@ -1,5 +1,9 @@
-import { VStack } from '@chakra-ui/react';
-import type { Disbursement } from '@prisma/client';
+import { Divider, VStack } from '@chakra-ui/react';
+import type {
+  Disbursement,
+  DisbursementStatus,
+  DisbursementType,
+} from '@prisma/client';
 import React, { useState } from 'react';
 import type {
   FieldValues,
@@ -10,12 +14,13 @@ import type {
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
+import { trpcClient } from '../../lib/utils/trpcClient';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 import FormControlledPyInvoiceNumber from '../FormControlled/FormControlledPyInvoiceNumber';
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
-import StateControlledRadioButtons from '../StateControlled/StateControlledRadioButtons';
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -28,63 +33,52 @@ const DisbursmentForm = ({
   errors,
   setValue,
 }: formProps<Disbursement>) => {
-  const [extractionMethod, setExtractionMethod] = useState<{
-    value: string;
-    label: string;
-  } | null>({
-    value: 'bankAcc',
-    label: 'Cuenta Bancaria',
-  });
+  const {
+    data: moneyAccs,
+    // isLoading: isMoneyAccLoading,
+    // error: isMoneyAccError,
+  } = trpcClient.moneyAcc.getMany.useQuery();
+  const {
+    data: projects,
+    // isLoading: isMoneyAccLoading,
+    // error: isMoneyAccError,
+  } = trpcClient.project.getMany.useQuery();
+
   const currency = useWatch({ control, name: 'currency' });
 
-  const options = [
-    { value: 'pettyCash', label: 'Caja chica' },
-    { value: 'bankAcc', label: 'Cuenta Bancaria' },
+  const bankIdOptions = moneyAccs
+    ?.filter((x) => x.currency === currency)
+    .map((acc) => ({
+      value: acc.id,
+      label: `${acc.isCashAccount ? 'Caja chica:' : 'Cuenta Banc.:'} ${
+        acc.displayName
+      } en ${translateCurrencyPrefix(currency)}`,
+    }));
+  const projectOptions = projects?.map((proj) => ({
+    value: proj.id,
+    label: `${proj.displayName}`,
+  }));
+
+  const statusOptions: { value: DisbursementStatus; label: string }[] = [
+    { value: 'ACCEPTED', label: 'Aceptado' },
+    { value: 'PENDING', label: 'Pendiente' },
+    { value: 'REJECTED', label: 'Rechazado' },
   ];
-  const onChange = (x: any) => {
-    setExtractionMethod(options.find((y) => y.value === x) ?? null);
-    x === 'bankAcc' ? setValue('pettyCashId', null) : setValue('bankId', null);
-  };
+  const disbursementTypeOptions: { value: DisbursementType; label: string }[] =
+    [
+      { value: 'ADVANCE', label: 'Adelanto' },
+      { value: 'MONEY_ORDER', label: 'Orden de pago' },
+      { value: 'REIMBURSMENT_ORDER', label: 'Orden de re-embolso' },
+    ];
 
   return (
     <VStack spacing={5}>
-      <StateControlledRadioButtons
-        onChange={onChange}
-        label="Seleccione el medio de extracción"
-        options={options}
-        state={extractionMethod}
-      />
-      {extractionMethod?.value === 'bankAcc' && (
-        <FormControlledSelect
-          control={control}
-          errors={errors}
-          name="bankId"
-          label="Seleccione un banco"
-          options={[]}
-        />
-      )}
-      {extractionMethod?.value === 'pettyCash' && (
-        <FormControlledSelect
-          control={control}
-          errors={errors}
-          name="bankId"
-          label="Seleccione una caja chica"
-          options={[]}
-        />
-      )}
       <FormControlledSelect
         control={control}
         errors={errors}
-        name="projectId"
-        label="Seleccione un proyecto"
-        options={[]}
-      />
-      <FormControlledRadioButtons
-        control={control}
-        errors={errors}
-        name="status"
-        label="Estado del desembolso"
-        options={[]}
+        name="disbursementType"
+        label="Tipo de solicitud"
+        options={disbursementTypeOptions ?? []}
       />
       <FormControlledText
         control={control}
@@ -116,6 +110,39 @@ const DisbursmentForm = ({
         helperText="El dinero asignado no afecta las cuentas bancarias. Se usa para tener una referencia del total disponible."
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
+      />
+
+      <FormControlledImageUpload
+        control={control}
+        errors={errors}
+        name="pictureUrl"
+        label="Foto de su comprobante"
+        helperText="Requerido en caso de Solicitur de re-embolso"
+        setValue={setValue}
+      />
+      {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
+      <Divider pb={3} />
+      <FormControlledSelect
+        control={control}
+        errors={errors}
+        name="bankId"
+        label="Seleccione un banco"
+        options={bankIdOptions ?? []}
+      />
+
+      <FormControlledSelect
+        control={control}
+        errors={errors}
+        name="projectId"
+        label="Seleccione un proyecto"
+        options={projectOptions ?? []}
+      />
+      <FormControlledRadioButtons
+        control={control}
+        errors={errors}
+        name="status"
+        label="Estado del desembolso"
+        options={statusOptions}
       />
     </VStack>
   );

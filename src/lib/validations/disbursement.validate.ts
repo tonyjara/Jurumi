@@ -71,7 +71,6 @@ export const defaultDisbursementValues: disbursementValidateData = {
   accountId: '',
   taxPayerId: null,
   bankId: null,
-  pettyCashId: null,
   projectId: null,
   archived: false,
   softDeleted: false,

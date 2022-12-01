@@ -16,7 +16,7 @@ const SeedButton = ({ reset, mock }: { reset: any; mock: () => object }) => {
           }}
           colorScheme="purple"
         >
-          Seed Me daddy
+          Seed Me 🌱
         </Button>
       )}
     </>

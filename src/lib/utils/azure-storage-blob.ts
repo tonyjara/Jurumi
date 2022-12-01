@@ -44,8 +44,8 @@ const createBlobInContainer = async (
   await blobClient.uploadData(file, options);
 };
 
-const uploadFileToBlob = async (file: File | null): Promise<string[]> => {
-  if (!file) return [];
+const uploadFileToBlob = async (file: File | null): Promise<string | null> => {
+  if (!file) return null;
 
   // get BlobService = notice `?` is pulled out of sasToken - if created in Azure portal
   const blobService = new BlobServiceClient(
@@ -62,8 +62,12 @@ const uploadFileToBlob = async (file: File | null): Promise<string[]> => {
   // upload file
   await createBlobInContainer(containerClient, file);
 
+  const client = containerClient.getBlobClient(file.name);
+
+  // console.log(url);
   // get list of blobs in container
-  return getBlobsInContainer(containerClient);
+  // return getBlobsInContainer(containerClient);
+  return client.url;
 };
 
 export default uploadFileToBlob;

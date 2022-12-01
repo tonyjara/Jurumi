@@ -30,10 +30,10 @@ const Home = () => {
     setUploading(true);
 
     // *** UPLOAD TO AZURE STORAGE ***
-    const blobsInContainer: string[] = await uploadFileToBlob(fileSelected);
+    // const blobsInContainer: string[] = await uploadFileToBlob(fileSelected);
 
     // prepare UI for results
-    setBlobList(blobsInContainer);
+    // setBlobList(blobsInContainer);
 
     // reset state/form
     setFileSelected(null);

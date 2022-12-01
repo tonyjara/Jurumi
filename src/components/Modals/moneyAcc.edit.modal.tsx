@@ -10,26 +10,28 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { PettyCash } from '@prisma/client';
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 
 import { trpcClient } from '../../lib/utils/trpcClient';
+import type { MoneyAccWithBankInfo } from '../../lib/validations/moneyAcc.validate';
+import {
+  defaultMoneyAccValues,
+  validateMoneyAccount,
+} from '../../lib/validations/moneyAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
-import { pettyCashMock } from '../../__tests__/mocks/Mocks';
-import PettyCashForm from '../Forms/PettyCash.form';
-import {
-  defaultPettyCashValues,
-  validatePettyCash,
-} from '../../lib/validations/pettyCash.validate';
+import { moneyAccMock } from '../../__tests__/mocks/Mocks';
+import MoneyAccForm from '../Forms/MoneyAcc.form';
 
-const CreatePettyCashModal = ({
+const EditMoneyAccModal = ({
   isOpen,
   onClose,
+  accData,
 }: {
+  accData: MoneyAccWithBankInfo;
   isOpen: boolean;
   onClose: () => void;
 }) => {
@@ -39,28 +41,38 @@ const CreatePettyCashModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<PettyCash>({
-    defaultValues: defaultPettyCashValues,
-    resolver: zodResolver(validatePettyCash),
+  } = useForm<MoneyAccWithBankInfo>({
+    defaultValues: defaultMoneyAccValues,
+    resolver: zodResolver(validateMoneyAccount),
   });
   const handleOnClose = () => {
-    reset(defaultPettyCashValues);
+    reset(defaultMoneyAccValues);
     onClose();
   };
+  useEffect(() => {
+    if (isOpen) {
+      reset(accData);
+    }
 
-  const { error, mutate, isLoading } = trpcClient.pettyCash.create.useMutation(
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+  const isCashAccount = useWatch({ control, name: 'isCashAccount' });
+
+  const { error, mutate, isLoading } = trpcClient.moneyAcc.edit.useMutation(
     handleUseMutationAlerts({
-      successText: 'Su caja chica ha sido creada! 🔥',
+      successText: 'Su cuenta ha sido editada!',
       callback: () => {
         handleOnClose();
-        context.pettyCash.getMany.invalidate();
+        isCashAccount
+          ? context.moneyAcc.getManyCashAccs.invalidate()
+          : context.moneyAcc.getManyBankAccs.invalidate();
       },
     })
   );
 
-  const submitFunc = async (data: PettyCash) => {
+  const submitFunc = async (data: MoneyAccWithBankInfo) => {
     mutate(data);
-    console.log(data);
   };
 
   return (
@@ -68,12 +80,16 @@ const CreatePettyCashModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una caja chica</ModalHeader>
+          {isCashAccount ? (
+            <ModalHeader>Editar una Caja Chica</ModalHeader>
+          ) : (
+            <ModalHeader>Editar una Cuenta Bancaria</ModalHeader>
+          )}
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={pettyCashMock} />
+            <SeedButton reset={reset} mock={moneyAccMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <PettyCashForm control={control} errors={errors} />
+            <MoneyAccForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
@@ -83,7 +99,7 @@ const CreatePettyCashModal = ({
               colorScheme="blue"
               mr={3}
             >
-              Guardar
+              Editar
             </Button>
             <Button colorScheme="gray" mr={3} onClick={onClose}>
               Cerrar
@@ -96,4 +112,4 @@ const CreatePettyCashModal = ({
   );
 };
 
-export default CreatePettyCashModal;
+export default EditMoneyAccModal;

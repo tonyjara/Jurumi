@@ -1,17 +1,12 @@
 import { VStack } from '@chakra-ui/react';
-import type { BankAccount } from '@prisma/client';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
 import {
   bankNameOptions,
   ownerDocTypeOptions,
-  currencyOptions,
 } from '../../lib/utils/SelectOptions';
-import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
+import type { MoneyAccWithBankInfo } from '../../lib/validations/moneyAcc.validate';
 import FormControlledPhoneInput from '../FormControlled/FormControlledPhoneInput';
-import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
 
@@ -20,80 +15,66 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<T>;
 }
 
-const BankAccForm = ({ control, errors }: formProps<BankAccount>) => {
-  const currency = useWatch({ control, name: 'currency' });
+const BankInfoForm = ({ control, errors }: formProps<MoneyAccWithBankInfo>) => {
+  // const currency = useWatch({ control, name: 'currency' });
 
   return (
-    <VStack spacing={5}>
+    <VStack w={'100%'} spacing={5}>
       <FormControlledSelect
         control={control}
         errors={errors}
-        name="bankName"
+        name="bankInfo.bankName"
         label="Seleccione el banco"
         options={bankNameOptions}
       />
       <FormControlledText
         control={control}
         errors={errors}
-        name="ownerName"
+        name="bankInfo.ownerName"
         label="Nombre y Apellido del titular"
         autoFocus={true}
       />
       <FormControlledText
         control={control}
         errors={errors}
-        name="accountNumber"
+        name="bankInfo.accountNumber"
         label="Número de cuenta"
       />
       <FormControlledSelect
         control={control}
         errors={errors}
-        name="ownerDocType"
+        name="bankInfo.ownerDocType"
         label="Tipo de documento"
         options={ownerDocTypeOptions}
       />
       <FormControlledText
         control={control}
         errors={errors}
-        name="ownerDoc"
+        name="bankInfo.ownerDoc"
         label="Documento del titular"
       />
       <FormControlledPhoneInput
         control={control}
         errors={errors}
-        name="ownerContactNumber"
+        name="bankInfo.ownerContactNumber"
         label="Celular del titular (Opcional)."
         helperText="Ej: 0981 123 123"
       />
-      <FormControlledRadioButtons
-        control={control}
-        errors={errors}
-        name="currency"
-        label="Moneda"
-        options={currencyOptions}
-      />
-      <FormControlledMoneyInput
-        control={control}
-        errors={errors}
-        name="balance"
-        label="Balance Inicial"
-        prefix={translateCurrencyPrefix(currency)}
-        currency={currency}
-      />
+
       <FormControlledText
         control={control}
         errors={errors}
-        name="country"
+        name="bankInfo.country"
         label="País"
       />
       <FormControlledText
         control={control}
         errors={errors}
-        name="city"
+        name="bankInfo.city"
         label="Ciudad"
       />
     </VStack>
   );
 };
 
-export default BankAccForm;
+export default BankInfoForm;

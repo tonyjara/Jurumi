@@ -10,23 +10,23 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { BankAccount } from '@prisma/client';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 
 import { trpcClient } from '../../lib/utils/trpcClient';
+import type { MoneyAccWithBankInfo } from '../../lib/validations/moneyAcc.validate';
 import {
-  defaultBankAccountValues,
-  validateBankAccountCreate,
-} from '../../lib/validations/bankAcc.validate';
+  defaultMoneyAccValues,
+  validateMoneyAccount,
+} from '../../lib/validations/moneyAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
-import { bankAccMock } from '../../__tests__/mocks/Mocks';
-import BankAccForm from '../Forms/BankAcc.form';
+import { moneyAccMock } from '../../__tests__/mocks/Mocks';
+import MoneyAccForm from '../Forms/MoneyAcc.form';
 
-const CreateBankAccountModal = ({
+const CreateMoneyAccModal = ({
   isOpen,
   onClose,
 }: {
@@ -39,26 +39,29 @@ const CreateBankAccountModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<BankAccount>({
-    defaultValues: defaultBankAccountValues,
-    resolver: zodResolver(validateBankAccountCreate),
+  } = useForm<MoneyAccWithBankInfo>({
+    defaultValues: defaultMoneyAccValues,
+    resolver: zodResolver(validateMoneyAccount),
   });
   const handleOnClose = () => {
-    reset(defaultBankAccountValues);
+    reset(defaultMoneyAccValues);
     onClose();
   };
+  const isCashAccount = useWatch({ control, name: 'isCashAccount' });
 
-  const { error, mutate, isLoading } = trpcClient.bankAcc.create.useMutation(
+  const { error, mutate, isLoading } = trpcClient.moneyAcc.create.useMutation(
     handleUseMutationAlerts({
       successText: 'Su cuenta bancaria ha sido creada! 🔥',
       callback: () => {
         handleOnClose();
-        context.bankAcc.getMany.invalidate();
+        isCashAccount
+          ? context.moneyAcc.getManyCashAccs.invalidate()
+          : context.moneyAcc.getManyBankAccs.invalidate();
       },
     })
   );
 
-  const submitFunc = async (data: BankAccount) => {
+  const submitFunc = async (data: MoneyAccWithBankInfo) => {
     mutate(data);
   };
 
@@ -67,12 +70,16 @@ const CreateBankAccountModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una cuenta bancaria</ModalHeader>
+          {isCashAccount ? (
+            <ModalHeader>Crear una Caja Chica</ModalHeader>
+          ) : (
+            <ModalHeader>Crear una Cuenta Bancaria</ModalHeader>
+          )}
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={bankAccMock} />
+            <SeedButton reset={reset} mock={moneyAccMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <BankAccForm control={control} errors={errors} />
+            <MoneyAccForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
@@ -95,4 +102,4 @@ const CreateBankAccountModal = ({
   );
 };
 
-export default CreateBankAccountModal;
+export default CreateMoneyAccModal;

@@ -63,11 +63,13 @@ const CreateDisbursementModal = ({
     );
 
   const submitFunc = async (data: Disbursement) => {
-    //Admins and moderators add projectId Manually
-    const isUser = session?.user.role === 'USER';
-    data.projectId = isUser ? projectId : data.projectId;
+    console.log(data);
 
-    mutate(data);
+    //Admins and moderators add projectId Manually
+    // const isUser = session?.user.role === 'USER';
+    // data.projectId = isUser ? projectId : data.projectId;
+
+    // mutate(data);
   };
 
   return (
@@ -75,7 +77,7 @@ const CreateDisbursementModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear un desembolso</ModalHeader>
+          <ModalHeader>Crear una solicitud desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <SeedButton reset={reset} mock={disbursementMock} />

@@ -5,7 +5,6 @@ import {
   CardBody,
   Box,
   Container,
-  Text,
   Icon,
   Divider,
   HStack,
@@ -19,13 +18,12 @@ import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import {
   decimalFormat,
-  translateBankNames,
   translateCurrency,
 } from '../../../lib/utils/TranslatedEnums';
-import EditBankAccModal from '../../Modals/moneyAcc.edit.modal';
-import type { MoneyAccWithBankInfo } from '../../../lib/validations/moneyAcc.validate';
+import type { MoneyAccount } from '@prisma/client';
+import EditMoneyAccModal from '../../Modals/moneyAcc.edit.modal';
 
-const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
+const PettyCashCard = (pettyCash: MoneyAccount) => {
   const context = trpcClient.useContext();
 
   const {
@@ -36,36 +34,31 @@ const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
 
   const { mutate, isLoading } = trpcClient.moneyAcc.deleteById.useMutation(
     handleUseMutationAlerts({
-      successText: 'La cuenta ha sido eliminada! 💩',
+      successText: 'La caja chica ha sido eliminada! 💩',
       callback: () => {
-        context.moneyAcc.getManyBankAccs.invalidate();
+        context.moneyAcc.getManyCashAccs.invalidate();
       },
     })
   );
-  const deleteBankAcc = () => {
-    mutate({ id: bankAcc.id });
+  const deleteMutation = () => {
+    mutate({ id: pettyCash.id });
   };
 
   return (
     <Container maxW={'280px'}>
       <Card>
         <CardHeader pb={0}>
-          <Heading size="md">{bankAcc.displayName}</Heading>
-          <Heading size={'sm'}>
-            {' '}
-            {`${translateBankNames(
-              bankAcc.bankInfo?.bankName
-            )} ${translateCurrency(bankAcc.currency)}`}{' '}
-          </Heading>
+          <Heading size="md">{pettyCash.displayName}</Heading>
+          <Heading size={'sm'}>{translateCurrency(pettyCash.currency)}</Heading>
         </CardHeader>
 
         <CardBody>
-          <Box textAlign={'left'}>
+          <Box>
             <Heading size="md">
-              {decimalFormat(bankAcc.initialBalance, bankAcc.currency)}
+              {decimalFormat(pettyCash.initialBalance, pettyCash.currency)}
             </Heading>
-            <VStack whiteSpace={'nowrap'} spacing={0}>
-              <Text>Titular: {bankAcc.bankInfo?.ownerName} </Text>
+            <VStack whiteSpace={'nowrap'} textAlign={'left'} spacing={0}>
+              {/* <Text>Titular: {bankAcc.ownerName}</Text> */}
             </VStack>
             <Divider mb={2} mt={2} />
             <HStack justifyContent={'end'}>
@@ -77,9 +70,9 @@ const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
               />
               <IconButton
                 icon={<Icon boxSize={6} as={MdOutlineDelete} />}
-                aria-label={'Delete bankAcc'}
+                aria-label={'Delete pettyCash'}
                 size="sm"
-                onClick={deleteBankAcc}
+                onClick={deleteMutation}
                 disabled={isLoading}
               />
             </HStack>
@@ -87,8 +80,8 @@ const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
         </CardBody>
       </Card>
 
-      <EditBankAccModal
-        accData={bankAcc}
+      <EditMoneyAccModal
+        accData={pettyCash}
         isOpen={isEditOpen}
         onClose={onEditClose}
       />
@@ -96,4 +89,4 @@ const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
   );
 };
 
-export default BankAccCard;
+export default PettyCashCard;

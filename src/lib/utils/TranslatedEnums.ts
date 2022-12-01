@@ -46,7 +46,8 @@ export const translateBankDocTypes = (docType: BankDocType) => {
 
   return docTypes[docType] ?? 'Cédula de identidad. ';
 };
-export const translateBankNames = (bankName: BankNamesPy) => {
+export const translateBankNames = (bankName?: BankNamesPy) => {
+  if (!bankName) return '';
   const bankNames: { [key in BankNamesPy]?: string } = {
     BANCOP: 'Bancop',
     BANCO_ATLAS: 'Banco Atlas',

@@ -1,35 +1,27 @@
 import { HStack, useDisclosure, Box } from '@chakra-ui/react';
 import React from 'react';
-import CreateBankAccountModal from '../../../components/Modals/bankAcc.create.modal';
+import CreateMoneyAccModal from '../../../components/Modals/MoneyAcc.create.modal';
 import CreateOrgModal from '../../../components/Modals/org.create.modal';
 import { Select } from 'chakra-react-select';
-import CreatePettyCashModal from '../../../components/Modals/pettyCash.create.modal';
 
 const CreateTablesSelect = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
-    isOpen: bankAccIsOpen,
-    onOpen: onBankAccOpen,
-    onClose: onBankAccClose,
-  } = useDisclosure();
-  const {
-    isOpen: isPettyCashOpen,
-    onOpen: onPettyCashOpen,
-    onClose: onPettyCashClose,
+    isOpen: moneyAccIsOpen,
+    onOpen: onMoneyAccOpen,
+    onClose: onMoneyAccClose,
   } = useDisclosure();
 
   const selectOptions = [
     { label: 'Crear Org', value: 'org' },
-    { label: 'Crear Cuenta Bancaria', value: 'bankAcc' },
-    { label: 'Crear Caja Chica', value: 'pettyCash' },
+    { label: 'Crear Cuenta o Caja chica', value: 'moneyAcc' },
   ];
-  const handleOnChange = (x: 'bankAcc' | 'org' | 'pettyCash' | undefined) => {
+  const handleOnChange = (x: 'moneyAcc' | 'org' | undefined) => {
     if (!x) return;
     const dict = {
-      bankAcc: onBankAccOpen,
+      moneyAcc: onMoneyAccOpen,
       org: onOpen,
-      pettyCash: onPettyCashOpen,
     };
     dict[x]();
   };
@@ -44,6 +36,7 @@ const CreateTablesSelect = () => {
     >
       <Box minW={'300px'}>
         <Select
+          instanceId={'unique-id'}
           value={{ value: '', label: 'Seleccione para crear' }}
           options={selectOptions}
           onChange={(e: any) => handleOnChange(e?.value)}
@@ -52,11 +45,7 @@ const CreateTablesSelect = () => {
         />
       </Box>
       <CreateOrgModal isOpen={isOpen} onClose={onClose} />
-      <CreateBankAccountModal isOpen={bankAccIsOpen} onClose={onBankAccClose} />
-      <CreatePettyCashModal
-        isOpen={isPettyCashOpen}
-        onClose={onPettyCashClose}
-      />
+      <CreateMoneyAccModal isOpen={moneyAccIsOpen} onClose={onMoneyAccClose} />
     </HStack>
   );
 };
