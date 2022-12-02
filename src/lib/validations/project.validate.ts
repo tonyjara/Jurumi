@@ -1,6 +1,4 @@
 import type { Project } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import { Currency } from '@prisma/client';
 import { z } from 'zod';
 
 const stringReqMinMax = (reqText: string, min: number, max: number) =>
@@ -9,28 +7,29 @@ const stringReqMinMax = (reqText: string, min: number, max: number) =>
     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
     .max(max, `Has superado el límite de caractérs (${max})`);
 
-type withMoney = Omit<Project, 'assignedMoney'> & { assignedMoney?: any };
-
-export const validateProject: z.ZodType<withMoney> = z.lazy(() =>
+export const validateProject: z.ZodType<Project> = z.lazy(() =>
   z.object({
     id: z.string(),
+    createdAt: z.date(),
+    createdById: z.string(),
+    updatedAt: z.date().nullable(),
+    updatedById: z.string().nullable(),
     displayName: stringReqMinMax(
       'Favor ingrese un nombre para el proyecto.',
       2,
       64
     ),
-    assignedMoney: z.any().transform((value) => new Prisma.Decimal(value)),
-    assignedMoneyCurrency: z.nativeEnum(Currency),
+    description: stringReqMinMax(
+      'Favor ingrese una descripción proyecto.',
+      6,
+      128
+    ),
     organizationId: z.string({
       required_error: 'Favor seleccione una organización.',
     }),
     allowedUsers: z.string().array(),
     softDeleted: z.boolean(),
-    updatedAt: z.date().nullable(),
-    updatedById: z.string().nullable(),
     archived: z.boolean(),
-    createdAt: z.date(),
-    createdById: z.string(),
   })
 );
 
@@ -43,10 +42,9 @@ export const defaultProjectValues: projectValidateData = {
   createdById: '',
   updatedById: null,
   displayName: '',
-  assignedMoney: new Prisma.Decimal(0.0),
-  assignedMoneyCurrency: 'PYG',
   organizationId: '',
   allowedUsers: [],
   archived: false,
   softDeleted: false,
+  description: '',
 };

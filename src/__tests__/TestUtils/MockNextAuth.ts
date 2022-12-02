@@ -1,23 +1,29 @@
 import * as nextAuthReact from 'next-auth/react';
-import type { Session } from 'next-auth';
-import type { Role } from '@prisma/client';
+import type { Account, Role } from '@prisma/client';
 
 //ADD THIS TO ALL TEST FILES => jest.mock('next-auth/react');
 export const nextAuthReactMocked = nextAuthReact as jest.Mocked<
   typeof nextAuthReact
 >;
 
+const user: (x: Role) => Omit<Account, 'password'> = (x) => {
+  return {
+    createdAt: new Date(),
+    displayName: 'Tony',
+    email: 'tony@tony.com',
+    id: 'claszae5y00008xq0u4wnkiav',
+    role: x,
+    updatedAt: new Date(),
+    organizationId: null,
+    isVerified: true,
+    active: true,
+  };
+};
+
 export const mockSessionWithRole = (role: Role) => {
   return {
     expires: '',
-    user: {
-      createdAt: new Date(),
-      displayName: 'Tony',
-      email: 'tony@tony.com',
-      id: 'claszae5y00008xq0u4wnkiav',
-      role,
-      updatedAt: new Date(),
-    },
+    user: user(role),
   };
 };
 

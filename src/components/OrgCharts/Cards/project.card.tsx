@@ -20,7 +20,7 @@ import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import type { Project } from '@prisma/client';
 import { decimalFormat } from '../../../lib/utils/TranslatedEnums';
 import EditProjectModal from '../../Modals/project.edit.modal';
-import CreateDisbursementModal from '../../Modals/disbursement.create.modal';
+import CreateDisbursementModal from '../../Modals/MoneyRequest.create.modal';
 
 const ProjectCard = (project: Project) => {
   const context = trpcClient.useContext();
@@ -59,10 +59,10 @@ const ProjectCard = (project: Project) => {
           <Box>
             <Heading whiteSpace={'nowrap'} size="md">
               Monto asignado: <br />
-              {decimalFormat(
+              {/* {decimalFormat(
                 project.assignedMoney,
                 project.assignedMoneyCurrency
-              )}
+              )} */}
             </Heading>
             <VStack whiteSpace={'nowrap'} textAlign={'left'} spacing={0}>
               {/* <Text>Titular: {bankAcc.ownerName}</Text> */}

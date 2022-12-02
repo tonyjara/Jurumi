@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Box,
   Stack,
@@ -15,25 +15,16 @@ import {
   defaultSigninData,
   signinValidation,
 } from '../lib/validations/auth.signin.validate';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import type { GetServerSideProps } from 'next';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
+import { myToast } from '../components/Toasts/MyToast';
 
 export default function Signin({ onSubmit }: { onSubmit?: any }) {
   const router = useRouter();
   const { t } = useTranslation(['signin', 'common', 'validation', 'forms']);
-
-  // const { status } = useSession();
-
-  // useEffect(() => {
-  //   if (status === 'authenticated') {
-  //     router.push('/home');
-  //   }
-  //   return () => {};
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [status]);
 
   const {
     handleSubmit,
@@ -50,6 +41,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
       email,
       password,
     });
+
     if (!x?.error) {
       //redirect
       router.push('/home');
@@ -57,13 +49,13 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
 
     if (x?.error) {
       //handle
-      console.log(x.error);
+      // console.log(x.error);
+      myToast.error('Hubo un error favor intente nuevamente.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit ?? submitSigning)} noValidate>
-      {/* <TopNavbar /> */}
       <Stack spacing={2} py={{ base: 5, md: 10 }}>
         <Heading
           textAlign={'center'}

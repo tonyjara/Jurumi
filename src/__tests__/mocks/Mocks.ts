@@ -1,4 +1,4 @@
-import type { Disbursement, Project, MoneyAccount } from '@prisma/client';
+import type { MoneyRequest, Project, MoneyAccount } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -45,35 +45,29 @@ export const projectMock: () => Project = () => {
     updatedById: null,
     displayName:
       faker.commerce.productAdjective() + ' ' + faker.company.bsBuzz(),
-    assignedMoney: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
-    assignedMoneyCurrency: 'PYG',
     organizationId: '',
     allowedUsers: [],
     archived: false,
     softDeleted: false,
+    description: '',
+    taxPayerId: null,
   };
 };
-export const disbursementMock: () => Disbursement = () => {
+export const moneyRequestMock: () => MoneyRequest = () => {
   return {
-    accountId: '',
-    amount: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
-    archived: false,
-    bankId: null,
-    createdAt: new Date(),
-    createdById: '',
-    currency: 'PYG',
-    description: faker.hacker.phrase(),
-    disbursementType: 'MONEY_ORDER',
-    facturaNumber: '',
     id: '',
-    pettyCashId: null,
-    pictureUrl: '',
-    projectId: null,
-    scannedText: '',
-    softDeleted: false,
-    status: 'PENDING',
-    taxPayerId: null,
+    createdAt: new Date(),
     updatedAt: null,
-    updatedById: null,
+    description: '',
+    status: 'PENDING',
+    moneyRequestType: 'FUND_REQUEST',
+    currency: 'USD',
+    amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+    fundSentPictureUrl: '',
+    accountId: '',
+    moneyAccountId: null,
+    projectId: null,
+    archived: false,
+    softDeleted: false,
   };
 };

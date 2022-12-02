@@ -20,21 +20,21 @@ test.skip('unit test trpc routes', async () => {
     },
   });
 
-  const orgInput: inferProcedureInput<AppRouter['org']['create']> = {
-    id: '1',
-    createdAt: new Date(),
-    updatedAt: null,
-    createdById: '',
-    updatedById: null,
-    displayName: 'org123',
-    allowedUsers: [],
-    archived: false,
-    softDeleted: false,
-  };
+  // const orgInput: inferProcedureInput<AppRouter['org']['create']> = {
+  //   id: '1',
+  //   createdAt: new Date(),
+  //   updatedAt: null,
+  //   createdById: '',
+  //   updatedById: null,
+  //   displayName: 'org123',
+  //   allowedUsers: [],
+  //   archived: false,
+  //   softDeleted: false,
+  // };
 
-  //   prismaMock.organization.create.mockResolvedValue(orgInput);
-  const orgCreate = await caller.org.create(orgInput);
-  //   const byId = await caller.post.byId({ id: post.id });
+  // //   prismaMock.organization.create.mockResolvedValue(orgInput);
+  // const orgCreate = await caller.org.create(orgInput);
+  // //   const byId = await caller.post.byId({ id: post.id });
 
-  expect(orgCreate).toMatchObject(orgInput);
+  // expect(orgCreate).toMatchObject(orgInput);
 });

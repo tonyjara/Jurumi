@@ -24,8 +24,7 @@ export const projectRouter = router({
         data: {
           createdById: ctx.session.user.id,
           displayName: input.displayName,
-          assignedMoney: new Prisma.Decimal(input.assignedMoney),
-          assignedMoneyCurrency: input.assignedMoneyCurrency,
+          description: input.description,
           organizationId: input.organizationId,
           allowedUsers: input.allowedUsers,
         },
@@ -40,8 +39,7 @@ export const projectRouter = router({
         data: {
           updatedById: ctx.session.user.id,
           displayName: input.displayName,
-          assignedMoney: new Prisma.Decimal(input.assignedMoney),
-          assignedMoneyCurrency: input.assignedMoneyCurrency,
+          description: input.description,
           allowedUsers: input.allowedUsers,
         },
       });

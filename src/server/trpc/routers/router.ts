@@ -3,10 +3,11 @@
  */
 import { publicProcedure, router } from '../initTrpc';
 import { moneyAccRouter } from './moneyAcc.routes';
-import { disbursementRouter } from './disbursement.routes';
+import { moneyRequestRouter } from './moneyRequest.routes';
 import { greetingRouter } from './greeting.route';
 import { orgRouter } from './org.routes';
 import { projectRouter } from './project.routes';
+import { accountsRouter } from './account.routes';
 
 export const appRouter = router({
   healthcheck: publicProcedure.query(() => 'yay!'),
@@ -14,7 +15,8 @@ export const appRouter = router({
   org: orgRouter,
   moneyAcc: moneyAccRouter,
   project: projectRouter,
-  disbursement: disbursementRouter,
+  moneyRequest: moneyRequestRouter,
+  account: accountsRouter,
 });
 
 export type AppRouter = typeof appRouter;

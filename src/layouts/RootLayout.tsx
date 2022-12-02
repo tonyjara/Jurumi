@@ -1,16 +1,8 @@
-import { useSession } from 'next-auth/react';
 import React from 'react';
-import TopNavbar from '../components/Nav/TopNavbar';
+import MySidebarWithHeader from '../components/Nav/MySidebarWithHeader';
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  const { status } = useSession();
-
-  return (
-    <>
-      <TopNavbar />
-      {children}
-    </>
-  );
+  return <MySidebarWithHeader>{children}</MySidebarWithHeader>;
 };
 
 export default RootLayout;

@@ -58,6 +58,8 @@ export const authOptions: NextAuthOptions = {
         });
         if (!prismaUser) return null;
 
+        if (!prismaUser.isVerified || !prismaUser.active) return null;
+
         const matchesHash = await bcrypt.compare(
           credentials.password,
           prismaUser.password //hashed pass

@@ -11,7 +11,7 @@ import {
 } from '../initTrpc';
 
 export const orgRouter = router({
-  getMany: publicProcedure.query(async () => {
+  getMany: protectedProcedure.query(async () => {
     return await prisma?.organization.findMany();
   }),
   create: protectedProcedure

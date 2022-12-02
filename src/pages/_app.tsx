@@ -9,6 +9,7 @@ import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
 import RootLayout from '../layouts/RootLayout';
 import { theme } from '../styles/Theme';
+import CheckAccounIsActive from '../lib/utils/CheckAccounIsActive';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -17,6 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
+        <CheckAccounIsActive />
         <Toaster />
         <RootLayout>
           <Component {...pageProps} />
