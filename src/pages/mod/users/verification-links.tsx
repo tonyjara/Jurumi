@@ -9,24 +9,23 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import type { AccountVerificationLinks } from '@prisma/client';
-import { addHours } from 'date-fns';
-import { isBefore } from 'date-fns/esm';
+import { addHours, isBefore } from 'date-fns';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import BooleanCell from '../../components/DynamicTables/DynamicCells/BooleanCell';
-import DateCell from '../../components/DynamicTables/DynamicCells/DateCell';
-import TextCell from '../../components/DynamicTables/DynamicCells/TextCell';
-import type { TableOptions } from '../../components/DynamicTables/DynamicTable';
-import DynamicTable from '../../components/DynamicTables/DynamicTable';
-import CopyLinkCellButton from '../../components/DynamicTables/usersPage/CopyLink.cellButton';
-import CreateAccountModal from '../../components/Modals/account.create.modal';
+import BooleanCell from '../../../components/DynamicTables/DynamicCells/BooleanCell';
+import DateCell from '../../../components/DynamicTables/DynamicCells/DateCell';
+import TextCell from '../../../components/DynamicTables/DynamicCells/TextCell';
+import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
+import DynamicTable from '../../../components/DynamicTables/DynamicTable';
+import CopyLinkCellButton from '../../../components/DynamicTables/usersPage/CopyLink.cellButton';
+import CreateAccountModal from '../../../components/Modals/account.create.modal';
 import {
   handleUseMutationAlerts,
   myToast,
-} from '../../components/Toasts/MyToast';
-import { trpcClient } from '../../lib/utils/trpcClient';
+} from '../../../components/Toasts/MyToast';
+import { trpcClient } from '../../../lib/utils/trpcClient';
 
-const UsersPage = () => {
+const VerificationLinks = () => {
   const context = trpcClient.useContext();
 
   const { data } = trpcClient.account.getVerificationLinks.useQuery();
@@ -56,9 +55,11 @@ const UsersPage = () => {
   ) => (
     <Td>
       <Menu>
-        <MenuButton>
-          <IconButton aria-label="options button" icon={<BsThreeDots />} />
-        </MenuButton>
+        <MenuButton
+          as={IconButton}
+          aria-label="options button"
+          icon={<BsThreeDots />}
+        />
         <MenuList>
           <MenuItem
             onClick={() => {
@@ -100,7 +101,7 @@ const UsersPage = () => {
         options={options}
         headers={[
           { label: 'F. Creacion' },
-          { label: 'Creador' },
+          { label: 'Correo' },
           {
             label: 'Disponible',
           },
@@ -119,4 +120,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default VerificationLinks;

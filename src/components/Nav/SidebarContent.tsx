@@ -1,4 +1,7 @@
 import type { BoxProps, FlexProps } from '@chakra-ui/react';
+import { AccordionIcon } from '@chakra-ui/react';
+import { AccordionPanel } from '@chakra-ui/react';
+import { Accordion, AccordionButton, AccordionItem } from '@chakra-ui/react';
 import { Icon } from '@chakra-ui/react';
 import {
   useColorModeValue,
@@ -21,24 +24,40 @@ interface NavItemProps extends FlexProps {
   dest: string; //destination
 }
 
+interface LinkItemChild {
+  name: string;
+  dest: string;
+}
+
 interface LinkItemProps {
   name: string;
   icon: IconType;
   dest: string; //destination
+  children?: LinkItemChild[];
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   const { data } = useSession();
-  const isAdmin = data?.user.role === 'ADMIN';
+  // const isAdmin = data?.user.role === 'ADMIN';
   const isAdminOrMod =
     data?.user.role === 'ADMIN' || data?.user.role === 'MODERATOR';
 
-  const adminLinks: Array<LinkItemProps> = isAdmin
-    ? [{ name: 'Usuarios', icon: FiUsers, dest: '/mod/users' }]
-    : [];
+  // const adminLinks: Array<LinkItemProps> = isAdmin
+  //   ? [{ name: 'Usuarios', icon: FiUsers, dest: '/mod/users' }]
+  //   : [];
   const adminOrModLinks: Array<LinkItemProps> = isAdminOrMod
     ? [
-        { name: 'Usuarios', icon: FiUsers, dest: '/mod/users' },
+        {
+          name: 'Usuarios',
+          icon: FiUsers,
+          dest: '/mod/users',
+          children: [
+            {
+              name: 'Links de verificacion',
+              dest: '/mod/users/verification-links',
+            },
+          ],
+        },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },
       ]
     : [];
@@ -69,9 +88,30 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} dest={link.dest}>
-          {link.name}
-        </NavItem>
+        <div key={link.name}>
+          {link.children?.length && (
+            <Accordion allowToggle>
+              <AccordionItem>
+                <AccordionButton>
+                  <AccordionIcon />
+                  <NavItem icon={link.icon} dest={link.dest}>
+                    {link.name}
+                  </NavItem>
+                </AccordionButton>
+                {link.children.map((x) => (
+                  <AccordionPanel key={x.name}>
+                    <NavItemChild name={x.name} dest={x.dest} />
+                  </AccordionPanel>
+                ))}
+              </AccordionItem>
+            </Accordion>
+          )}
+          {!link.children?.length && (
+            <NavItem icon={link.icon} dest={link.dest}>
+              {link.name}
+            </NavItem>
+          )}
+        </div>
       ))}
     </Box>
   );
@@ -113,4 +153,28 @@ const NavItem = ({ icon, children, dest, ...rest }: NavItemProps) => {
   );
 };
 
+const NavItemChild = ({ name, dest }: LinkItemChild) => {
+  return (
+    <Link
+      href={dest}
+      style={{ textDecoration: 'none' }}
+      // _focus={{ boxShadow: 'none' }}
+    >
+      <Flex
+        align="center"
+        p="4"
+        mx="2"
+        borderRadius="lg"
+        role="group"
+        cursor="pointer"
+        _hover={{
+          bg: 'cyan.400',
+          color: 'white',
+        }}
+      >
+        {name}
+      </Flex>
+    </Link>
+  );
+};
 export default SidebarContent;

@@ -15,11 +15,33 @@ import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
 export const accountsRouter = router({
+  toggleActivation: adminModProcedure
+    .input(z.object({ id: z.string(), active: z.boolean() }))
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.session?.user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'No user session.',
+        });
+      }
+      return await prisma?.account.update({
+        where: {
+          id: input.id,
+        },
+        data: { active: input.active },
+      });
+    }),
   getUnique: protectedProcedure.query(async ({ ctx }) => {
     return await prisma?.account.findUnique({
       where: {
         email: ctx.session.user.email,
       },
+    });
+  }),
+  getMany: adminModProcedure.query(async () => {
+    return await prisma?.account.findMany({
+      take: 20,
+      orderBy: { createdAt: 'desc' },
     });
   }),
   getVerificationLinks: adminModProcedure.query(async () => {

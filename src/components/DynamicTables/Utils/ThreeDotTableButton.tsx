@@ -14,9 +14,12 @@ const ThreeDotTableButton = ({ options }: { options?: TableOptions[] }) => {
     <>
       {options?.length && (
         <Menu>
-          <MenuButton>
-            <IconButton aria-label="options button" icon={<BsThreeDots />} />
-          </MenuButton>
+          <MenuButton
+            as={IconButton}
+            aria-label="options button"
+            icon={<BsThreeDots />}
+          />
+
           <MenuList>
             {options.map((x) => (
               <MenuItem key={x.label} onClick={x.onClick}>

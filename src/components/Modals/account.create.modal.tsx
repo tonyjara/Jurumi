@@ -65,6 +65,7 @@ const CreateAccountModal = ({
         // handleOnClose();
         reset(defaultAccData);
         context.account.getVerificationLinks.invalidate();
+        context.account.getMany.invalidate();
       },
     })
   );
