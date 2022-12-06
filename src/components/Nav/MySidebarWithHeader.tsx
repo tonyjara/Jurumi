@@ -42,7 +42,11 @@ export default function MySidebarWithHeader({
       </Drawer>
       <MyTopBar onOpen={onOpen} />
 
-      <Box ml={{ base: 0, md: 60 }} p="4">
+      <Box
+        py={{ base: '100px', md: '100px' }}
+        px={{ base: '10px', md: '10px' }}
+        ml={{ base: 0, md: 60 }}
+      >
         {children}
       </Box>
     </Box>

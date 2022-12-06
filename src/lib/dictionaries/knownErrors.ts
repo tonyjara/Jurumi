@@ -2,7 +2,7 @@
 
 export const knownErrors = (error: string) => {
   if (error.includes('Unique constraint failed')) {
-    return 'El campo debe ser único.';
+    return 'Este campo ya existe, favor ingrese un valor distinto.';
   }
   if (error === 'admin-only') {
     return 'Esta operación solo esta habilitada para Administradores.';

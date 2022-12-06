@@ -73,8 +73,8 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    maxAge: 24 * 60 * 60, // 24 hours
-    updateAge: 24 * 60 * 60, // 24 hours
+    maxAge: 12 * 60 * 60, // 12 hours
+    updateAge: 12 * 60 * 60, // 12 hours
     strategy: 'jwt',
   },
 };

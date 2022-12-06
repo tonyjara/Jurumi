@@ -87,8 +87,8 @@ const NavbarProfileSection = () => {
             </MenuButton>
           )}
           <MenuList
-            bg={useColorModeValue('white', 'gray.900')}
-            borderColor={useColorModeValue('gray.200', 'gray.700')}
+            // bg={useColorModeValue('white', 'gray.900')}
+            // borderColor={useColorModeValue('gray.200', 'gray.700')}
             zIndex={3}
           >
             <MenuItem>Mi cuenta</MenuItem>

@@ -1,4 +1,4 @@
-import type { Account } from '@prisma/client';
+import type { Account, AccountVerificationLinks } from '@prisma/client';
 import { Role } from '@prisma/client';
 import * as z from 'zod';
 
@@ -36,3 +36,7 @@ export const defaultAccData: accCreateData = {
   role: 'USER',
   isVerified: false,
 };
+
+export interface accountWithVerifyLink extends Account {
+  accountVerificationLinks: AccountVerificationLinks[];
+}

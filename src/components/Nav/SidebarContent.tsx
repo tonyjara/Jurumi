@@ -52,6 +52,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   ];
   return (
     <Box
+      zIndex={2}
       transition="3s ease"
       bg={useColorModeValue('white', 'gray.900')}
       borderRight="1px"

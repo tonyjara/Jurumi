@@ -12,6 +12,7 @@ import { validateNewUser } from '../../../lib/validations/newUser.validate';
 import { verifyToken } from '../../../lib/utils/asyncJWT';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
+import { z } from 'zod';
 
 export const accountsRouter = router({
   getUnique: protectedProcedure.query(async ({ ctx }) => {
@@ -21,12 +22,52 @@ export const accountsRouter = router({
       },
     });
   }),
-  getVerificationLinks: adminModProcedure.query(async ({ ctx }) => {
+  getVerificationLinks: adminModProcedure.query(async () => {
     return await prisma?.accountVerificationLinks.findMany({
       take: 20,
       orderBy: { createdAt: 'desc' },
+      include: { account: { select: { displayName: true } } },
     });
   }),
+  generateVerificationLink: adminModProcedure
+    .input(z.object({ email: z.string(), displayName: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const secret = process.env.JWT_SECRET;
+      const uuid = uuidv4();
+      if (!secret || !ctx.session?.user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'No user session.',
+        });
+      }
+      const signedToken = jwt.sign(
+        {
+          data: {
+            email: input.email,
+            displayName: input.displayName,
+            linkId: uuid,
+          },
+        },
+        secret,
+        { expiresIn: 60 * 60 }
+      );
+      const baseUrl = getBaseUrl();
+      const link = `${baseUrl}/new-user/${signedToken}`;
+
+      return await prisma?.account.update({
+        where: { email: input.email },
+        data: {
+          accountVerificationLinks: {
+            create: {
+              id: uuid,
+              verificationLink: link,
+              email: input.email,
+              createdById: ctx.session.user.id,
+            },
+          },
+        },
+      });
+    }),
   assignPassword: publicProcedure
     .input(validateNewUser)
     .mutation(async ({ input }) => {
@@ -96,7 +137,6 @@ export const accountsRouter = router({
       );
       const baseUrl = getBaseUrl();
       const link = `${baseUrl}/new-user/${signedToken}`;
-      console.log(link);
 
       return await prisma?.account.create({
         data: {

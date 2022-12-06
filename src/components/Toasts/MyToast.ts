@@ -27,7 +27,7 @@ export const handleUseMutationAlerts = ({
   callback,
 }: {
   successText: string;
-  callback?: () => void;
+  callback?: (x: any, y: any, z: any) => void;
 }) => {
   const loadToast = () => toast.loading('Un momento porfavor...');
   return {
@@ -35,10 +35,11 @@ export const handleUseMutationAlerts = ({
       toast.dismiss();
       myToast.error(knownErrors(error.message));
     },
-    onSuccess: () => {
+    //data is the return from the event
+    onSuccess: (data: any, variables: any, context: any) => {
       toast.dismiss();
       myToast.success(successText);
-      callback && callback();
+      callback && callback(data, variables, context);
     },
     onMutate: () => loadToast(),
   };
