@@ -14,6 +14,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import type { IconType } from 'react-icons';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
+import { BsCash, BsCashStack } from 'react-icons/bs';
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
@@ -58,6 +59,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             },
           ],
         },
+        { name: 'Solicitudes', icon: BsCashStack, dest: '/mod/requests' },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },
       ]
     : [];
@@ -66,7 +68,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
     // ...adminLinks,
     ...adminOrModLinks,
-
+    //Public links
+    { name: 'Mis solicitudes', icon: BsCash, dest: '/home/requests' },
     { name: 'Configuración', icon: FiSettings, dest: '/home/settings' },
   ];
   return (

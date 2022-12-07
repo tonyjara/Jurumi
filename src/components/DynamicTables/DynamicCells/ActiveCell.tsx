@@ -1,15 +1,15 @@
 import React from 'react';
 import { Td } from '@chakra-ui/react';
 import { MdCheckCircle, MdOutlineUnpublished } from 'react-icons/md';
-import type { DynamicCellProps } from '../DynamicTable';
+import type { DynamicCellProps, IObjectKeys } from '../DynamicTable';
 
-const ActiveCell = <T extends object>(props: DynamicCellProps<T>) => {
+const ActiveCell = <T extends IObjectKeys>(props: DynamicCellProps<T>) => {
   const { data, objectKey } = props;
 
   return (
     <Td>
-      {objectKey && data[objectKey] && <MdCheckCircle color="green" />}
-      {objectKey && !data[objectKey] && <MdOutlineUnpublished color="red" />}
+      {data[objectKey] && <MdCheckCircle color="green" />}
+      {!data[objectKey] && <MdOutlineUnpublished color="red" />}
     </Td>
   );
 };

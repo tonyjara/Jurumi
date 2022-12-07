@@ -95,15 +95,14 @@ model MoneyAccount {
   currency       Currency @default(PYG)
   initialBalance Decimal  @default(0) @db.Decimal(19, 4)
 
-  moneyRequests MoneyRequest[]
-  imbursements  Imbursement[]
-  organization  Organization[]
+  imbursements Imbursement[]
+  organization Organization[]
 
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
 
   bankInfo     BankInfo?
-  Transactions Transactions[]
+  Transactions Transaction[]
 }
 
 model BankInfo {
@@ -168,6 +167,7 @@ model CostCategory {
   createdById     String
   updatedById     String?
   displayName     String
+  currency        Currency
   openingBalance  Decimal        @default(0) @db.Decimal(12, 4)
   projectId       String?
   Project         Project?       @relation(fields: [projectId], references: [id])
@@ -192,12 +192,14 @@ model Imbursement {
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
 
-  moneyAccountId String
-  moneyAccount   MoneyAccount  @relation(fields: [moneyAccountId], references: [id])
   taxPayerId     String
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
   ProjectStage   ProjectStage? @relation(fields: [projectStageId], references: [id])
   projectStageId String?
+
+  MoneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
+  moneyAccountId String?
+  transactions   Transaction[]
 }
 
 model TaxPayer {
@@ -241,22 +243,20 @@ model MoneyRequest {
   moneyRequestType      MoneyRequestType
   currency              Currency
   amountRequested       Decimal                @default(0) @db.Decimal(12, 4)
-  fundSentPictureUrl    String // Proof that fund has been sent
   ExpenseReports        ExpenseReport[]
   moneyRequestApprovals MoneyRequestApproval[]
+  rejectionMessage      String
 
   accountId String
   account   Account @relation(fields: [accountId], references: [id])
 
-  moneyAccountId String?
-  moneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
-  projectId      String?
-  project        Project?      @relation(fields: [projectId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
 
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
 
-  transactions  Transactions[]
+  transactions  Transaction[]
   ExpenseReturn ExpenseReturn[]
 }
 
@@ -285,23 +285,32 @@ model ExpenseReturn {
   amountReturned        Decimal   @default(0) @db.Decimal(12, 4)
   returnProofPictureUrl String
 
-  moneyRequestId String?
-  MoneyRequest   MoneyRequest? @relation(fields: [moneyRequestId], references: [id])
+  moneyRequestId String
+  MoneyRequest   MoneyRequest  @relation(fields: [moneyRequestId], references: [id])
+  transactions   Transaction[]
 }
 
-model Transactions {
-  id                Int           @id @default(autoincrement())
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime?     @updatedAt
-  createdById       String
-  updatedById       String?
-  currency          Currency
-  openingBalance    Decimal       @default(0) @db.Decimal(12, 4)
-  transactionAmount Decimal       @default(0) @db.Decimal(12, 4)
-  moneyAccountId    String
-  moneyAccount      MoneyAccount  @relation(fields: [moneyAccountId], references: [id])
-  moneyRequest      MoneyRequest? @relation(fields: [disbursementId], references: [id])
-  disbursementId    String?
+//The only way to add or substract money from moneyaccounts is through a transaction.
+model Transaction {
+  id                  Int       @id @default(autoincrement())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime? @updatedAt
+  createdById         String
+  updatedById         String?
+  currency            Currency
+  openingBalance      Decimal   @default(0) @db.Decimal(12, 4)
+  transactionAmount   Decimal   @default(0) @db.Decimal(12, 4)
+  transactionProofUrl String
+
+  moneyAccountId String
+  moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
+
+  moneyRequestId  String?
+  moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
+  ExpenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
+  expenseReturnId String?
+  Imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
+  imbursementId   String?
 }
 
 enum Role {

@@ -18,10 +18,10 @@ import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import {
-  defaultDisbursementValues,
+  defaultMoneyRequestValues,
   validateMoneyRequest,
 } from '../../lib/validations/moneyRequest.validate';
-import DisbursementForm from '../Forms/MoneyRequest.form';
+import MoneyRequestForm from '../Forms/MoneyRequest.form';
 import { useSession } from 'next-auth/react';
 import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
 
@@ -32,7 +32,7 @@ const CreateMoneyRequestModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  projectId: string;
+  projectId?: string;
 }) => {
   const context = trpcClient.useContext();
   const { data: session } = useSession();
@@ -40,36 +40,34 @@ const CreateMoneyRequestModal = ({
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<MoneyRequest>({
-    defaultValues: defaultDisbursementValues,
+    defaultValues: defaultMoneyRequestValues,
     resolver: zodResolver(validateMoneyRequest),
   });
   const handleOnClose = () => {
-    reset(defaultDisbursementValues);
+    reset(defaultMoneyRequestValues);
     onClose();
   };
 
   const { error, mutate, isLoading } =
     trpcClient.moneyRequest.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su solicitud ha sido creado!',
+        successText: 'Su solicitud ha sido creada!',
         callback: () => {
           handleOnClose();
           context.moneyRequest.getMany.invalidate();
+          context.moneyRequest.getManyWithAccounts.invalidate();
         },
       })
     );
 
   const submitFunc = async (data: MoneyRequest) => {
-    console.log(data);
-
     //Admins and moderators add projectId Manually
-    // const isUser = session?.user.role === 'USER';
-    // data.projectId = isUser ? projectId : data.projectId;
+    const isUser = session?.user.role === 'USER';
+    data.projectId = isUser && projectId ? projectId : data.projectId;
 
-    // mutate(data);
+    mutate(data);
   };
 
   return (
@@ -82,11 +80,7 @@ const CreateMoneyRequestModal = ({
           <ModalBody>
             <SeedButton reset={reset} mock={moneyRequestMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <DisbursementForm
-              setValue={setValue}
-              control={control}
-              errors={errors}
-            />
+            <MoneyRequestForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>

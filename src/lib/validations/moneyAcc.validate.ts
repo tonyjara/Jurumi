@@ -1,4 +1,3 @@
-import type { MoneyAccount } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import {
   BankAccountType,
@@ -8,15 +7,26 @@ import {
 } from '@prisma/client';
 import { z } from 'zod';
 
+const stringReqMinMax = (reqText: string, min: number, max: number) =>
+  z
+    .string({ required_error: reqText })
+    .min(min, `El campo debe tener al menos (${min}) caractéres.`)
+    .max(max, `Has superado el límite de caractérs (${max})`);
+const stringMinMax = (min: number, max: number) =>
+  z
+    .string()
+    .min(min, `El campo debe tener al menos (${min}) caractéres.`)
+    .max(max, `Has superado el límite de caractérs (${max})`);
+
 export const BankInfoModel = z.object({
   bankName: z.nativeEnum(BankNamesPy),
   accountNumber: z.string(),
-  ownerName: z.string(),
+  ownerName: stringReqMinMax('Favor ingrese el nombre del titular', 2, 64),
   ownerDocType: z.nativeEnum(BankDocType),
   ownerDoc: z.string(),
-  ownerContactNumber: z.string().nullish(),
-  country: z.string(),
-  city: z.string(),
+  ownerContactNumber: stringMinMax(10, 20).nullable(),
+  country: stringReqMinMax('Favor seleccione una país.', 3, 64),
+  city: stringReqMinMax('Favor seleccione una ciudad.', 3, 64),
   type: z.nativeEnum(BankAccountType),
 });
 
@@ -80,24 +90,3 @@ export const defaultMoneyAccValues: MoneyAccWithBankInfo = {
   softDeleted: false,
   bankInfo: defaultBankInfoValues,
 };
-
-// const stringReqMinMax = (reqText: string, min: number, max: number) =>
-//   z
-//     .string({ required_error: reqText })
-//     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
-//     .max(max, `Has superado el límite de caractérs (${max})`);
-// const stringMinMax = (min: number, max: number) =>
-//   z
-//     .string()
-//     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
-//     .max(max, `Has superado el límite de caractérs (${max})`);
-
-// accountNumber: stringReqMinMax('Favor ingrese el número de cuenta.', 3, 64),
-// type: z.nativeEnum(BankAccountType),
-// bankName: z.nativeEnum(BankNamesPy),
-// city: stringReqMinMax('Favor seleccione una ciudad.', 3, 64),
-// country: stringReqMinMax('Favor seleccione una país.', 3, 64),
-// ownerContactNumber: stringMinMax(10, 20).nullable(),
-// ownerDoc: stringReqMinMax('Favor ingrese el documento del titular', 5, 20),
-// ownerDocType: z.nativeEnum(BankDocType),
-// ownerName: stringReqMinMax('Favor ingrese el nombre del titular', 2, 64),

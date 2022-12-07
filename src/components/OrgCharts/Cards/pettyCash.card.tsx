@@ -11,21 +11,20 @@ import {
   IconButton,
   useDisclosure,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
-import {
-  decimalFormat,
-  translateCurrency,
-} from '../../../lib/utils/TranslatedEnums';
+import { translateCurrency } from '../../../lib/utils/TranslatedEnums';
 import type { MoneyAccount } from '@prisma/client';
 import EditMoneyAccModal from '../../Modals/moneyAcc.edit.modal';
+import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
 
 const PettyCashCard = (pettyCash: MoneyAccount) => {
   const context = trpcClient.useContext();
-
+  const cardBackground = useColorModeValue('white', 'gray.700');
   const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
@@ -46,7 +45,7 @@ const PettyCashCard = (pettyCash: MoneyAccount) => {
 
   return (
     <Container maxW={'280px'}>
-      <Card>
+      <Card backgroundColor={cardBackground}>
         <CardHeader pb={0}>
           <Heading size="md">{pettyCash.displayName}</Heading>
           <Heading size={'sm'}>{translateCurrency(pettyCash.currency)}</Heading>

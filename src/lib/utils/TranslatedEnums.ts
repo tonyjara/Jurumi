@@ -1,6 +1,10 @@
-import type { BankDocType, BankNamesPy, Currency } from '@prisma/client';
-import type { Decimal } from '@prisma/client/runtime';
-import DecimalFormat from 'decimal-format';
+import type {
+  BankDocType,
+  BankNamesPy,
+  Currency,
+  MoneyRequestStatus,
+  MoneyRequestType,
+} from '@prisma/client';
 
 export const translateCurrencyPrefix = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
@@ -25,15 +29,6 @@ export const translateCurrencyShort = (currency: Currency) => {
   };
 
   return prefixes[currency] ?? 'Guaranies ';
-};
-
-export const decimalFormat = (x: Decimal, y: Currency) => {
-  if (y === 'USD') {
-    const df = new DecimalFormat(`${translateCurrencyPrefix(y)} #,##0.00#`);
-    return df.format(x.toString());
-  }
-  const df = new DecimalFormat(`${translateCurrencyPrefix(y)} #,##0.#`);
-  return df.format(x.toString());
 };
 
 export const translateBankDocTypes = (docType: BankDocType) => {
@@ -68,4 +63,23 @@ export const translateBankNames = (bankName?: BankNamesPy) => {
   };
 
   return bankNames[bankName] ?? 'Itau';
+};
+
+export const translatedMoneyReqStatus = (status: MoneyRequestStatus) => {
+  const x: { [key in MoneyRequestStatus]?: string } = {
+    ACCEPTED: '🟩Aceptado',
+    PENDING: '🟨 Pendiente',
+    REJECTED: '🟥Rechazado',
+  };
+
+  return x[status] ?? 'Error ';
+};
+export const translatedMoneyReqType = (type: MoneyRequestType) => {
+  const x: { [key in MoneyRequestType]?: string } = {
+    FUND_REQUEST: 'Solicitud de fondos',
+    MONEY_ORDER: 'Orden de pago',
+    REIMBURSMENT_ORDER: 'Solicitud de re-embolso',
+  };
+
+  return x[type] ?? 'Error ';
 };

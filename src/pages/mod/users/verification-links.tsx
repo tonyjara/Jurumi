@@ -83,8 +83,8 @@ const VerificationLinks = () => {
       isBefore(new Date(), addHours(x.createdAt, 1)) && !x.hasBeenUsed;
     return (
       <Tr key={x.id}>
-        <DateCell objectKey={'createdAt'} data={x} />
-        <TextCell objectKey={'email'} data={x} />
+        <DateCell date={x.createdAt} />
+        <TextCell text={x.email} />
         <BooleanCell isActive={isActive} />
         <BooleanCell isActive={x.hasBeenUsed} />
         {isActive ? <CopyLinkCellButton {...x} /> : <Td></Td>}
@@ -100,18 +100,12 @@ const VerificationLinks = () => {
         subTitle="Los links tienen una máxima duración de 1 hora."
         options={options}
         headers={[
-          { label: 'F. Creacion' },
-          { label: 'Correo' },
-          {
-            label: 'Disponible',
-          },
-          {
-            label: 'Activado',
-          },
-          {
-            label: 'Link',
-          },
-          { label: 'Opciones' },
+          'F. Creacion',
+          'Correo',
+          'Disponible',
+          'Activado',
+          'Link',
+          'Opciones',
         ]}
         rows={rowHandler}
       />

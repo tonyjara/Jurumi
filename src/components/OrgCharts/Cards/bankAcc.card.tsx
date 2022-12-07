@@ -12,18 +12,19 @@ import {
   IconButton,
   useDisclosure,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import {
-  decimalFormat,
   translateBankNames,
   translateCurrency,
 } from '../../../lib/utils/TranslatedEnums';
 import EditBankAccModal from '../../Modals/moneyAcc.edit.modal';
 import type { MoneyAccWithBankInfo } from '../../../lib/validations/moneyAcc.validate';
+import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
 
 const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
   const context = trpcClient.useContext();
@@ -45,10 +46,10 @@ const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
   const deleteBankAcc = () => {
     mutate({ id: bankAcc.id });
   };
-
+  const cardBackground = useColorModeValue('white', 'gray.700');
   return (
     <Container maxW={'280px'}>
-      <Card>
+      <Card backgroundColor={cardBackground}>
         <CardHeader pb={0}>
           <Heading size="md">{bankAcc.displayName}</Heading>
           <Heading size={'sm'}>

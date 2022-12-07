@@ -5,16 +5,12 @@ import type {
   MoneyRequestType,
 } from '@prisma/client';
 import React from 'react';
-import type {
-  FieldValues,
-  Control,
-  FieldErrorsImpl,
-  UseFormSetValue,
-} from 'react-hook-form';
+import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
+import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
@@ -23,10 +19,9 @@ import FormControlledText from '../FormControlled/FormControlledText';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
-  setValue: UseFormSetValue<T>;
 }
 
-const DisbursmentForm = ({ control, errors }: formProps<MoneyRequest>) => {
+const MoneyRequestForm = ({ control, errors }: formProps<MoneyRequest>) => {
   const {
     data: moneyAccs,
     // isLoading: isMoneyAccLoading,
@@ -39,6 +34,7 @@ const DisbursmentForm = ({ control, errors }: formProps<MoneyRequest>) => {
   } = trpcClient.project.getMany.useQuery();
 
   const currency = useWatch({ control, name: 'currency' });
+  const status = useWatch({ control, name: 'status' });
 
   const bankIdOptions = moneyAccs
     ?.filter((x) => x.currency === currency)
@@ -89,16 +85,24 @@ const DisbursmentForm = ({ control, errors }: formProps<MoneyRequest>) => {
         label="Moneda"
         options={currencyOptions}
       />
+      <FormControlledMoneyInput
+        control={control}
+        errors={errors}
+        name={'amountRequested'}
+        label="Monto solicitado"
+        prefix={translateCurrencyPrefix(currency)}
+        currency={currency}
+      />
 
       {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
       <Divider pb={3} />
-      <FormControlledSelect
+      {/* <FormControlledSelect
         control={control}
         errors={errors}
         name="moneyAccountId"
         label="Seleccione un banco"
         options={bankIdOptions ?? []}
-      />
+      /> */}
 
       <FormControlledSelect
         control={control}
@@ -114,8 +118,18 @@ const DisbursmentForm = ({ control, errors }: formProps<MoneyRequest>) => {
         label="Estado del desembolso"
         options={statusOptions}
       />
+
+      {status === 'REJECTED' && (
+        <FormControlledText
+          control={control}
+          errors={errors}
+          name="rejectionMessage"
+          isTextArea={true}
+          label="Motivo del rechazo"
+        />
+      )}
     </VStack>
   );
 };
 
-export default DisbursmentForm;
+export default MoneyRequestForm;

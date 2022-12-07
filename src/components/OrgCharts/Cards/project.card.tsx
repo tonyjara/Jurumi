@@ -17,12 +17,16 @@ import React from 'react';
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
-import type { Project } from '@prisma/client';
-import { decimalFormat } from '../../../lib/utils/TranslatedEnums';
+import type { CostCategory, Project } from '@prisma/client';
 import EditProjectModal from '../../Modals/project.edit.modal';
-import CreateDisbursementModal from '../../Modals/MoneyRequest.create.modal';
+import CreateMoneyRequestModal from '../../Modals/MoneyRequest.create.modal';
+import { addDecimals } from '../../../lib/utils/DecimalHelpers';
 
-const ProjectCard = (project: Project) => {
+const ProjectCard = (
+  project: Project & {
+    costCategories: CostCategory[];
+  }
+) => {
   const context = trpcClient.useContext();
 
   const {
@@ -31,9 +35,9 @@ const ProjectCard = (project: Project) => {
     onClose: onEditClose,
   } = useDisclosure();
   const {
-    isOpen: isDisbursementOpen,
-    onOpen: onDisbursementOpen,
-    onClose: onDisbursmeentClose,
+    isOpen: isMoneyRequestOpen,
+    onOpen: onMoneyRequestOpen,
+    onClose: onMoneyRequestClose,
   } = useDisclosure();
 
   const { mutate, isLoading } = trpcClient.project.deleteById.useMutation(
@@ -58,25 +62,24 @@ const ProjectCard = (project: Project) => {
         <CardBody>
           <Box>
             <Heading whiteSpace={'nowrap'} size="md">
-              Monto asignado: <br />
-              {/* {decimalFormat(
-                project.assignedMoney,
-                project.assignedMoneyCurrency
-              )} */}
+              Monto asignado:
+              <br />
+              {addDecimals(project.costCategories, 'openingBalance')}
             </Heading>
-            <VStack whiteSpace={'nowrap'} textAlign={'left'} spacing={0}>
-              {/* <Text>Titular: {bankAcc.ownerName}</Text> */}
-            </VStack>
+            <VStack
+              whiteSpace={'nowrap'}
+              textAlign={'left'}
+              spacing={0}
+            ></VStack>
             <Divider mb={2} mt={2} />
             <HStack justifyContent={'end'}>
               <Button
-                onClick={onDisbursementOpen}
+                onClick={onMoneyRequestOpen}
                 rightIcon={<Icon boxSize={6} as={MdOutlineAdd} />}
-                aria-label={'Add Disbursement'}
+                aria-label={'Add MoneyRequest'}
                 size="sm"
-                // alignSelf={'end'}
               >
-                Desembolso
+                Solicitud
               </Button>
               <IconButton
                 onClick={onEditOpen}
@@ -101,10 +104,10 @@ const ProjectCard = (project: Project) => {
         isOpen={isEditOpen}
         onClose={onEditClose}
       />
-      <CreateDisbursementModal
+      <CreateMoneyRequestModal
         projectId={project.id}
-        isOpen={isDisbursementOpen}
-        onClose={onDisbursmeentClose}
+        isOpen={isMoneyRequestOpen}
+        onClose={onMoneyRequestClose}
       />
     </Container>
   );

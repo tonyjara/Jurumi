@@ -44,10 +44,11 @@ const FormControlledSelect = <T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <Select
+            instanceId={name}
             options={options}
             onChange={(e) => field.onChange(e?.value ?? '')}
             value={options.find((x) => x.value === field.value)}
-            noOptionsMessage={() => ''}
+            noOptionsMessage={() => 'No hay opciones.'}
             placeholder=""
             isClearable={isClearable}
           />

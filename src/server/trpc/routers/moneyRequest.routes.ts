@@ -2,11 +2,29 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateMoneyRequest } from '../../../lib/validations/moneyRequest.validate';
-import { adminProcedure, protectedProcedure, router } from '../initTrpc';
+import {
+  adminModProcedure,
+  adminProcedure,
+  protectedProcedure,
+  router,
+} from '../initTrpc';
 
 export const moneyRequestRouter = router({
-  getMany: protectedProcedure.query(async () => {
-    return await prisma?.moneyRequest.findMany();
+  getMany: adminModProcedure.query(async () => {
+    return await prisma?.moneyRequest.findMany({
+      take: 20,
+      orderBy: { createdAt: 'desc' },
+    });
+  }),
+  getManyWithAccounts: adminModProcedure.query(async () => {
+    return await prisma?.moneyRequest.findMany({
+      take: 20,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        account: true,
+        project: true,
+      },
+    });
   }),
   create: protectedProcedure
     .input(validateMoneyRequest)
@@ -27,10 +45,9 @@ export const moneyRequestRouter = router({
           currency: input.currency,
           description: input.description,
           moneyRequestType: input.moneyRequestType,
-          fundSentPictureUrl: input.fundSentPictureUrl,
           projectId: input.projectId,
-          moneyAccountId: input.moneyAccountId,
           status: input.status,
+          rejectionMessage: input.rejectionMessage,
         },
       });
       return x;
@@ -45,10 +62,9 @@ export const moneyRequestRouter = router({
           currency: input.currency,
           description: input.description,
           moneyRequestType: input.moneyRequestType,
-          fundSentPictureUrl: input.fundSentPictureUrl,
           projectId: input.projectId,
-          moneyAccountId: input.moneyAccountId,
           status: input.status,
+          rejectionMessage: input.rejectionMessage,
         },
       });
       return x;

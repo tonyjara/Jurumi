@@ -16,23 +16,31 @@ import React from 'react';
 import SkeletonRows from './Utils/SkeletonRows';
 import ThreeDotTableButton from './Utils/ThreeDotTableButton';
 
+export interface IObjectKeys {
+  [key: string]: any;
+}
+type NestedKeyOf<ObjectType extends IObjectKeys> = {
+  [Key in keyof ObjectType &
+    (string | number)]: ObjectType[Key] extends IObjectKeys
+    ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
+    : `${Key}`;
+}[keyof ObjectType & (string | number)];
+
 export interface TableOptions {
   onClick: () => void;
   label: string;
 }
-export interface DynamicCellHeaders {
-  label: string;
-}
-
-export interface DynamicCellProps<T extends object> {
-  objectKey: keyof T;
+export interface DynamicCellProps<T extends IObjectKeys> {
+  objectKey: NestedKeyOf<T>;
+  // objectKey: Extract<keyof T, string>;
   data: T;
+  enumFunc?: (x: any) => string;
 }
 
 interface DynamicTableProps<T extends object> {
   title: string;
   subTitle?: string;
-  headers: DynamicCellHeaders[];
+  headers: string[];
   rows?: T[];
   options?: TableOptions[]; // enables three dot menu
 }
@@ -62,8 +70,8 @@ const DynamicTable = <T extends object>({
         <Table size={['sm', 'md']} variant={'simple'}>
           <Thead>
             <Tr>
-              {headers.map((header, idx: number) => {
-                return <Th key={idx}>{header.label}</Th>;
+              {headers.map((label, idx: number) => {
+                return <Th key={idx}>{label}</Th>;
               })}
             </Tr>
           </Thead>

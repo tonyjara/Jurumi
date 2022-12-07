@@ -15,6 +15,7 @@ import {
   IconButton,
   useDisclosure,
   Button,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
@@ -47,10 +48,10 @@ const OrgCard = ({ displayName, id }: { displayName: string; id: string }) => {
   const deleteOrg = () => {
     mutate({ id });
   };
-
+  const cardBackground = useColorModeValue('white', 'gray.700');
   return (
     <Container maxW={'280px'}>
-      <Card>
+      <Card backgroundColor={cardBackground}>
         <CardHeader>
           <Heading size="md">{displayName}</Heading>
         </CardHeader>

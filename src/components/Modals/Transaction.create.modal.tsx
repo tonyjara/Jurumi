@@ -10,60 +10,63 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Project } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
-
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
-import { projectMock } from '../../__tests__/mocks/Mocks';
-import ProjectForm from '../Forms/Project.form';
-import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
-import {
-  defaultProjectValues,
-  validateProject,
-} from '../../lib/validations/project.validate';
 
-const ProjectCreateModal = ({
+import { useSession } from 'next-auth/react';
+import { transactionMock } from '../../__tests__/mocks/Mocks';
+import type { MoneyRequest, Transaction } from '@prisma/client';
+import TransactionForm from '../Forms/Transaction.form';
+import {
+  defaultTransactionValues,
+  validateTransaction,
+} from '../../lib/validations/transaction.validate';
+
+const CreateMoneyRequestModal = ({
   isOpen,
   onClose,
-  orgId,
+  moneyRequest,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  orgId: string;
+  moneyRequest?: MoneyRequest;
 }) => {
   const context = trpcClient.useContext();
+  const { data: session } = useSession();
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<ProjectWithCostCat>({
-    defaultValues: defaultProjectValues,
-    resolver: zodResolver(validateProject),
+  } = useForm<Transaction>({
+    defaultValues: defaultTransactionValues,
+    resolver: zodResolver(validateTransaction),
   });
   const handleOnClose = () => {
-    reset(defaultProjectValues);
+    //   reset(defaultMoneyRequestValues);
     onClose();
   };
 
-  const { error, mutate, isLoading } = trpcClient.project.create.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Su proyecto ha sido creada! 🔥',
-      callback: () => {
-        handleOnClose();
-        context.project.getMany.invalidate();
-      },
-    })
-  );
+  const { error, mutate, isLoading } =
+    trpcClient.moneyRequest.create.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Su solicitud ha sido creada!',
+        callback: () => {
+          handleOnClose();
+          context.moneyRequest.getMany.invalidate();
+          context.moneyRequest.getManyWithAccounts.invalidate();
+        },
+      })
+    );
 
-  const submitFunc = async (data: ProjectWithCostCat) => {
-    data.organizationId = orgId;
-    mutate(data);
+  const submitFunc = async (data: Transaction) => {
+    console.log(data);
+
+    //   mutate(data);
   };
 
   return (
@@ -71,12 +74,12 @@ const ProjectCreateModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear un proyecto</ModalHeader>
+          <ModalHeader>Crear una solicitud desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={projectMock} />
+            <SeedButton reset={reset} mock={transactionMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <ProjectForm control={control} errors={errors} />
+            <TransactionForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
@@ -94,9 +97,8 @@ const ProjectCreateModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
-      <DevTool control={control} />
     </Modal>
   );
 };
 
-export default ProjectCreateModal;
+export default CreateMoneyRequestModal;

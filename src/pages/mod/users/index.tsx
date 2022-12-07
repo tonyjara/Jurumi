@@ -67,11 +67,11 @@ const UsersPage = () => {
     return (
       <Tr key={x.id}>
         <BooleanCell isActive={x.active} />
-        <TextCell objectKey={'displayName'} data={x} />
-        <TextCell objectKey={'email'} data={x} />
-        <TextCell objectKey={'role'} data={x} />
+        <TextCell text={x.displayName} />
+        <TextCell text={x.email} />
+        <TextCell text={x.role} />
         <BooleanCell isActive={x.isVerified} />
-        <DateCell objectKey={'createdAt'} data={x} />
+        <DateCell date={x.createdAt} />
         {rowOptionsButton(x)}
       </Tr>
     );
@@ -83,22 +83,13 @@ const UsersPage = () => {
         title={'Usuarios'}
         options={options}
         headers={[
-          {
-            label: 'Activado',
-          },
-          { label: 'Nombre' },
-          {
-            label: 'Correo',
-          },
-          {
-            label: 'Rol',
-          },
-          {
-            label: 'Verificado',
-          },
-
-          { label: 'F. Creacion' },
-          { label: 'Opciones' },
+          'Activado',
+          'Nombre',
+          'Correo',
+          'Rol',
+          'Verificado',
+          'F. Creacion',
+          'Opciones',
         ]}
         rows={rowHandler}
       />

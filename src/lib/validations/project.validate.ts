@@ -1,4 +1,6 @@
-import type { Project } from '@prisma/client';
+import type { CostCategory, Project } from '@prisma/client';
+import { Currency } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 const stringReqMinMax = (reqText: string, min: number, max: number) =>
@@ -7,7 +9,32 @@ const stringReqMinMax = (reqText: string, min: number, max: number) =>
     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
     .max(max, `Has superado el límite de caractérs (${max})`);
 
-export const validateProject: z.ZodType<Project> = z.lazy(() =>
+type withMoney = Omit<CostCategory, 'openingBalance'> & {
+  openingBalance?: any;
+};
+
+const CostCategoryModel: z.ZodType<withMoney> = z.lazy(() =>
+  z.object({
+    id: z.string(),
+    createdAt: z.date(),
+    updatedAt: z.date().nullable(),
+    createdById: z.string(),
+    updatedById: z.string().nullable(),
+    displayName: z.string(),
+    openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
+    projectId: z.string().nullable(),
+    expenseReportId: z.string().nullable(),
+    currency: z.nativeEnum(Currency),
+  })
+);
+
+type costCatWithMoney = z.infer<typeof CostCategoryModel>;
+
+export interface ProjectWithCostCat extends Project {
+  costCategories: costCatWithMoney[];
+}
+
+export const validateProject: z.ZodType<ProjectWithCostCat> = z.lazy(() =>
   z.object({
     id: z.string(),
     createdAt: z.date(),
@@ -30,10 +57,24 @@ export const validateProject: z.ZodType<Project> = z.lazy(() =>
     allowedUsers: z.string().array(),
     softDeleted: z.boolean(),
     archived: z.boolean(),
+    costCategories: CostCategoryModel.array(),
   })
 );
 
 export type projectValidateData = z.infer<typeof validateProject>;
+
+export const defaultCostCat: costCatWithMoney = {
+  id: '',
+  createdAt: new Date(),
+  updatedAt: null,
+  createdById: '',
+  updatedById: null,
+  displayName: '',
+  currency: 'PYG',
+  openingBalance: new Prisma.Decimal(0),
+  projectId: null,
+  expenseReportId: null,
+};
 
 export const defaultProjectValues: projectValidateData = {
   id: '',
@@ -47,4 +88,5 @@ export const defaultProjectValues: projectValidateData = {
   archived: false,
   softDeleted: false,
   description: '',
+  costCategories: [defaultCostCat],
 };

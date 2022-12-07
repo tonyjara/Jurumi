@@ -1,9 +1,11 @@
 import React from 'react';
 import { Td } from '@chakra-ui/react';
 import { MdCheckCircle, MdOutlineUnpublished } from 'react-icons/md';
-import type { DynamicCellProps } from '../DynamicTable';
+import type { DynamicCellProps, IObjectKeys } from '../DynamicTable';
 
-const ReverseActiveCell = <T extends object>(props: DynamicCellProps<T>) => {
+const ReverseActiveCell = <T extends IObjectKeys>(
+  props: DynamicCellProps<T>
+) => {
   const { data, objectKey } = props;
 
   return (

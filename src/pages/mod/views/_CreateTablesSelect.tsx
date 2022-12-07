@@ -1,4 +1,9 @@
-import { HStack, useDisclosure, Box } from '@chakra-ui/react';
+import {
+  HStack,
+  useDisclosure,
+  Box,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import React from 'react';
 import CreateMoneyAccModal from '../../../components/Modals/MoneyAcc.create.modal';
 import CreateOrgModal from '../../../components/Modals/org.create.modal';
@@ -34,10 +39,12 @@ const CreateTablesSelect = () => {
     dict[x]();
   };
 
+  const selectBackground = useColorModeValue('white', 'gray.900');
   return (
     <HStack
-      p={'10px'}
-      backgroundColor={'gray.900'}
+      p={'5px'}
+      borderRadius="8px"
+      backgroundColor={selectBackground}
       zIndex={2}
       position={'absolute'}
       right={0}

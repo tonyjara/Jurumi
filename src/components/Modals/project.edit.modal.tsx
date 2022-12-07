@@ -10,7 +10,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Project } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
@@ -21,6 +20,7 @@ import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
 import { projectMock } from '../../__tests__/mocks/Mocks';
 import ProjectForm from '../Forms/Project.form';
+import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
 import {
   defaultProjectValues,
   validateProject,
@@ -33,7 +33,7 @@ const EditProjectModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  project: Project;
+  project: ProjectWithCostCat;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -41,7 +41,7 @@ const EditProjectModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Project>({
+  } = useForm<ProjectWithCostCat>({
     defaultValues: defaultProjectValues,
     resolver: zodResolver(validateProject),
   });
@@ -68,7 +68,7 @@ const EditProjectModal = ({
     })
   );
 
-  const submitFunc = async (data: Project) => {
+  const submitFunc = async (data: ProjectWithCostCat) => {
     mutate(data);
   };
 
