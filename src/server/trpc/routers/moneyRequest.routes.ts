@@ -16,13 +16,14 @@ export const moneyRequestRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
-  getManyWithAccounts: adminModProcedure.query(async () => {
+  getManyComplete: adminModProcedure.query(async () => {
     return await prisma?.moneyRequest.findMany({
       take: 20,
       orderBy: { createdAt: 'desc' },
       include: {
         account: true,
         project: true,
+        transactions: true,
       },
     });
   }),

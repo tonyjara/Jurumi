@@ -62,7 +62,7 @@ const EditMoneyRequestModal = ({
       callback: () => {
         handleOnClose();
         context.moneyRequest.getMany.invalidate();
-        context.moneyRequest.getManyWithAccounts.invalidate();
+        context.moneyRequest.getManyComplete.invalidate();
       },
     })
   );

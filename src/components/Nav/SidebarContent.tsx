@@ -15,6 +15,7 @@ import Link from 'next/link';
 import type { IconType } from 'react-icons';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
 import { BsCash, BsCashStack } from 'react-icons/bs';
+import { AiFillBank } from 'react-icons/ai';
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
@@ -58,6 +59,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
               dest: '/mod/users/verification-links',
             },
           ],
+        },
+        {
+          name: 'Transacciones',
+          icon: AiFillBank,
+          dest: '/mod/transactions',
         },
         { name: 'Solicitudes', icon: BsCashStack, dest: '/mod/requests' },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },

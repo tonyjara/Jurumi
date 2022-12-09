@@ -1,5 +1,6 @@
 import { VStack } from '@chakra-ui/react';
 import type { Transaction } from '@prisma/client';
+import type { Decimal } from '@prisma/client/runtime';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
@@ -15,9 +16,14 @@ import FormControlledSelect from '../FormControlled/FormControlledSelect';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
+  totalAmount?: Decimal;
 }
 
-const TransactionForm = ({ control, errors }: formProps<Transaction>) => {
+const TransactionForm = ({
+  control,
+  errors,
+  totalAmount,
+}: formProps<Transaction>) => {
   const {
     data: moneyAccs,
     // isLoading: isMoneyAccLoading,
@@ -60,6 +66,7 @@ const TransactionForm = ({ control, errors }: formProps<Transaction>) => {
         label="Monto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
+        totalAmount={totalAmount}
       />
     </VStack>
   );

@@ -5,10 +5,12 @@ import {
   FormHelperText,
   FormErrorMessage,
   InputGroup,
-  InputLeftElement,
+  InputRightElement,
+  Button,
 } from '@chakra-ui/react';
 import type { Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
+import type { Decimal } from '@prisma/client/runtime';
 import React from 'react';
 import CurrencyInput from 'react-currency-input-field';
 import type {
@@ -26,11 +28,10 @@ interface InputProps<T extends FieldValues> {
   label: string;
   helperText?: string;
   maxLength?: number;
-  inputRight?: any;
-  inputLeft?: any;
   prefix: string;
   hidden?: boolean;
   currency: Currency;
+  totalAmount?: Decimal;
 }
 
 const FormControlledMoneyInput = <T extends FieldValues>({
@@ -39,11 +40,10 @@ const FormControlledMoneyInput = <T extends FieldValues>({
   errors,
   label,
   helperText,
-  inputRight,
-  inputLeft,
   prefix,
   hidden,
   currency,
+  totalAmount,
 }: InputProps<T>) => {
   return (
     <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
@@ -55,11 +55,6 @@ const FormControlledMoneyInput = <T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <InputGroup>
-            {inputLeft && (
-              <InputLeftElement pointerEvents={'none'}>
-                {inputLeft}
-              </InputLeftElement>
-            )}
             <CurrencyInput
               id="input-example"
               customInput={Input}
@@ -80,7 +75,11 @@ const FormControlledMoneyInput = <T extends FieldValues>({
                   : field.onChange(0);
               }}
             />
-            ;{inputRight}
+            {totalAmount && (
+              <InputRightElement onClick={() => field.onChange(totalAmount)}>
+                <Button>MAX </Button>
+              </InputRightElement>
+            )}
           </InputGroup>
         )}
       />

@@ -1,4 +1,4 @@
-import { getFetch, httpBatchLink } from '@trpc/client';
+import { httpBatchLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import type { NextPageContext } from 'next';
@@ -6,6 +6,17 @@ import superjson from 'superjson';
 // ℹ️ Type-only import:
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export
 import type { AppRouter } from '../../server/trpc/routers/router';
+import { Decimal } from 'decimal.js';
+
+//this solves the problem when serializing  superjson
+superjson.registerCustom<Decimal, string>(
+  {
+    isApplicable: (v): v is Decimal => Decimal.isDecimal(v),
+    serialize: (v) => v.toJSON(),
+    deserialize: (v) => new Decimal(v),
+  },
+  'decimal.js'
+);
 
 export function getBaseUrl() {
   if (typeof window !== 'undefined') {

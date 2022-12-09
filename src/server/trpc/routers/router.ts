@@ -8,6 +8,7 @@ import { greetingRouter } from './greeting.route';
 import { orgRouter } from './org.routes';
 import { projectRouter } from './project.routes';
 import { accountsRouter } from './account.routes';
+import { transactionsRouter } from './transaction.routes';
 
 export const appRouter = router({
   healthcheck: publicProcedure.query(() => 'yay!'),
@@ -17,6 +18,7 @@ export const appRouter = router({
   project: projectRouter,
   moneyRequest: moneyRequestRouter,
   account: accountsRouter,
+  transaction: transactionsRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -1,3 +1,3 @@
-import MoneyRequests from '../../../pageContainers/MoneyRequests.mod.requests';
+import MoneyRequestsPage from '../../../pageContainers/MoneyRequestsPage.mod.requests';
 
-export default MoneyRequests;
+export default MoneyRequestsPage;

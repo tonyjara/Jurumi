@@ -19,9 +19,8 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   });
 });
 const isAdmin = t.middleware(({ next, ctx }) => {
-  //@ts-ignore
   const role = ctx.session?.user?.role;
-  if (role !== 'ADMIN') {
+  if (!ctx.session?.user || role !== 'ADMIN') {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'admin-only',
@@ -35,9 +34,8 @@ const isAdmin = t.middleware(({ next, ctx }) => {
   });
 });
 const isAdminOrMod = t.middleware(({ next, ctx }) => {
-  //@ts-ignore
   const role = ctx.session?.user?.role;
-  if (!(role === 'ADMIN' || role === 'MODERATOR')) {
+  if (!ctx.session?.user || !(role === 'ADMIN' || role === 'MODERATOR')) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'admin-mod-only',

@@ -5,6 +5,16 @@ const nextConfig = {
   i18n,
   reactStrictMode: true,
   swcMinify: true,
+  experimental: {
+    swcPlugins: [
+      [
+        'next-superjson-plugin',
+        {
+          excluded: [],
+        },
+      ],
+    ],
+  },
 };
 
 module.exports = nextConfig;

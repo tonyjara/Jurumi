@@ -112,7 +112,7 @@ export const transactionMock: () => Transaction = () => {
     id: 0,
     createdAt: new Date(),
     updatedAt: null,
-    createdById: '',
+    accountId: '',
     updatedById: null,
     currency: 'PYG',
     openingBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),

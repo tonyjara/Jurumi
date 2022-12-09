@@ -43,6 +43,8 @@ interface DynamicTableProps<T extends object> {
   headers: string[];
   rows?: T[];
   options?: TableOptions[]; // enables three dot menu
+  searchBar?: React.ReactNode;
+  loading?: boolean;
 }
 
 const DynamicTable = <T extends object>({
@@ -51,6 +53,8 @@ const DynamicTable = <T extends object>({
   rows,
   options,
   subTitle,
+  searchBar,
+  loading,
 }: DynamicTableProps<T>) => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
   return (
@@ -62,6 +66,7 @@ const DynamicTable = <T extends object>({
               {title}
             </Text>
             <Text fontSize="md">{subTitle}</Text>
+            {searchBar}
           </Flex>
           <ThreeDotTableButton options={options} />
         </Flex>
@@ -77,8 +82,8 @@ const DynamicTable = <T extends object>({
           </Thead>
           <Tbody>
             <>
-              {rows}
-              {!rows && <SkeletonRows />}
+              {!loading && rows}
+              {(!rows || loading) && <SkeletonRows />}
             </>
           </Tbody>
         </Table>
