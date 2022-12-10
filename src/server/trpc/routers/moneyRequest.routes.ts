@@ -27,6 +27,19 @@ export const moneyRequestRouter = router({
       },
     });
   }),
+  findCompleteById: adminModProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      if (!input.id.length) return null;
+      return await prisma?.moneyRequest.findUnique({
+        where: { id: input.id },
+        include: {
+          account: true,
+          project: true,
+          transactions: true,
+        },
+      });
+    }),
   create: protectedProcedure
     .input(validateMoneyRequest)
     .mutation(async ({ input, ctx }) => {

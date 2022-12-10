@@ -19,7 +19,7 @@ interface formProps<T extends FieldValues> {
   totalAmount?: Decimal;
 }
 
-const TransactionForm = ({
+const TransactionEditForm = ({
   control,
   errors,
   totalAmount,
@@ -72,4 +72,4 @@ const TransactionForm = ({
   );
 };
 
-export default TransactionForm;
+export default TransactionEditForm;

@@ -23,6 +23,7 @@ interface InputProps<T extends FieldValues> {
   helperText?: string;
   options: { value: string; label: string }[];
   isClearable?: boolean;
+  error?: string;
 }
 
 const FormControlledSelect = <T extends FieldValues>({
@@ -33,9 +34,10 @@ const FormControlledSelect = <T extends FieldValues>({
   options,
   helperText,
   isClearable,
+  error,
 }: InputProps<T>) => {
   return (
-    <FormControl isInvalid={!!errors[name]}>
+    <FormControl isInvalid={!!errors[name] || !!error}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -60,6 +62,7 @@ const FormControlledSelect = <T extends FieldValues>({
         //@ts-ignore
         <FormErrorMessage>{errors[name].message}</FormErrorMessage>
       )}
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>
   );
 };

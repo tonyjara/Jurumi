@@ -1,6 +1,6 @@
-import type { Transaction } from '@prisma/client';
 import { z } from 'zod';
-import { validateTransaction } from '../../../lib/validations/transaction.validate';
+import { validateTransactionCreate } from '../../../lib/validations/transaction.create.validate';
+import { validateTransactionEdit } from '../../../lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
 
 export const transactionsRouter = router({
@@ -23,12 +23,12 @@ export const transactionsRouter = router({
       },
     });
   }),
-  findCompleteById: adminModProcedure
-    .input(z.object({ id: z.string() }))
+  findManyCompleteById: adminModProcedure
+    .input(z.object({ ids: z.number().array() }))
     .query(async ({ input }) => {
-      if (!input.id.length) return null;
-      return await prisma?.transaction.findUnique({
-        where: { id: parseInt(input.id) },
+      if (!input.ids.length) return null;
+      return await prisma?.transaction.findMany({
+        where: { id: { in: input.ids } },
         include: {
           moneyAccount: true,
           account: true,
@@ -39,33 +39,33 @@ export const transactionsRouter = router({
       });
     }),
 
-  create: adminModProcedure
-    .input(validateTransaction)
+  createMany: adminModProcedure
+    .input(validateTransactionCreate)
     .mutation(async ({ input, ctx }) => {
-      const x = (await prisma?.transaction.create({
-        data: {
+      const x = await prisma?.transaction.createMany({
+        data: input.transactions.map((trans) => ({
+          transactionAmount: trans.transactionAmount,
           accountId: ctx.session.user.id,
-          currency: input.currency,
+          currency: trans.currency,
           openingBalance: input.openingBalance,
-          transactionAmount: input.transactionAmount,
-          moneyAccountId: input.moneyAccountId,
-          transactionProofUrl: input.transactionProofUrl,
+          moneyAccountId: trans.moneyAccountId,
+          transactionProofUrl: trans.transactionProofUrl,
           moneyRequestId: input.moneyRequestId,
           imbursementId: input.imbursementId,
           expenseReturnId: input.expenseReturnId,
-        },
-      })) as Transaction | undefined;
+        })),
+      });
 
       if (input.moneyRequestId && x) {
         await prisma?.moneyRequest.update({
           where: { id: input.moneyRequestId },
-          data: { status: 'ACCEPTED', transactions: { connect: { id: x.id } } },
+          data: { status: 'ACCEPTED' },
         });
       }
       return x;
     }),
   edit: adminModProcedure
-    .input(validateTransaction)
+    .input(validateTransactionEdit)
     .mutation(async ({ input, ctx }) => {
       const x = await prisma?.transaction.update({
         where: { id: input.id },

@@ -4,11 +4,11 @@ import { Currency } from '@prisma/client';
 import { z } from 'zod';
 
 type withMoney = Omit<Transaction, 'openingBalance' | 'transactionAmount'> & {
-  transactionAmount?: any;
   openingBalance?: any;
+  transactionAmount?: any;
 };
 
-export const validateTransaction: z.ZodType<withMoney> = z.lazy(() =>
+export const validateTransactionEdit: z.ZodType<withMoney> = z.lazy(() =>
   z
     .object({
       id: z.number().int(),
@@ -21,15 +21,15 @@ export const validateTransaction: z.ZodType<withMoney> = z.lazy(() =>
       transactionAmount: z
         .any()
         .transform((value) => new Prisma.Decimal(value)),
+      moneyRequestId: z.string().nullable(),
+      expenseReturnId: z.string().nullable(),
+      imbursementId: z.string().nullable(),
       moneyAccountId: z
         .string({
           required_error:
             'Favor seleccione una cuenta de donde extraer el dinero.',
         })
         .min(2, 'Favor seleccione una cuenta de donde extraer el dinero.'),
-      moneyRequestId: z.string().nullable(),
-      expenseReturnId: z.string().nullable(),
-      imbursementId: z.string().nullable(),
       transactionProofUrl: z.string(),
     })
     .superRefine((val, ctx) => {
@@ -44,19 +44,21 @@ export const validateTransaction: z.ZodType<withMoney> = z.lazy(() =>
     })
 );
 
-export type validateTransactionData = z.infer<typeof validateTransaction>;
+export type validateTransactionEditData = z.infer<
+  typeof validateTransactionEdit
+>;
 
-export const defaultTransactionValues: validateTransactionData = {
+export const defaultTransactionEditValues: validateTransactionEditData = {
   id: 0,
   createdAt: new Date(),
   updatedAt: null,
   accountId: '',
   updatedById: null,
   currency: 'PYG',
-  openingBalance: new Prisma.Decimal(0),
   transactionAmount: new Prisma.Decimal(0),
   moneyAccountId: '',
   transactionProofUrl: '',
+  openingBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
   imbursementId: null,
   expenseReturnId: null,

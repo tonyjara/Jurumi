@@ -321,6 +321,7 @@ enum Role {
   // can create everything but not hard delete. 
   // Can change status.
   USER
+  // can only see their requests
   // Has to be specificly assigned to read or write.
   // Can't see any amount of money left.
   // Cannot change status.

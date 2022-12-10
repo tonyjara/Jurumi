@@ -1,5 +1,5 @@
 import { CloseIcon, Search2Icon } from '@chakra-ui/icons';
-import { InputGroup, Input, InputRightElement } from '@chakra-ui/react';
+import { InputGroup, Input, InputRightElement, Text } from '@chakra-ui/react';
 import React from 'react';
 
 const TableSearchbar = ({
@@ -7,15 +7,17 @@ const TableSearchbar = ({
   setSearchValue,
   type,
   placeholder,
+  helperText,
 }: {
   searchValue: string;
   setSearchValue: (value: React.SetStateAction<string>) => void;
   type: 'text' | 'number';
   placeholder: string;
+  helperText?: string;
 }) => {
   const hasLength = !!searchValue.length;
   return (
-    <InputGroup>
+    <InputGroup flexDir={'column'}>
       <Input
         type={type}
         value={searchValue}
@@ -29,6 +31,7 @@ const TableSearchbar = ({
       >
         {hasLength ? <CloseIcon /> : <Search2Icon />}
       </InputRightElement>
+      <Text color={'gray.500'}>{helperText}</Text>
     </InputGroup>
   );
 };

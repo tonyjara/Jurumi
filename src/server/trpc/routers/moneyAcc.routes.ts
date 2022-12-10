@@ -4,34 +4,42 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import type { BankInfoModel } from '../../../lib/validations/moneyAcc.validate';
 import { validateMoneyAccount } from '../../../lib/validations/moneyAcc.validate';
-import { adminProcedure, protectedProcedure, router } from '../initTrpc';
+import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 
 export const moneyAccRouter = router({
-  getMany: protectedProcedure.query(async () => {
+  getMany: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany();
   }),
-  getManyBankAccs: protectedProcedure.query(async () => {
+
+  getManyWithTransactions: adminModProcedure.query(async () => {
+    return await prisma?.moneyAccount.findMany({
+      include: {
+        Transactions: {
+          include: {
+            account: { select: { displayName: true } },
+            moneyAccount: { select: { displayName: true } },
+          },
+        },
+      },
+      take: 20,
+      orderBy: { id: 'desc' },
+    });
+  }),
+
+  getManyBankAccs: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: false },
       include: { bankInfo: true },
     });
   }),
-  getManyCashAccs: protectedProcedure.query(async () => {
+  getManyCashAccs: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: true },
     });
   }),
-  create: protectedProcedure
+  create: adminModProcedure
     .input(validateMoneyAccount)
     .mutation(async ({ input: i, ctx }) => {
-      // console.log(input);
-
-      if (!ctx.session.user) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'No user session.',
-        });
-      }
       const bankInfo: BankInfoModel | undefined = i.bankInfo
         ? {
             bankName: i.bankInfo.bankName,
@@ -57,16 +65,9 @@ export const moneyAccRouter = router({
       });
       return x;
     }),
-  edit: protectedProcedure
+  edit: adminModProcedure
     .input(validateMoneyAccount)
     .mutation(async ({ input: i, ctx }) => {
-      if (!ctx.session.user) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'No user session.',
-        });
-      }
-
       const bankInfo: BankInfoModel | undefined = i.bankInfo
         ? {
             bankName: i.bankInfo.bankName,
