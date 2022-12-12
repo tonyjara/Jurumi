@@ -103,7 +103,7 @@ model MoneyAccount {
   softDeleted Boolean @default(false)
 
   bankInfo     BankInfo?
-  Transactions Transaction[]
+  transactions Transaction[]
 }
 
 model BankInfo {

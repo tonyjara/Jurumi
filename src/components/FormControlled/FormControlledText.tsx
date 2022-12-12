@@ -30,6 +30,7 @@ interface InputProps<T extends FieldValues> {
   isTextArea?: boolean;
   hidden?: boolean;
   autoFocus?: boolean;
+  error?: string; // escape hatch for nested objects
 }
 
 const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
@@ -46,9 +47,10 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
     isTextArea,
     hidden,
     autoFocus,
+    error,
   } = props;
   return (
-    <FormControl hidden={hidden} isInvalid={!!errors[name]}>
+    <FormControl hidden={hidden} isInvalid={!!errors[name] || !!error}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -85,6 +87,7 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
           </InputGroup>
         )}
       />
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!errors[name] ? (
         <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
       ) : (

@@ -3,14 +3,14 @@ import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import type {
-  BankInfoModel,
+  BankInfoModelType,
   MoneyAccWithBankInfo,
 } from '../../lib/validations/moneyAcc.validate';
 import { randEnumValue } from '../../lib/utils/TypescriptUtils';
 import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
 
-const bankInfo: () => BankInfoModel = () => {
-  const x: BankInfoModel = {
+const bankInfo: () => BankInfoModelType = () => {
+  const x: BankInfoModelType = {
     bankName: randEnumValue(BankNamesPy),
     type: 'SAVINGS',
     accountNumber: faker.finance.account(),

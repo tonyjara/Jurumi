@@ -19,9 +19,10 @@ export default function MySidebarWithHeader({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { status } = useSession();
+  const authenticated = status === 'authenticated';
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
-      {status === 'authenticated' && (
+      {authenticated && (
         <SidebarContent
           onClose={() => onClose}
           display={{ base: 'none', md: 'block' }}
@@ -45,7 +46,7 @@ export default function MySidebarWithHeader({
       <Box
         py={{ base: '100px', md: '100px' }}
         px={{ base: '10px', md: '10px' }}
-        ml={{ base: 0, md: 60 }}
+        ml={!authenticated ? { base: 0 } : { base: 0, md: 60 }}
       >
         {children}
       </Box>

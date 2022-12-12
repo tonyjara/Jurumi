@@ -10,14 +10,12 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Project } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
 import { projectMock } from '../../__tests__/mocks/Mocks';
 import ProjectForm from '../Forms/Project.form';
@@ -94,7 +92,6 @@ const ProjectCreateModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
-      <DevTool control={control} />
     </Modal>
   );
 };

@@ -64,7 +64,6 @@ const uploadFileToBlob = async (file: File | null): Promise<string | null> => {
 
   const client = containerClient.getBlobClient(file.name);
 
-  // console.log(url);
   // get list of blobs in container
   // return getBlobsInContainer(containerClient);
   return client.url;

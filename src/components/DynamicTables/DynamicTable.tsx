@@ -19,7 +19,7 @@ import ThreeDotTableButton from './Utils/ThreeDotTableButton';
 export interface IObjectKeys {
   [key: string]: any;
 }
-type NestedKeyOf<ObjectType extends IObjectKeys> = {
+export type NestedKeyOf<ObjectType extends IObjectKeys> = {
   [Key in keyof ObjectType &
     (string | number)]: ObjectType[Key] extends IObjectKeys
     ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`

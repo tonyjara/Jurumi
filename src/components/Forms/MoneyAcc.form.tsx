@@ -1,5 +1,4 @@
 import { VStack } from '@chakra-ui/react';
-import type { MoneyAccount } from '@prisma/client';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
@@ -29,7 +28,7 @@ const MoneyAccForm = ({ control, errors }: formProps<MoneyAccWithBankInfo>) => {
         control={control}
         errors={errors}
         name="displayName"
-        label="Nombre para diferencial la cuenta"
+        label="Nombre para diferenciar la cuenta"
         autoFocus={true}
       />
 
@@ -47,6 +46,9 @@ const MoneyAccForm = ({ control, errors }: formProps<MoneyAccWithBankInfo>) => {
         label="Balance Inicial"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
+        helperText={
+          'Una vez creada la cuenta este valor NO se puede modificar.'
+        }
       />
       <FormControlledSwitch
         control={control}

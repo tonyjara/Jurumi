@@ -5,6 +5,7 @@ import {
   Button,
   Heading,
   useColorModeValue,
+  Container,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -55,70 +56,74 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit ?? submitSigning)} noValidate>
-      <Stack spacing={2} py={{ base: 5, md: 10 }}>
-        <Heading
-          textAlign={'center'}
-          py={{ base: 0, md: 5 }}
-          fontSize={{ base: '2xl', md: '4xl' }}
+    <Container>
+      <form onSubmit={handleSubmit(onSubmit ?? submitSigning)} noValidate>
+        <Stack
+          spacing={2}
+          // py={{ base: 5, md: 10 }}
         >
-          {t('signin:heading')}
-        </Heading>
+          <Heading
+            textAlign={'center'}
+            py={{ base: 0, md: 5 }}
+            fontSize={{ base: '2xl', md: '4xl' }}
+          >
+            {t('signin:heading')}
+          </Heading>
 
-        <Box
-          rounded={'lg'}
-          bg={{
-            base: '-moz-initial',
-            md: useColorModeValue('white', 'gray.700'),
-          }}
-          boxShadow={{ base: 'none', md: 'lg' }}
-          p={5}
-          minW={{ base: 'full', md: 'lg' }}
-          maxW="xl"
-          alignSelf={'center'}
-        >
-          <Stack spacing={2}>
-            <FormControlledText
-              label={t('forms:email')}
-              errors={errors}
-              control={control}
-              name="email"
-              type="email"
-              helperText={t('forms:emailHelper')}
-              data-testid="forms:email"
-            />
-            <FormControlledText
-              label={t('forms:password')}
-              errors={errors}
-              control={control}
-              name="password"
-              type="password"
-              data-testid="forms:password"
-            />
+          <Box
+            rounded={'lg'}
+            bg={{
+              base: '-moz-initial',
+              md: useColorModeValue('white', 'gray.700'),
+            }}
+            boxShadow={{ base: 'none', md: 'lg' }}
+            p={5}
+            minW={{ base: 'full', md: 'lg' }}
+            maxW="xl"
+          >
+            <Stack spacing={2}>
+              <FormControlledText
+                label={t('forms:email')}
+                errors={errors}
+                control={control}
+                name="email"
+                type="email"
+                helperText={t('forms:emailHelper')}
+                data-testid="forms:email"
+              />
+              <FormControlledText
+                label={t('forms:password')}
+                errors={errors}
+                control={control}
+                name="password"
+                type="password"
+                data-testid="forms:password"
+              />
 
-            <Stack spacing={5}>
-              <Stack
-                spacing={5}
-                textAlign={'center'}
-                direction={{ base: 'column' }}
-              >
-                <Button
-                  disabled={isSubmitting}
-                  type="submit"
-                  bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}
+              <Stack spacing={5}>
+                <Stack
+                  spacing={5}
+                  textAlign={'center'}
+                  direction={{ base: 'column' }}
                 >
-                  {t('common:buttons.save')}
-                </Button>
+                  <Button
+                    disabled={isSubmitting}
+                    type="submit"
+                    bg={'blue.400'}
+                    color={'white'}
+                    _hover={{
+                      bg: 'blue.500',
+                    }}
+                  >
+                    {t('common:buttons.save')}
+                  </Button>
+                </Stack>
               </Stack>
             </Stack>
-          </Stack>
-        </Box>
-      </Stack>
-    </form>
+          </Box>
+        </Stack>
+      </form>
+    </Container>
   );
 }
 

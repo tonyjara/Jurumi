@@ -24,6 +24,7 @@ interface InputProps<T extends FieldValues> {
   options: { value: string; label: string }[];
   isClearable?: boolean;
   error?: string;
+  onChangeMw?: () => void; //middlewarish func
 }
 
 const FormControlledSelect = <T extends FieldValues>({
@@ -35,6 +36,7 @@ const FormControlledSelect = <T extends FieldValues>({
   helperText,
   isClearable,
   error,
+  onChangeMw,
 }: InputProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name] || !!error}>
@@ -48,7 +50,10 @@ const FormControlledSelect = <T extends FieldValues>({
           <Select
             instanceId={name}
             options={options}
-            onChange={(e) => field.onChange(e?.value ?? '')}
+            onChange={(e) => {
+              onChangeMw && onChangeMw();
+              field.onChange(e?.value ?? '');
+            }}
             value={options.find((x) => x.value === field.value)}
             noOptionsMessage={() => 'No hay opciones.'}
             placeholder=""

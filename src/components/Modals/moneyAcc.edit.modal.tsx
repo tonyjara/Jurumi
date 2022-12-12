@@ -21,17 +21,17 @@ import {
   validateMoneyAccount,
 } from '../../lib/validations/moneyAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
 import { moneyAccMock } from '../../__tests__/mocks/Mocks';
-import MoneyAccForm from '../Forms/MoneyAcc.form';
+import EditMoneyAccForm from '../Forms/MoneyAcc.edit.form';
+import type { MoneyAccount } from '@prisma/client';
 
 const EditMoneyAccModal = ({
   isOpen,
   onClose,
   accData,
 }: {
-  accData: MoneyAccWithBankInfo;
+  accData: MoneyAccWithBankInfo | MoneyAccount;
   isOpen: boolean;
   onClose: () => void;
 }) => {
@@ -67,6 +67,7 @@ const EditMoneyAccModal = ({
         isCashAccount
           ? context.moneyAcc.getManyCashAccs.invalidate()
           : context.moneyAcc.getManyBankAccs.invalidate();
+        context.moneyAcc.getManyWithTransactions.invalidate();
       },
     })
   );
@@ -89,7 +90,7 @@ const EditMoneyAccModal = ({
           <ModalBody>
             <SeedButton reset={reset} mock={moneyAccMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <MoneyAccForm control={control} errors={errors} />
+            <EditMoneyAccForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
@@ -107,7 +108,6 @@ const EditMoneyAccModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
-      <DevTool control={control} />
     </Modal>
   );
 };

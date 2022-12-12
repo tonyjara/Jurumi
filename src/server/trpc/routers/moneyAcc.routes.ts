@@ -1,8 +1,6 @@
-import type { BankInfo } from '@prisma/client';
 import { Prisma } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import type { BankInfoModel } from '../../../lib/validations/moneyAcc.validate';
+import type { BankInfoModelType } from '../../../lib/validations/moneyAcc.validate';
 import { validateMoneyAccount } from '../../../lib/validations/moneyAcc.validate';
 import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 
@@ -14,7 +12,9 @@ export const moneyAccRouter = router({
   getManyWithTransactions: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       include: {
-        Transactions: {
+        bankInfo: true,
+        transactions: {
+          orderBy: { id: 'desc' },
           include: {
             account: { select: { displayName: true } },
             moneyAccount: { select: { displayName: true } },
@@ -40,7 +40,7 @@ export const moneyAccRouter = router({
   create: adminModProcedure
     .input(validateMoneyAccount)
     .mutation(async ({ input: i, ctx }) => {
-      const bankInfo: BankInfoModel | undefined = i.bankInfo
+      const bankInfo: BankInfoModelType | undefined = i.bankInfo
         ? {
             bankName: i.bankInfo.bankName,
             type: i.bankInfo.type,
@@ -68,7 +68,7 @@ export const moneyAccRouter = router({
   edit: adminModProcedure
     .input(validateMoneyAccount)
     .mutation(async ({ input: i, ctx }) => {
-      const bankInfo: BankInfoModel | undefined = i.bankInfo
+      const bankInfo: BankInfoModelType | undefined = i.bankInfo
         ? {
             bankName: i.bankInfo.bankName,
             type: i.bankInfo.type,

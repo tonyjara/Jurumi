@@ -10,7 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 
@@ -21,7 +21,6 @@ import {
   validateMoneyAccount,
 } from '../../lib/validations/moneyAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
 import { moneyAccMock } from '../../__tests__/mocks/Mocks';
 import MoneyAccForm from '../Forms/MoneyAcc.form';
@@ -43,6 +42,16 @@ const CreateMoneyAccModal = ({
     defaultValues: defaultMoneyAccValues,
     resolver: zodResolver(validateMoneyAccount),
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset(defaultMoneyAccValues);
+    }
+
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   const handleOnClose = () => {
     reset(defaultMoneyAccValues);
     onClose();
@@ -97,7 +106,6 @@ const CreateMoneyAccModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
-      <DevTool control={control} />
     </Modal>
   );
 };

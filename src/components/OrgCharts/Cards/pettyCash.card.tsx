@@ -18,9 +18,9 @@ import { MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import { translateCurrency } from '../../../lib/utils/TranslatedEnums';
-import type { MoneyAccount } from '@prisma/client';
 import EditMoneyAccModal from '../../Modals/moneyAcc.edit.modal';
 import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
+import type { MoneyAccount } from '@prisma/client';
 
 const PettyCashCard = (pettyCash: MoneyAccount) => {
   const context = trpcClient.useContext();

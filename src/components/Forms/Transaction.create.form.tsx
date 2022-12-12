@@ -17,9 +17,11 @@ import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
-import { decimalFormat } from '../../lib/utils/DecimalHelpers';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
-import { reduceTransactionFields } from '../../lib/utils/TransactionUtils';
+import {
+  formatedAccountBalance,
+  reduceTransactionFields,
+} from '../../lib/utils/TransactionUtils';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import type {
@@ -44,7 +46,7 @@ const TransactionForm = ({
   totalAmount,
   amountExecuted,
 }: formProps<FormTransaction>) => {
-  const { fields, prepend, remove } = useFieldArray({
+  const { fields, prepend, remove, update } = useFieldArray({
     control,
     name: 'transactions',
   });
@@ -53,7 +55,7 @@ const TransactionForm = ({
     data: moneyAccs,
     // isLoading: isMoneyAccLoading,
     // error: isMoneyAccError,
-  } = trpcClient.moneyAcc.getMany.useQuery();
+  } = trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
   // const currency = useWatch({ control, name: 'currency' });
 
@@ -62,10 +64,7 @@ const TransactionForm = ({
       ?.filter((x) => x.currency === currency)
       .map((acc) => ({
         value: acc.id,
-        label: `${acc.displayName} ${decimalFormat(
-          acc.initialBalance,
-          acc.currency
-        )}`,
+        label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
       }));
 
   const defaultTransaction: TransactionField = {
@@ -100,6 +99,14 @@ const TransactionForm = ({
       </HStack>
       {fields.map((x, index) => {
         const currency = x.currency;
+        const resetAccountSelectValues = () => {
+          update(index, {
+            moneyAccountId: '',
+            currency,
+            transactionProofUrl: '',
+            transactionAmount: new Prisma.Decimal(0),
+          });
+        };
         return (
           <VStack
             borderColor={containerBorder}
@@ -127,6 +134,7 @@ const TransactionForm = ({
               name={`transactions.${index}.currency`}
               label="Moneda"
               options={currencyOptions}
+              onChangeMw={resetAccountSelectValues}
             />
             <FormControlledSelect
               control={control}

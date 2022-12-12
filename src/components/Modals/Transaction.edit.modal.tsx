@@ -15,7 +15,6 @@ import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import { DevTool } from '@hookform/devtools';
 import SeedButton from '../DevTools/SeedButton';
 import { projectMock } from '../../__tests__/mocks/Mocks';
 import type { Transaction } from '@prisma/client';
@@ -64,6 +63,7 @@ const EditTransactionModal = ({
       callback: () => {
         context.transaction.getManyComplete.invalidate();
         context.transaction.findManyCompleteById.invalidate();
+        context.moneyAcc.getManyWithTransactions.invalidate();
         handleOnClose();
       },
     })
@@ -101,7 +101,6 @@ const EditTransactionModal = ({
           </ModalFooter>
         </ModalContent>
       </form>
-      <DevTool control={control} />
     </Modal>
   );
 };

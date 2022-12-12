@@ -24,6 +24,7 @@ interface InputProps<T extends FieldValues> {
   helperText?: string;
   options: { value: string; label: string }[];
   hidden?: boolean;
+  onChangeMw?: () => void; //middlewarish func
 }
 
 const FormControlledRadioButtons = <T extends FieldValues>({
@@ -34,6 +35,7 @@ const FormControlledRadioButtons = <T extends FieldValues>({
   options,
   helperText,
   hidden,
+  onChangeMw,
 }: InputProps<T>) => {
   return (
     <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
@@ -44,7 +46,13 @@ const FormControlledRadioButtons = <T extends FieldValues>({
         control={control}
         name={name}
         render={({ field }) => (
-          <RadioGroup onChange={field.onChange} value={field.value}>
+          <RadioGroup
+            onChange={(e) => {
+              onChangeMw && onChangeMw();
+              field.onChange(e);
+            }}
+            value={field.value}
+          >
             <Stack direction="row">
               {options.map((x) => (
                 <Radio key={x.value} value={x.value}>

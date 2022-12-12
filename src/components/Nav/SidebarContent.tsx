@@ -109,7 +109,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
               <AccordionItem>
                 <AccordionButton>
                   <AccordionIcon />
-                  <NavItem icon={link.icon} dest={link.dest}>
+                  <NavItem onClick={onClose} icon={link.icon} dest={link.dest}>
                     {link.name}
                   </NavItem>
                 </AccordionButton>
@@ -122,7 +122,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             </Accordion>
           )}
           {!link.children?.length && (
-            <NavItem icon={link.icon} dest={link.dest}>
+            <NavItem onClick={onClose} icon={link.icon} dest={link.dest}>
               {link.name}
             </NavItem>
           )}

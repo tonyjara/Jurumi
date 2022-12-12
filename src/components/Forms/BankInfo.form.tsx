@@ -33,12 +33,16 @@ const BankInfoForm = ({ control, errors }: formProps<MoneyAccWithBankInfo>) => {
         name="bankInfo.ownerName"
         label="Nombre y Apellido del titular"
         autoFocus={true}
+        //@ts-ignore
+        error={errors.bankInfo?.ownerName?.message}
       />
       <FormControlledText
         control={control}
         errors={errors}
         name="bankInfo.accountNumber"
         label="Número de cuenta"
+        //@ts-ignore
+        error={errors.bankInfo?.accountNumber?.message}
       />
       <FormControlledSelect
         control={control}
@@ -66,12 +70,16 @@ const BankInfoForm = ({ control, errors }: formProps<MoneyAccWithBankInfo>) => {
         errors={errors}
         name="bankInfo.country"
         label="País"
+        //@ts-ignore
+        error={errors.bankInfo?.country?.message}
       />
       <FormControlledText
         control={control}
         errors={errors}
         name="bankInfo.city"
         label="Ciudad"
+        //@ts-ignore
+        error={errors.bankInfo?.city?.message}
       />
     </VStack>
   );

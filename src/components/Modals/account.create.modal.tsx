@@ -57,7 +57,6 @@ const CreateAccountModal = ({
     handleUseMutationAlerts({
       successText: 'El usuario ha sido creado!',
       callback: (returnedData: accountWithVerifyLink) => {
-        console.log(returnedData);
         const verifyLink =
           returnedData.accountVerificationLinks[0]?.verificationLink;
         if (!verifyLink) return;

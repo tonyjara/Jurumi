@@ -1,3 +1,3 @@
-import MoneyAccountsPage from '../../../pageContainers/MoneyAccountsPage.mod.money-accounts';
+import MoneyAccountsPage from '../../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
 
 export default MoneyAccountsPage;

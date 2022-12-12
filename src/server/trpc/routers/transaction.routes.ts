@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { validateTransactionCreate } from '../../../lib/validations/transaction.create.validate';
 import { validateTransactionEdit } from '../../../lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
+import { createManyMoneyAccountTransactions } from './utils/TransactionRouteUtils';
 
 export const transactionsRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -42,18 +43,9 @@ export const transactionsRouter = router({
   createMany: adminModProcedure
     .input(validateTransactionCreate)
     .mutation(async ({ input, ctx }) => {
-      const x = await prisma?.transaction.createMany({
-        data: input.transactions.map((trans) => ({
-          transactionAmount: trans.transactionAmount,
-          accountId: ctx.session.user.id,
-          currency: trans.currency,
-          openingBalance: input.openingBalance,
-          moneyAccountId: trans.moneyAccountId,
-          transactionProofUrl: trans.transactionProofUrl,
-          moneyRequestId: input.moneyRequestId,
-          imbursementId: input.imbursementId,
-          expenseReturnId: input.expenseReturnId,
-        })),
+      const x = await createManyMoneyAccountTransactions({
+        accountId: ctx.session.user.id,
+        formTransaction: input,
       });
 
       if (input.moneyRequestId && x) {
@@ -67,6 +59,9 @@ export const transactionsRouter = router({
   edit: adminModProcedure
     .input(validateTransactionEdit)
     .mutation(async ({ input, ctx }) => {
+      // When editing it has to check all the relevant sub-sequent transactions.
+      // For the moment being it will only allow edit if it's the last transaction
+
       const x = await prisma?.transaction.update({
         where: { id: input.id },
         data: {
@@ -90,6 +85,7 @@ export const transactionsRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      //for the moment being it will only allow delete if it's the last transaction.
       const x = await prisma?.transaction.delete({
         where: { id: input.id },
       });

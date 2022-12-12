@@ -1,3 +1,4 @@
+import type { BankInfo, MoneyAccount } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import {
   BankAccountType,
@@ -6,6 +7,14 @@ import {
   Currency,
 } from '@prisma/client';
 import { z } from 'zod';
+
+export interface MoneyAccWithBankInfo extends MoneyAccount {
+  bankInfo: BankInfoModelType | null;
+}
+
+type withMoney = Omit<MoneyAccWithBankInfo, 'initialBalance'> & {
+  initialBalance?: any;
+};
 
 const stringReqMinMax = (reqText: string, min: number, max: number) =>
   z
@@ -18,53 +27,88 @@ const stringMinMax = (min: number, max: number) =>
     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
     .max(max, `Has superado el límite de caractérs (${max})`);
 
-export const BankInfoModel = z.object({
-  bankName: z.nativeEnum(BankNamesPy),
-  accountNumber: z.string(),
-  ownerName: stringReqMinMax('Favor ingrese el nombre del titular', 2, 64),
-  ownerDocType: z.nativeEnum(BankDocType),
-  ownerDoc: z.string(),
-  ownerContactNumber: stringMinMax(10, 20).nullable(),
-  country: stringReqMinMax('Favor seleccione una país.', 3, 64),
-  city: stringReqMinMax('Favor seleccione una ciudad.', 3, 64),
-  type: z.nativeEnum(BankAccountType),
-});
+export const BankInfoModel: z.ZodType<Omit<BankInfo, 'moneyAccountId'>> =
+  z.lazy(() =>
+    z.object({
+      bankName: z.nativeEnum(BankNamesPy),
+      accountNumber: z.string(),
+      ownerName: z.string(),
+      ownerDocType: z.nativeEnum(BankDocType),
+      ownerDoc: z.string(),
+      ownerContactNumber: stringMinMax(10, 20).nullable(),
+      country: z.string(),
+      city: z.string(),
+      type: z.nativeEnum(BankAccountType),
+    })
+  );
 
-export const MoneyAccountModel = z.object({
-  id: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date().nullish(),
-  createdById: z.string(),
-  displayName: z.string(),
-  updatedById: z.string().nullish(),
-  isCashAccount: z.boolean(),
-  currency: z.nativeEnum(Currency),
-  initialBalance: z.any().transform((value) => new Prisma.Decimal(value)),
-  archived: z.boolean(),
-  softDeleted: z.boolean(),
-});
+export type BankInfoModelType = z.infer<typeof BankInfoModel>;
 
-export type BankInfoModel = z.infer<typeof BankInfoModel>;
-
-export interface CompleteMoneyAccount
-  extends z.infer<typeof MoneyAccountModel> {
-  bankInfo?: BankInfoModel | null;
-}
-// type withMoney = Omit<BankAccount, 'balance'> & { balance?: any };
-type MoneyAccountWithOmit = Omit<CompleteMoneyAccount, 'initialBalance'> & {
-  initialBalance?: any;
-};
-
-export const validateMoneyAccount: z.ZodSchema<MoneyAccountWithOmit> = z.lazy(
-  () =>
-    MoneyAccountModel.extend({
-      bankInfo: BankInfoModel.nullish(),
+export const validateMoneyAccount: z.ZodType<withMoney> = z.lazy(() =>
+  z
+    .object({
+      id: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date().nullable(),
+      createdById: z.string(),
+      displayName: stringReqMinMax(
+        'Favor ingrese un nombre para su cuenta',
+        3,
+        64
+      ),
+      updatedById: z.string().nullable(),
+      isCashAccount: z.boolean(),
+      currency: z.nativeEnum(Currency),
+      initialBalance: z.any().transform((value) => new Prisma.Decimal(value)),
+      archived: z.boolean(),
+      softDeleted: z.boolean(),
+      bankInfo: BankInfoModel.nullable(),
+    })
+    .superRefine((val, ctx) => {
+      if (
+        !val.isCashAccount &&
+        val.bankInfo &&
+        val.bankInfo?.country.length < 3
+      ) {
+        ctx.addIssue({
+          path: ['bankInfo.country'],
+          code: z.ZodIssueCode.custom,
+          message: 'Favor ingrese el nombre de un país.',
+        });
+      }
+      if (!val.isCashAccount && val.bankInfo && val.bankInfo?.city.length < 2) {
+        ctx.addIssue({
+          path: ['bankInfo.city'],
+          code: z.ZodIssueCode.custom,
+          message: 'Favor ingrese el nombre de una ciudad.',
+        });
+      }
+      if (
+        !val.isCashAccount &&
+        val.bankInfo &&
+        val.bankInfo?.ownerName.length < 3
+      ) {
+        ctx.addIssue({
+          path: ['bankInfo.ownerName'],
+          code: z.ZodIssueCode.custom,
+          message: 'Favor ingrese el nombre del titular.',
+        });
+      }
+      if (
+        !val.isCashAccount &&
+        val.bankInfo &&
+        val.bankInfo?.accountNumber.length < 3
+      ) {
+        ctx.addIssue({
+          path: ['bankInfo.accountNumber'],
+          code: z.ZodIssueCode.custom,
+          message: 'Favor ingrese el número de cuenta.',
+        });
+      }
     })
 );
 
-export type MoneyAccWithBankInfo = z.infer<typeof validateMoneyAccount>;
-
-const defaultBankInfoValues: BankInfoModel = {
+const defaultBankInfoValues: BankInfoModelType = {
   bankName: 'ITAU',
   type: 'SAVINGS',
   accountNumber: '',
