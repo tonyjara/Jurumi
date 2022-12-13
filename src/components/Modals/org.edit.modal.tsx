@@ -59,6 +59,7 @@ const EditOrgModal = ({
         onClose();
         reset();
         context.org.getMany.invalidate();
+        context.org.getMyOrgs.invalidate();
       },
     })
   );

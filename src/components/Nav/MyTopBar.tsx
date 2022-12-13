@@ -29,14 +29,14 @@ const MyTopBar = ({ onOpen, ...rest }: MobileProps) => {
         aria-label="open menu"
         icon={<FiMenu />}
       />
-
+      {/*TEXT SHOWN ONLY ON MOBILE */}
       <Text
         display={{ base: 'flex', md: 'none' }}
         fontSize="2xl"
         fontFamily="monospace"
         fontWeight="bold"
       >
-        Logo
+        Logosd
       </Text>
       <NavbarProfileSection />
     </Flex>

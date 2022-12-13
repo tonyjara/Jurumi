@@ -13,6 +13,7 @@ import { verifyToken } from '../../../lib/utils/asyncJWT';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
+import { initialSetupValidation } from '../../../lib/validations/setup.validate';
 
 export const accountsRouter = router({
   toggleActivation: adminModProcedure
@@ -38,6 +39,7 @@ export const accountsRouter = router({
       },
     });
   }),
+
   getMany: adminModProcedure.query(async () => {
     return await prisma?.account.findMany({
       take: 20,
@@ -143,12 +145,12 @@ export const accountsRouter = router({
       }
     }),
 
-  create: adminModProcedure
+  createWithSigendLink: adminModProcedure
     .input(validateAccount)
     .mutation(async ({ input, ctx }) => {
       const secret = process.env.JWT_SECRET;
       const uuid = uuidv4();
-      if (!secret || !ctx.session?.user) {
+      if (!secret) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'No user session.',
@@ -164,7 +166,7 @@ export const accountsRouter = router({
         },
         secret,
         { expiresIn: 60 * 60 }
-      );
+      ) as string;
       const baseUrl = getBaseUrl();
       const link = `${baseUrl}/new-user/${signedToken}`;
 
@@ -187,6 +189,30 @@ export const accountsRouter = router({
           },
         },
         include: { accountVerificationLinks: true },
+      });
+    }),
+  createOneUNSAFE: publicProcedure
+    .input(initialSetupValidation)
+    .mutation(async ({ input }) => {
+      const accounts = await prisma?.account.findMany();
+      if (accounts?.length) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Only allowed when no accounts.',
+        });
+      }
+
+      const hashedPass = await bcrypt.hash(input.password, 10);
+
+      return await prisma?.account.create({
+        data: {
+          displayName: input.displayName,
+          email: input.email,
+          role: 'ADMIN',
+          isVerified: true,
+          active: true,
+          password: hashedPass,
+        },
       });
     }),
 });

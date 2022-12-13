@@ -53,6 +53,7 @@ const CreateOrgModal = ({
         handleOnClose();
         reset();
         context.org.getMany.invalidate();
+        context.org.getMyOrgs.invalidate();
       },
     })
   );

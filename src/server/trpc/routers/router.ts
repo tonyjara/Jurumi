@@ -9,15 +9,19 @@ import { orgRouter } from './org.routes';
 import { projectRouter } from './project.routes';
 import { accountsRouter } from './account.routes';
 import { transactionsRouter } from './transaction.routes';
+import { moneyApprovalRouter } from './moneyApproval.routes';
+import { preferencesRouter } from './preferences.routes';
 
 export const appRouter = router({
-  healthcheck: publicProcedure.query(() => 'yay!'),
-  greeting: greetingRouter,
-  org: orgRouter,
-  moneyAcc: moneyAccRouter,
-  project: projectRouter,
-  moneyRequest: moneyRequestRouter,
   account: accountsRouter,
+  greeting: greetingRouter,
+  healthcheck: publicProcedure.query(() => 'yay!'),
+  moneyAcc: moneyAccRouter,
+  moneyApprovals: moneyApprovalRouter,
+  moneyRequest: moneyRequestRouter,
+  org: orgRouter,
+  preferences: preferencesRouter,
+  project: projectRouter,
   transaction: transactionsRouter,
 });
 

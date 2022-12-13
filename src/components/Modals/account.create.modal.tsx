@@ -53,21 +53,22 @@ const CreateAccountModal = ({
     setValue('');
     onClose();
   };
-  const { error, mutate, isLoading } = trpcClient.account.create.useMutation(
-    handleUseMutationAlerts({
-      successText: 'El usuario ha sido creado!',
-      callback: (returnedData: accountWithVerifyLink) => {
-        const verifyLink =
-          returnedData.accountVerificationLinks[0]?.verificationLink;
-        if (!verifyLink) return;
-        setValue(verifyLink);
-        // handleOnClose();
-        reset(defaultAccData);
-        context.account.getVerificationLinks.invalidate();
-        context.account.getMany.invalidate();
-      },
-    })
-  );
+  const { error, mutate, isLoading } =
+    trpcClient.account.createWithSigendLink.useMutation(
+      handleUseMutationAlerts({
+        successText: 'El usuario ha sido creado!',
+        callback: (returnedData: accountWithVerifyLink) => {
+          const verifyLink =
+            returnedData.accountVerificationLinks[0]?.verificationLink;
+          if (!verifyLink) return;
+          setValue(verifyLink);
+          // handleOnClose();
+          reset(defaultAccData);
+          context.account.getVerificationLinks.invalidate();
+          context.account.getMany.invalidate();
+        },
+      })
+    );
 
   const submitFunc = async (data: Account) => {
     mutate(data);

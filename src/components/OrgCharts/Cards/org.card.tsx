@@ -43,6 +43,7 @@ const OrgCard = (org: OrgWithApproversAndMoneyAdmins) => {
       successText: 'La organización ha sido eliminada! 💩',
       callback: () => {
         context.org.getMany.invalidate();
+        context.org.getMyOrgs.invalidate();
       },
     })
   );

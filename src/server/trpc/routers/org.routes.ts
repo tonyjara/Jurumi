@@ -1,7 +1,12 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateOrgCreate } from '../../../lib/validations/org.validate';
-import { adminProcedure, adminModProcedure, router } from '../initTrpc';
+import {
+  adminProcedure,
+  adminModProcedure,
+  router,
+  protectedProcedure,
+} from '../initTrpc';
 
 export const orgRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -10,6 +15,14 @@ export const orgRouter = router({
         moneyAdministrators: { select: { id: true, displayName: true } },
         moneyRequestApprovers: { select: { id: true, displayName: true } },
       },
+    });
+  }),
+  getMyOrgs: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+
+    return await prisma?.organization.findMany({
+      where: { members: { every: { id: user.id } } },
+      select: { id: true, displayName: true },
     });
   }),
   getManyForSelect: adminModProcedure.query(async () => {
@@ -32,6 +45,7 @@ export const orgRouter = router({
           moneyAdministrators: {
             connect: input.moneyAdministrators.map((x) => ({ id: x.id })),
           },
+          members: { connect: { id: user.id } },
         },
       });
       return org;

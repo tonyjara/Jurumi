@@ -59,7 +59,7 @@ const DynamicTable = <T extends object>({
   const backgroundColor = useColorModeValue('white', 'gray.800');
   return (
     <Card
-      h={document.documentElement.scrollHeight - 200}
+      // h={document.documentElement.scrollHeight - 200}
       overflow={'hidden'}
       backgroundColor={backgroundColor}
     >

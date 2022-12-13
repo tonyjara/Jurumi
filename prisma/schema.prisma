@@ -35,16 +35,36 @@ model Account {
   role        Role      @default(USER)
   isVerified  Boolean   @default(false)
 
-  profile Profile?
+  profile     Profile?
+  preferences Preferences?
 
   moneyRequests            MoneyRequest[]
   moneyApprovals           MoneyRequestApproval[]
   accountVerificationLinks AccountVerificationLinks[]
   transactions             Transaction[]
 
+  members           Organization[] @relation("members")
   moneyApproverOrgs Organization[] @relation("moneyRequestApprovers")
   moneyAdminOrgs    Organization[] @relation("moneyAdministrators")
   allowedOnProjects Project[]
+}
+
+model Profile {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  avatarUrl String
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId String    @unique
+}
+
+model Preferences {
+  id                   String    @id @default(cuid())
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime? @updatedAt
+  account              Account   @relation(fields: [accountId], references: [id])
+  accountId            String    @unique
+  selectedOrganization String
 }
 
 model AccountVerificationLinks {
@@ -56,15 +76,6 @@ model AccountVerificationLinks {
   verificationLink String
   email            String
   hasBeenUsed      Boolean  @default(false)
-}
-
-model Profile {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  avatarUrl String
-  account   Account   @relation(fields: [accountId], references: [id])
-  accountId String    @unique
 }
 
 // Users added here can see all projects
@@ -80,6 +91,7 @@ model Organization {
   moneyRequests MoneyRequest[]
   projects      Project[]
 
+  members               Account[] @relation("members") //All accounts need to be member of the organization.
   moneyRequestApprovers Account[] @relation("moneyRequestApprovers") //All money requests need to be approved by this users.
   moneyAdministrators   Account[] @relation("moneyAdministrators") //All money requests are executed by this users, the also get notified.
   archived              Boolean   @default(false)

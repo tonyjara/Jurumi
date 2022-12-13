@@ -25,15 +25,29 @@ CREATE TYPE "MoneyResquestApprovalStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJEC
 -- CreateTable
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "email" TEXT NOT NULL,
     "displayName" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
-    "organizationId" TEXT,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AccountVerificationLinks" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdById" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
+    "verificationLink" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "hasBeenUsed" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "AccountVerificationLinks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -55,7 +69,6 @@ CREATE TABLE "Organization" (
     "createdById" TEXT NOT NULL,
     "updatedById" TEXT,
     "displayName" TEXT NOT NULL,
-    "allowedUsers" TEXT[],
     "archived" BOOLEAN NOT NULL DEFAULT false,
     "softDeleted" BOOLEAN NOT NULL DEFAULT false,
 
@@ -102,12 +115,9 @@ CREATE TABLE "Project" (
     "updatedById" TEXT,
     "displayName" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "assignedMoneyCurrency" "Currency" NOT NULL,
-    "allowedUsers" TEXT[],
     "archived" BOOLEAN NOT NULL DEFAULT false,
     "softDeleted" BOOLEAN NOT NULL DEFAULT false,
     "organizationId" TEXT NOT NULL,
-    "taxPayerId" TEXT,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );
@@ -135,6 +145,7 @@ CREATE TABLE "CostCategory" (
     "createdById" TEXT NOT NULL,
     "updatedById" TEXT,
     "displayName" TEXT NOT NULL,
+    "currency" "Currency" NOT NULL,
     "openingBalance" DECIMAL(12,4) NOT NULL DEFAULT 0,
     "projectId" TEXT,
     "expenseReportId" TEXT,
@@ -158,9 +169,9 @@ CREATE TABLE "Imbursement" (
     "finalAmount" DECIMAL(12,4) NOT NULL DEFAULT 0,
     "archived" BOOLEAN NOT NULL DEFAULT false,
     "softDeleted" BOOLEAN NOT NULL DEFAULT false,
-    "moneyAccountId" TEXT NOT NULL,
     "taxPayerId" TEXT NOT NULL,
     "projectStageId" TEXT,
+    "moneyAccountId" TEXT,
 
     CONSTRAINT "Imbursement_pkey" PRIMARY KEY ("id")
 );
@@ -177,8 +188,6 @@ CREATE TABLE "TaxPayer" (
     "fantasyName" TEXT,
     "archived" BOOLEAN NOT NULL DEFAULT false,
     "softDeleted" BOOLEAN NOT NULL DEFAULT false,
-    "projectId" TEXT,
-    "projectStageId" TEXT,
 
     CONSTRAINT "TaxPayer_pkey" PRIMARY KEY ("id")
 );
@@ -190,7 +199,8 @@ CREATE TABLE "MoneyRequestApproval" (
     "updatedAt" TIMESTAMP(3),
     "status" "MoneyResquestApprovalStatus" NOT NULL,
     "rejectMessage" TEXT NOT NULL,
-    "accountId" TEXT,
+    "accountId" TEXT NOT NULL,
+    "moneyRequestId" TEXT NOT NULL,
 
     CONSTRAINT "MoneyRequestApproval_pkey" PRIMARY KEY ("id")
 );
@@ -200,17 +210,14 @@ CREATE TABLE "MoneyRequest" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "createdById" TEXT NOT NULL,
-    "updatedById" TEXT,
     "description" TEXT NOT NULL,
     "status" "MoneyRequestStatus" NOT NULL,
     "moneyRequestType" "MoneyRequestType" NOT NULL,
     "currency" "Currency" NOT NULL,
     "amountRequested" DECIMAL(12,4) NOT NULL DEFAULT 0,
-    "fundSentPictureUrl" TEXT NOT NULL,
+    "rejectionMessage" TEXT NOT NULL,
     "accountId" TEXT NOT NULL,
-    "taxPayerId" TEXT,
-    "moneyAccountId" TEXT,
+    "organizationId" TEXT NOT NULL,
     "projectId" TEXT,
     "archived" BOOLEAN NOT NULL DEFAULT false,
     "softDeleted" BOOLEAN NOT NULL DEFAULT false,
@@ -240,29 +247,68 @@ CREATE TABLE "ExpenseReturn" (
     "updatedAt" TIMESTAMP(3),
     "amountReturned" DECIMAL(12,4) NOT NULL DEFAULT 0,
     "returnProofPictureUrl" TEXT NOT NULL,
-    "moneyRequestId" TEXT,
+    "moneyRequestId" TEXT NOT NULL,
 
     CONSTRAINT "ExpenseReturn_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Transactions" (
+CREATE TABLE "Transaction" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "createdById" TEXT NOT NULL,
     "updatedById" TEXT,
     "currency" "Currency" NOT NULL,
     "openingBalance" DECIMAL(12,4) NOT NULL DEFAULT 0,
     "transactionAmount" DECIMAL(12,4) NOT NULL DEFAULT 0,
+    "transactionProofUrl" TEXT NOT NULL,
     "moneyAccountId" TEXT NOT NULL,
-    "disbursementId" TEXT,
+    "accountId" TEXT NOT NULL,
+    "moneyRequestId" TEXT,
+    "expenseReturnId" TEXT,
+    "imbursementId" TEXT,
 
-    CONSTRAINT "Transactions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_members" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_moneyRequestApprovers" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_moneyAdministrators" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_AccountToProject" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "_MoneyAccountToOrganization" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_ProjectToTaxPayer" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_ProjectStageToTaxPayer" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -304,13 +350,49 @@ CREATE UNIQUE INDEX "TaxPayer_ruc_key" ON "TaxPayer"("ruc");
 CREATE UNIQUE INDEX "ExpenseReport_taxPayerId_facturaNumber_key" ON "ExpenseReport"("taxPayerId", "facturaNumber");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "_members_AB_unique" ON "_members"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_members_B_index" ON "_members"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_moneyRequestApprovers_AB_unique" ON "_moneyRequestApprovers"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_moneyRequestApprovers_B_index" ON "_moneyRequestApprovers"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_moneyAdministrators_AB_unique" ON "_moneyAdministrators"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_moneyAdministrators_B_index" ON "_moneyAdministrators"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_AccountToProject_AB_unique" ON "_AccountToProject"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_AccountToProject_B_index" ON "_AccountToProject"("B");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_MoneyAccountToOrganization_AB_unique" ON "_MoneyAccountToOrganization"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_MoneyAccountToOrganization_B_index" ON "_MoneyAccountToOrganization"("B");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "_ProjectToTaxPayer_AB_unique" ON "_ProjectToTaxPayer"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ProjectToTaxPayer_B_index" ON "_ProjectToTaxPayer"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_ProjectStageToTaxPayer_AB_unique" ON "_ProjectStageToTaxPayer"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ProjectStageToTaxPayer_B_index" ON "_ProjectStageToTaxPayer"("B");
+
 -- AddForeignKey
-ALTER TABLE "Account" ADD CONSTRAINT "Account_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "AccountVerificationLinks" ADD CONSTRAINT "AccountVerificationLinks_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -331,31 +413,25 @@ ALTER TABLE "CostCategory" ADD CONSTRAINT "CostCategory_projectId_fkey" FOREIGN 
 ALTER TABLE "CostCategory" ADD CONSTRAINT "CostCategory_expenseReportId_fkey" FOREIGN KEY ("expenseReportId") REFERENCES "ExpenseReport"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Imbursement" ADD CONSTRAINT "Imbursement_moneyAccountId_fkey" FOREIGN KEY ("moneyAccountId") REFERENCES "MoneyAccount"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Imbursement" ADD CONSTRAINT "Imbursement_taxPayerId_fkey" FOREIGN KEY ("taxPayerId") REFERENCES "TaxPayer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Imbursement" ADD CONSTRAINT "Imbursement_projectStageId_fkey" FOREIGN KEY ("projectStageId") REFERENCES "ProjectStage"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TaxPayer" ADD CONSTRAINT "TaxPayer_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Imbursement" ADD CONSTRAINT "Imbursement_moneyAccountId_fkey" FOREIGN KEY ("moneyAccountId") REFERENCES "MoneyAccount"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TaxPayer" ADD CONSTRAINT "TaxPayer_projectStageId_fkey" FOREIGN KEY ("projectStageId") REFERENCES "ProjectStage"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "MoneyRequestApproval" ADD CONSTRAINT "MoneyRequestApproval_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MoneyRequestApproval" ADD CONSTRAINT "MoneyRequestApproval_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "MoneyRequestApproval" ADD CONSTRAINT "MoneyRequestApproval_moneyRequestId_fkey" FOREIGN KEY ("moneyRequestId") REFERENCES "MoneyRequest"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MoneyRequest" ADD CONSTRAINT "MoneyRequest_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MoneyRequest" ADD CONSTRAINT "MoneyRequest_taxPayerId_fkey" FOREIGN KEY ("taxPayerId") REFERENCES "TaxPayer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "MoneyRequest" ADD CONSTRAINT "MoneyRequest_moneyAccountId_fkey" FOREIGN KEY ("moneyAccountId") REFERENCES "MoneyAccount"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "MoneyRequest" ADD CONSTRAINT "MoneyRequest_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MoneyRequest" ADD CONSTRAINT "MoneyRequest_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -367,16 +443,61 @@ ALTER TABLE "ExpenseReport" ADD CONSTRAINT "ExpenseReport_taxPayerId_fkey" FOREI
 ALTER TABLE "ExpenseReport" ADD CONSTRAINT "ExpenseReport_moneyRequestId_fkey" FOREIGN KEY ("moneyRequestId") REFERENCES "MoneyRequest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ExpenseReturn" ADD CONSTRAINT "ExpenseReturn_moneyRequestId_fkey" FOREIGN KEY ("moneyRequestId") REFERENCES "MoneyRequest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ExpenseReturn" ADD CONSTRAINT "ExpenseReturn_moneyRequestId_fkey" FOREIGN KEY ("moneyRequestId") REFERENCES "MoneyRequest"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Transactions" ADD CONSTRAINT "Transactions_moneyAccountId_fkey" FOREIGN KEY ("moneyAccountId") REFERENCES "MoneyAccount"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_moneyAccountId_fkey" FOREIGN KEY ("moneyAccountId") REFERENCES "MoneyAccount"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Transactions" ADD CONSTRAINT "Transactions_disbursementId_fkey" FOREIGN KEY ("disbursementId") REFERENCES "MoneyRequest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_moneyRequestId_fkey" FOREIGN KEY ("moneyRequestId") REFERENCES "MoneyRequest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_expenseReturnId_fkey" FOREIGN KEY ("expenseReturnId") REFERENCES "ExpenseReturn"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_imbursementId_fkey" FOREIGN KEY ("imbursementId") REFERENCES "Imbursement"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_members" ADD CONSTRAINT "_members_A_fkey" FOREIGN KEY ("A") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_members" ADD CONSTRAINT "_members_B_fkey" FOREIGN KEY ("B") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_moneyRequestApprovers" ADD CONSTRAINT "_moneyRequestApprovers_A_fkey" FOREIGN KEY ("A") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_moneyRequestApprovers" ADD CONSTRAINT "_moneyRequestApprovers_B_fkey" FOREIGN KEY ("B") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_moneyAdministrators" ADD CONSTRAINT "_moneyAdministrators_A_fkey" FOREIGN KEY ("A") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_moneyAdministrators" ADD CONSTRAINT "_moneyAdministrators_B_fkey" FOREIGN KEY ("B") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AccountToProject" ADD CONSTRAINT "_AccountToProject_A_fkey" FOREIGN KEY ("A") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AccountToProject" ADD CONSTRAINT "_AccountToProject_B_fkey" FOREIGN KEY ("B") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_MoneyAccountToOrganization" ADD CONSTRAINT "_MoneyAccountToOrganization_A_fkey" FOREIGN KEY ("A") REFERENCES "MoneyAccount"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_MoneyAccountToOrganization" ADD CONSTRAINT "_MoneyAccountToOrganization_B_fkey" FOREIGN KEY ("B") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ProjectToTaxPayer" ADD CONSTRAINT "_ProjectToTaxPayer_A_fkey" FOREIGN KEY ("A") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ProjectToTaxPayer" ADD CONSTRAINT "_ProjectToTaxPayer_B_fkey" FOREIGN KEY ("B") REFERENCES "TaxPayer"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ProjectStageToTaxPayer" ADD CONSTRAINT "_ProjectStageToTaxPayer_A_fkey" FOREIGN KEY ("A") REFERENCES "ProjectStage"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ProjectStageToTaxPayer" ADD CONSTRAINT "_ProjectStageToTaxPayer_B_fkey" FOREIGN KEY ("B") REFERENCES "TaxPayer"("id") ON DELETE CASCADE ON UPDATE CASCADE;

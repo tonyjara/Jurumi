@@ -14,7 +14,6 @@ import type {
   Path,
 } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-// import Select from 'react-select';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;

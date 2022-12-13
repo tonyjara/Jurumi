@@ -1,8 +1,7 @@
-import type { BoxProps, FlexProps } from '@chakra-ui/react';
+import type { BoxProps } from '@chakra-ui/react';
 import { AccordionIcon } from '@chakra-ui/react';
 import { AccordionPanel } from '@chakra-ui/react';
 import { Accordion, AccordionButton, AccordionItem } from '@chakra-ui/react';
-import { Icon } from '@chakra-ui/react';
 import {
   useColorModeValue,
   Flex,
@@ -11,25 +10,18 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import type { IconType } from 'react-icons';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
 import { BsCash, BsCashStack } from 'react-icons/bs';
 import { AiFillBank } from 'react-icons/ai';
 import { FaExchangeAlt } from 'react-icons/fa';
+import type { LinkItemChild } from './NavItemChild';
+import NavItemChild from './NavItemChild';
+import NavItem from './NavItem';
+import OrganizationSelect from './OrganizationSelect';
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
-}
-interface NavItemProps extends FlexProps {
-  icon: IconType;
-  children: React.ReactNode;
-  dest: string; //destination
-}
-
-interface LinkItemChild {
-  name: string;
-  dest: string;
 }
 
 interface LinkItemProps {
@@ -97,9 +89,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Logo
-        </Text>
+        {/* TEXT SHOWN ONLY ON DESKTOP */}
+        {/* <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+          Logoss
+        </Text> */}
+        <OrganizationSelect />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
@@ -132,64 +126,4 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   );
 };
 
-const NavItem = ({ icon, children, dest, ...rest }: NavItemProps) => {
-  return (
-    <Link
-      href={dest}
-      style={{ textDecoration: 'none' }}
-      // _focus={{ boxShadow: 'none' }}
-    >
-      <Flex
-        align="center"
-        p="4"
-        mx="4"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: 'cyan.400',
-          color: 'white',
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            _groupHover={{
-              color: 'white',
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
-  );
-};
-
-const NavItemChild = ({ name, dest }: LinkItemChild) => {
-  return (
-    <Link
-      href={dest}
-      style={{ textDecoration: 'none' }}
-      // _focus={{ boxShadow: 'none' }}
-    >
-      <Flex
-        align="center"
-        p="4"
-        mx="2"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: 'cyan.400',
-          color: 'white',
-        }}
-      >
-        {name}
-      </Flex>
-    </Link>
-  );
-};
 export default SidebarContent;
