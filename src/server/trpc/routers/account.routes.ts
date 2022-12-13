@@ -44,6 +44,14 @@ export const accountsRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
+  getAllActive: adminModProcedure.query(async () => {
+    //Use this to build options with react-select
+    return await prisma?.account.findMany({
+      where: { active: true },
+      orderBy: { displayName: 'asc' },
+      select: { id: true, displayName: true, email: true },
+    });
+  }),
   getVerificationLinks: adminModProcedure.query(async () => {
     return await prisma?.accountVerificationLinks.findMany({
       take: 20,

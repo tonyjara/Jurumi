@@ -1,5 +1,4 @@
 import { Prisma } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateMoneyRequest } from '../../../lib/validations/moneyRequest.validate';
 import {
@@ -24,6 +23,13 @@ export const moneyRequestRouter = router({
         account: true,
         project: true,
         transactions: true,
+        moneyRequestApprovals: true,
+        organization: {
+          select: {
+            moneyRequestApprovers: { select: { id: true, displayName: true } },
+            moneyAdministrators: { select: { id: true, displayName: true } },
+          },
+        },
       },
     });
   }),
@@ -37,21 +43,21 @@ export const moneyRequestRouter = router({
           account: true,
           project: true,
           transactions: true,
+          moneyRequestApprovals: true,
+          organization: {
+            select: {
+              moneyRequestApprovers: {
+                select: { id: true, displayName: true },
+              },
+              moneyAdministrators: { select: { id: true, displayName: true } },
+            },
+          },
         },
       });
     }),
   create: protectedProcedure
     .input(validateMoneyRequest)
     .mutation(async ({ input, ctx }) => {
-      // console.log(input);
-
-      if (!ctx.session.user) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'No user session.',
-        });
-      }
-      // return {};
       const x = await prisma?.moneyRequest.create({
         data: {
           accountId: ctx.session.user.id,
@@ -62,6 +68,7 @@ export const moneyRequestRouter = router({
           projectId: input.projectId,
           status: input.status,
           rejectionMessage: input.rejectionMessage,
+          organizationId: input.organizationId,
         },
       });
       return x;
@@ -79,6 +86,7 @@ export const moneyRequestRouter = router({
           projectId: input.projectId,
           status: input.status,
           rejectionMessage: input.rejectionMessage,
+          organizationId: input.organizationId,
         },
       });
       return x;

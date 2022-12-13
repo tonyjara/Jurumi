@@ -34,7 +34,6 @@ export const projectRouter = router({
           displayName: input.displayName,
           description: input.description,
           organizationId: input.organizationId,
-          allowedUsers: input.allowedUsers,
           costCategories: { createMany: { data: mappedCategories } },
         },
       });
@@ -71,7 +70,6 @@ export const projectRouter = router({
           updatedById: ctx.session.user.id,
           displayName: input.displayName,
           description: input.description,
-          allowedUsers: input.allowedUsers,
         },
       });
       return project;

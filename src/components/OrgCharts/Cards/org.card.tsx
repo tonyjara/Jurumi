@@ -23,8 +23,9 @@ import { trpcClient } from '../../../lib/utils/trpcClient';
 import CreateProjectModal from '../../Modals/project.create.modal';
 import EditOrgModal from '../../Modals/org.edit.modal';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
+import type { OrgWithApproversAndMoneyAdmins } from '../../../lib/validations/org.validate';
 
-const OrgCard = ({ displayName, id }: { displayName: string; id: string }) => {
+const OrgCard = (org: OrgWithApproversAndMoneyAdmins) => {
   const context = trpcClient.useContext();
   const {
     isOpen: isProjectOpen,
@@ -46,27 +47,43 @@ const OrgCard = ({ displayName, id }: { displayName: string; id: string }) => {
     })
   );
   const deleteOrg = () => {
-    mutate({ id });
+    mutate({ id: org.id });
   };
   const cardBackground = useColorModeValue('white', 'gray.700');
   return (
     <Container maxW={'280px'}>
       <Card backgroundColor={cardBackground}>
         <CardHeader>
-          <Heading size="md">{displayName}</Heading>
+          <Heading size="md">{org.displayName}</Heading>
         </CardHeader>
 
         <CardBody>
           <Stack divider={<StackDivider />}>
             <Box>
-              <Heading size="xs" textTransform="uppercase">
+              {/* <Heading size="xs" textTransform="uppercase">
                 Resumen
-              </Heading>
+              </Heading> */}
               <UnorderedList textAlign={'left'}>
-                <ListItem>3 Cuentas bancarias</ListItem>
-                <ListItem>5 Proyectos</ListItem>
-                <ListItem>20 Desembolsos</ListItem>
-                <ListItem>200 Transacciones</ListItem>
+                <ListItem>
+                  Aprobadores:{' '}
+                  {org.moneyRequestApprovers.length
+                    ? org.moneyRequestApprovers
+                        .map((x) => x.displayName)
+                        .toString()
+                        .split(',')
+                        .join(', ')
+                    : '-'}{' '}
+                </ListItem>
+                <ListItem>
+                  Administradores:{' '}
+                  {org.moneyAdministrators.length
+                    ? org.moneyAdministrators
+                        .map((x) => x.displayName)
+                        .toString()
+                        .split(',')
+                        .join(', ')
+                    : '-'}
+                </ListItem>
               </UnorderedList>
               <Divider mb={2} mt={2} />
               <HStack justifyContent={'end'}>
@@ -98,14 +115,9 @@ const OrgCard = ({ displayName, id }: { displayName: string; id: string }) => {
         </CardBody>
       </Card>
 
-      <EditOrgModal
-        id={id}
-        displayName={displayName}
-        isOpen={isEditOpen}
-        onClose={onEditClose}
-      />
+      <EditOrgModal org={org} isOpen={isEditOpen} onClose={onEditClose} />
       <CreateProjectModal
-        orgId={id}
+        orgId={org.id}
         isOpen={isProjectOpen}
         onClose={onProjectClose}
       />

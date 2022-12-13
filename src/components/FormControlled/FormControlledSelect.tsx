@@ -8,6 +8,7 @@ import { Select } from 'chakra-react-select';
 import React from 'react';
 import type {
   Control,
+  ControllerRenderProps,
   FieldErrorsImpl,
   FieldValues,
   Path,
@@ -21,10 +22,13 @@ interface InputProps<T extends FieldValues> {
   name: Path<T>;
   label: string;
   helperText?: string;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string }[] | any[];
   isClearable?: boolean;
   error?: string;
   onChangeMw?: () => void; //middlewarish func
+  isMulti?: boolean;
+  optionLabel?: string;
+  optionValue?: string;
 }
 
 const FormControlledSelect = <T extends FieldValues>({
@@ -37,7 +41,34 @@ const FormControlledSelect = <T extends FieldValues>({
   isClearable,
   error,
   onChangeMw,
+  isMulti,
+  optionLabel,
+  optionValue,
 }: InputProps<T>) => {
+  const handleOnChange = (e: any, field: ControllerRenderProps<T, Path<T>>) => {
+    if (!isMulti) {
+      if (!optionValue) {
+        return field.onChange(e?.value ?? '');
+      }
+
+      return field.onChange(e ? e[optionValue] : '');
+    }
+
+    if (isMulti) {
+      field.onChange(e ? e : []);
+    }
+  };
+  const handleValue = (field: ControllerRenderProps<T, Path<T>>) => {
+    if (!isMulti) {
+      if (!optionValue) {
+        return options.find((x) => x.value === field.value) ?? {};
+      }
+      return options.find((x) => x[optionValue] === field.value) ?? {};
+    }
+
+    return field.value;
+  };
+
   return (
     <FormControl isInvalid={!!errors[name] || !!error}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
@@ -52,12 +83,15 @@ const FormControlledSelect = <T extends FieldValues>({
             options={options}
             onChange={(e) => {
               onChangeMw && onChangeMw();
-              field.onChange(e?.value ?? '');
+              handleOnChange(e, field);
             }}
-            value={options.find((x) => x.value === field.value)}
+            value={handleValue(field)}
             noOptionsMessage={() => 'No hay opciones.'}
             placeholder=""
             isClearable={isClearable}
+            isMulti={isMulti}
+            getOptionLabel={optionLabel ? (x) => x[optionLabel] : undefined}
+            getOptionValue={optionValue ? (x) => x[optionValue] : undefined}
           />
         )}
       />

@@ -20,10 +20,7 @@ const ProjectCardGroup = () => {
       {!isLoading && (
         <HStack>
           {orgs?.map((org) => (
-            <Tree
-              key={org.id}
-              label={<OrgCard displayName={org.displayName} id={org.id} />}
-            >
+            <Tree key={org.id} label={<OrgCard {...(org as any)} />}>
               {projects
                 ?.filter((x) => x.organizationId === org.id)
                 .map((project) => (

@@ -1,13 +1,15 @@
 import React from 'react';
-import { Td, Flex, Text } from '@chakra-ui/react';
+import { Td, Flex, Text, Tooltip } from '@chakra-ui/react';
 
-const TextCell = ({ text }: { text: string }) => {
+const TextCell = ({ text, hover }: { text: string; hover?: string }) => {
   return (
     <Td>
       <Flex direction="column">
-        <Text fontSize="sm" fontWeight="bold">
-          {text}
-        </Text>
+        <Tooltip label={hover}>
+          <Text fontSize="sm" fontWeight="bold">
+            {text}
+          </Text>
+        </Tooltip>
       </Flex>
     </Td>
   );

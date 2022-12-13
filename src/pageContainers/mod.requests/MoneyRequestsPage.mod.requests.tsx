@@ -5,7 +5,9 @@ import type {
   Project,
   Transaction,
 } from '@prisma/client';
+import { isEqual } from 'lodash';
 import React, { useEffect, useState } from 'react';
+import { z } from 'zod';
 import DateCell from '../../components/DynamicTables/DynamicCells/DateCell';
 import EnumTextCell from '../../components/DynamicTables/DynamicCells/EnumTextCell';
 import MoneyCell from '../../components/DynamicTables/DynamicCells/MoneyCell';
@@ -33,7 +35,6 @@ export type MoneyRequestComplete = MoneyRequest & {
 
 const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const [searchValue, setSearchValue] = useState('');
-
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null
   );
@@ -42,7 +43,6 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     if (query.moneyRequestId) {
       setSearchValue(query.moneyRequestId);
     }
-
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -61,16 +61,18 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     return () => {};
   }, [editMoneyRequest, isEditOpen]);
 
-  const { data } = trpcClient.moneyRequest.getManyComplete.useQuery();
+  const { data: moneyRequests } =
+    trpcClient.moneyRequest.getManyComplete.useQuery();
   const { data: findByIdData, isFetching } =
     trpcClient.moneyRequest.findCompleteById.useQuery(
       { id: searchValue },
       { enabled: searchValue.length > 0 }
     );
 
-  const handleDataSource: () => MoneyRequestComplete[] = () => {
+  const handleDataSource = () => {
+    if (!moneyRequests) return [];
     if (findByIdData) return [findByIdData];
-    if (data) return data;
+    if (moneyRequests) return moneyRequests;
     return [];
   };
 
@@ -82,10 +84,37 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   ];
 
   const rowHandler = handleDataSource().map((x) => {
+    const approverIds = x.organization.moneyRequestApprovers.map((x) => x.id);
+    const approverNames = x.organization.moneyRequestApprovers
+      .map((x) => x.displayName)
+      .toString()
+      .split(',')
+      .join(' ,');
+    const approvedIds = x.moneyRequestApprovals.map((x) => x.accountId);
+    const needsApproval = () => {
+      //1. If organization has not designated approvers, then ignore.
+      if (x.organization.moneyRequestApprovers.length) {
+        //2. If there are no approvals then asume needs approval.
+        if (!x.moneyRequestApprovals.length) return true;
+
+        //3. Check if the approvals contain the approvers
+        if (isEqual(approvedIds, approverIds)) return false;
+
+        return true;
+      }
+      return false;
+    };
+    const approvalText = `${approvedIds.length} de ${approverIds.length}  ${
+      needsApproval() ? '❌' : '✅'
+    }`;
     return (
       <Tr key={x.id}>
         <DateCell date={x.createdAt} />
 
+        <TextCell
+          text={needsApproval() ? approvalText : 'No req.'}
+          hover={approverNames}
+        />
         <EnumTextCell
           text={x.status}
           enumFunc={translatedMoneyReqStatus}
@@ -104,6 +133,7 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           currency={x.currency}
         />
         <RowOptionsModRequests
+          needsApproval={needsApproval()}
           x={x}
           onEditOpen={onEditOpen}
           setEditMoneyRequest={setEditMoneyRequest}
@@ -128,7 +158,8 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         options={tableOptions}
         headers={[
           'F. Creacion',
-          'Status',
+          'Aprobación',
+          'Estado',
           'Tipo',
           'Monto',
           'Creador',
@@ -138,7 +169,7 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         ]}
         rows={rowHandler}
       />
-      <CreateMoneyRequestModal isOpen={isOpen} onClose={onClose} />
+      <CreateMoneyRequestModal orgId={null} isOpen={isOpen} onClose={onClose} />
       {editMoneyRequest && (
         <EditMoneyRequestModal
           moneyRequest={editMoneyRequest}

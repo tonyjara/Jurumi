@@ -51,13 +51,8 @@ const TransactionForm = ({
     name: 'transactions',
   });
 
-  const {
-    data: moneyAccs,
-    // isLoading: isMoneyAccLoading,
-    // error: isMoneyAccError,
-  } = trpcClient.moneyAcc.getManyWithTransactions.useQuery();
-
-  // const currency = useWatch({ control, name: 'currency' });
+  const { data: moneyAccs } =
+    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
   const moneyAccOptions = (currency: Currency) =>
     moneyAccs

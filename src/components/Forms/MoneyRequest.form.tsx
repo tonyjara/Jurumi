@@ -4,6 +4,7 @@ import type {
   MoneyRequestStatus,
   MoneyRequestType,
 } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
@@ -22,28 +23,16 @@ interface formProps<T extends FieldValues> {
 }
 
 const MoneyRequestForm = ({ control, errors }: formProps<MoneyRequest>) => {
-  const {
-    data: moneyAccs,
-    // isLoading: isMoneyAccLoading,
-    // error: isMoneyAccError,
-  } = trpcClient.moneyAcc.getMany.useQuery();
-  const {
-    data: projects,
-    // isLoading: isMoneyAccLoading,
-    // error: isMoneyAccError,
-  } = trpcClient.project.getMany.useQuery();
+  const { data: session } = useSession();
+
+  const isAdminOrMod =
+    session?.user.role === 'ADMIN' || session?.user.role === 'MODERATOR';
+  const { data: projects } = trpcClient.project.getMany.useQuery();
+  const { data: orgs } = trpcClient.org.getManyForSelect.useQuery();
 
   const currency = useWatch({ control, name: 'currency' });
   const status = useWatch({ control, name: 'status' });
 
-  const bankIdOptions = moneyAccs
-    ?.filter((x) => x.currency === currency)
-    .map((acc) => ({
-      value: acc.id,
-      label: `${acc.isCashAccount ? 'Caja chica:' : 'Cuenta Banc.:'} ${
-        acc.displayName
-      } en ${translateCurrencyPrefix(currency)}`,
-    }));
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
     label: `${proj.displayName}`,
@@ -96,28 +85,35 @@ const MoneyRequestForm = ({ control, errors }: formProps<MoneyRequest>) => {
 
       {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
       <Divider pb={3} />
-      {/* <FormControlledSelect
-        control={control}
-        errors={errors}
-        name="moneyAccountId"
-        label="Seleccione un banco"
-        options={bankIdOptions ?? []}
-      /> */}
 
-      <FormControlledSelect
-        control={control}
-        errors={errors}
-        name="projectId"
-        label="Seleccione un proyecto"
-        options={projectOptions ?? []}
-      />
-      <FormControlledRadioButtons
-        control={control}
-        errors={errors}
-        name="status"
-        label="Estado del desembolso"
-        options={statusOptions}
-      />
+      {isAdminOrMod && (
+        <>
+          <FormControlledSelect
+            control={control}
+            errors={errors}
+            name="projectId"
+            label="Seleccione un proyecto"
+            options={projectOptions ?? []}
+          />
+          <FormControlledSelect
+            control={control}
+            errors={errors}
+            name="organizationId"
+            label="Seleccione una organización"
+            options={orgs ?? []}
+            optionLabel={'displayName'}
+            optionValue={'id'}
+            isClearable
+          />
+          <FormControlledRadioButtons
+            control={control}
+            errors={errors}
+            name="status"
+            label="Estado del desembolso"
+            options={statusOptions}
+          />
+        </>
+      )}
 
       {status === 'REJECTED' && (
         <FormControlledText

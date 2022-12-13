@@ -41,6 +41,10 @@ model Account {
   moneyApprovals           MoneyRequestApproval[]
   accountVerificationLinks AccountVerificationLinks[]
   transactions             Transaction[]
+
+  moneyApproverOrgs Organization[] @relation("moneyRequestApprovers")
+  moneyAdminOrgs    Organization[] @relation("moneyAdministrators")
+  allowedOnProjects Project[]
 }
 
 model AccountVerificationLinks {
@@ -73,14 +77,13 @@ model Organization {
   displayName String    @unique
 
   moneyAccounts MoneyAccount[]
+  moneyRequests MoneyRequest[]
   projects      Project[]
 
-  moneyRequestApprovers String[] //All money requests need to be approved by this users.
-  moneyAdministrators   String[] //All money requests are executed by this users, the also get notified.
-
-  allowedUsers String[]
-  archived     Boolean  @default(false)
-  softDeleted  Boolean  @default(false)
+  moneyRequestApprovers Account[] @relation("moneyRequestApprovers") //All money requests need to be approved by this users.
+  moneyAdministrators   Account[] @relation("moneyAdministrators") //All money requests are executed by this users, the also get notified.
+  archived              Boolean   @default(false)
+  softDeleted           Boolean   @default(false)
 }
 
 //USERS are not allowed access
@@ -133,9 +136,9 @@ model Project {
   updatedById  String?
   displayName  String    @unique
   description  String
-  allowedUsers String[]
   archived     Boolean   @default(false)
   softDeleted  Boolean   @default(false)
+  allowedUsers Account[] // account with USER role that can interact with this project
 
   moneyRequest   MoneyRequest[]
   costCategories CostCategory[]
@@ -227,38 +230,41 @@ model MoneyRequestApproval {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
-  status         MoneyResquestApprovalStatus
-  rejectMessage  String
-  Account        Account?                    @relation(fields: [accountId], references: [id])
-  accountId      String?
-  MoneyRequest   MoneyRequest?               @relation(fields: [moneyRequestId], references: [id])
-  moneyRequestId String?
+  status        MoneyResquestApprovalStatus
+  rejectMessage String
+
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
+  moneyRequestId String
+  aoneyRequest   MoneyRequest @relation(fields: [moneyRequestId], references: [id])
 }
 
 model MoneyRequest {
-  id                    String                 @id @default(cuid())
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime?              @updatedAt
-  description           String
-  status                MoneyRequestStatus
-  moneyRequestType      MoneyRequestType
-  currency              Currency
-  amountRequested       Decimal                @default(0) @db.Decimal(12, 4)
-  ExpenseReports        ExpenseReport[]
-  moneyRequestApprovals MoneyRequestApproval[]
-  rejectionMessage      String
+  id               String             @id @default(cuid())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+  description      String
+  status           MoneyRequestStatus
+  moneyRequestType MoneyRequestType
+  currency         Currency
+  amountRequested  Decimal            @default(0) @db.Decimal(12, 4)
+  rejectionMessage String
 
-  accountId String
-  account   Account @relation(fields: [accountId], references: [id])
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
 
+  ExpenseReports        ExpenseReport[]
+  moneyRequestApprovals MoneyRequestApproval[]
+  transactions          Transaction[]
+  ExpenseReturn         ExpenseReturn[]
+
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
-
-  transactions  Transaction[]
-  ExpenseReturn ExpenseReturn[]
 }
 
 model ExpenseReport {

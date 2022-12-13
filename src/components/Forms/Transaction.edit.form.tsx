@@ -6,6 +6,7 @@ import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { decimalFormat } from '../../lib/utils/DecimalHelpers';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
+import { formatedAccountBalance } from '../../lib/utils/TransactionUtils';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
@@ -24,11 +25,8 @@ const TransactionEditForm = ({
   errors,
   totalAmount,
 }: formProps<Transaction>) => {
-  const {
-    data: moneyAccs,
-    // isLoading: isMoneyAccLoading,
-    // error: isMoneyAccError,
-  } = trpcClient.moneyAcc.getMany.useQuery();
+  const { data: moneyAccs } =
+    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
   const currency = useWatch({ control, name: 'currency' });
 
@@ -36,10 +34,7 @@ const TransactionEditForm = ({
     ?.filter((x) => x.currency === currency)
     .map((acc) => ({
       value: acc.id,
-      label: `${acc.displayName} ${decimalFormat(
-        acc.initialBalance,
-        acc.currency
-      )}`,
+      label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
     }));
 
   return (

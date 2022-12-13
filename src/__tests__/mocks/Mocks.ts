@@ -52,7 +52,6 @@ export const projectMock: () => ProjectWithCostCat = () => {
     displayName:
       faker.commerce.productAdjective() + ' ' + faker.company.bsBuzz(),
     organizationId: '',
-    allowedUsers: [],
     archived: false,
     softDeleted: false,
     description: faker.commerce.productDescription().substring(0, 127),
@@ -104,6 +103,7 @@ export const moneyRequestMock: () => MoneyRequest = () => {
     archived: false,
     softDeleted: false,
     rejectionMessage: '',
+    organizationId: '',
   };
   return x;
 };

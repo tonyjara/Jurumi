@@ -71,7 +71,13 @@ const RowOptionsModTransactions = ({
           >
             Editar
           </MenuItem>
-          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+          <MenuItem
+            onClick={() =>
+              deleteById({ id: x.id, moneyAccountId: x.moneyAccountId })
+            }
+          >
+            Eliminar
+          </MenuItem>
         </MenuList>
       </Menu>
     </Td>

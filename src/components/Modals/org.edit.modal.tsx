@@ -10,25 +10,27 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Organization } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import { validateOrgEdit } from '../../lib/validations/org.edit.validate';
-import FormControlledText from '../FormControlled/FormControlledText';
+import type { OrgWithApproversAndMoneyAdmins } from '../../lib/validations/org.validate';
+import {
+  defaultOrgData,
+  validateOrgCreate,
+} from '../../lib/validations/org.validate';
+
+import OrgForm from '../Forms/Org.form';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
 const EditOrgModal = ({
   isOpen,
   onClose,
-  id,
-  displayName,
+  org,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  id: string;
-  displayName: string;
+  org: OrgWithApproversAndMoneyAdmins;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -36,14 +38,14 @@ const EditOrgModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Organization>({
-    defaultValues: { id: '', displayName: '' },
-    resolver: zodResolver(validateOrgEdit),
+  } = useForm<OrgWithApproversAndMoneyAdmins>({
+    defaultValues: defaultOrgData,
+    resolver: zodResolver(validateOrgCreate),
   });
 
   useEffect(() => {
     if (isOpen) {
-      reset({ id, displayName });
+      reset(org);
     }
 
     return () => {};
@@ -61,7 +63,7 @@ const EditOrgModal = ({
     })
   );
 
-  const submitFunc = async (data: Organization) => {
+  const submitFunc = async (data: OrgWithApproversAndMoneyAdmins) => {
     mutate(data);
   };
 
@@ -75,13 +77,7 @@ const EditOrgModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
-            <FormControlledText
-              control={control}
-              errors={errors}
-              name="displayName"
-              label="Nombre de su organización"
-              autoFocus={true}
-            />
+            <OrgForm control={control} errors={errors as any} />
           </ModalBody>
 
           <ModalFooter>

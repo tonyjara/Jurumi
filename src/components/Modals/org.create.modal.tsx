@@ -10,16 +10,16 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Organization } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
+import type { OrgWithApproversAndMoneyAdmins } from '../../lib/validations/org.validate';
 import {
   defaultOrgData,
   validateOrgCreate,
-} from '../../lib/validations/org.create.validate';
-import FormControlledText from '../FormControlled/FormControlledText';
+} from '../../lib/validations/org.validate';
+import OrgForm from '../Forms/Org.form';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
 const CreateOrgModal = ({
@@ -32,12 +32,13 @@ const CreateOrgModal = ({
   onSubmit?: any;
 }) => {
   const context = trpcClient.useContext();
+
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Organization>({
+  } = useForm<OrgWithApproversAndMoneyAdmins>({
     defaultValues: defaultOrgData,
     resolver: zodResolver(validateOrgCreate),
   });
@@ -56,7 +57,7 @@ const CreateOrgModal = ({
     })
   );
 
-  const submitFunc = async (data: Organization) => {
+  const submitFunc = async (data: OrgWithApproversAndMoneyAdmins) => {
     mutate(data);
   };
 
@@ -70,13 +71,7 @@ const CreateOrgModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
-            <FormControlledText
-              control={control}
-              errors={errors}
-              name="displayName"
-              label="Nombre de su organización"
-              autoFocus={true}
-            />
+            <OrgForm control={control} errors={errors as any} />
           </ModalBody>
 
           <ModalFooter>

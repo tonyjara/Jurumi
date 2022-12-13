@@ -19,12 +19,14 @@ const RowOptionsModRequests = ({
   x,
   setEditMoneyRequest,
   onEditOpen,
+  needsApproval,
 }: {
   x: MoneyRequestComplete;
   setEditMoneyRequest: React.Dispatch<
     React.SetStateAction<MoneyRequest | null>
   >;
   onEditOpen: () => void;
+  needsApproval: boolean;
 }) => {
   const context = trpcClient.useContext();
 
@@ -47,6 +49,7 @@ const RowOptionsModRequests = ({
         />
         <MenuList>
           <MenuItem
+            isDisabled={needsApproval}
             onClick={() => {
               router.push({
                 pathname: '/home/create/transaction',
@@ -54,7 +57,7 @@ const RowOptionsModRequests = ({
               });
             }}
           >
-            Aceptar y ejecutar
+            Aceptar y ejecutar {needsApproval && '( Necesita aprovación )'}
           </MenuItem>
           <MenuItem
             onClick={() => {

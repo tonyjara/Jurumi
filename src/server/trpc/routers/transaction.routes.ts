@@ -1,8 +1,12 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateTransactionCreate } from '../../../lib/validations/transaction.create.validate';
 import { validateTransactionEdit } from '../../../lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
-import { createManyMoneyAccountTransactions } from './utils/TransactionRouteUtils';
+import {
+  checkIfIsLastTransaction,
+  createManyMoneyAccountTransactions,
+} from './utils/TransactionRouteUtils';
 
 export const transactionsRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -59,8 +63,12 @@ export const transactionsRouter = router({
   edit: adminModProcedure
     .input(validateTransactionEdit)
     .mutation(async ({ input, ctx }) => {
-      // When editing it has to check all the relevant sub-sequent transactions.
       // For the moment being it will only allow edit if it's the last transaction
+
+      await checkIfIsLastTransaction({
+        moneyAccountId: input.moneyAccountId,
+        transactionId: input.id,
+      });
 
       const x = await prisma?.transaction.update({
         where: { id: input.id },
@@ -82,10 +90,16 @@ export const transactionsRouter = router({
     .input(
       z.object({
         id: z.number(),
+        moneyAccountId: z.string(),
       })
     )
     .mutation(async ({ input }) => {
       //for the moment being it will only allow delete if it's the last transaction.
+      await checkIfIsLastTransaction({
+        moneyAccountId: input.moneyAccountId,
+        transactionId: input.id,
+      });
+
       const x = await prisma?.transaction.delete({
         where: { id: input.id },
       });

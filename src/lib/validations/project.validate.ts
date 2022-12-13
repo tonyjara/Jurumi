@@ -54,7 +54,6 @@ export const validateProject: z.ZodType<ProjectWithCostCat> = z.lazy(() =>
     organizationId: z.string({
       required_error: 'Favor seleccione una organización.',
     }),
-    allowedUsers: z.string().array(),
     softDeleted: z.boolean(),
     archived: z.boolean(),
     costCategories: CostCategoryModel.array(),
@@ -84,7 +83,6 @@ export const defaultProjectValues: projectValidateData = {
   updatedById: null,
   displayName: '',
   organizationId: '',
-  allowedUsers: [],
   archived: false,
   softDeleted: false,
   description: '',

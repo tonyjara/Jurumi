@@ -106,6 +106,7 @@ const ProjectCard = (
       />
       <CreateMoneyRequestModal
         projectId={project.id}
+        orgId={project.organizationId}
         isOpen={isMoneyRequestOpen}
         onClose={onMoneyRequestClose}
       />

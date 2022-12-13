@@ -58,7 +58,11 @@ const DynamicTable = <T extends object>({
 }: DynamicTableProps<T>) => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
   return (
-    <Card backgroundColor={backgroundColor}>
+    <Card
+      h={document.documentElement.scrollHeight - 200}
+      overflow={'hidden'}
+      backgroundColor={backgroundColor}
+    >
       <CardHeader>
         <Flex justifyContent={'space-between'}>
           <Flex flexDirection={'column'}>

@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { MoneyRequest } from '@prisma/client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
@@ -29,10 +29,12 @@ const CreateMoneyRequestModal = ({
   isOpen,
   onClose,
   projectId,
+  orgId,
 }: {
   isOpen: boolean;
   onClose: () => void;
   projectId?: string;
+  orgId: string | null;
 }) => {
   const context = trpcClient.useContext();
   const { data: session } = useSession();
@@ -40,6 +42,7 @@ const CreateMoneyRequestModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<MoneyRequest>({
     defaultValues: defaultMoneyRequestValues,
@@ -49,6 +52,14 @@ const CreateMoneyRequestModal = ({
     reset(defaultMoneyRequestValues);
     onClose();
   };
+
+  useEffect(() => {
+    if (orgId && isOpen) {
+      setValue('organizationId', orgId);
+    }
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId, isOpen]);
 
   const { error, mutate, isLoading } =
     trpcClient.moneyRequest.create.useMutation(
@@ -66,7 +77,6 @@ const CreateMoneyRequestModal = ({
     //Admins and moderators add projectId Manually
     const isUser = session?.user.role === 'USER';
     data.projectId = isUser && projectId ? projectId : data.projectId;
-
     mutate(data);
   };
 

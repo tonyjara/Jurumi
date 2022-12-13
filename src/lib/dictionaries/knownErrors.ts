@@ -4,6 +4,9 @@ export const knownErrors = (error: string) => {
   if (error.includes('Unique constraint failed')) {
     return 'Este campo ya existe, favor ingrese un valor distinto.';
   }
+  if (error.includes('New record already exists.')) {
+    return 'Solo pueden modificarse las últimas transacciones en una cuenta.';
+  }
   if (error === 'admin-only') {
     return 'Esta operación solo esta habilitada para Administradores.';
   }
