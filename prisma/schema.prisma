@@ -169,7 +169,7 @@ model ProjectStage {
   updatedById   String?
   startDate     DateTime
   endDate       DateTime?
-  expectedFunds Decimal       @default(0) @db.Decimal(12, 4)
+  expectedFunds Decimal       @default(0) @db.Decimal(19, 4)
   donors        TaxPayer[]
   receivedFunds Imbursement[]
   Project       Project?      @relation(fields: [projectId], references: [id])
@@ -177,14 +177,15 @@ model ProjectStage {
 }
 
 model CostCategory {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime?       @updatedAt
-  createdById    String
-  updatedById    String?
-  displayName    String
-  currency       Currency
-  balance        Decimal         @default(0) @db.Decimal(12, 4) // is handled dynamicly whenever a expense report is submited.
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdById String
+  updatedById String?
+  displayName String
+  currency    Currency
+  balance     Decimal   @default(0) @db.Decimal(19, 4)
+
   projectId      String?
   Project        Project?        @relation(fields: [projectId], references: [id])
   expenseReports ExpenseReport[]
@@ -200,9 +201,9 @@ model Imbursement {
   wasConvertedToOtherCurrency Boolean   @default(false)
   exchangeRate                Int
   otherCurrency               Currency
-  amountInOtherCurrency       Decimal   @default(0) @db.Decimal(12, 4)
+  amountInOtherCurrency       Decimal   @default(0) @db.Decimal(19, 4)
   finalCurrency               Currency  @default(PYG)
-  finalAmount                 Decimal   @default(0) @db.Decimal(12, 4)
+  finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
 
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
@@ -258,7 +259,7 @@ model MoneyRequest {
   status           MoneyRequestStatus
   moneyRequestType MoneyRequestType
   currency         Currency
-  amountRequested  Decimal            @default(0) @db.Decimal(12, 4)
+  amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
   rejectionMessage String
 
   accountId      String
@@ -286,7 +287,7 @@ model ExpenseReport {
   facturaNumber     String
   facturaPictureUrl String
   facturaText       String
-  amountSpent       Decimal        @default(0) @db.Decimal(12, 4)
+  amountSpent       Decimal        @default(0) @db.Decimal(19, 4)
 
   taxPayerId     String
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
@@ -300,7 +301,7 @@ model ExpenseReturn {
   id                    String    @id @default(cuid())
   createdAt             DateTime  @default(now())
   updatedAt             DateTime? @updatedAt
-  amountReturned        Decimal   @default(0) @db.Decimal(12, 4)
+  amountReturned        Decimal   @default(0) @db.Decimal(19, 4)
   returnProofPictureUrl String
 
   moneyRequestId String
@@ -308,15 +309,14 @@ model ExpenseReturn {
   transactions   Transaction[]
 }
 
-//The only way to add or substract money from moneyaccounts is through a transaction.
 model Transaction {
   id                  Int       @id @default(autoincrement())
   createdAt           DateTime  @default(now())
   updatedAt           DateTime? @updatedAt
   updatedById         String?
   currency            Currency
-  openingBalance      Decimal   @default(0) @db.Decimal(12, 4)
-  transactionAmount   Decimal   @default(0) @db.Decimal(12, 4)
+  openingBalance      Decimal   @default(0) @db.Decimal(19, 4)
+  transactionAmount   Decimal   @default(0) @db.Decimal(19, 4)
   transactionProofUrl String
 
   moneyAccountId String
@@ -333,15 +333,9 @@ model Transaction {
 }
 
 enum Role {
-  ADMIN // full access to crud and testing/seed
+  ADMIN
   MODERATOR
-  // can create everything but not hard delete. 
-  // Can change status.
   USER
-  // can only see their requests
-  // Has to be specificly assigned to read or write.
-  // Can't see any amount of money left.
-  // Cannot change status.
 }
 
 enum BankAccountType {
@@ -388,9 +382,9 @@ enum MoneyRequestStatus {
 }
 
 enum MoneyRequestType {
-  FUND_REQUEST // user requests for funds which he later needs to justify with pictures, factura names, etc.
-  MONEY_ORDER // user to keep track of transfers, for example, we request money to pay accounting.
-  REIMBURSMENT_ORDER // user already spent the money and is required a reimbursment of a particular activity. Invoice picture is required.
+  FUND_REQUEST
+  MONEY_ORDER
+  REIMBURSMENT_ORDER
 }
 
 enum MoneyResquestApprovalStatus {

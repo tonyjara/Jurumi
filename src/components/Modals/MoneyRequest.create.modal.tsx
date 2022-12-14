@@ -10,7 +10,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { MoneyRequest } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
@@ -80,7 +79,6 @@ const CreateMoneyRequestModal = ({
     // mutate(data);
     console.log(data);
   };
-  console.log(errors);
 
   return (
     <Modal isOpen={isOpen} onClose={handleOnClose}>

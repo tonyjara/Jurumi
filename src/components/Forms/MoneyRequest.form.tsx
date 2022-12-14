@@ -1,9 +1,5 @@
 import { Divider, VStack, Text } from '@chakra-ui/react';
-import type {
-  MoneyRequest,
-  MoneyRequestStatus,
-  MoneyRequestType,
-} from '@prisma/client';
+
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import type {
@@ -13,7 +9,11 @@ import type {
   SetFieldValue,
 } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
-import { currencyOptions } from '../../lib/utils/SelectOptions';
+import {
+  currencyOptions,
+  moneyRequestStatusOptions,
+  moneyRequestTypeOptions,
+} from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
@@ -35,9 +35,13 @@ const MoneyRequestForm = ({
   setValue,
 }: formProps<moneyRequestValidateData>) => {
   const { data: session } = useSession();
-
-  const isAdminOrMod =
-    session?.user.role === 'ADMIN' || session?.user.role === 'MODERATOR';
+  const user = session?.user;
+  const isAdminOrMod = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
+  const projectId = useWatch({ control, name: 'projectId' });
+  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
+    { projectId: projectId ?? '' },
+    { enabled: !!projectId?.length }
+  );
   const { data: projects } = trpcClient.project.getMany.useQuery();
   const { data: orgs } = trpcClient.org.getManyForSelect.useQuery();
 
@@ -50,17 +54,11 @@ const MoneyRequestForm = ({
     label: `${proj.displayName}`,
   }));
 
-  const statusOptions: { value: MoneyRequestStatus; label: string }[] = [
-    { value: 'ACCEPTED', label: 'Aceptado' },
-    { value: 'PENDING', label: 'Pendiente' },
-    { value: 'REJECTED', label: 'Rechazado' },
-  ];
-  const moneyRequestTypeOptions: { value: MoneyRequestType; label: string }[] =
-    [
-      { value: 'FUND_REQUEST', label: 'Solicitud de Adelanto' },
-      { value: 'MONEY_ORDER', label: 'Orden de pago' },
-      { value: 'REIMBURSMENT_ORDER', label: 'Solicitud de re-embolso' },
-    ];
+  const costCatOptions = () =>
+    costCats?.map((cat) => ({
+      value: cat.id,
+      label: `${cat.displayName}`,
+    }));
 
   return (
     <VStack spacing={5}>
@@ -94,7 +92,7 @@ const MoneyRequestForm = ({
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
       />
-      {requestType === 'REIMBURSMENT_ORDER' && (
+      {requestType === 'REIMBURSMENT_ORDER' && user && (
         <>
           <Divider pb={3} />
           <Text fontWeight={'bold'} color={'gray.400'} alignSelf={'start'}>
@@ -109,9 +107,11 @@ const MoneyRequestForm = ({
           <FormControlledImageUpload
             control={control}
             errors={errors}
-            name="facturaNumber"
-            label="Arrastrue."
+            name="facturaPictureUrl"
+            label="Foto de su comprobante"
             setValue={setValue}
+            userId={user.id}
+            helperText="Favor tener en cuenta la orientación y legibilidad del documento."
           />
         </>
       )}
@@ -128,6 +128,15 @@ const MoneyRequestForm = ({
             label="Seleccione un proyecto"
             options={projectOptions ?? []}
           />
+          {costCatOptions()?.length && (
+            <FormControlledSelect
+              control={control}
+              errors={errors}
+              name="costCategories"
+              label="Linea presupuestaria"
+              options={costCatOptions() ?? []}
+            />
+          )}
           <FormControlledSelect
             control={control}
             errors={errors}
@@ -143,7 +152,7 @@ const MoneyRequestForm = ({
             errors={errors}
             name="status"
             label="Estado del desembolso"
-            options={statusOptions}
+            options={moneyRequestStatusOptions}
           />
         </>
       )}
