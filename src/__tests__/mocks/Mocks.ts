@@ -1,4 +1,4 @@
-import type { MoneyRequest, Transaction } from '@prisma/client';
+import type { Transaction } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -8,6 +8,7 @@ import type {
 } from '../../lib/validations/moneyAcc.validate';
 import { randEnumValue } from '../../lib/utils/TypescriptUtils';
 import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
+import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
 
 const bankInfo: () => BankInfoModelType = () => {
   const x: BankInfoModelType = {
@@ -82,8 +83,8 @@ export const projectMock: () => ProjectWithCostCat = () => {
   };
   return x;
 };
-export const moneyRequestMock: () => MoneyRequest = () => {
-  const x: MoneyRequest = {
+export const moneyRequestMock: () => moneyRequestValidateData = () => {
+  const x: moneyRequestValidateData = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
@@ -98,6 +99,10 @@ export const moneyRequestMock: () => MoneyRequest = () => {
     softDeleted: false,
     rejectionMessage: '',
     organizationId: '',
+    facturaNumber: '',
+    facturaPictureUrl: '',
+    costCategories: [],
+    taxPayerId: '',
   };
   return x;
 };

@@ -1,4 +1,4 @@
-import { Divider, VStack } from '@chakra-ui/react';
+import { Divider, VStack, Text } from '@chakra-ui/react';
 import type {
   MoneyRequest,
   MoneyRequestStatus,
@@ -6,23 +6,34 @@ import type {
 } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
+import type {
+  FieldValues,
+  Control,
+  FieldErrorsImpl,
+  SetFieldValue,
+} from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
+import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
-
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
+  setValue: SetFieldValue<T>;
 }
 
-const MoneyRequestForm = ({ control, errors }: formProps<MoneyRequest>) => {
+const MoneyRequestForm = ({
+  control,
+  errors,
+  setValue,
+}: formProps<moneyRequestValidateData>) => {
   const { data: session } = useSession();
 
   const isAdminOrMod =
@@ -32,6 +43,7 @@ const MoneyRequestForm = ({ control, errors }: formProps<MoneyRequest>) => {
 
   const currency = useWatch({ control, name: 'currency' });
   const status = useWatch({ control, name: 'status' });
+  const requestType = useWatch({ control, name: 'moneyRequestType' });
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
@@ -82,6 +94,27 @@ const MoneyRequestForm = ({ control, errors }: formProps<MoneyRequest>) => {
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
       />
+      {requestType === 'REIMBURSMENT_ORDER' && (
+        <>
+          <Divider pb={3} />
+          <Text fontWeight={'bold'} color={'gray.400'} alignSelf={'start'}>
+            Justificación de reembolso.
+          </Text>
+          <FormControlledText
+            control={control}
+            errors={errors}
+            name="facturaNumber"
+            label="Número de factura."
+          />
+          <FormControlledImageUpload
+            control={control}
+            errors={errors}
+            name="facturaNumber"
+            label="Arrastrue."
+            setValue={setValue}
+          />
+        </>
+      )}
 
       {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
       <Divider pb={3} />

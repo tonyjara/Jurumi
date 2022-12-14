@@ -7,7 +7,6 @@ import type {
 } from '@prisma/client';
 import { isEqual } from 'lodash';
 import type { Account } from 'next-auth';
-import { useSession } from 'next-auth/react';
 
 type ApprovalTypes = MoneyRequest & {
   transactions: Transaction[];

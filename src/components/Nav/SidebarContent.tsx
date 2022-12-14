@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import type { IconType } from 'react-icons';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
 import { BsCash, BsCashStack } from 'react-icons/bs';
+import { MdApproval } from 'react-icons/md';
 import { AiFillBank } from 'react-icons/ai';
 import { FaExchangeAlt } from 'react-icons/fa';
 import type { LinkItemChild } from './NavItemChild';
@@ -58,7 +59,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           dest: '/mod/transactions',
         },
         { name: 'Solicitudes', icon: BsCashStack, dest: '/mod/requests' },
-        { name: 'Aprobaciones', icon: BsCashStack, dest: '/mod/approvals' },
+        { name: 'Aprobaciones', icon: MdApproval, dest: '/mod/approvals' },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },
       ]
     : [];

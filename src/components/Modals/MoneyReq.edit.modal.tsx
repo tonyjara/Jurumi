@@ -17,6 +17,7 @@ import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
+import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
 import {
   defaultMoneyRequestValues,
   validateMoneyRequest,
@@ -38,8 +39,9 @@ const EditMoneyRequestModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<MoneyRequest>({
+  } = useForm<moneyRequestValidateData>({
     defaultValues: defaultMoneyRequestValues,
     resolver: zodResolver(validateMoneyRequest),
   });
@@ -66,7 +68,7 @@ const EditMoneyRequestModal = ({
     })
   );
 
-  const submitFunc = async (data: MoneyRequest) => {
+  const submitFunc = async (data: moneyRequestValidateData) => {
     mutate(data);
   };
 
@@ -80,7 +82,11 @@ const EditMoneyRequestModal = ({
           <ModalBody>
             <SeedButton reset={reset} mock={moneyRequestMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <MoneyRequestForm control={control} errors={errors} />
+            <MoneyRequestForm
+              setValue={setValue}
+              control={control}
+              errors={errors as any}
+            />
           </ModalBody>
 
           <ModalFooter>
