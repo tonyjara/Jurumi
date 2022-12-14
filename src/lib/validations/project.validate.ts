@@ -9,8 +9,8 @@ const stringReqMinMax = (reqText: string, min: number, max: number) =>
     .min(min, `El campo debe tener al menos (${min}) caractéres.`)
     .max(max, `Has superado el límite de caractérs (${max})`);
 
-type withMoney = Omit<CostCategory, 'openingBalance'> & {
-  openingBalance?: any;
+type withMoney = Omit<CostCategory, 'balance'> & {
+  balance?: any;
 };
 
 const CostCategoryModel: z.ZodType<withMoney> = z.lazy(() =>
@@ -21,9 +21,8 @@ const CostCategoryModel: z.ZodType<withMoney> = z.lazy(() =>
     createdById: z.string(),
     updatedById: z.string().nullable(),
     displayName: z.string(),
-    openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
+    balance: z.any().transform((value) => new Prisma.Decimal(value)),
     projectId: z.string().nullable(),
-    expenseReportId: z.string().nullable(),
     currency: z.nativeEnum(Currency),
   })
 );
@@ -70,9 +69,8 @@ export const defaultCostCat: costCatWithMoney = {
   updatedById: null,
   displayName: '',
   currency: 'PYG',
-  openingBalance: new Prisma.Decimal(0),
+  balance: new Prisma.Decimal(0),
   projectId: null,
-  expenseReportId: null,
 };
 
 export const defaultProjectValues: projectValidateData = {

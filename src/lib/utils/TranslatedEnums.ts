@@ -4,6 +4,7 @@ import type {
   Currency,
   MoneyRequestStatus,
   MoneyRequestType,
+  MoneyResquestApprovalStatus,
 } from '@prisma/client';
 
 export const translateCurrencyPrefix = (currency: Currency) => {
@@ -67,7 +68,7 @@ export const translateBankNames = (bankName?: BankNamesPy) => {
 
 export const translatedMoneyReqStatus = (status: MoneyRequestStatus) => {
   const x: { [key in MoneyRequestStatus]?: string } = {
-    ACCEPTED: '🟩Aceptado',
+    ACCEPTED: '🟩Ejecutado',
     PENDING: '🟨 Pendiente',
     REJECTED: '🟥Rechazado',
   };
@@ -82,4 +83,16 @@ export const translatedMoneyReqType = (type: MoneyRequestType) => {
   };
 
   return x[type] ?? 'Error ';
+};
+
+export const translatedMoneyRequestApprovalStatus = (
+  status: MoneyResquestApprovalStatus
+) => {
+  const x: { [key in MoneyResquestApprovalStatus]?: string } = {
+    ACCEPTED: '🟩Aceptadas',
+    PENDING: '🟨 Pendientes',
+    REJECTED: '🟥Rechazadas',
+  };
+
+  return x[status] ?? 'Error ';
 };

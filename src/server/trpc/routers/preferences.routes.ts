@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { protectedProcedure, router } from '../initTrpc';
+import { getSelectedOrganizationId } from './utils/PreferencesRoutUtils';
 
 export const preferencesRouter = router({
   upsertSelectedOrg: protectedProcedure
@@ -19,9 +20,6 @@ export const preferencesRouter = router({
     }),
   getMyPreferences: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
-    return await prisma?.preferences.findUnique({
-      where: { accountId: user.id },
-      select: { selectedOrganization: true },
-    });
+    return await getSelectedOrganizationId(user);
   }),
 });

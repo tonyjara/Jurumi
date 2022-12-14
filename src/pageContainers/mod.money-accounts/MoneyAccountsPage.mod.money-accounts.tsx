@@ -83,53 +83,54 @@ const MoneyAccountsPage = () => {
           backgroundColor={bg}
           allowToggle
         >
-          {data?.map((moneyAcc) => (
-            <AccordionItem key={moneyAcc.id}>
-              <AccordionButton>
-                <AccordionIcon />
+          {data &&
+            data.map((moneyAcc) => (
+              <AccordionItem key={moneyAcc.id}>
+                <AccordionButton as={Flex}>
+                  <AccordionIcon />
 
-                <HStack minW={'600px'} h={'35px'}>
-                  <Text
-                    textOverflow={'ellipsis'}
-                    w={'250px'}
-                    overflow="hidden"
-                    whiteSpace={'nowrap'}
-                    fontSize={'lg'}
-                  >
-                    {moneyAcc.displayName}
-                  </Text>
-                  <Divider orientation="vertical" />
-                  <Text pl={'5px'} w={'150px'} fontSize={'lg'}>
-                    {moneyAcc.bankInfo
-                      ? translateBankNames(moneyAcc.bankInfo?.bankName)
-                      : 'Caja chica'}
-                  </Text>
-                  <Divider orientation="vertical" />
-                  <Text
-                    pl={'5px'}
-                    w={'150px'}
-                    fontWeight="bold"
-                    fontSize={'lg'}
-                  >
-                    {formatedAccountBalance(moneyAcc)}
-                  </Text>
+                  <HStack minW={'600px'} h={'35px'}>
+                    <Text
+                      textOverflow={'ellipsis'}
+                      w={'250px'}
+                      overflow="hidden"
+                      whiteSpace={'nowrap'}
+                      fontSize={'lg'}
+                    >
+                      {moneyAcc.displayName}
+                    </Text>
+                    <Divider orientation="vertical" />
+                    <Text pl={'5px'} w={'150px'} fontSize={'lg'}>
+                      {moneyAcc.bankInfo
+                        ? translateBankNames(moneyAcc.bankInfo?.bankName)
+                        : 'Caja chica'}
+                    </Text>
+                    <Divider orientation="vertical" />
+                    <Text
+                      pl={'5px'}
+                      w={'150px'}
+                      fontWeight="bold"
+                      fontSize={'lg'}
+                    >
+                      {formatedAccountBalance(moneyAcc)}
+                    </Text>
 
-                  <AccordionOptionsMoneyAccountsPage
-                    setEditData={setEditData}
-                    accountData={moneyAcc}
+                    <AccordionOptionsMoneyAccountsPage
+                      setEditData={setEditData}
+                      accountData={moneyAcc}
+                    />
+                  </HStack>
+                </AccordionButton>
+
+                <AccordionPanel pb={4}>
+                  <TransactionsTable
+                    loading={isFetching}
+                    data={moneyAcc.transactions as any}
                   />
-                </HStack>
-              </AccordionButton>
-
-              <AccordionPanel pb={4}>
-                <TransactionsTable
-                  loading={isFetching}
-                  data={moneyAcc.transactions as any}
-                />
-              </AccordionPanel>
-              <Divider ml={'10px'} w={'98%'} />
-            </AccordionItem>
-          ))}
+                </AccordionPanel>
+                <Divider ml={'10px'} w={'98%'} />
+              </AccordionItem>
+            ))}
         </Accordion>
         {editData && (
           <EditMoneyAccModal

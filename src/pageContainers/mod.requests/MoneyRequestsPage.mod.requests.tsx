@@ -5,9 +5,8 @@ import type {
   Project,
   Transaction,
 } from '@prisma/client';
-import { isEqual } from 'lodash';
+import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import { z } from 'zod';
 import DateCell from '../../components/DynamicTables/DynamicCells/DateCell';
 import EnumTextCell from '../../components/DynamicTables/DynamicCells/EnumTextCell';
 import MoneyCell from '../../components/DynamicTables/DynamicCells/MoneyCell';
@@ -18,6 +17,7 @@ import DynamicTable from '../../components/DynamicTables/DynamicTable';
 import TableSearchbar from '../../components/DynamicTables/Utils/TableSearchbar';
 import EditMoneyRequestModal from '../../components/Modals/MoneyReq.edit.modal';
 import CreateMoneyRequestModal from '../../components/Modals/MoneyRequest.create.modal';
+import { ApprovalUtils } from '../../lib/utils/ApprovalUtilts';
 import { reduceTransactionAmounts } from '../../lib/utils/TransactionUtils';
 import {
   translatedMoneyReqStatus,
@@ -34,6 +34,8 @@ export type MoneyRequestComplete = MoneyRequest & {
 };
 
 const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
+  const session = useSession();
+  const user = session.data?.user;
   const [searchValue, setSearchValue] = useState('');
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null
@@ -62,7 +64,7 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   }, [editMoneyRequest, isEditOpen]);
 
   const { data: moneyRequests } =
-    trpcClient.moneyRequest.getManyComplete.useQuery();
+    trpcClient.moneyRequest.getManyComplete.useQuery({});
   const { data: findByIdData, isFetching } =
     trpcClient.moneyRequest.findCompleteById.useQuery(
       { id: searchValue },
@@ -84,29 +86,8 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   ];
 
   const rowHandler = handleDataSource().map((x) => {
-    const approverIds = x.organization.moneyRequestApprovers.map((x) => x.id);
-    const approverNames = x.organization.moneyRequestApprovers
-      .map((x) => x.displayName)
-      .toString()
-      .split(',')
-      .join(' ,');
-    const approvedIds = x.moneyRequestApprovals.map((x) => x.accountId);
-    const needsApproval = () => {
-      //1. If organization has not designated approvers, then ignore.
-      if (x.organization.moneyRequestApprovers.length) {
-        //2. If there are no approvals then asume needs approval.
-        if (!x.moneyRequestApprovals.length) return true;
-
-        //3. Check if the approvals contain the approvers
-        if (isEqual(approvedIds, approverIds)) return false;
-
-        return true;
-      }
-      return false;
-    };
-    const approvalText = `${approvedIds.length} de ${approverIds.length}  ${
-      needsApproval() ? '❌' : '✅'
-    }`;
+    const { needsApproval, approvalText, approverNames, hasBeenApproved } =
+      ApprovalUtils(x as any, user);
     return (
       <Tr key={x.id}>
         <DateCell date={x.createdAt} />
@@ -137,6 +118,7 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           x={x}
           onEditOpen={onEditOpen}
           setEditMoneyRequest={setEditMoneyRequest}
+          hasBeenApproved={hasBeenApproved()}
         />
       </Tr>
     );
@@ -159,7 +141,7 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         headers={[
           'F. Creacion',
           'Aprobación',
-          'Estado',
+          'Desembolso',
           'Tipo',
           'Monto',
           'Creador',

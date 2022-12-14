@@ -7,7 +7,7 @@ const TextCell = ({
   shortenString,
 }: {
   text: string;
-  hover?: string;
+  hover?: string | React.ReactNode;
   shortenString?: boolean;
 }) => {
   return (

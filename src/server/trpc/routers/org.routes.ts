@@ -20,9 +20,9 @@ export const orgRouter = router({
   getMyOrgs: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
 
-    return await prisma?.organization.findMany({
-      where: { members: { every: { id: user.id } } },
-      select: { id: true, displayName: true },
+    return await prisma?.account.findUnique({
+      where: { id: user.id },
+      select: { organizations: { select: { id: true, displayName: true } } },
     });
   }),
   getManyForSelect: adminModProcedure.query(async () => {

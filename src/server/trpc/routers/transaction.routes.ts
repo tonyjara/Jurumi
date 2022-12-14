@@ -1,10 +1,10 @@
-import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateTransactionCreate } from '../../../lib/validations/transaction.create.validate';
 import { validateTransactionEdit } from '../../../lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
 import {
   checkIfIsLastTransaction,
+  checkIfUserIsMoneyAdmin,
   createManyMoneyAccountTransactions,
 } from './utils/TransactionRouteUtils';
 
@@ -47,6 +47,8 @@ export const transactionsRouter = router({
   createMany: adminModProcedure
     .input(validateTransactionCreate)
     .mutation(async ({ input, ctx }) => {
+      const user = ctx.session.user;
+      await checkIfUserIsMoneyAdmin(user);
       const x = await createManyMoneyAccountTransactions({
         accountId: ctx.session.user.id,
         formTransaction: input,

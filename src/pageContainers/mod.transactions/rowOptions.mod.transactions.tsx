@@ -30,8 +30,7 @@ const RowOptionsModTransactions = ({
     handleUseMutationAlerts({
       successText: 'Se ha eliminado la transaccion!',
       callback: () => {
-        context.transaction.getManyComplete.invalidate();
-        context.transaction.findManyCompleteById.invalidate();
+        context.transaction.invalidate();
       },
     })
   );

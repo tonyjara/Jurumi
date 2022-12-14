@@ -1,12 +1,7 @@
 import React from 'react';
-import PendingApprovalsTable from './PendingApprovalsTable';
 
 const HomePage = () => {
-  return (
-    <div>
-      <PendingApprovalsTable />
-    </div>
-  );
+  return <div>Home</div>;
 };
 
 export default HomePage;

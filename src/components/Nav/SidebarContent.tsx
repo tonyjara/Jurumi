@@ -2,13 +2,7 @@ import type { BoxProps } from '@chakra-ui/react';
 import { AccordionIcon } from '@chakra-ui/react';
 import { AccordionPanel } from '@chakra-ui/react';
 import { Accordion, AccordionButton, AccordionItem } from '@chakra-ui/react';
-import {
-  useColorModeValue,
-  Flex,
-  CloseButton,
-  Text,
-  Box,
-} from '@chakra-ui/react';
+import { useColorModeValue, Flex, CloseButton, Box } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import type { IconType } from 'react-icons';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
@@ -64,6 +58,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           dest: '/mod/transactions',
         },
         { name: 'Solicitudes', icon: BsCashStack, dest: '/mod/requests' },
+        { name: 'Aprobaciones', icon: BsCashStack, dest: '/mod/approvals' },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },
       ]
     : [];
@@ -90,9 +85,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         {/* TEXT SHOWN ONLY ON DESKTOP */}
-        {/* <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Logoss
-        </Text> */}
+
         <OrganizationSelect />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>

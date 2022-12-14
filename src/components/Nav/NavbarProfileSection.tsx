@@ -8,13 +8,11 @@ import {
   Avatar,
   VStack,
   MenuList,
-  useColorModeValue,
   MenuItem,
   MenuDivider,
   Box,
   Text,
   useColorMode,
-  Icon,
   Button,
 } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
@@ -27,7 +25,7 @@ const NavbarProfileSection = () => {
   const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
 
-  const { data, status } = useSession();
+  const { data } = useSession();
 
   const onToggleLanguageClick = (newLocale: string) => {
     const { pathname, asPath, query } = router;

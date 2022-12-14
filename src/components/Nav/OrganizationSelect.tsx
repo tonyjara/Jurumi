@@ -20,8 +20,9 @@ const OrganizationSelect = () => {
     );
 
   const options = () => {
-    if (!data) return <option>No eres parte de ninguna organización.</option>;
-    return data?.map((opt) => (
+    if (!data?.organizations)
+      return <option>No eres parte de ninguna organización.</option>;
+    return data.organizations?.map((opt) => (
       <option key={opt.id} value={opt.id}>
         {opt.displayName}
       </option>

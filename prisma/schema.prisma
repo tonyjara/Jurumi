@@ -43,7 +43,7 @@ model Account {
   accountVerificationLinks AccountVerificationLinks[]
   transactions             Transaction[]
 
-  members           Organization[] @relation("members")
+  organizations     Organization[] @relation("members")
   moneyApproverOrgs Organization[] @relation("moneyRequestApprovers")
   moneyAdminOrgs    Organization[] @relation("moneyAdministrators")
   allowedOnProjects Project[]
@@ -177,18 +177,17 @@ model ProjectStage {
 }
 
 model CostCategory {
-  id              String         @id @default(cuid())
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime?      @updatedAt
-  createdById     String
-  updatedById     String?
-  displayName     String
-  currency        Currency
-  openingBalance  Decimal        @default(0) @db.Decimal(12, 4)
-  projectId       String?
-  Project         Project?       @relation(fields: [projectId], references: [id])
-  expenseReportId String?
-  ExpenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime?       @updatedAt
+  createdById    String
+  updatedById    String?
+  displayName    String
+  currency       Currency
+  balance        Decimal         @default(0) @db.Decimal(12, 4) // is handled dynamicly whenever a expense report is submited.
+  projectId      String?
+  Project        Project?        @relation(fields: [projectId], references: [id])
+  expenseReports ExpenseReport[]
 }
 
 model Imbursement {

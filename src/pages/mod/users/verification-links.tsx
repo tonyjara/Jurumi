@@ -28,15 +28,16 @@ import { trpcClient } from '../../../lib/utils/trpcClient';
 const VerificationLinks = () => {
   const context = trpcClient.useContext();
 
-  const { data } = trpcClient.account.getVerificationLinks.useQuery();
-  const { mutate } = trpcClient.account.generateVerificationLink.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Se ha generado otro link!',
-      callback: () => {
-        context.account.getVerificationLinks.invalidate();
-      },
-    })
-  );
+  const { data } = trpcClient.verificationLinks.getVerificationLinks.useQuery();
+  const { mutate } =
+    trpcClient.verificationLinks.generateVerificationLink.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Se ha generado otro link!',
+        callback: () => {
+          context.verificationLinks.getVerificationLinks.invalidate();
+        },
+      })
+    );
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const options: TableOptions[] = [

@@ -56,8 +56,7 @@ const CreateTransactionPage = ({
       handleUseMutationAlerts({
         successText: 'Su solicitud ha sido aprobada y ejecutada!',
         callback: () => {
-          context.moneyRequest.getMany.invalidate();
-          context.moneyRequest.getManyComplete.invalidate();
+          context.moneyRequest.invalidate();
           reset(defaultTransactionCreateValues);
           handleGoBack();
         },

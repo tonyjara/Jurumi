@@ -1,5 +1,5 @@
 import type { FlexProps } from '@chakra-ui/react';
-import { Flex, useColorModeValue, IconButton, Text } from '@chakra-ui/react';
+import { Flex, useColorModeValue, IconButton } from '@chakra-ui/react';
 import { FiMenu } from 'react-icons/fi';
 import NavbarProfileSection from './NavbarProfileSection';
 
@@ -30,14 +30,7 @@ const MyTopBar = ({ onOpen, ...rest }: MobileProps) => {
         icon={<FiMenu />}
       />
       {/*TEXT SHOWN ONLY ON MOBILE */}
-      <Text
-        display={{ base: 'flex', md: 'none' }}
-        fontSize="2xl"
-        fontFamily="monospace"
-        fontWeight="bold"
-      >
-        Logosd
-      </Text>
+
       <NavbarProfileSection />
     </Flex>
   );

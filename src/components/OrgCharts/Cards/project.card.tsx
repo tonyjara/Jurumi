@@ -64,7 +64,7 @@ const ProjectCard = (
             <Heading whiteSpace={'nowrap'} size="md">
               Monto asignado:
               <br />
-              {addDecimals(project.costCategories, 'openingBalance')}
+              {addDecimals(project.costCategories, 'balance')}
             </Heading>
             <VStack
               whiteSpace={'nowrap'}

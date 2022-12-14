@@ -11,6 +11,7 @@ import { accountsRouter } from './account.routes';
 import { transactionsRouter } from './transaction.routes';
 import { moneyApprovalRouter } from './moneyApproval.routes';
 import { preferencesRouter } from './preferences.routes';
+import { verificationLinksRouter } from './verificationLink.routes';
 
 export const appRouter = router({
   account: accountsRouter,
@@ -23,6 +24,7 @@ export const appRouter = router({
   preferences: preferencesRouter,
   project: projectRouter,
   transaction: transactionsRouter,
+  verificationLinks: verificationLinksRouter,
 });
 
 export type AppRouter = typeof appRouter;

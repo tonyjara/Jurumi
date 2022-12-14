@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { MoneyResquestApprovalStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { validateMoneyRequest } from '../../../lib/validations/moneyRequest.validate';
 import {
@@ -15,24 +15,56 @@ export const moneyRequestRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
-  getManyComplete: adminModProcedure.query(async () => {
-    return await prisma?.moneyRequest.findMany({
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        account: true,
-        project: true,
-        transactions: true,
-        moneyRequestApprovals: true,
-        organization: {
-          select: {
-            moneyRequestApprovers: { select: { id: true, displayName: true } },
-            moneyAdministrators: { select: { id: true, displayName: true } },
+
+  getManyComplete: adminModProcedure
+    .input(
+      z.object({ status: z.nativeEnum(MoneyResquestApprovalStatus).optional() })
+    )
+    .query(async ({ input, ctx }) => {
+      const user = ctx.session.user;
+
+      const handleWhere = () => {
+        if (input.status === 'PENDING') {
+          return {
+            moneyRequestApprovals: {
+              none: {
+                accountId: user.id,
+              },
+            },
+          };
+        }
+
+        return {
+          moneyRequestApprovals: {
+            some: {
+              accountId: user.id,
+              status: input.status,
+            },
+          },
+        };
+      };
+
+      return await prisma?.moneyRequest.findMany({
+        take: 20,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          account: true,
+          project: true,
+          transactions: true,
+          moneyRequestApprovals: true,
+          organization: {
+            select: {
+              moneyRequestApprovers: {
+                select: { id: true, displayName: true },
+              },
+              moneyAdministrators: { select: { id: true, displayName: true } },
+            },
           },
         },
-      },
-    });
-  }),
+
+        where: input.status ? handleWhere() : {},
+      });
+    }),
   findCompleteById: adminModProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {

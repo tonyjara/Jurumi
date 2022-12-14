@@ -53,7 +53,7 @@ const CostCategoryForm = ({
             <FormControlledMoneyInput
               control={control}
               errors={errors}
-              name={`costCategories.${index}.openingBalance`}
+              name={`costCategories.${index}.balance`}
               label="Monto"
               prefix={translateCurrencyPrefix(currency)}
               currency={currency}

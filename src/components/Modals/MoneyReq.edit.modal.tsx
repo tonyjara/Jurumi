@@ -61,8 +61,7 @@ const EditMoneyRequestModal = ({
       successText: 'Su solicitud ha sido editada!',
       callback: () => {
         handleOnClose();
-        context.moneyRequest.getMany.invalidate();
-        context.moneyRequest.getManyComplete.invalidate();
+        context.moneyRequest.invalidate();
       },
     })
   );

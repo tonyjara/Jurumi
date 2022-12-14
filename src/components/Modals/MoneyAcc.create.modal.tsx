@@ -63,9 +63,8 @@ const CreateMoneyAccModal = ({
       successText: 'Su cuenta bancaria ha sido creada! 🔥',
       callback: () => {
         handleOnClose();
-        isCashAccount
-          ? context.moneyAcc.getManyCashAccs.invalidate()
-          : context.moneyAcc.getManyBankAccs.invalidate();
+
+        context.moneyAcc.invalidate();
       },
     })
   );

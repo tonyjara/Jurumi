@@ -38,13 +38,15 @@ export interface DynamicCellProps<T extends IObjectKeys> {
 }
 
 interface DynamicTableProps<T extends object> {
-  title: string;
+  title?: string;
   subTitle?: string;
   headers: string[];
   rows?: T[];
   options?: TableOptions[]; // enables three dot menu
   searchBar?: React.ReactNode;
   loading?: boolean;
+  noHeader?: boolean;
+  h?: string;
 }
 
 const DynamicTable = <T extends object>({
@@ -55,26 +57,26 @@ const DynamicTable = <T extends object>({
   subTitle,
   searchBar,
   loading,
+  noHeader,
+  h,
 }: DynamicTableProps<T>) => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
   return (
-    <Card
-      // h={document.documentElement.scrollHeight - 200}
-      overflow={'hidden'}
-      backgroundColor={backgroundColor}
-    >
-      <CardHeader>
-        <Flex justifyContent={'space-between'}>
-          <Flex flexDirection={'column'}>
-            <Text fontSize="xl" fontWeight="bold">
-              {title}
-            </Text>
-            <Text fontSize="md">{subTitle}</Text>
-            {searchBar}
+    <Card h={h ?? '80vh'} overflow={'hidden'} backgroundColor={backgroundColor}>
+      {!noHeader && (
+        <CardHeader>
+          <Flex justifyContent={'space-between'}>
+            <Flex flexDirection={'column'}>
+              <Text fontSize="xl" fontWeight="bold">
+                {title}
+              </Text>
+              <Text fontSize="md">{subTitle}</Text>
+              {searchBar}
+            </Flex>
+            <ThreeDotTableButton options={options} />
           </Flex>
-          <ThreeDotTableButton options={options} />
-        </Flex>
-      </CardHeader>
+        </CardHeader>
+      )}
       <CardBody overflow={'auto'}>
         <Table size={['sm', 'md']} variant={'simple'}>
           <Thead>

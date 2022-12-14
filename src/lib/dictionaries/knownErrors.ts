@@ -10,6 +10,9 @@ export const knownErrors = (error: string) => {
   if (error === 'admin-only') {
     return 'Esta operación solo esta habilitada para Administradores.';
   }
+  if (error === 'User not money admin') {
+    return 'Esta operación solo esta habilitada para miembros de Administración.';
+  }
 
   return 'Hubo un error, favor intente nuevamente';
 };

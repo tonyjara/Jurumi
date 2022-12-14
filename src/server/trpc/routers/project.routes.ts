@@ -23,7 +23,7 @@ export const projectRouter = router({
 
       const mappedCategories = input.costCategories.map((cat) => ({
         displayName: cat.displayName,
-        openingBalance: cat.openingBalance,
+        balance: cat.balance,
         createdById: ctx.session.user.id,
         currency: cat.currency,
       }));
@@ -49,14 +49,14 @@ export const projectRouter = router({
           await prisma?.costCategory.upsert({
             create: {
               displayName: cat.displayName,
-              openingBalance: cat.openingBalance,
+              balance: cat.balance,
               createdById: ctx.session.user.id,
               currency: cat.currency,
               projectId: input.id,
             },
             update: {
               displayName: cat.displayName,
-              openingBalance: cat.openingBalance,
+              balance: cat.balance,
               createdById: ctx.session.user.id,
               currency: cat.currency,
             },

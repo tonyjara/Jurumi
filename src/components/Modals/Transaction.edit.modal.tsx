@@ -61,9 +61,8 @@ const EditTransactionModal = ({
     handleUseMutationAlerts({
       successText: 'Su transacción ha sido editada! ',
       callback: () => {
-        context.transaction.getManyComplete.invalidate();
-        context.transaction.findManyCompleteById.invalidate();
-        context.moneyAcc.getManyWithTransactions.invalidate();
+        context.transaction.invalidate();
+        context.moneyAcc.invalidate();
         handleOnClose();
       },
     })

@@ -64,11 +64,8 @@ export const projectMock: () => ProjectWithCostCat = () => {
         updatedById: null,
         displayName: faker.commerce.product(),
         currency: 'PYG',
-        openingBalance: new Prisma.Decimal(
-          faker.commerce.price(1000000, 3000000)
-        ),
+        balance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
         projectId: null,
-        expenseReportId: null,
       },
       {
         id: '',
@@ -78,11 +75,8 @@ export const projectMock: () => ProjectWithCostCat = () => {
         updatedById: null,
         displayName: faker.commerce.product(),
         currency: 'PYG',
-        openingBalance: new Prisma.Decimal(
-          faker.commerce.price(1000000, 3000000)
-        ),
+        balance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
         projectId: null,
-        expenseReportId: null,
       },
     ],
   };

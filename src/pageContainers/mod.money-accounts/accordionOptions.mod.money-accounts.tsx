@@ -4,6 +4,8 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Box,
+  Button,
 } from '@chakra-ui/react';
 import type { MoneyAccount } from '@prisma/client';
 import React from 'react';
@@ -17,7 +19,7 @@ const AccordionOptionsMoneyAccountsPage = ({
   accountData: MoneyAccount;
 }) => {
   return (
-    <div>
+    <>
       <Menu>
         <MenuButton
           onClick={(e) => e.stopPropagation()}
@@ -36,7 +38,7 @@ const AccordionOptionsMoneyAccountsPage = ({
           </MenuItem>
         </MenuList>
       </Menu>
-    </div>
+    </>
   );
 };
 

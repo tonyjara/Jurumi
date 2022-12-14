@@ -10,86 +10,90 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { MoneyRequest } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
+import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import {
-  defaultMoneyRequestValues,
-  validateMoneyRequest,
-} from '../../lib/validations/moneyRequest.validate';
-import MoneyRequestForm from '../Forms/MoneyRequest.form';
-import { useSession } from 'next-auth/react';
-import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
 
-const CreateMoneyRequestModal = ({
+interface RejectForm {
+  moneyRequestId: string;
+  rejectMessage: string;
+}
+
+const RejectPendingApprovalModal = ({
   isOpen,
   onClose,
-  projectId,
-  orgId,
+  requestId,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  projectId?: string;
-  orgId: string | null;
+  requestId: string;
 }) => {
   const context = trpcClient.useContext();
-  const { data: session } = useSession();
+  const defValues = { rejectMessage: '', moneyRequestId: '' };
   const {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<MoneyRequest>({
-    defaultValues: defaultMoneyRequestValues,
-    resolver: zodResolver(validateMoneyRequest),
+  } = useForm<RejectForm>({
+    defaultValues: defValues,
+    resolver: zodResolver(
+      z.object({
+        rejectMessage: z
+          .string({ required_error: 'Favor ingrese un mensaje' })
+          .min(6, 'Favor ingrese un mensaje'),
+        moneyRequestId: z.string().min(1, ''),
+      })
+    ),
   });
-  const handleOnClose = () => {
-    reset(defaultMoneyRequestValues);
-    onClose();
-  };
 
   useEffect(() => {
-    if (orgId && isOpen) {
-      setValue('organizationId', orgId);
+    if (requestId) {
+      reset({ moneyRequestId: requestId });
     }
+
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, isOpen]);
+  }, [requestId]);
 
   const { error, mutate, isLoading } =
-    trpcClient.moneyRequest.create.useMutation(
+    trpcClient.moneyApprovals.reject.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su solicitud ha sido creada!',
+        successText: 'La solicitud ha sido rechazada.',
         callback: () => {
-          handleOnClose();
+          onClose();
+          reset(defValues);
           context.moneyRequest.invalidate();
         },
       })
     );
 
-  const submitFunc = async (data: MoneyRequest) => {
-    //Admins and moderators add projectId Manually
-    const isUser = session?.user.role === 'USER';
-    data.projectId = isUser && projectId ? projectId : data.projectId;
+  const submitFunc = async (data: RejectForm) => {
     mutate(data);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleOnClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una solicitud desembolso</ModalHeader>
+          <ModalHeader>Rechazo de solicitud</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={moneyRequestMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <MoneyRequestForm control={control} errors={errors} />
+
+            <FormControlledText
+              control={control}
+              errors={errors}
+              name="rejectMessage"
+              label="Razón del rechazo"
+              isTextArea
+              autoFocus={true}
+            />
           </ModalBody>
 
           <ModalFooter>
@@ -111,4 +115,4 @@ const CreateMoneyRequestModal = ({
   );
 };
 
-export default CreateMoneyRequestModal;
+export default RejectPendingApprovalModal;
