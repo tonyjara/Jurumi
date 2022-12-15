@@ -54,7 +54,7 @@ const RowOptionsModRequests = ({
             isDisabled={needsApproval && !hasBeenApproved}
             onClick={() => {
               router.push({
-                pathname: '/home/create/transaction',
+                pathname: '/mod/transactions/create',
                 query: { moneyRequestId: x.id },
               });
             }}

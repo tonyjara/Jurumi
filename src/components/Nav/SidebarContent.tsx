@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import type { IconType } from 'react-icons';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
 import { BsCash, BsCashStack } from 'react-icons/bs';
+import { TbReceiptTax } from 'react-icons/tb';
 import { MdApproval } from 'react-icons/md';
 import { AiFillBank } from 'react-icons/ai';
 import { FaExchangeAlt } from 'react-icons/fa';
@@ -69,6 +70,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     // ...adminLinks,
     ...adminOrModLinks,
     //Public links
+    { name: 'Contribuyentes', icon: TbReceiptTax, dest: '/home/taxpayers' },
     { name: 'Mis solicitudes', icon: BsCash, dest: '/home/requests' },
     { name: 'Configuración', icon: FiSettings, dest: '/home/settings' },
   ];
