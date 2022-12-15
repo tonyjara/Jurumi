@@ -20,10 +20,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//Tips
-// To add new fields, first add them as optionsl next to the type, ex: String?. Then add the missing fields from studio then take the ? out and re run the migration.
-// use a .env to store everything, prisma doesn't like the .env.local
-
 model Account {
   id          String    @id @default(cuid())
   active      Boolean   @default(true)
@@ -42,6 +38,7 @@ model Account {
   moneyApprovals           MoneyRequestApproval[]
   accountVerificationLinks AccountVerificationLinks[]
   transactions             Transaction[]
+  searchableImages         searchableImage[]
 
   organizations     Organization[] @relation("members")
   moneyApproverOrgs Organization[] @relation("moneyRequestApprovers")
@@ -138,8 +135,6 @@ model BankInfo {
   @@unique([bankName, accountNumber])
 }
 
-//A project can have several donors. The estimated amount of money for the project is infered from the cost categories assigned.
-//The amount of money received is infered from the imbursments from the donors. Once we have assigned donors we can choose from their imbursments and relate them to the project.
 model Project {
   id           String    @id @default(cuid())
   createdAt    DateTime  @default(now())
@@ -205,8 +200,10 @@ model Imbursement {
   finalCurrency               Currency  @default(PYG)
   finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
 
-  archived    Boolean @default(false)
-  softDeleted Boolean @default(false)
+  archived         Boolean           @default(false)
+  softDeleted      Boolean           @default(false)
+  transactions     Transaction[]
+  searchableImages searchableImage[]
 
   taxPayerId     String
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
@@ -215,7 +212,6 @@ model Imbursement {
 
   MoneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
   moneyAccountId String?
-  transactions   Transaction[]
 }
 
 model TaxPayer {
@@ -280,44 +276,46 @@ model MoneyRequest {
 }
 
 model ExpenseReport {
-  id                String         @id @default(cuid())
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime?      @updatedAt
-  costCategory      CostCategory[]
-  facturaNumber     String
-  facturaPictureUrl String
-  facturaText       String
-  amountSpent       Decimal        @default(0) @db.Decimal(19, 4)
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  facturaNumber String
+  facturaText   String
+  amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
+
+  searchableImages searchableImage[]
 
   taxPayerId     String
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
   moneyRequestId String?
   MoneyRequest   MoneyRequest? @relation(fields: [moneyRequestId], references: [id])
+  CostCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
+  costCategoryId String?
 
   @@unique([taxPayerId, facturaNumber])
 }
 
 model ExpenseReturn {
-  id                    String    @id @default(cuid())
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime? @updatedAt
-  amountReturned        Decimal   @default(0) @db.Decimal(19, 4)
-  returnProofPictureUrl String
-
-  moneyRequestId String
-  MoneyRequest   MoneyRequest  @relation(fields: [moneyRequestId], references: [id])
-  transactions   Transaction[]
+  id               String            @id @default(cuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime?         @updatedAt
+  amountReturned   Decimal           @default(0) @db.Decimal(19, 4)
+  searchableImages searchableImage[]
+  moneyRequestId   String
+  MoneyRequest     MoneyRequest      @relation(fields: [moneyRequestId], references: [id])
+  transactions     Transaction[]
 }
 
 model Transaction {
-  id                  Int       @id @default(autoincrement())
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime? @updatedAt
-  updatedById         String?
-  currency            Currency
-  openingBalance      Decimal   @default(0) @db.Decimal(19, 4)
-  transactionAmount   Decimal   @default(0) @db.Decimal(19, 4)
-  transactionProofUrl String
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+  updatedById       String?
+  currency          Currency
+  openingBalance    Decimal   @default(0) @db.Decimal(19, 4)
+  transactionAmount Decimal   @default(0) @db.Decimal(19, 4)
+
+  searchableImages searchableImage[]
 
   moneyAccountId String
   moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
@@ -330,6 +328,31 @@ model Transaction {
   expenseReturnId String?
   Imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
   imbursementId   String?
+}
+
+model searchableImage {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  url       String
+  text      String
+  imageName String // uuid assigned from upload
+
+  accountId String?
+  accounts  Account? @relation(fields: [accountId], references: [id])
+
+  imbursementId String?
+  Imbursement   Imbursement? @relation(fields: [imbursementId], references: [id])
+
+  expenseReportId String?
+  ExpenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
+
+  expenseReturnId String?
+  ExpenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
+
+  transactionId Int?
+  Transaction   Transaction? @relation(fields: [transactionId], references: [id])
 }
 
 enum Role {

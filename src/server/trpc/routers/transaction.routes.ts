@@ -80,7 +80,6 @@ export const transactionsRouter = router({
           openingBalance: input.openingBalance,
           transactionAmount: input.transactionAmount,
           moneyAccountId: input.moneyAccountId,
-          transactionProofUrl: input.transactionProofUrl,
           moneyRequestId: input.moneyRequestId,
           imbursementId: input.imbursementId,
           expenseReturnId: input.expenseReturnId,

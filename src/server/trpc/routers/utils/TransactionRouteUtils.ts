@@ -42,7 +42,6 @@ export async function createManyMoneyAccountTransactions({
           currency: tx.currency,
           openingBalance: currentBalance,
           moneyAccountId,
-          transactionProofUrl: tx.transactionProofUrl,
           moneyRequestId: formTransaction.moneyRequestId,
           imbursementId: formTransaction.imbursementId,
           expenseReturnId: formTransaction.expenseReturnId,

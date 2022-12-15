@@ -15,8 +15,9 @@ type withMoney = Omit<MoneyRequest, 'amountRequested'> & {
 };
 interface withExpenseReport extends withMoney {
   facturaNumber?: string;
-  costCategories?: string[];
+  costCategories?: string;
   facturaPictureUrl?: string;
+  imageName?: string;
   taxPayerId?: string;
 }
 
@@ -43,8 +44,9 @@ export const validateMoneyRequest: z.ZodType<withExpenseReport> = z.lazy(() =>
       organizationId: z.string().min(1, 'Favor seleccione una organización.'),
       facturaNumber: z.string(),
       taxPayerId: z.string(),
-      costCategories: z.string().array(),
+      costCategories: z.string(),
       facturaPictureUrl: z.string(),
+      imageName: z.string(),
     })
     .superRefine((val, ctx) => {
       if (val.status === 'REJECTED' && val.rejectionMessage.length < 6) {
@@ -66,14 +68,14 @@ export const validateMoneyRequest: z.ZodType<withExpenseReport> = z.lazy(() =>
           ctx.addIssue({
             path: ['facturaPictureUrl'],
             code: z.ZodIssueCode.custom,
-            message: 'Favor suba un comprobante de compra.',
+            message: 'Favor suba una foto de su comprobante.',
           });
         }
         if (val.taxPayerId.length < 5) {
           ctx.addIssue({
             path: ['taxPayerId'],
             code: z.ZodIssueCode.custom,
-            message: 'Favor seleccione un contribuyente.',
+            message: 'Favor ingrese el ruc del contribuyente.',
           });
         }
       }
@@ -99,6 +101,7 @@ export const defaultMoneyRequestValues: moneyRequestValidateData = {
   organizationId: '',
   facturaNumber: '',
   facturaPictureUrl: '',
-  costCategories: [],
+  imageName: '',
+  costCategories: '',
   taxPayerId: '',
 };

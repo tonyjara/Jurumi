@@ -30,7 +30,6 @@ export const validateTransactionEdit: z.ZodType<withMoney> = z.lazy(() =>
             'Favor seleccione una cuenta de donde extraer el dinero.',
         })
         .min(2, 'Favor seleccione una cuenta de donde extraer el dinero.'),
-      transactionProofUrl: z.string(),
     })
     .superRefine((val, ctx) => {
       if (!(val.expenseReturnId || val.imbursementId || val.moneyRequestId)) {
@@ -57,7 +56,6 @@ export const defaultTransactionEditValues: validateTransactionEditData = {
   currency: 'PYG',
   transactionAmount: new Prisma.Decimal(0),
   moneyAccountId: '',
-  transactionProofUrl: '',
   openingBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
   imbursementId: null,

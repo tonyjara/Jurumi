@@ -22,6 +22,7 @@ import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
+import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
 import FormControlledText from '../FormControlled/FormControlledText';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -59,6 +60,8 @@ const MoneyRequestForm = ({
       value: cat.id,
       label: `${cat.displayName}`,
     }));
+
+  console.log(errors);
 
   return (
     <VStack spacing={5}>
@@ -98,6 +101,11 @@ const MoneyRequestForm = ({
           <Text fontWeight={'bold'} color={'gray.400'} alignSelf={'start'}>
             Justificación de reembolso.
           </Text>
+          <FormControlledTaxPayerId
+            control={control}
+            errors={errors}
+            name="taxPayerId"
+          />
           <FormControlledText
             control={control}
             errors={errors}
@@ -107,7 +115,8 @@ const MoneyRequestForm = ({
           <FormControlledImageUpload
             control={control}
             errors={errors}
-            name="facturaPictureUrl"
+            urlName="facturaPictureUrl"
+            idName="imageName"
             label="Foto de su comprobante"
             setValue={setValue}
             userId={user.id}

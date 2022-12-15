@@ -30,7 +30,8 @@ import { v4 as uuidV4 } from 'uuid';
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
-  name: Path<T>;
+  urlName: Path<T>; // the url returned from azure
+  idName: Path<T>; //The uuid that gets assigned to images as name.
   label: string;
   hidden?: boolean;
   setValue: SetFieldValue<T>;
@@ -41,10 +42,19 @@ interface InputProps<T extends FieldValues> {
 const FormControlledImageUpload = <T extends FieldValues>(
   props: InputProps<T>
 ) => {
-  const { control, name, errors, label, hidden, setValue, helperText, userId } =
-    props;
+  const {
+    control,
+    urlName,
+    idName,
+    errors,
+    label,
+    hidden,
+    setValue,
+    helperText,
+    userId,
+  } = props;
   const [uploading, setUploading] = useState(false);
-  const pictureUrl = useWatch({ control, name }) as string;
+  const pictureUrl = useWatch({ control, name: urlName }) as string;
   const imageUuid = uuidV4(); //This is set on purpose here so that if there is another upload it overwrites the same picture.
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -66,7 +76,8 @@ const FormControlledImageUpload = <T extends FieldValues>(
       const compressed = await compressCoverPhoto(file);
       const url = await uploadFileToBlob(compressed, userId);
 
-      setValue(name, url);
+      setValue(urlName, url);
+      setValue(idName, imageUuid);
       setUploading(false);
     } catch (err) {
       myToast.error();
@@ -86,7 +97,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
   const activeBg = useColorModeValue('gray.100', 'gray.600');
 
   return (
-    <FormControl hidden={hidden} isInvalid={!!errors[name]}>
+    <FormControl hidden={hidden} isInvalid={!!errors[urlName || idName]}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -134,11 +145,11 @@ const FormControlledImageUpload = <T extends FieldValues>(
         />
       </HStack>
 
-      {!errors[name] ? (
+      {!errors[urlName] ? (
         <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
       ) : (
-        //@ts-ignorep
-        <FormErrorMessage>{errors[name].message}</FormErrorMessage>
+        //@ts-ignore
+        <FormErrorMessage>{errors[urlName].message}</FormErrorMessage>
       )}
     </FormControl>
   );

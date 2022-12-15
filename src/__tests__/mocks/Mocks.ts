@@ -101,7 +101,7 @@ export const moneyRequestMock: () => moneyRequestValidateData = () => {
     organizationId: '',
     facturaNumber: '',
     facturaPictureUrl: '',
-    costCategories: [],
+    costCategories: '',
     taxPayerId: '',
   };
   return x;
@@ -120,7 +120,6 @@ export const transactionMock: () => Transaction = () => {
     ),
     moneyAccountId: '',
     moneyRequestId: null,
-    transactionProofUrl: '',
     imbursementId: null,
     expenseReturnId: null,
   };
