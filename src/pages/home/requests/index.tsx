@@ -1,7 +1,3 @@
-import React from 'react';
+import HomeRequestsPage from '../../../pageContainers/home/requests/HomeRequestsPage.home.requests';
 
-const MyRequests = () => {
-  return <div>MyRequests</div>;
-};
-
-export default MyRequests;
+export default HomeRequestsPage;

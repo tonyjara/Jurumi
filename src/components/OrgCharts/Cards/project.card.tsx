@@ -12,6 +12,9 @@ import {
   useDisclosure,
   VStack,
   Button,
+  Text,
+  List,
+  ListItem,
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
@@ -20,7 +23,7 @@ import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import type { CostCategory, Project } from '@prisma/client';
 import EditProjectModal from '../../Modals/project.edit.modal';
 import CreateMoneyRequestModal from '../../Modals/MoneyRequest.create.modal';
-import { addDecimals } from '../../../lib/utils/DecimalHelpers';
+import { addDecimals, decimalFormat } from '../../../lib/utils/DecimalHelpers';
 
 const ProjectCard = (
   project: Project & {
@@ -64,8 +67,20 @@ const ProjectCard = (
             <Heading whiteSpace={'nowrap'} size="md">
               Monto asignado:
               <br />
-              {addDecimals(project.costCategories, 'balance')}
+              {addDecimals(project.costCategories, 'openingBalance')}
             </Heading>
+            <Text>Lineas Presupuestarias:</Text>
+            <List>
+              {project.costCategories.map((x) => (
+                <ListItem key={x.id}>
+                  {x.displayName}{' '}
+                  {decimalFormat(
+                    x.openingBalance.sub(x.executedAmount),
+                    x.currency
+                  )}
+                </ListItem>
+              ))}
+            </List>
             <VStack
               whiteSpace={'nowrap'}
               textAlign={'left'}

@@ -7,6 +7,7 @@ import {
   protectedProcedure,
   router,
 } from '../initTrpc';
+import { handleWhereImApprover } from './utils/MoneyRequestUtils';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -15,6 +16,26 @@ export const moneyRequestRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
+  getMyOwnComplete: protectedProcedure
+    .input(
+      z.object({ status: z.nativeEnum(MoneyResquestApprovalStatus).optional() })
+    )
+    .query(async ({ input, ctx }) => {
+      const user = ctx.session.user;
+
+      return await prisma?.moneyRequest.findMany({
+        take: 20,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          project: true,
+          costCategory: true,
+          transactions: true,
+          expenseReports: true,
+        },
+
+        where: { accountId: user.id, status: input.status },
+      });
+    }),
 
   getManyComplete: adminModProcedure
     .input(
@@ -23,35 +44,16 @@ export const moneyRequestRouter = router({
     .query(async ({ input, ctx }) => {
       const user = ctx.session.user;
 
-      const handleWhere = () => {
-        if (input.status === 'PENDING') {
-          return {
-            moneyRequestApprovals: {
-              none: {
-                accountId: user.id,
-              },
-            },
-          };
-        }
-
-        return {
-          moneyRequestApprovals: {
-            some: {
-              accountId: user.id,
-              status: input.status,
-            },
-          },
-        };
-      };
-
       return await prisma?.moneyRequest.findMany({
         take: 20,
         orderBy: { createdAt: 'desc' },
         include: {
           account: true,
           project: true,
+          costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
+          expenseReports: true,
           organization: {
             select: {
               moneyRequestApprovers: {
@@ -62,7 +64,7 @@ export const moneyRequestRouter = router({
           },
         },
 
-        where: input.status ? handleWhere() : {},
+        where: input.status ? handleWhereImApprover(input, user.id) : {},
       });
     }),
   findCompleteById: adminModProcedure
@@ -74,8 +76,10 @@ export const moneyRequestRouter = router({
         include: {
           account: true,
           project: true,
+          costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
+          expenseReports: true,
           organization: {
             select: {
               moneyRequestApprovers: {
@@ -90,9 +94,11 @@ export const moneyRequestRouter = router({
   create: protectedProcedure
     .input(validateMoneyRequest)
     .mutation(async ({ input, ctx }) => {
-      const x = await prisma?.moneyRequest.create({
+      const user = ctx.session.user;
+
+      const MoneyReq = await prisma?.moneyRequest.create({
         data: {
-          accountId: ctx.session.user.id,
+          accountId: user.id,
           amountRequested: new Prisma.Decimal(input.amountRequested),
           currency: input.currency,
           description: input.description,
@@ -101,10 +107,13 @@ export const moneyRequestRouter = router({
           status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
+          costCategoryId: input.costCategoryId,
         },
       });
-      return x;
+
+      return MoneyReq;
     }),
+  // edit executed amount when going from other than accepted
   edit: protectedProcedure
     .input(validateMoneyRequest)
     .mutation(async ({ input }) => {
@@ -119,10 +128,12 @@ export const moneyRequestRouter = router({
           status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
+          costCategoryId: input.costCategoryId,
         },
       });
       return x;
     }),
+  //TODO substract from costcategory if it was accepted
   deleteById: adminProcedure
     .input(
       z.object({

@@ -139,7 +139,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
         <Image
           style={{ borderRadius: '8px' }}
           alt={'upload picture'}
-          src={pictureUrl.length ? pictureUrl : '/no-image.png'}
+          src={pictureUrl?.length ? pictureUrl : '/no-image.png'}
           width={100}
           height={100}
         />

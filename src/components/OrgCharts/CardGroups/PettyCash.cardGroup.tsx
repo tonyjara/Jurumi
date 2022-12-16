@@ -3,29 +3,24 @@ import { trpcClient } from '../../../lib/utils/trpcClient';
 import { HStack, Text } from '@chakra-ui/react';
 import ErrorBotLottie from '../../Spinners-Loading/ErrorBotLottie';
 import PettyCashCard from '../Cards/pettyCash.card';
-import type { MoneyAccount } from '@prisma/client';
+import type { MoneyAccWithTransactions } from '../../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
+import { Prisma } from '@prisma/client';
+import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
+import { reduceMoneyAccountValues } from '../../../lib/utils/MoneyAccountUtils';
 
 const PettyCashCardGroup = () => {
   const { data, isLoading, error } =
     trpcClient.moneyAcc.getManyCashAccs.useQuery();
-  const reduceToGs = (cashAccs?: MoneyAccount[]) =>
-    cashAccs
-      ?.reduce((acc, cashAcc) => {
-        if (cashAcc.currency === 'PYG') {
-          return (acc += parseFloat(cashAcc.initialBalance.toString()));
-        }
-        return acc;
-      }, 0)
-      .toLocaleString('es');
-  const reduceToUsd = (cashAccs?: MoneyAccount[]) =>
-    cashAccs
-      ?.reduce((acc, cashAcc) => {
-        if (cashAcc.currency === 'USD') {
-          return (acc += parseFloat(cashAcc.initialBalance.toString()));
-        }
-        return acc;
-      }, 0)
-      .toLocaleString('en-US');
+
+  const reduceToGs = (cashAccs?: MoneyAccWithTransactions[]) => {
+    if (!cashAccs) return new Prisma.Decimal(0);
+    return reduceMoneyAccountValues(cashAccs, 'PYG');
+  };
+  const reduceToUsd = (cashAccs?: MoneyAccWithTransactions[]) => {
+    if (!cashAccs) return new Prisma.Decimal(0);
+    return reduceMoneyAccountValues(cashAccs, 'USD');
+  };
+
   return (
     <>
       {!isLoading && (
@@ -40,8 +35,9 @@ const PettyCashCardGroup = () => {
           }}
         >
           <Text fontWeight={'bold'} as={'legend'}>
-            Cajas chicas. Total Dólares: {reduceToUsd(data)} Total Guaraníes:{' '}
-            {reduceToGs(data)}
+            Cajas chicas. Total Dólares:{' '}
+            {decimalFormat(reduceToUsd(data), 'USD')} Total Guaraníes:{' '}
+            {decimalFormat(reduceToGs(data), 'PYG')}
           </Text>
           <HStack>
             {data?.map((pettyCash) => (

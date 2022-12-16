@@ -1,7 +1,12 @@
-import { Divider, VStack } from '@chakra-ui/react';
+import { Divider, VStack, Text } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
+import type {
+  FieldValues,
+  Control,
+  FieldErrorsImpl,
+  SetFieldValue,
+} from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import {
   currencyOptions,
@@ -10,21 +15,26 @@ import {
 } from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
+import type { expenseReportValidateType } from '../../lib/validations/expenseReport.validate';
 import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
+import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
 import FormControlledText from '../FormControlled/FormControlledText';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
+  setValue: SetFieldValue<T>;
 }
 
-const MoneyRequestForm = ({
+const ExpenseReportForm = ({
   control,
   errors,
-}: formProps<moneyRequestValidateData>) => {
+  setValue,
+}: formProps<expenseReportValidateType>) => {
   const { data: session } = useSession();
   const user = session?.user;
   const isAdminOrMod = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
@@ -37,7 +47,6 @@ const MoneyRequestForm = ({
   const { data: orgs } = trpcClient.org.getManyForSelect.useQuery();
 
   const currency = useWatch({ control, name: 'currency' });
-  const status = useWatch({ control, name: 'status' });
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
@@ -52,21 +61,6 @@ const MoneyRequestForm = ({
 
   return (
     <VStack spacing={5}>
-      <FormControlledSelect
-        control={control}
-        errors={errors}
-        name="moneyRequestType"
-        label="Tipo de solicitud"
-        options={moneyRequestTypeOptions ?? []}
-      />
-      <FormControlledText
-        control={control}
-        errors={errors}
-        name="description"
-        isTextArea={true}
-        label="Concepto del desembolso"
-      />
-
       <FormControlledRadioButtons
         control={control}
         errors={errors}
@@ -77,64 +71,66 @@ const MoneyRequestForm = ({
       <FormControlledMoneyInput
         control={control}
         errors={errors}
-        name={'amountRequested'}
-        label="Monto solicitado"
+        name={'amountSpent'}
+        label="Monto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
       />
 
-      {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
-      <Divider pb={3} />
-
-      {isAdminOrMod && (
-        <>
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            name="projectId"
-            label="Seleccione un proyecto"
-            options={projectOptions ?? []}
-          />
-          {costCatOptions()?.length && (
-            <FormControlledSelect
-              control={control}
-              errors={errors}
-              name="costCategoryId"
-              label="Linea presupuestaria"
-              options={costCatOptions() ?? []}
-            />
-          )}
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            name="organizationId"
-            label="Seleccione una organización"
-            options={orgs ?? []}
-            optionLabel={'displayName'}
-            optionValue={'id'}
-            isClearable
-          />
-          <FormControlledRadioButtons
-            control={control}
-            errors={errors}
-            name="status"
-            label="Estado del desembolso"
-            options={moneyRequestStatusOptions}
-          />
-        </>
-      )}
-
-      {status === 'REJECTED' && (
-        <FormControlledText
+      <FormControlledTaxPayerId
+        control={control}
+        errors={errors}
+        razonSocialName="taxPayerRazonSocial"
+        rucName="taxPayerRuc"
+        setValue={setValue}
+      />
+      <FormControlledText
+        control={control}
+        errors={errors}
+        name="facturaNumber"
+        label="Número de factura."
+      />
+      {user && (
+        <FormControlledImageUpload
           control={control}
           errors={errors}
-          name="rejectionMessage"
-          isTextArea={true}
-          label="Motivo del rechazo"
+          urlName="facturaPictureUrl"
+          idName="imageName"
+          label="Foto de su comprobante"
+          setValue={setValue}
+          userId={user.id}
+          helperText="Favor tener en cuenta la orientación y legibilidad del documento."
         />
       )}
+
+      <FormControlledSelect
+        control={control}
+        errors={errors}
+        name="projectId"
+        label="Seleccione un proyecto"
+        options={projectOptions ?? []}
+        isClearable
+      />
+      {costCatOptions()?.length && (
+        <FormControlledSelect
+          control={control}
+          errors={errors}
+          name="costCategoryId"
+          label="Linea presupuestaria"
+          options={costCatOptions() ?? []}
+          isClearable
+        />
+      )}
+
+      <FormControlledText
+        control={control}
+        errors={errors}
+        name="comments"
+        isTextArea={true}
+        label="Comentarios (opcional)"
+      />
     </VStack>
   );
 };
 
-export default MoneyRequestForm;
+export default ExpenseReportForm;

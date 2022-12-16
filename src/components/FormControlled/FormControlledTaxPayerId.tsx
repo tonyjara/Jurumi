@@ -7,25 +7,22 @@ import {
   FormErrorMessage,
   Spinner,
   Text,
-  Flex,
-  Button,
   IconButton,
   HStack,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import type { DropdownIndicatorProps, GroupBase } from 'chakra-react-select';
 import { Select, components } from 'chakra-react-select';
-import { debounce } from 'lodash';
+import { startCase } from 'lodash';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import type {
   Control,
-  ControllerRenderProps,
   FieldErrorsImpl,
   FieldValues,
   Path,
+  SetFieldValue,
 } from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import useDebounce from '../../lib/hooks/useDebounce';
 import { trpcClient } from '../../lib/utils/trpcClient';
@@ -33,8 +30,10 @@ import { trpcClient } from '../../lib/utils/trpcClient';
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
-  name: Path<T>;
+  rucName: Path<T>;
+  razonSocialName: Path<T>;
   autoFocus?: boolean;
+  setValue: SetFieldValue<T>;
 }
 export interface datosPyResponse {
   razonsocial: string;
@@ -44,7 +43,8 @@ export interface datosPyResponse {
 const FormControlledTaxPayerId = <T extends FieldValues>(
   props: InputProps<T>
 ) => {
-  const { control, name, errors, autoFocus } = props;
+  const { control, rucName, razonSocialName, errors, autoFocus, setValue } =
+    props;
   const [loading, setLoading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectInput, setSelectInput] = useState('');
@@ -54,12 +54,29 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
 
   const debouncedSearchValue = useDebounce(selectInput, 500);
 
-  const watchTaxpayerId = useWatch({ control, name });
   const controller = new AbortController();
-  const { data: findByIdData, isFetching: isFetchingFindData } =
+
+  const { isFetching: isFetchingFindData } =
     trpcClient.taxPayer.findFullTextSearch.useQuery(
-      { ruc: selectInput },
-      { enabled: selectInput.length > 4 }
+      { ruc: debouncedSearchValue },
+      {
+        refetchOnWindowFocus: false,
+        enabled: debouncedSearchValue.length > 4,
+        onSuccess: async (x) => {
+          if (!x) return;
+          if (!x.length) {
+            return getDataFromDatosPy(debouncedSearchValue);
+          }
+
+          const convertToSelect = x.map((y) => ({
+            value: y.ruc,
+            label: y.razonSocial,
+          }));
+
+          setSelectOptions(convertToSelect);
+          setOpenDropdown(true);
+        },
+      }
     );
 
   const getDataFromDatosPy = async (id: string) => {
@@ -76,7 +93,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
       const datosFrompy = data as datosPyResponse[];
 
       const options = datosFrompy.map((x) => ({
-        label: x.razonsocial,
+        label: startCase(x.razonsocial.toLowerCase()),
         value: `${x.documento}-${x.dv}`,
       }));
       setSelectOptions(options);
@@ -89,42 +106,6 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
       setSelectOptions(null);
     }
   };
-
-  const handleStackedQuery = async () => {
-    if (!findByIdData) {
-      return await getDataFromDatosPy(selectInput);
-    }
-
-    const convertToSelect = findByIdData.map((x) => ({
-      value: x.ruc,
-      label: x.razonSocial,
-    }));
-
-    setSelectOptions(convertToSelect);
-    setOpenDropdown(true);
-
-    setLoading(false);
-  };
-
-  // const debouncedQuery = debounce(
-  //   async () => getDataFromDatosPy(watchTaxpayerId),
-  //   500
-  // );
-  // const debouncedQuery = debounce(async () => handleStackedQuery(), 500);
-
-  useEffect(() => {
-    const hasOnlyLetters = /^[a-zA-Z]+$/.test(selectInput);
-
-    if (selectInput.length > 5 && !hasOnlyLetters) {
-      // debouncedQuery();
-      handleStackedQuery();
-    }
-
-    return () => {
-      controller.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectInput]);
 
   const handleInputChange = (e: any) => {
     if (openDropdown) setOpenDropdown(false);
@@ -144,20 +125,20 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
   };
 
   return (
-    <FormControl isInvalid={!!errors[name]}>
+    <FormControl isInvalid={!!errors[rucName]}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
         Ruc del contribuyente
       </FormLabel>
       <HStack>
         <Controller
           control={control}
-          name={name}
+          name={rucName}
           render={({ field }) => (
             <div style={{ width: '90%' }}>
               <Select
                 autoFocus={autoFocus}
                 menuIsOpen={openDropdown}
-                instanceId={name}
+                instanceId={rucName}
                 components={{
                   DropdownIndicator:
                     loading || isFetchingFindData
@@ -168,9 +149,11 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
                 onInputChange={(e) => {
                   handleInputChange(e);
                 }}
-                onChange={(e: any) => {
+                onChange={(
+                  e: any | { value: string; label: string } | undefined
+                ) => {
                   field.onChange(e?.value ?? '');
-                  //should create on select
+                  setValue(razonSocialName, e?.label ?? '');
                 }}
                 value={selectOptions?.find((x) => x.value === field.value)}
                 noOptionsMessage={() => 'No hay opciones.'}
@@ -197,9 +180,9 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
           regrese.
         </Text>
       )}
-      {errors[name] && (
+      {errors[rucName] && (
         //@ts-ignore
-        <FormErrorMessage>{errors[name].message}</FormErrorMessage>
+        <FormErrorMessage>{errors[rucName].message}</FormErrorMessage>
       )}
     </FormControl>
   );

@@ -29,12 +29,16 @@ export const moneyAccRouter = router({
   getManyBankAccs: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: false },
-      include: { bankInfo: true },
+      include: {
+        bankInfo: true,
+        transactions: { take: 1, orderBy: { id: 'desc' } },
+      },
     });
   }),
   getManyCashAccs: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: true },
+      include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
     });
   }),
   create: adminModProcedure

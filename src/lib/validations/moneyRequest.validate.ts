@@ -13,15 +13,8 @@ const stringReqMinMax = (reqText: string, min: number, max: number) =>
 type withMoney = Omit<MoneyRequest, 'amountRequested'> & {
   amountRequested?: any;
 };
-interface withExpenseReport extends withMoney {
-  facturaNumber?: string;
-  costCategories?: string;
-  facturaPictureUrl?: string;
-  imageName?: string;
-  taxPayerId?: string;
-}
 
-export const validateMoneyRequest: z.ZodType<withExpenseReport> = z.lazy(() =>
+export const validateMoneyRequest: z.ZodType<withMoney> = z.lazy(() =>
   z
     .object({
       id: z.string(),
@@ -42,11 +35,7 @@ export const validateMoneyRequest: z.ZodType<withExpenseReport> = z.lazy(() =>
       softDeleted: z.boolean(),
       rejectionMessage: z.string(),
       organizationId: z.string().min(1, 'Favor seleccione una organización.'),
-      facturaNumber: z.string(),
-      taxPayerId: z.string(),
-      costCategories: z.string(),
-      facturaPictureUrl: z.string(),
-      imageName: z.string(),
+      costCategoryId: z.string(),
     })
     .superRefine((val, ctx) => {
       if (val.status === 'REJECTED' && val.rejectionMessage.length < 6) {
@@ -55,29 +44,6 @@ export const validateMoneyRequest: z.ZodType<withExpenseReport> = z.lazy(() =>
           code: z.ZodIssueCode.custom,
           message: 'Favor justifique el rechazo en al menos 6 caractéres.',
         });
-      }
-      if (val.moneyRequestType === 'REIMBURSMENT_ORDER') {
-        if (val.facturaNumber.length < 5) {
-          ctx.addIssue({
-            path: ['facturaNumber'],
-            code: z.ZodIssueCode.custom,
-            message: 'Favor ingrese un número de factura.',
-          });
-        }
-        if (val.facturaPictureUrl.length < 5) {
-          ctx.addIssue({
-            path: ['facturaPictureUrl'],
-            code: z.ZodIssueCode.custom,
-            message: 'Favor suba una foto de su comprobante.',
-          });
-        }
-        if (val.taxPayerId.length < 5) {
-          ctx.addIssue({
-            path: ['taxPayerId'],
-            code: z.ZodIssueCode.custom,
-            message: 'Favor ingrese el ruc del contribuyente.',
-          });
-        }
       }
     })
 );
@@ -99,9 +65,5 @@ export const defaultMoneyRequestValues: moneyRequestValidateData = {
   softDeleted: false,
   rejectionMessage: '',
   organizationId: '',
-  facturaNumber: '',
-  facturaPictureUrl: '',
-  imageName: '',
-  costCategories: '',
-  taxPayerId: '',
+  costCategoryId: '',
 };

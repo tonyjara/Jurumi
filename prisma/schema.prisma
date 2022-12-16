@@ -39,12 +39,13 @@ model Account {
   moneyApprovals           MoneyRequestApproval[]
   accountVerificationLinks AccountVerificationLinks[]
   transactions             Transaction[]
-  searchableImages         searchableImage[]
+  searchableImage          searchableImage[]
 
-  organizations     Organization[] @relation("members")
-  moneyApproverOrgs Organization[] @relation("moneyRequestApprovers")
-  moneyAdminOrgs    Organization[] @relation("moneyAdministrators")
+  organizations     Organization[]  @relation("members")
+  moneyApproverOrgs Organization[]  @relation("moneyRequestApprovers")
+  moneyAdminOrgs    Organization[]  @relation("moneyAdministrators")
   allowedOnProjects Project[]
+  expenseReports    ExpenseReport[]
 }
 
 model Profile {
@@ -149,6 +150,7 @@ model Project {
   allowedUsers Account[] // account with USER role that can interact with this project
 
   moneyRequest   MoneyRequest[]
+  expenseReports ExpenseReport[]
   costCategories CostCategory[]
   projectStages  ProjectStage[]
   TaxPayer       TaxPayer[]
@@ -173,18 +175,20 @@ model ProjectStage {
 }
 
 model CostCategory {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  createdById String
-  updatedById String?
-  displayName String
-  currency    Currency
-  balance     Decimal   @default(0) @db.Decimal(19, 4)
+  id             String    @id @default(cuid())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+  createdById    String
+  updatedById    String?
+  displayName    String
+  currency       Currency
+  openingBalance Decimal   @default(0) @db.Decimal(19, 4)
+  executedAmount Decimal   @default(0) @db.Decimal(19, 4)
 
   projectId      String?
   Project        Project?        @relation(fields: [projectId], references: [id])
   expenseReports ExpenseReport[]
+  moneyRequests  MoneyRequest[]
 }
 
 model Imbursement {
@@ -201,17 +205,17 @@ model Imbursement {
   finalCurrency               Currency  @default(PYG)
   finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
 
-  archived         Boolean           @default(false)
-  softDeleted      Boolean           @default(false)
-  transactions     Transaction[]
-  searchableImages searchableImage[]
+  archived        Boolean          @default(false)
+  softDeleted     Boolean          @default(false)
+  transactions    Transaction[]
+  searchableImage searchableImage?
 
   taxPayerId     String
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
   ProjectStage   ProjectStage? @relation(fields: [projectStageId], references: [id])
   projectStageId String?
 
-  MoneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
+  moneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
   moneyAccountId String?
 }
 
@@ -230,8 +234,8 @@ model TaxPayer {
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
 
-  Project      Project[]
-  ProjectStage ProjectStage[]
+  project      Project[]
+  projectStage ProjectStage[]
 }
 
 model MoneyRequestApproval {
@@ -264,13 +268,15 @@ model MoneyRequest {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId      String?
+  project        Project?      @relation(fields: [projectId], references: [id])
+  costCategoryId String?
+  costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
 
-  ExpenseReports        ExpenseReport[]
+  expenseReports        ExpenseReport[]
   moneyRequestApprovals MoneyRequestApproval[]
   transactions          Transaction[]
-  ExpenseReturn         ExpenseReturn[]
+  expenseReturns        ExpenseReturn[]
 
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
@@ -281,30 +287,36 @@ model ExpenseReport {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
   facturaNumber String
-  facturaText   String
+  comments      String
+  currency      Currency
   amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
 
-  searchableImages searchableImage[]
+  searchableImage searchableImage?
 
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
   taxPayerId     String
-  taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
-  moneyRequestId String?
-  MoneyRequest   MoneyRequest? @relation(fields: [moneyRequestId], references: [id])
-  CostCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
+  taxPayer       TaxPayer     @relation(fields: [taxPayerId], references: [id])
+  moneyRequestId String
+  MoneyRequest   MoneyRequest @relation(fields: [moneyRequestId], references: [id])
+
   costCategoryId String?
+  CostCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
+  projectId      String?
+  Project        Project?      @relation(fields: [projectId], references: [id])
 
   @@unique([taxPayerId, facturaNumber])
 }
 
 model ExpenseReturn {
-  id               String            @id @default(cuid())
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime?         @updatedAt
-  amountReturned   Decimal           @default(0) @db.Decimal(19, 4)
-  searchableImages searchableImage[]
-  moneyRequestId   String
-  MoneyRequest     MoneyRequest      @relation(fields: [moneyRequestId], references: [id])
-  transactions     Transaction[]
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime?        @updatedAt
+  amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
+  searchableImage searchableImage?
+  moneyRequestId  String
+  MoneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
+  transactions    Transaction[]
 }
 
 model Transaction {
@@ -316,19 +328,19 @@ model Transaction {
   openingBalance    Decimal   @default(0) @db.Decimal(19, 4)
   transactionAmount Decimal   @default(0) @db.Decimal(19, 4)
 
-  searchableImages searchableImage[]
+  searchableImage searchableImage?
 
   moneyAccountId String
   moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
-  account        Account      @relation(fields: [accountId], references: [id])
   accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
 
   moneyRequestId  String?
   moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
-  ExpenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
   expenseReturnId String?
-  Imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
+  ExpenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
   imbursementId   String?
+  Imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
 }
 
 model searchableImage {
@@ -343,17 +355,17 @@ model searchableImage {
   accountId String?
   accounts  Account? @relation(fields: [accountId], references: [id])
 
-  imbursementId String?
+  imbursementId String?      @unique
   Imbursement   Imbursement? @relation(fields: [imbursementId], references: [id])
 
-  expenseReportId String?
-  ExpenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
+  expenseReportId String?        @unique
+  expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
 
-  expenseReturnId String?
-  ExpenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
+  expenseReturnId String?        @unique
+  expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
 
-  transactionId Int?
-  Transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  transactionId Int?         @unique
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
 }
 
 enum Role {

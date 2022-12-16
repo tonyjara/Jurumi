@@ -11,6 +11,7 @@ import { TbReceiptTax } from 'react-icons/tb';
 import { MdApproval } from 'react-icons/md';
 import { AiFillBank } from 'react-icons/ai';
 import { FaExchangeAlt } from 'react-icons/fa';
+import { TbReportMoney } from 'react-icons/tb';
 import type { LinkItemChild } from './NavItemChild';
 import NavItemChild from './NavItemChild';
 import NavItem from './NavItem';
@@ -72,6 +73,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     //Public links
     { name: 'Contribuyentes', icon: TbReceiptTax, dest: '/home/taxpayers' },
     { name: 'Mis solicitudes', icon: BsCash, dest: '/home/requests' },
+    {
+      name: 'Mis rendiciones',
+      icon: TbReportMoney,
+      dest: '/home/expense-reports',
+    },
     { name: 'Configuración', icon: FiSettings, dest: '/home/settings' },
   ];
   return (
@@ -84,6 +90,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       w={{ base: 'full', md: 60 }}
       pos="fixed"
       h="full"
+      overflowY={'auto'}
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">

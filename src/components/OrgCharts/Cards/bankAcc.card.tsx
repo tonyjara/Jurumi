@@ -24,9 +24,12 @@ import {
 } from '../../../lib/utils/TranslatedEnums';
 import EditBankAccModal from '../../Modals/moneyAcc.edit.modal';
 import type { MoneyAccWithBankInfo } from '../../../lib/validations/moneyAcc.validate';
-import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
-
-const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
+import { formatedAccountBalance } from '../../../lib/utils/TransactionUtils';
+import type { Transaction } from '@prisma/client';
+interface BankAccWithTransactions extends MoneyAccWithBankInfo {
+  transactions: Transaction[];
+}
+const BankAccCard = (bankAcc: BankAccWithTransactions) => {
   const context = trpcClient.useContext();
 
   const {
@@ -62,9 +65,7 @@ const BankAccCard = (bankAcc: MoneyAccWithBankInfo) => {
 
         <CardBody>
           <Box textAlign={'left'}>
-            <Heading size="md">
-              {decimalFormat(bankAcc.initialBalance, bankAcc.currency)}
-            </Heading>
+            <Heading size="md">{formatedAccountBalance(bankAcc)}</Heading>
             <VStack whiteSpace={'nowrap'} spacing={0}>
               <Text>Titular: {bankAcc.bankInfo?.ownerName} </Text>
             </VStack>

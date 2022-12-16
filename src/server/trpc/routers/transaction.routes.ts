@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { reduceTransactionFields } from '../../../lib/utils/TransactionUtils';
 import { validateTransactionCreate } from '../../../lib/validations/transaction.create.validate';
 import { validateTransactionEdit } from '../../../lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
@@ -48,16 +49,34 @@ export const transactionsRouter = router({
     .input(validateTransactionCreate)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
+      //1. Check money admin permissions
       await checkIfUserIsMoneyAdmin(user);
+      //2. Create transactions
       const x = await createManyMoneyAccountTransactions({
         accountId: ctx.session.user.id,
         formTransaction: input,
       });
 
       if (input.moneyRequestId && x) {
-        await prisma?.moneyRequest.update({
+        //3. Change request status
+        const moneyRequest = await prisma?.moneyRequest.update({
           where: { id: input.moneyRequestId },
           data: { status: 'ACCEPTED' },
+        });
+        //3. Substract from cost categories
+        if (!moneyRequest || !moneyRequest.costCategoryId) return;
+        const costCat = await prisma?.costCategory.findUnique({
+          where: { id: moneyRequest.costCategoryId },
+        });
+        if (!costCat) return;
+
+        await prisma?.costCategory.update({
+          where: { id: moneyRequest?.costCategoryId },
+          data: {
+            executedAmount: costCat.executedAmount.add(
+              reduceTransactionFields(input.transactions)
+            ),
+          },
         });
       }
       return x;

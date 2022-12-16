@@ -10,78 +10,82 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { MoneyRequest } from '@prisma/client';
+import type { ExpenseReport } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
+import type { OrgWithApproversAndMoneyAdmins } from '../../lib/validations/org.validate';
 import {
-  defaultMoneyRequestValues,
-  validateMoneyRequest,
-} from '../../lib/validations/moneyRequest.validate';
-import MoneyRequestForm from '../Forms/MoneyRequest.form';
-import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
+  defaultOrgData,
+  validateOrgCreate,
+} from '../../lib/validations/org.validate';
+import ExpenseReportForm from '../Forms/ExpenseReport.form';
 
-const EditMoneyRequestModal = ({
+import OrgForm from '../Forms/Org.form';
+import { handleUseMutationAlerts } from '../Toasts/MyToast';
+
+const EditExpenseReportModal = ({
   isOpen,
   onClose,
-  moneyRequest,
+  expenseReport,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  moneyRequest: MoneyRequest;
+  expenseReport: ExpenseReport;
 }) => {
   const context = trpcClient.useContext();
   const {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<moneyRequestValidateData>({
-    defaultValues: defaultMoneyRequestValues,
-    resolver: zodResolver(validateMoneyRequest),
+  } = useForm<ExpenseReport>({
+    defaultValues: defaultOrgData,
+    resolver: zodResolver(validateOrgCreate),
   });
+
   useEffect(() => {
     if (isOpen) {
-      reset(moneyRequest);
+      reset(expenseReport);
     }
 
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
-  const handleOnClose = () => {
-    reset(defaultMoneyRequestValues);
-    onClose();
-  };
 
-  const { error, mutate, isLoading } = trpcClient.moneyRequest.edit.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Su solicitud ha sido editada!',
-      callback: () => {
-        handleOnClose();
-        context.moneyRequest.invalidate();
-      },
-    })
-  );
+  const { error, mutate, isLoading } =
+    trpcClient.expenseReport.edit.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Su rendición ha sido editada!',
+        callback: () => {
+          onClose();
+          reset();
+          context.expenseReport.invalidate();
+        },
+      })
+    );
 
-  const submitFunc = async (data: moneyRequestValidateData) => {
-    mutate(data);
+  const submitFunc = async (data: ExpenseReport) => {
+    //   mutate(data);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleOnClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Editar una solicitud desembolso</ModalHeader>
+          <ModalHeader>Editar una organización</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={moneyRequestMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <MoneyRequestForm control={control} errors={errors as any} />
+
+            {/* <ExpenseReportForm
+              setValue={setValue}
+              control={control}
+              errors={errors as any}
+            /> */}
           </ModalBody>
 
           <ModalFooter>
@@ -103,4 +107,4 @@ const EditMoneyRequestModal = ({
   );
 };
 
-export default EditMoneyRequestModal;
+export default EditExpenseReportModal;

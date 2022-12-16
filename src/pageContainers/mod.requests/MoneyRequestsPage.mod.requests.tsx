@@ -18,7 +18,10 @@ import TableSearchbar from '../../components/DynamicTables/Utils/TableSearchbar'
 import EditMoneyRequestModal from '../../components/Modals/MoneyReq.edit.modal';
 import CreateMoneyRequestModal from '../../components/Modals/MoneyRequest.create.modal';
 import { ApprovalUtils } from '../../lib/utils/ApprovalUtilts';
-import { reduceTransactionAmounts } from '../../lib/utils/TransactionUtils';
+import {
+  reduceExpenseReports,
+  reduceTransactionAmounts,
+} from '../../lib/utils/TransactionUtils';
 import {
   translatedMoneyReqStatus,
   translatedMoneyReqType,
@@ -108,9 +111,15 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         <MoneyCell objectKey={'amountRequested'} data={x} />
         <TextCell text={x.account.displayName} />
         <TextCell text={x.project?.displayName ?? '-'} />
+        <TextCell text={x.costCategory?.displayName ?? '-'} />
         <PercentageCell
           total={x.amountRequested}
           executed={reduceTransactionAmounts(x.transactions)}
+          currency={x.currency}
+        />
+        <PercentageCell
+          total={x.amountRequested}
+          executed={reduceExpenseReports(x.expenseReports)}
           currency={x.currency}
         />
         <RowOptionsModRequests
@@ -146,7 +155,9 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           'Monto',
           'Creador',
           'Proyecto',
+          'L. Presu.',
           'Ejecudado',
+          'Rendido',
           'Opciones',
         ]}
         rows={rowHandler}

@@ -3,7 +3,10 @@ import BankAccCard from '../Cards/bankAcc.card';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import { HStack, Text } from '@chakra-ui/react';
 import ErrorBotLottie from '../../Spinners-Loading/ErrorBotLottie';
-import type { MoneyAccount } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { reduceMoneyAccountValues } from '../../../lib/utils/MoneyAccountUtils';
+import type { MoneyAccWithTransactions } from '../../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
+import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
 
 const BankAccCardGroup = () => {
   const {
@@ -11,24 +14,14 @@ const BankAccCardGroup = () => {
     isLoading: isBankLoading,
     error: bankError,
   } = trpcClient.moneyAcc.getManyBankAccs.useQuery();
-  const reduceToGs = (bankAccs?: MoneyAccount[]) =>
-    bankAccs
-      ?.reduce((acc, bankAcc) => {
-        if (bankAcc.currency === 'PYG') {
-          return (acc += parseFloat(bankAcc.initialBalance.toString()));
-        }
-        return acc;
-      }, 0)
-      .toLocaleString('es');
-  const reduceToUsd = (bankAccs?: MoneyAccount[]) =>
-    bankAccs
-      ?.reduce((acc, bankAcc) => {
-        if (bankAcc.currency === 'USD') {
-          return (acc += parseFloat(bankAcc.initialBalance.toString()));
-        }
-        return acc;
-      }, 0)
-      .toLocaleString('en-US');
+  const reduceToGs = (bankAccs?: MoneyAccWithTransactions[]) => {
+    if (!bankAccs) return new Prisma.Decimal(0);
+    return reduceMoneyAccountValues(bankAccs, 'PYG');
+  };
+  const reduceToUsd = (bankAccs?: MoneyAccWithTransactions[]) => {
+    if (!bankAccs) return new Prisma.Decimal(0);
+    return reduceMoneyAccountValues(bankAccs, 'USD');
+  };
   return (
     <>
       {!isBankLoading && (
@@ -43,8 +36,9 @@ const BankAccCardGroup = () => {
           }}
         >
           <Text fontWeight={'bold'} as={'legend'}>
-            Cuentas bancarias. Total Dólares: {reduceToUsd(bankAccs)} Total
-            Guaraníes: {reduceToGs(bankAccs)}
+            Cuentas bancarias. Total Dólares:
+            {decimalFormat(reduceToUsd(bankAccs), 'USD')} Total Guaraníes:{' '}
+            {decimalFormat(reduceToGs(bankAccs), 'PYG')}
           </Text>
           <HStack>
             {bankAccs?.map((bankAcc) => (

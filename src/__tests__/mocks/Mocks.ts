@@ -9,6 +9,7 @@ import type {
 import { randEnumValue } from '../../lib/utils/TypescriptUtils';
 import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
 import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
+import type { expenseReportValidateType } from '../../lib/validations/expenseReport.validate';
 
 const bankInfo: () => BankInfoModelType = () => {
   const x: BankInfoModelType = {
@@ -80,7 +81,10 @@ export const projectMock: () => ProjectWithCostCat = () => {
         updatedById: null,
         displayName: faker.commerce.product(),
         currency: 'PYG',
-        balance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+        openingBalance: new Prisma.Decimal(
+          faker.commerce.price(1000000, 3000000)
+        ),
+        executedAmount: new Prisma.Decimal(0),
         projectId: null,
       },
       {
@@ -91,7 +95,10 @@ export const projectMock: () => ProjectWithCostCat = () => {
         updatedById: null,
         displayName: faker.commerce.product(),
         currency: 'PYG',
-        balance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+        openingBalance: new Prisma.Decimal(
+          faker.commerce.price(1000000, 3000000)
+        ),
+        executedAmount: new Prisma.Decimal(0),
         projectId: null,
       },
     ],
@@ -114,10 +121,7 @@ export const moneyRequestMock: () => moneyRequestValidateData = () => {
     softDeleted: false,
     rejectionMessage: '',
     organizationId: '',
-    facturaNumber: '',
-    facturaPictureUrl: '',
-    costCategories: '',
-    taxPayerId: '',
+    costCategoryId: '',
   };
   return x;
 };
@@ -137,6 +141,35 @@ export const transactionMock: () => Transaction = () => {
     moneyRequestId: null,
     imbursementId: null,
     expenseReturnId: null,
+  };
+  return x;
+};
+
+type mockExpenseReport = Omit<expenseReportValidateType, 'projectId'>;
+
+export const expenseReportMock: ({
+  moneyReqId,
+}: {
+  moneyReqId: string;
+}) => mockExpenseReport = ({ moneyReqId }) => {
+  const x: mockExpenseReport = {
+    facturaPictureUrl:
+      'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+    imageName: '2c96c577-01a6-4a42-8681-907593b087aa',
+    taxPayerRuc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
+    taxPayerRazonSocial: faker.name.fullName(),
+
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    currency: 'PYG',
+    // projectId: null,
+    moneyRequestId: moneyReqId,
+    costCategoryId: null,
+    amountSpent: new Prisma.Decimal(faker.commerce.price(100000, 300000)),
+    facturaNumber: faker.random.numeric(11),
+    comments: faker.commerce.productDescription().substring(0, 123),
+    accountId: '',
   };
   return x;
 };

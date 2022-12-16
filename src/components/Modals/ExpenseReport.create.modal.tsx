@@ -16,37 +16,35 @@ import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
+import { defaultMoneyRequestValues } from '../../lib/validations/moneyRequest.validate';
+import { expenseReportMock } from '../../__tests__/mocks/Mocks';
+import type { MoneyRequest } from '@prisma/client';
+import type { expenseReportValidateType } from '../../lib/validations/expenseReport.validate';
 import {
-  defaultMoneyRequestValues,
-  validateMoneyRequest,
-} from '../../lib/validations/moneyRequest.validate';
-import MoneyRequestForm from '../Forms/MoneyRequest.form';
-import { useSession } from 'next-auth/react';
-import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
+  defaultExpenseReportData,
+  validateExpenseReport,
+} from '../../lib/validations/expenseReport.validate';
+import ExpenseReportForm from '../Forms/ExpenseReport.form';
 
-const CreateMoneyRequestModal = ({
+const CreateExpenseReportModal = ({
   isOpen,
   onClose,
-  projectId,
-  orgId,
+  moneyRequest,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  projectId?: string;
-  orgId: string | null;
+  moneyRequest: MoneyRequest;
 }) => {
   const context = trpcClient.useContext();
-  const { data: session } = useSession();
   const {
     handleSubmit,
     control,
     reset,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<moneyRequestValidateData>({
-    defaultValues: defaultMoneyRequestValues,
-    resolver: zodResolver(validateMoneyRequest),
+  } = useForm<expenseReportValidateType>({
+    defaultValues: defaultExpenseReportData,
+    resolver: zodResolver(validateExpenseReport),
   });
   const handleOnClose = () => {
     reset(defaultMoneyRequestValues);
@@ -54,17 +52,18 @@ const CreateMoneyRequestModal = ({
   };
 
   useEffect(() => {
-    if (orgId && isOpen) {
-      setValue('organizationId', orgId);
+    if (moneyRequest && isOpen) {
+      setValue('projectId', moneyRequest.projectId);
+      setValue('moneyRequestId', moneyRequest.id);
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, isOpen]);
+  }, [moneyRequest, isOpen]);
 
   const { error, mutate, isLoading } =
-    trpcClient.moneyRequest.create.useMutation(
+    trpcClient.expenseReport.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su solicitud ha sido creada!',
+        successText: 'Su rendición ha sido creada!',
         callback: () => {
           handleOnClose();
           context.moneyRequest.invalidate();
@@ -72,10 +71,7 @@ const CreateMoneyRequestModal = ({
       })
     );
 
-  const submitFunc = async (data: moneyRequestValidateData) => {
-    //Admins and moderators add projectId Manually
-    const isUser = session?.user.role === 'USER';
-    data.projectId = isUser && projectId ? projectId : data.projectId;
+  const submitFunc = async (data: expenseReportValidateType) => {
     mutate(data);
   };
 
@@ -84,12 +80,19 @@ const CreateMoneyRequestModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una solicitud desembolso</ModalHeader>
+          <ModalHeader>Crear una rendición</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={moneyRequestMock} />
+            <SeedButton
+              reset={reset}
+              mock={() => expenseReportMock({ moneyReqId: moneyRequest.id })}
+            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <MoneyRequestForm control={control} errors={errors as any} />
+            <ExpenseReportForm
+              setValue={setValue}
+              control={control}
+              errors={errors as any}
+            />
           </ModalBody>
 
           <ModalFooter>
@@ -111,4 +114,4 @@ const CreateMoneyRequestModal = ({
   );
 };
 
-export default CreateMoneyRequestModal;
+export default CreateExpenseReportModal;

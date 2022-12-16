@@ -77,9 +77,9 @@ export const translatedMoneyReqStatus = (status: MoneyRequestStatus) => {
 };
 export const translatedMoneyReqType = (type: MoneyRequestType) => {
   const x: { [key in MoneyRequestType]?: string } = {
-    FUND_REQUEST: 'Solicitud de fondos',
+    FUND_REQUEST: 'Anticipo',
     MONEY_ORDER: 'Orden de pago',
-    REIMBURSMENT_ORDER: 'Solicitud de re-embolso',
+    REIMBURSMENT_ORDER: 'Re-embolso',
   };
 
   return x[type] ?? 'Error ';

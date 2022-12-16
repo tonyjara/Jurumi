@@ -1,3 +1,4 @@
+import type { CostCategory } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateProject } from '../../../lib/validations/project.validate';
@@ -29,12 +30,16 @@ export const projectRouter = router({
         });
       }
 
-      const mappedCategories = input.costCategories.map((cat) => ({
-        displayName: cat.displayName,
-        balance: cat.balance,
-        createdById: ctx.session.user.id,
-        currency: cat.currency,
-      }));
+      const mappedCategories = input.costCategories.map(
+        (cat) =>
+          ({
+            displayName: cat.displayName,
+            openingBalance: cat.openingBalance,
+            executedAmount: cat.executedAmount,
+            createdById: ctx.session.user.id,
+            currency: cat.currency,
+          } as CostCategory)
+      );
 
       const project = await prisma?.project.create({
         data: {
@@ -57,14 +62,16 @@ export const projectRouter = router({
           await prisma?.costCategory.upsert({
             create: {
               displayName: cat.displayName,
-              balance: cat.balance,
+              openingBalance: cat.openingBalance,
+              executedAmount: cat.executedAmount,
               createdById: ctx.session.user.id,
               currency: cat.currency,
               projectId: input.id,
             },
             update: {
               displayName: cat.displayName,
-              balance: cat.balance,
+              openingBalance: cat.openingBalance,
+              executedAmount: cat.executedAmount,
               createdById: ctx.session.user.id,
               currency: cat.currency,
             },

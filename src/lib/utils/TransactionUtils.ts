@@ -1,4 +1,4 @@
-import type { Transaction } from '@prisma/client';
+import type { ExpenseReport, Transaction } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import type { MoneyAccWithTransactions } from '../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
 import type { TransactionField } from '../validations/transaction.create.validate';
@@ -12,6 +12,13 @@ export const reduceTransactionAmounts = (x?: Transaction[]) => {
     return acc.add(t.transactionAmount);
   }, new Prisma.Decimal(0));
 };
+
+export const reduceExpenseReports = (x?: ExpenseReport[]) => {
+  if (!x) return new Prisma.Decimal(0);
+  return x.reduce((acc, t) => {
+    return acc.add(t.amountSpent);
+  }, new Prisma.Decimal(0));
+};
 export const reduceTransactionFields = (x: TransactionField[]) => {
   return x.reduce((acc, t) => {
     return acc.add(t.transactionAmount);
@@ -19,7 +26,7 @@ export const reduceTransactionFields = (x: TransactionField[]) => {
 };
 
 export const formatedAccountBalance = (acc: MoneyAccWithTransactions) => {
-  if (acc.transactions.length) {
+  if (acc?.transactions?.length) {
     const lastT = acc.transactions[0];
     const currentBalance = lastT?.openingBalance.sub(lastT.transactionAmount);
     if (!currentBalance) return 'Error';

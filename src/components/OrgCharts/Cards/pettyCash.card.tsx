@@ -19,10 +19,10 @@ import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import { translateCurrency } from '../../../lib/utils/TranslatedEnums';
 import EditMoneyAccModal from '../../Modals/moneyAcc.edit.modal';
-import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
-import type { MoneyAccount } from '@prisma/client';
+import { formatedAccountBalance } from '../../../lib/utils/TransactionUtils';
+import type { MoneyAccWithTransactions } from '../../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
 
-const PettyCashCard = (pettyCash: MoneyAccount) => {
+const PettyCashCard = (pettyCash: MoneyAccWithTransactions) => {
   const context = trpcClient.useContext();
   const cardBackground = useColorModeValue('white', 'gray.700');
   const {
@@ -54,7 +54,8 @@ const PettyCashCard = (pettyCash: MoneyAccount) => {
         <CardBody>
           <Box>
             <Heading size="md">
-              {decimalFormat(pettyCash.initialBalance, pettyCash.currency)}
+              {/* {decimalFormat(pettyCash.initialBalance, pettyCash.currency)} */}
+              {formatedAccountBalance(pettyCash)}
             </Heading>
             <VStack whiteSpace={'nowrap'} textAlign={'left'} spacing={0}>
               {/* <Text>Titular: {bankAcc.ownerName}</Text> */}
