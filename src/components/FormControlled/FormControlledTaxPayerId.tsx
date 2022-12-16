@@ -27,6 +27,8 @@ import type {
 } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
+import useDebounce from '../../lib/hooks/useDebounce';
+import { trpcClient } from '../../lib/utils/trpcClient';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -50,8 +52,15 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     { value: string; label: string }[] | null
   >([]);
 
+  const debouncedSearchValue = useDebounce(selectInput, 500);
+
   const watchTaxpayerId = useWatch({ control, name });
   const controller = new AbortController();
+  const { data: findByIdData, isFetching: isFetchingFindData } =
+    trpcClient.taxPayer.findFullTextSearch.useQuery(
+      { ruc: selectInput },
+      { enabled: selectInput.length > 4 }
+    );
 
   const getDataFromDatosPy = async (id: string) => {
     try {
@@ -81,16 +90,34 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     }
   };
 
-  const debouncedQuery = debounce(
-    async () => getDataFromDatosPy(watchTaxpayerId),
-    500
-  );
+  const handleStackedQuery = async () => {
+    if (!findByIdData) {
+      return await getDataFromDatosPy(selectInput);
+    }
+
+    const convertToSelect = findByIdData.map((x) => ({
+      value: x.ruc,
+      label: x.razonSocial,
+    }));
+
+    setSelectOptions(convertToSelect);
+    setOpenDropdown(true);
+
+    setLoading(false);
+  };
+
+  // const debouncedQuery = debounce(
+  //   async () => getDataFromDatosPy(watchTaxpayerId),
+  //   500
+  // );
+  // const debouncedQuery = debounce(async () => handleStackedQuery(), 500);
 
   useEffect(() => {
     const hasOnlyLetters = /^[a-zA-Z]+$/.test(selectInput);
 
     if (selectInput.length > 5 && !hasOnlyLetters) {
-      debouncedQuery();
+      // debouncedQuery();
+      handleStackedQuery();
     }
 
     return () => {
@@ -132,7 +159,10 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
                 menuIsOpen={openDropdown}
                 instanceId={name}
                 components={{
-                  DropdownIndicator: loading ? DropdownIndicator : undefined,
+                  DropdownIndicator:
+                    loading || isFetchingFindData
+                      ? DropdownIndicator
+                      : undefined,
                 }}
                 options={selectOptions ?? []}
                 onInputChange={(e) => {
@@ -140,6 +170,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
                 }}
                 onChange={(e: any) => {
                   field.onChange(e?.value ?? '');
+                  //should create on select
                 }}
                 value={selectOptions?.find((x) => x.value === field.value)}
                 noOptionsMessage={() => 'No hay opciones.'}

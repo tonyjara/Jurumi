@@ -20,6 +20,8 @@ import {
   defaultTaxPayer,
   taxPayerValidate,
 } from '../../lib/validations/taxtPayer.validate';
+import { taxPayerMock } from '../../__tests__/mocks/Mocks';
+import SeedButton from '../DevTools/SeedButton';
 import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
@@ -72,7 +74,7 @@ const CreateTaxPayerModal = ({
           <ModalCloseButton />
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-
+            <SeedButton reset={reset} mock={taxPayerMock} />
             <VStack spacing={5}>
               <FormControlledText
                 control={control}

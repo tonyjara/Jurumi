@@ -1,5 +1,6 @@
 import { CloseIcon, Search2Icon } from '@chakra-ui/icons';
 import { InputGroup, Input, InputRightElement, Text } from '@chakra-ui/react';
+import { debounce } from 'lodash';
 import React from 'react';
 
 const TableSearchbar = ({
@@ -16,6 +17,7 @@ const TableSearchbar = ({
   helperText?: string;
 }) => {
   const hasLength = !!searchValue.length;
+
   return (
     <InputGroup flexDir={'column'}>
       <Input

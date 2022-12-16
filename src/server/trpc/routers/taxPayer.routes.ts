@@ -14,13 +14,17 @@ export const taxPayerRouter = router({
       orderBy: { razonSocial: 'asc' },
     });
   }),
-  findFirst: adminModProcedure
+  findFullTextSearch: adminModProcedure
     .input(z.object({ ruc: z.string() }))
-    .query(async () => {
-      return await prisma?.taxPayer.findFirst({
+    .query(async ({ input }) => {
+      return await prisma?.taxPayer.findMany({
         take: 20,
         orderBy: { razonSocial: 'asc' },
-        where: {},
+        where: {
+          ruc: {
+            search: input.ruc,
+          },
+        },
       });
     }),
 

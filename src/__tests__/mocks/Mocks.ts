@@ -1,4 +1,4 @@
-import type { Transaction } from '@prisma/client';
+import type { TaxPayer, Transaction } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -21,6 +21,21 @@ const bankInfo: () => BankInfoModelType = () => {
     country: 'Asuncion',
     city: 'Paraguay',
     ownerContactNumber: '0981 999 111',
+  };
+  return x;
+};
+export const taxPayerMock: () => TaxPayer = () => {
+  const x: TaxPayer = {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    createdById: '',
+    updatedById: null,
+    razonSocial: faker.name.fullName(),
+    ruc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
+    fantasyName: faker.name.firstName(),
+    archived: false,
+    softDeleted: false,
   };
   return x;
 };

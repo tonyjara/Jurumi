@@ -6,6 +6,7 @@ import type {
   TaxPayer,
   Transaction,
 } from '@prisma/client';
+import { debounce } from 'lodash';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import DateCell from '../../../components/DynamicTables/DynamicCells/DateCell';
@@ -15,6 +16,7 @@ import DynamicTable from '../../../components/DynamicTables/DynamicTable';
 import TableSearchbar from '../../../components/DynamicTables/Utils/TableSearchbar';
 import CreateTaxPayerModal from '../../../components/Modals/taxPayer.create.modal';
 import EditTaxPayerModal from '../../../components/Modals/taxPayer.edit.modal';
+import useDebounce from '../../../lib/hooks/useDebounce';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import RowOptionsHomeTaxPayers from './rowOptions.home.taxpayers';
 
@@ -29,14 +31,7 @@ const TaxPayersPage = () => {
   const user = session.data?.user;
   const [searchValue, setSearchValue] = useState('');
   const [editTaxPayer, setEditTaxPayer] = useState<TaxPayer | null>(null);
-
-  // useEffect(() => {
-  //   if (query.moneyRequestId) {
-  //     setSearchValue(query.moneyRequestId);
-  //   }
-  //   return () => {};
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const debouncedSearchValue = useDebounce(searchValue, 500);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -47,15 +42,15 @@ const TaxPayersPage = () => {
 
   const { data: taxPayers, isFetching: isFetchingTaxPayers } =
     trpcClient.taxPayer.getMany.useQuery();
-  // const { data: findByIdData, isFetching } =
-  //   trpcClient.moneyRequest.findCompleteById.useQuery(
-  //     { id: searchValue },
-  //     { enabled: searchValue.length > 0 }
-  //   );
+  const { data: findByIdData, isFetching: isFetchingFindData } =
+    trpcClient.taxPayer.findFullTextSearch.useQuery(
+      { ruc: debouncedSearchValue },
+      { enabled: debouncedSearchValue.length > 4 }
+    );
 
   const handleDataSource = () => {
     if (!taxPayers) return [];
-    // if (findByIdData) return [findByIdData];
+    if (findByIdData?.length) return findByIdData;
     return taxPayers;
   };
 
@@ -86,7 +81,7 @@ const TaxPayersPage = () => {
   return (
     <>
       <DynamicTable
-        title={'Solicitudes'}
+        title={'Contribuyentes'}
         searchBar={
           <TableSearchbar
             type="text"
@@ -95,14 +90,13 @@ const TaxPayersPage = () => {
             setSearchValue={setSearchValue}
           />
         }
-        loading={isFetchingTaxPayers}
+        loading={isFetchingTaxPayers || isFetchingFindData}
         options={tableOptions}
         headers={[
           'F. Creacion',
           'N. de Fantasía',
           'Razón social',
           'R.U.C.',
-
           'Opciones',
         ]}
         rows={rowHandler}

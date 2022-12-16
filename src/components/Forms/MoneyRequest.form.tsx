@@ -61,8 +61,6 @@ const MoneyRequestForm = ({
       label: `${cat.displayName}`,
     }));
 
-  console.log(errors);
-
   return (
     <VStack spacing={5}>
       <FormControlledSelect
