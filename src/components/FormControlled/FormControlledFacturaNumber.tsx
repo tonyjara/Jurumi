@@ -7,17 +7,17 @@ import {
   InputGroup,
   InputRightElement,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import type {
   Control,
   FieldErrorsImpl,
   FieldValues,
   Path,
 } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { CgFileDocument } from 'react-icons/cg';
 import { PatternFormat } from 'react-number-format';
-import { trim } from 'lodash';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -29,7 +29,7 @@ interface InputProps<T extends FieldValues> {
   autoFocus?: boolean;
 }
 
-const FormControlledPyInvoiceNumber = <T extends FieldValues>(
+const FormControlledFacturaNumber = <T extends FieldValues>(
   props: InputProps<T>
 ) => {
   const {
@@ -42,6 +42,8 @@ const FormControlledPyInvoiceNumber = <T extends FieldValues>(
     hidden,
     autoFocus,
   } = props;
+  const watchValue = useWatch({ control, name });
+  const [inputValue, setInputValue] = useState<string>(watchValue);
   return (
     <FormControl hidden={hidden} isInvalid={!!errors[name]}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
@@ -56,18 +58,19 @@ const FormControlledPyInvoiceNumber = <T extends FieldValues>(
               <CgFileDocument />
             </InputRightElement>
             <PatternFormat
-              value={field.value}
+              value={inputValue}
               label={label}
               error={errors.facturaNumber?.message ? true : false}
               helperText={helperText}
               fullWidth
               customInput={Input}
               allowEmptyFormatting
-              onValueChange={({ formattedValue }: any) => {
-                field.onChange(trim(formattedValue));
+              onValueChange={({ formattedValue, value }) => {
+                field.onChange(value);
+                setInputValue(formattedValue);
               }}
-              format={'### ### #######'}
-              placeholder={'___-___-_______'}
+              format={'###-###-#######'}
+              mask="_"
               autoFocus={autoFocus}
             />
           </InputGroup>
@@ -83,4 +86,4 @@ const FormControlledPyInvoiceNumber = <T extends FieldValues>(
   );
 };
 
-export default FormControlledPyInvoiceNumber;
+export default FormControlledFacturaNumber;

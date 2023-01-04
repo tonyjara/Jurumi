@@ -1,17 +1,16 @@
 import { Tr, useDisclosure } from '@chakra-ui/react';
-import type { ExpenseReport, MoneyRequest } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+import type { ExpenseReport } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import DateCell from '../../../components/DynamicTables/DynamicCells/DateCell';
+import FacturaNumberCell from '../../../components/DynamicTables/DynamicCells/FacturaNumberCell';
 import ImageModalCell from '../../../components/DynamicTables/DynamicCells/ImageModalCell';
 import MoneyCell from '../../../components/DynamicTables/DynamicCells/MoneyCell';
 import TextCell from '../../../components/DynamicTables/DynamicCells/TextCell';
-import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
 import DynamicTable from '../../../components/DynamicTables/DynamicTable';
 import TableSearchbar from '../../../components/DynamicTables/Utils/TableSearchbar';
-import EditMoneyRequestModal from '../../../components/Modals/MoneyReq.edit.modal';
-import CreateMoneyRequestModal from '../../../components/Modals/MoneyRequest.create.modal';
+import EditExpenseReportModal from '../../../components/Modals/expenseReport.edit.modal';
 import { trpcClient } from '../../../lib/utils/trpcClient';
+import RowOptionsHomeExpenseReports from './rowOptions.home.expense-reports';
 
 export type MyExpenseReport = ExpenseReport & {
   searchableImage: {
@@ -28,25 +27,15 @@ export type MyExpenseReport = ExpenseReport & {
   } | null;
   taxPayer: {
     razonSocial: string;
-    fantasyName: string;
+    fantasyName: string | null;
     ruc: string;
   };
 };
 
 const MyExpenseReportsPage = () => {
-  const session = useSession();
-  const user = session.data?.user;
   const [searchValue, setSearchValue] = useState('');
   const [editExpenseReport, setEditExpenseReport] =
     useState<MyExpenseReport | null>(null);
-
-  // useEffect(() => {
-  //   if (query.moneyRequestId) {
-  //     setSearchValue(query.moneyRequestId);
-  //   }
-  //   return () => {};
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   const {
     isOpen: isEditOpen,
@@ -75,7 +64,7 @@ const MyExpenseReportsPage = () => {
     return (
       <Tr key={x.id}>
         <DateCell date={x.createdAt} />
-        <TextCell text={x.facturaNumber} />
+        <FacturaNumberCell text={x.facturaNumber} />
         <TextCell shortenString hover={x.comments} text={x.comments} />
         <MoneyCell objectKey={'amountSpent'} data={x} />
         <ImageModalCell
@@ -85,6 +74,11 @@ const MyExpenseReportsPage = () => {
         <TextCell text={x.taxPayer.razonSocial} />
         <TextCell text={x.Project?.displayName ?? '-'} />
         <TextCell text={x.CostCategory?.displayName ?? '-'} />
+        <RowOptionsHomeExpenseReports
+          setEditExpenseReport={setEditExpenseReport}
+          onEditOpen={onEditOpen}
+          x={x}
+        />
       </Tr>
     );
   });
@@ -115,13 +109,13 @@ const MyExpenseReportsPage = () => {
         ]}
         rows={rowHandler}
       />
-      {/* {editExpenseReport && (
-        <EditMoneyRequestModal
-          moneyRequest={editExpenseReport}
+      {editExpenseReport && (
+        <EditExpenseReportModal
+          expenseReport={editExpenseReport}
           isOpen={isEditOpen}
           onClose={onEditClose}
         />
-      )} */}
+      )}
     </>
   );
 };

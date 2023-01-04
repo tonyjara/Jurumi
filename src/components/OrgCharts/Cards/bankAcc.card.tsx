@@ -23,10 +23,10 @@ import {
   translateCurrency,
 } from '../../../lib/utils/TranslatedEnums';
 import EditBankAccModal from '../../Modals/moneyAcc.edit.modal';
-import type { MoneyAccWithBankInfo } from '../../../lib/validations/moneyAcc.validate';
+import type { FormMoneyAccount } from '../../../lib/validations/moneyAcc.validate';
 import { formatedAccountBalance } from '../../../lib/utils/TransactionUtils';
 import type { Transaction } from '@prisma/client';
-interface BankAccWithTransactions extends MoneyAccWithBankInfo {
+export interface BankAccWithTransactions extends FormMoneyAccount {
   transactions: Transaction[];
 }
 const BankAccCard = (bankAcc: BankAccWithTransactions) => {

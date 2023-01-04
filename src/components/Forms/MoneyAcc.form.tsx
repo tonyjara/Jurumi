@@ -4,7 +4,7 @@ import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import type { MoneyAccWithBankInfo } from '../../lib/validations/moneyAcc.validate';
+import type { FormMoneyAccount } from '../../lib/validations/moneyAcc.validate';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
@@ -18,7 +18,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<any>;
 }
 
-const MoneyAccForm = ({ control, errors }: formProps<MoneyAccWithBankInfo>) => {
+const MoneyAccForm = ({ control, errors }: formProps<FormMoneyAccount>) => {
   const currency = useWatch({ control, name: 'currency' });
   const isCashAccount = useWatch({ control, name: 'isCashAccount' });
 

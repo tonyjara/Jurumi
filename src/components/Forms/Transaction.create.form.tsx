@@ -25,7 +25,7 @@ import {
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import type {
-  FormTransaction,
+  FormTransactionCreate,
   TransactionField,
 } from '../../lib/validations/transaction.create.validate';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
@@ -45,7 +45,7 @@ const TransactionForm = ({
   errors,
   totalAmount,
   amountExecuted,
-}: formProps<FormTransaction>) => {
+}: formProps<FormTransactionCreate>) => {
   const { fields, prepend, remove, update } = useFieldArray({
     control,
     name: 'transactions',

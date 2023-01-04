@@ -14,10 +14,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import type { OrgWithApproversAndMoneyAdmins } from '../../lib/validations/org.validate';
+import type { FormOrganization } from '../../lib/validations/org.validate';
 import {
   defaultOrgData,
-  validateOrgCreate,
+  validateOrganization,
 } from '../../lib/validations/org.validate';
 import OrgForm from '../Forms/Org.form';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
@@ -38,9 +38,9 @@ const CreateOrgModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<OrgWithApproversAndMoneyAdmins>({
+  } = useForm<FormOrganization>({
     defaultValues: defaultOrgData,
-    resolver: zodResolver(validateOrgCreate),
+    resolver: zodResolver(validateOrganization),
   });
   const handleOnClose = () => {
     reset(defaultOrgData);
@@ -58,7 +58,7 @@ const CreateOrgModal = ({
     })
   );
 
-  const submitFunc = async (data: OrgWithApproversAndMoneyAdmins) => {
+  const submitFunc = async (data: FormOrganization) => {
     mutate(data);
   };
 

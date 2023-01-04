@@ -9,11 +9,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import type { TaxPayer } from '@prisma/client';
 import { useRouter } from 'next/router';
+import type { FormTaxPayer } from '../../../lib/validations/taxtPayer.validate';
 import {
   defaultTaxPayer,
-  taxPayerValidate,
+  validateTaxPayer,
 } from '../../../lib/validations/taxtPayer.validate';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
@@ -33,9 +33,9 @@ const CreateTaxPayerPage = () => {
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<TaxPayer>({
+  } = useForm<FormTaxPayer>({
     defaultValues: defaultTaxPayer,
-    resolver: zodResolver(taxPayerValidate),
+    resolver: zodResolver(validateTaxPayer),
   });
 
   const { error, mutate, isLoading } = trpcClient.taxPayer.create.useMutation(
@@ -49,7 +49,7 @@ const CreateTaxPayerPage = () => {
     })
   );
 
-  const submitFunc = async (data: TaxPayer) => {
+  const submitFunc = async (data: FormTaxPayer) => {
     mutate(data);
   };
 

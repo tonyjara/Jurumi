@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { taxPayerValidate } from '../../../lib/validations/taxtPayer.validate';
+import { validateTaxPayer } from '../../../lib/validations/taxtPayer.validate';
 import {
   adminProcedure,
   adminModProcedure,
@@ -29,7 +29,7 @@ export const taxPayerRouter = router({
     }),
 
   create: protectedProcedure
-    .input(taxPayerValidate)
+    .input(validateTaxPayer)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
 
@@ -62,7 +62,7 @@ export const taxPayerRouter = router({
       return x;
     }),
   edit: protectedProcedure
-    .input(taxPayerValidate)
+    .input(validateTaxPayer)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
 

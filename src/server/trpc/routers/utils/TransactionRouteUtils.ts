@@ -1,13 +1,13 @@
 import type { Account, Transaction } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
-import type { FormTransaction } from '../../../../lib/validations/transaction.create.validate';
+import type { FormTransactionCreate } from '../../../../lib/validations/transaction.create.validate';
 import { getSelectedOrganizationId } from './PreferencesRoutUtils';
 
 export async function createManyMoneyAccountTransactions({
   accountId,
   formTransaction,
 }: {
-  formTransaction: FormTransaction;
+  formTransaction: FormTransactionCreate;
   accountId: string;
 }) {
   return await prisma?.$transaction(async (txCtx) => {

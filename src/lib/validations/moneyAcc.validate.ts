@@ -7,25 +7,7 @@ import {
   Currency,
 } from '@prisma/client';
 import { z } from 'zod';
-
-export interface MoneyAccWithBankInfo extends MoneyAccount {
-  bankInfo: BankInfoModelType | null;
-}
-
-type withMoney = Omit<MoneyAccWithBankInfo, 'initialBalance'> & {
-  initialBalance?: any;
-};
-
-const stringReqMinMax = (reqText: string, min: number, max: number) =>
-  z
-    .string({ required_error: reqText })
-    .min(min, `El campo debe tener al menos (${min}) caractéres.`)
-    .max(max, `Has superado el límite de caractérs (${max})`);
-const stringMinMax = (min: number, max: number) =>
-  z
-    .string()
-    .min(min, `El campo debe tener al menos (${min}) caractéres.`)
-    .max(max, `Has superado el límite de caractérs (${max})`);
+import { stringMinMax, stringReqMinMax } from '../utils/ValidationHelpers';
 
 export const BankInfoModel: z.ZodType<Omit<BankInfo, 'moneyAccountId'>> =
   z.lazy(() =>
@@ -41,10 +23,19 @@ export const BankInfoModel: z.ZodType<Omit<BankInfo, 'moneyAccountId'>> =
       type: z.nativeEnum(BankAccountType),
     })
   );
+export type FormBankInfo = z.infer<typeof BankInfoModel>;
 
-export type BankInfoModelType = z.infer<typeof BankInfoModel>;
+export interface FormMoneyAccWithBankInfo extends MoneyAccount {
+  bankInfo: FormBankInfo | null;
+}
+export type FormMoneyAccount = Omit<
+  FormMoneyAccWithBankInfo,
+  'initialBalance'
+> & {
+  initialBalance?: any;
+};
 
-export const validateMoneyAccount: z.ZodType<withMoney> = z.lazy(() =>
+export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
   z
     .object({
       id: z.string(),
@@ -108,7 +99,7 @@ export const validateMoneyAccount: z.ZodType<withMoney> = z.lazy(() =>
     })
 );
 
-const defaultBankInfoValues: BankInfoModelType = {
+const defaultBankInfoData: FormBankInfo = {
   bankName: 'ITAU',
   type: 'SAVINGS',
   accountNumber: '',
@@ -120,7 +111,7 @@ const defaultBankInfoValues: BankInfoModelType = {
   ownerContactNumber: null,
 };
 
-export const defaultMoneyAccValues: MoneyAccWithBankInfo = {
+export const defaultMoneyAccData: FormMoneyAccount = {
   id: '',
   createdAt: new Date(),
   updatedAt: null,
@@ -132,5 +123,5 @@ export const defaultMoneyAccValues: MoneyAccWithBankInfo = {
   displayName: '',
   archived: false,
   softDeleted: false,
-  bankInfo: defaultBankInfoValues,
+  bankInfo: defaultBankInfoData,
 };

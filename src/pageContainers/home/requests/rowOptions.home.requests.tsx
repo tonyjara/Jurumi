@@ -37,7 +37,7 @@ const RowOptionsHomeRequests = ({
   setEditMoneyRequest: React.Dispatch<
     React.SetStateAction<MoneyRequest | null>
   >;
-  setReqForReport: React.Dispatch<React.SetStateAction<MoneyRequest | null>>;
+  setReqForReport: React.Dispatch<React.SetStateAction<MyMoneyRequests | null>>;
   onEditOpen: () => void;
   onExpRepOpen: () => void;
 }) => {

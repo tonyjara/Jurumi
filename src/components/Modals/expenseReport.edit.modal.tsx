@@ -10,19 +10,16 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { ExpenseReport } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import type { OrgWithApproversAndMoneyAdmins } from '../../lib/validations/org.validate';
+import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
 import {
-  defaultOrgData,
-  validateOrgCreate,
-} from '../../lib/validations/org.validate';
+  defaultExpenseReportData,
+  validateExpenseReport,
+} from '../../lib/validations/expenseReport.validate';
 import ExpenseReportForm from '../Forms/ExpenseReport.form';
-
-import OrgForm from '../Forms/Org.form';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
 const EditExpenseReportModal = ({
@@ -32,7 +29,7 @@ const EditExpenseReportModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  expenseReport: ExpenseReport;
+  expenseReport: FormExpenseReport;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -41,9 +38,9 @@ const EditExpenseReportModal = ({
     reset,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<ExpenseReport>({
-    defaultValues: defaultOrgData,
-    resolver: zodResolver(validateOrgCreate),
+  } = useForm<FormExpenseReport>({
+    defaultValues: defaultExpenseReportData,
+    resolver: zodResolver(validateExpenseReport),
   });
 
   useEffect(() => {
@@ -67,8 +64,8 @@ const EditExpenseReportModal = ({
       })
     );
 
-  const submitFunc = async (data: ExpenseReport) => {
-    //   mutate(data);
+  const submitFunc = async (data: FormExpenseReport) => {
+    mutate(data);
   };
 
   return (
@@ -76,16 +73,16 @@ const EditExpenseReportModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Editar una organización</ModalHeader>
+          <ModalHeader>Editar una rendición</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
-            {/* <ExpenseReportForm
+            <ExpenseReportForm
               setValue={setValue}
               control={control}
               errors={errors as any}
-            /> */}
+            />
           </ModalBody>
 
           <ModalFooter>

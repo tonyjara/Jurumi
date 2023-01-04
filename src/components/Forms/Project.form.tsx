@@ -1,9 +1,7 @@
 import { VStack } from '@chakra-ui/react';
-import type { Project } from '@prisma/client';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
-import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
-import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
+import type { FormProject } from '../../lib/validations/project.validate';
 import FormControlledText from '../FormControlled/FormControlledText';
 import CostCategoryForm from './CostCategory.form';
 
@@ -12,7 +10,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<T>;
 }
 
-const ProjectForm = ({ control, errors }: formProps<ProjectWithCostCat>) => {
+const ProjectForm = ({ control, errors }: formProps<FormProject>) => {
   return (
     <>
       <VStack spacing={5}>

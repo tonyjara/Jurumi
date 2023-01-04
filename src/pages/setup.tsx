@@ -17,10 +17,10 @@ import { handleUseMutationAlerts } from '../components/Toasts/MyToast';
 import { knownErrors } from '../lib/dictionaries/knownErrors';
 import { trpcClient } from '../lib/utils/trpcClient';
 
-import type { initialSetupForm } from '../lib/validations/setup.validate';
+import type { FormInitialSetup } from '../lib/validations/setup.validate';
 import {
   defaultInitialSetupData,
-  initialSetupValidation,
+  validateInitialSetup,
 } from '../lib/validations/setup.validate';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 //This page is only available when there are no users in the database
@@ -32,9 +32,9 @@ const Setup = () => {
     control,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<initialSetupForm>({
+  } = useForm<FormInitialSetup>({
     defaultValues: defaultInitialSetupData,
-    resolver: zodResolver(initialSetupValidation),
+    resolver: zodResolver(validateInitialSetup),
   });
 
   const { error, mutate, isLoading } =
@@ -48,7 +48,7 @@ const Setup = () => {
       })
     );
 
-  const submitFunc = async (data: initialSetupForm) => {
+  const submitFunc = async (data: FormInitialSetup) => {
     mutate(data);
   };
   return (

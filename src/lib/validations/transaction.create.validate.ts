@@ -20,12 +20,12 @@ export interface TransactionField {
   moneyAccountId: string;
   transactionProofUrl: string;
 }
-export interface FormTransaction extends withMoney {
+export interface FormTransactionCreate extends withMoney {
   transactions: TransactionField[];
 }
 
-export const validateTransactionCreate: z.ZodType<FormTransaction> = z.lazy(
-  () =>
+export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
+  z.lazy(() =>
     z
       .object({
         transactions: z.array(
@@ -67,13 +67,9 @@ export const validateTransactionCreate: z.ZodType<FormTransaction> = z.lazy(
           });
         }
       })
-);
+  );
 
-export type validateTransactionCreateData = z.infer<
-  typeof validateTransactionCreate
->;
-
-export const defaultTransactionCreateValues: validateTransactionCreateData = {
+export const defaultTransactionCreateData: FormTransactionCreate = {
   id: 0,
   createdAt: new Date(),
   updatedAt: null,

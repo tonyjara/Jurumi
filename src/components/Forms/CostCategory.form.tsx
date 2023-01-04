@@ -4,8 +4,8 @@ import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
-import { defaultCostCat } from '../../lib/validations/project.validate';
+import type { FormProject } from '../../lib/validations/project.validate';
+import { defaultCostCategoryData } from '../../lib/validations/project.validate';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 import FormControlledText from '../FormControlled/FormControlledText';
 
@@ -14,10 +14,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<T>;
 }
 
-const CostCategoryForm = ({
-  control,
-  errors,
-}: formProps<ProjectWithCostCat>) => {
+const CostCategoryForm = ({ control, errors }: formProps<FormProject>) => {
   const { fields, prepend, remove } = useFieldArray({
     control,
     name: 'costCategories',
@@ -29,7 +26,7 @@ const CostCategoryForm = ({
       <HStack justifyContent={'space-between'}>
         <Text fontSize={'lg'}> Lineas presupuestarias</Text>
         <IconButton
-          onClick={() => prepend(defaultCostCat)}
+          onClick={() => prepend(defaultCostCategoryData)}
           aria-label="add"
           icon={<AddIcon />}
         />

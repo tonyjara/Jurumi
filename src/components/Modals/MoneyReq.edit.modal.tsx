@@ -17,9 +17,9 @@ import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
+import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
 import {
-  defaultMoneyRequestValues,
+  defaultMoneyRequestData,
   validateMoneyRequest,
 } from '../../lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
@@ -40,8 +40,8 @@ const EditMoneyRequestModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<moneyRequestValidateData>({
-    defaultValues: defaultMoneyRequestValues,
+  } = useForm<FormMoneyRequest>({
+    defaultValues: defaultMoneyRequestData,
     resolver: zodResolver(validateMoneyRequest),
   });
   useEffect(() => {
@@ -53,7 +53,7 @@ const EditMoneyRequestModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
   const handleOnClose = () => {
-    reset(defaultMoneyRequestValues);
+    reset(defaultMoneyRequestData);
     onClose();
   };
 
@@ -67,7 +67,7 @@ const EditMoneyRequestModal = ({
     })
   );
 
-  const submitFunc = async (data: moneyRequestValidateData) => {
+  const submitFunc = async (data: FormMoneyRequest) => {
     mutate(data);
   };
 

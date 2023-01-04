@@ -19,9 +19,9 @@ import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import { projectMock } from '../../__tests__/mocks/Mocks';
 import ProjectForm from '../Forms/Project.form';
-import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
+import type { FormProject } from '../../lib/validations/project.validate';
 import {
-  defaultProjectValues,
+  defaultProjectData,
   validateProject,
 } from '../../lib/validations/project.validate';
 
@@ -40,12 +40,12 @@ const ProjectCreateModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<ProjectWithCostCat>({
-    defaultValues: defaultProjectValues,
+  } = useForm<FormProject>({
+    defaultValues: defaultProjectData,
     resolver: zodResolver(validateProject),
   });
   const handleOnClose = () => {
-    reset(defaultProjectValues);
+    reset(defaultProjectData);
     onClose();
   };
 
@@ -59,7 +59,7 @@ const ProjectCreateModal = ({
     })
   );
 
-  const submitFunc = async (data: ProjectWithCostCat) => {
+  const submitFunc = async (data: FormProject) => {
     data.organizationId = orgId;
     mutate(data);
   };

@@ -10,7 +10,7 @@ import {
 } from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
+import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
@@ -21,10 +21,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<T>;
 }
 
-const MoneyRequestForm = ({
-  control,
-  errors,
-}: formProps<moneyRequestValidateData>) => {
+const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
   const { data: session } = useSession();
   const user = session?.user;
   const isAdminOrMod = user?.role === 'ADMIN' || user?.role === 'MODERATOR';

@@ -22,8 +22,8 @@ export const validateNewUser = z
       });
     }
   });
-export type newUserForm = z.infer<typeof validateNewUser>;
-export const defaultNewUserValues: newUserForm = {
+export type FormNewUser = z.infer<typeof validateNewUser>;
+export const defaultNewUserData: FormNewUser = {
   password: '',
   confirmPassword: '',
   token: '',

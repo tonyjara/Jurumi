@@ -2,19 +2,17 @@ import type { CostCategory, Project } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
+import { stringReqMinMax } from '../utils/ValidationHelpers';
 
-const stringReqMinMax = (reqText: string, min: number, max: number) =>
-  z
-    .string({ required_error: reqText })
-    .min(min, `El campo debe tener al menos (${min}) caractéres.`)
-    .max(max, `Has superado el límite de caractérs (${max})`);
-
-type withMoney = Omit<CostCategory, 'openingBalance' | 'executedAmount'> & {
+export type FormCostCategory = Omit<
+  CostCategory,
+  'openingBalance' | 'executedAmount'
+> & {
   openingBalance?: any;
   executedAmount?: any;
 };
 
-const CostCategoryModel: z.ZodType<withMoney> = z.lazy(() =>
+const validateCostCategory: z.ZodType<FormCostCategory> = z.lazy(() =>
   z.object({
     id: z.string(),
     createdAt: z.date(),
@@ -29,13 +27,11 @@ const CostCategoryModel: z.ZodType<withMoney> = z.lazy(() =>
   })
 );
 
-type costCatWithMoney = z.infer<typeof CostCategoryModel>;
-
-export interface ProjectWithCostCat extends Project {
-  costCategories: costCatWithMoney[];
+export interface FormProject extends Project {
+  costCategories: FormCostCategory[];
 }
 
-export const validateProject: z.ZodType<ProjectWithCostCat> = z.lazy(() =>
+export const validateProject: z.ZodType<FormProject> = z.lazy(() =>
   z.object({
     id: z.string(),
     createdAt: z.date(),
@@ -57,13 +53,11 @@ export const validateProject: z.ZodType<ProjectWithCostCat> = z.lazy(() =>
     }),
     softDeleted: z.boolean(),
     archived: z.boolean(),
-    costCategories: CostCategoryModel.array(),
+    costCategories: validateCostCategory.array(),
   })
 );
 
-export type projectValidateData = z.infer<typeof validateProject>;
-
-export const defaultCostCat: costCatWithMoney = {
+export const defaultCostCategoryData: FormCostCategory = {
   id: '',
   createdAt: new Date(),
   updatedAt: null,
@@ -76,7 +70,7 @@ export const defaultCostCat: costCatWithMoney = {
   projectId: null,
 };
 
-export const defaultProjectValues: projectValidateData = {
+export const defaultProjectData: FormProject = {
   id: '',
   createdAt: new Date(),
   updatedAt: null,
@@ -87,5 +81,5 @@ export const defaultProjectValues: projectValidateData = {
   archived: false,
   softDeleted: false,
   description: '',
-  costCategories: [defaultCostCat],
+  costCategories: [defaultCostCategoryData],
 };

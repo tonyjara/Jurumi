@@ -23,9 +23,9 @@ import { trpcClient } from '../../../lib/utils/trpcClient';
 import CreateProjectModal from '../../Modals/project.create.modal';
 import EditOrgModal from '../../Modals/org.edit.modal';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
-import type { OrgWithApproversAndMoneyAdmins } from '../../../lib/validations/org.validate';
+import type { FormOrganization } from '../../../lib/validations/org.validate';
 
-const OrgCard = (org: OrgWithApproversAndMoneyAdmins) => {
+const OrgCard = (org: FormOrganization) => {
   const context = trpcClient.useContext();
   const {
     isOpen: isProjectOpen,

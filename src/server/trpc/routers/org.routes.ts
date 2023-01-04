@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { validateOrgCreate } from '../../../lib/validations/org.validate';
+import { validateOrganization } from '../../../lib/validations/org.validate';
 import {
   adminProcedure,
   adminModProcedure,
@@ -31,7 +31,7 @@ export const orgRouter = router({
     });
   }),
   create: adminModProcedure
-    .input(validateOrgCreate)
+    .input(validateOrganization)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
 
@@ -51,7 +51,7 @@ export const orgRouter = router({
       return org;
     }),
   edit: adminModProcedure
-    .input(validateOrgCreate)
+    .input(validateOrganization)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
 

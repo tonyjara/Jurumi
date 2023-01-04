@@ -19,7 +19,7 @@ import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import type { accountWithVerifyLink } from '../../lib/validations/account.validate';
 import {
-  defaultAccData,
+  defaultAccountData,
   validateAccount,
 } from '../../lib/validations/account.validate';
 
@@ -45,11 +45,11 @@ const CreateAccountModal = ({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<Account>({
-    defaultValues: defaultAccData,
+    defaultValues: defaultAccountData,
     resolver: zodResolver(validateAccount),
   });
   const handleOnClose = () => {
-    reset(defaultAccData);
+    reset(defaultAccountData);
     setValue('');
     onClose();
   };
@@ -63,7 +63,7 @@ const CreateAccountModal = ({
           if (!verifyLink) return;
           setValue(verifyLink);
           // handleOnClose();
-          reset(defaultAccData);
+          reset(defaultAccountData);
           context.verificationLinks.getVerificationLinks.invalidate();
           context.account.getMany.invalidate();
         },

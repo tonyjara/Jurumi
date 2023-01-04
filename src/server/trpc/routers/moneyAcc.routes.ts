@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
-import type { BankInfoModelType } from '../../../lib/validations/moneyAcc.validate';
+import type { FormBankInfo } from '../../../lib/validations/moneyAcc.validate';
 import { validateMoneyAccount } from '../../../lib/validations/moneyAcc.validate';
 import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 
@@ -44,7 +44,7 @@ export const moneyAccRouter = router({
   create: adminModProcedure
     .input(validateMoneyAccount)
     .mutation(async ({ input: i, ctx }) => {
-      const bankInfo: BankInfoModelType | undefined = i.bankInfo
+      const bankInfo: FormBankInfo | undefined = i.bankInfo
         ? {
             bankName: i.bankInfo.bankName,
             type: i.bankInfo.type,
@@ -72,7 +72,7 @@ export const moneyAccRouter = router({
   edit: adminModProcedure
     .input(validateMoneyAccount)
     .mutation(async ({ input: i, ctx }) => {
-      const bankInfo: BankInfoModelType | undefined = i.bankInfo
+      const bankInfo: FormBankInfo | undefined = i.bankInfo
         ? {
             bankName: i.bankInfo.bankName,
             type: i.bankInfo.type,

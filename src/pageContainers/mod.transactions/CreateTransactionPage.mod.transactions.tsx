@@ -9,9 +9,9 @@ import TransactionForm from '../../components/Forms/Transaction.create.form';
 import { handleUseMutationAlerts } from '../../components/Toasts/MyToast';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormTransaction } from '../../lib/validations/transaction.create.validate';
+import type { FormTransactionCreate } from '../../lib/validations/transaction.create.validate';
 import {
-  defaultTransactionCreateValues,
+  defaultTransactionCreateData,
   validateTransactionCreate,
 } from '../../lib/validations/transaction.create.validate';
 import { translatedMoneyReqType } from '../../lib/utils/TranslatedEnums';
@@ -37,8 +37,8 @@ const CreateTransactionPage = ({
     reset,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<FormTransaction>({
-    defaultValues: defaultTransactionCreateValues,
+  } = useForm<FormTransactionCreate>({
+    defaultValues: defaultTransactionCreateData,
     resolver: zodResolver(validateTransactionCreate),
   });
 
@@ -57,13 +57,13 @@ const CreateTransactionPage = ({
         successText: 'Su solicitud ha sido aprobada y ejecutada!',
         callback: () => {
           context.moneyRequest.invalidate();
-          reset(defaultTransactionCreateValues);
+          reset(defaultTransactionCreateData);
           handleGoBack();
         },
       })
     );
 
-  const submitFunc = async (data: FormTransaction) => {
+  const submitFunc = async (data: FormTransactionCreate) => {
     mutate(data);
   };
 

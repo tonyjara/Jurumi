@@ -5,7 +5,7 @@ import {
   bankNameOptions,
   ownerDocTypeOptions,
 } from '../../lib/utils/SelectOptions';
-import type { MoneyAccWithBankInfo } from '../../lib/validations/moneyAcc.validate';
+import type { FormMoneyAccount } from '../../lib/validations/moneyAcc.validate';
 import FormControlledPhoneInput from '../FormControlled/FormControlledPhoneInput';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
@@ -15,7 +15,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<T>;
 }
 
-const BankInfoForm = ({ control, errors }: formProps<MoneyAccWithBankInfo>) => {
+const BankInfoForm = ({ control, errors }: formProps<FormMoneyAccount>) => {
   // const currency = useWatch({ control, name: 'currency' });
 
   return (

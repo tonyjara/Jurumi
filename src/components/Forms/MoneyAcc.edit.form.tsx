@@ -2,7 +2,7 @@ import { VStack } from '@chakra-ui/react';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
-import type { MoneyAccWithBankInfo } from '../../lib/validations/moneyAcc.validate';
+import type { FormMoneyAccount } from '../../lib/validations/moneyAcc.validate';
 import FormControlledText from '../FormControlled/FormControlledText';
 import BankInfoForm from './BankInfo.form';
 
@@ -12,10 +12,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<any>;
 }
 
-const EditMoneyAccForm = ({
-  control,
-  errors,
-}: formProps<MoneyAccWithBankInfo>) => {
+const EditMoneyAccForm = ({ control, errors }: formProps<FormMoneyAccount>) => {
   const isCashAccount = useWatch({ control, name: 'isCashAccount' });
 
   return (

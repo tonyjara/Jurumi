@@ -18,9 +18,9 @@ import {
 import type { GetServerSideProps } from 'next';
 import { verifyToken } from '../../lib/utils/asyncJWT';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { newUserForm } from '../../lib/validations/newUser.validate';
+import type { FormNewUser } from '../../lib/validations/newUser.validate';
 import {
-  defaultNewUserValues,
+  defaultNewUserData,
   validateNewUser,
 } from '../../lib/validations/newUser.validate';
 import { trpcClient } from '../../lib/utils/trpcClient';
@@ -36,9 +36,9 @@ export default function NewUser(props?: {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<newUserForm>({
+  } = useForm<FormNewUser>({
     resolver: zodResolver(validateNewUser),
-    defaultValues: defaultNewUserValues,
+    defaultValues: defaultNewUserData,
   });
   const { error, mutate, isLoading } =
     trpcClient.verificationLinks.assignPassword.useMutation(
@@ -49,7 +49,7 @@ export default function NewUser(props?: {
         },
       })
     );
-  const submitForm = async (data: newUserForm) => {
+  const submitForm = async (data: FormNewUser) => {
     const token = props?.token;
     const email = props?.data?.email;
     const linkId = props?.data?.linkId;

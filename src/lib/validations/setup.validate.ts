@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const initialSetupValidation = z
+export const validateInitialSetup = z
   .object({
     displayName: z.string().min(3, 'Favor ingrese un nombre.'),
     email: z.string().email('Favor ingrese un correo válido.'),
@@ -21,8 +21,8 @@ export const initialSetupValidation = z
       });
     }
   });
-export type initialSetupForm = z.infer<typeof initialSetupValidation>;
-export const defaultInitialSetupData: initialSetupForm = {
+export type FormInitialSetup = z.infer<typeof validateInitialSetup>;
+export const defaultInitialSetupData: FormInitialSetup = {
   password: '',
   confirmPassword: '',
   email: '',

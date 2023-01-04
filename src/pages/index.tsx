@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/router';
 import FormControlledText from '../components/FormControlled/FormControlledText';
-import type { signinData } from '../lib/validations/auth.signin.validate';
+import type { FormSignin } from '../lib/validations/auth.signin.validate';
 import {
   defaultSigninData,
   signinValidation,
@@ -31,12 +31,12 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<signinData>({
+  } = useForm<FormSignin>({
     defaultValues: defaultSigninData,
     resolver: zodResolver(signinValidation(t)),
   });
 
-  const submitSigning = async ({ email, password }: signinData) => {
+  const submitSigning = async ({ email, password }: FormSignin) => {
     const x = await signIn('credentials', {
       redirect: false,
       email,

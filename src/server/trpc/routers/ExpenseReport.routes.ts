@@ -66,19 +66,19 @@ export const expenseReportsRouter = router({
     .input(validateExpenseReport)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
-
+      // Based on the RUC, we query the db, if no taxpayer, creates. Else do nothing. The returned value is used then to attach the taxpayerid to the expense report.
       const taxPayer = await prisma?.taxPayer.upsert({
         where: {
-          ruc: input.taxPayerRuc,
+          ruc: input.taxPayer.ruc,
         },
         create: {
           createdById: user.id,
-          razonSocial: input.taxPayerRazonSocial,
-          ruc: input.taxPayerRuc,
+          razonSocial: input.taxPayer.razonSocial,
+          ruc: input.taxPayer.ruc,
         },
         update: {},
       });
-      if (!taxPayer) {
+      if (!taxPayer || !input.searchableImage) {
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
           message: 'taxpayer failed',
@@ -95,15 +95,16 @@ export const expenseReportsRouter = router({
           currency: input.currency,
           moneyRequestId: input.moneyRequestId,
           taxPayerId: taxPayer.id,
+          projectId: input.projectId,
+          costCategoryId: input.costCategoryId,
+
           searchableImage: {
             create: {
-              url: input.facturaPictureUrl,
-              imageName: input.imageName,
+              url: input.searchableImage.url,
+              imageName: input.searchableImage.imageName,
               text: '',
             },
           },
-          //should substract on accpectance
-          costCategoryId: input.costCategoryId,
         },
       });
 
@@ -116,16 +117,16 @@ export const expenseReportsRouter = router({
 
       const taxPayer = await prisma?.taxPayer.upsert({
         where: {
-          ruc: input.taxPayerRuc,
+          ruc: input.taxPayer.ruc,
         },
         create: {
           createdById: user.id,
-          razonSocial: input.taxPayerRazonSocial,
-          ruc: input.taxPayerRuc,
+          razonSocial: input.taxPayer.razonSocial,
+          ruc: input.taxPayer.ruc,
         },
         update: {},
       });
-      if (!taxPayer) {
+      if (!taxPayer || !input.searchableImage) {
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
           message: 'taxpayer failed',
@@ -143,15 +144,27 @@ export const expenseReportsRouter = router({
           currency: input.currency,
           moneyRequestId: input.moneyRequestId,
           taxPayerId: taxPayer.id,
+          costCategoryId: input.costCategoryId,
+          projectId: input.projectId,
+          // searchableImage: {
+          //   create: {
+          //     url: input.facturaPictureUrl,
+          //     imageName: input.imageName,
+          //     text: '',
+          //   },
+          // },
           searchableImage: {
-            create: {
-              url: input.facturaPictureUrl,
-              imageName: input.imageName,
-              text: '',
+            upsert: {
+              create: {
+                url: input.searchableImage.url,
+                imageName: input.searchableImage.imageName,
+                text: '',
+              },
+              update: {
+                url: input.searchableImage.url,
+              },
             },
           },
-          //should substract on accpectance
-          costCategoryId: input.costCategoryId,
         },
       });
 

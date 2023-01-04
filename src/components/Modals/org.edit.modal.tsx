@@ -14,11 +14,9 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import type { OrgWithApproversAndMoneyAdmins } from '../../lib/validations/org.validate';
-import {
-  defaultOrgData,
-  validateOrgCreate,
-} from '../../lib/validations/org.validate';
+import type { FormOrganization } from '../../lib/validations/org.validate';
+import { validateOrganization } from '../../lib/validations/org.validate';
+import { defaultOrgData } from '../../lib/validations/org.validate';
 
 import OrgForm from '../Forms/Org.form';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
@@ -30,7 +28,7 @@ const EditOrgModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  org: OrgWithApproversAndMoneyAdmins;
+  org: FormOrganization;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -38,9 +36,9 @@ const EditOrgModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<OrgWithApproversAndMoneyAdmins>({
+  } = useForm<FormOrganization>({
     defaultValues: defaultOrgData,
-    resolver: zodResolver(validateOrgCreate),
+    resolver: zodResolver(validateOrganization),
   });
 
   useEffect(() => {
@@ -64,7 +62,7 @@ const EditOrgModal = ({
     })
   );
 
-  const submitFunc = async (data: OrgWithApproversAndMoneyAdmins) => {
+  const submitFunc = async (data: FormOrganization) => {
     mutate(data);
   };
 

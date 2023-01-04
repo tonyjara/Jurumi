@@ -3,18 +3,13 @@ import { MoneyRequestStatus, MoneyRequestType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { z } from 'zod';
+import { stringReqMinMax } from '../utils/ValidationHelpers';
 
-const stringReqMinMax = (reqText: string, min: number, max: number) =>
-  z
-    .string({ required_error: reqText })
-    .min(min, `El campo debe tener al menos (${min}) caractéres.`)
-    .max(max, `Has superado el límite de caractérs (${max})`);
-
-type withMoney = Omit<MoneyRequest, 'amountRequested'> & {
+export type FormMoneyRequest = Omit<MoneyRequest, 'amountRequested'> & {
   amountRequested?: any;
 };
 
-export const validateMoneyRequest: z.ZodType<withMoney> = z.lazy(() =>
+export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
   z
     .object({
       id: z.string(),
@@ -48,9 +43,7 @@ export const validateMoneyRequest: z.ZodType<withMoney> = z.lazy(() =>
     })
 );
 
-export type moneyRequestValidateData = z.infer<typeof validateMoneyRequest>;
-
-export const defaultMoneyRequestValues: moneyRequestValidateData = {
+export const defaultMoneyRequestData: FormMoneyRequest = {
   id: '',
   createdAt: new Date(),
   updatedAt: null,

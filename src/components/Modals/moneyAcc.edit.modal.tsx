@@ -15,9 +15,9 @@ import { useForm, useWatch } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 
 import { trpcClient } from '../../lib/utils/trpcClient';
-import type { MoneyAccWithBankInfo } from '../../lib/validations/moneyAcc.validate';
+import type { FormMoneyAccount } from '../../lib/validations/moneyAcc.validate';
 import {
-  defaultMoneyAccValues,
+  defaultMoneyAccData,
   validateMoneyAccount,
 } from '../../lib/validations/moneyAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
@@ -31,7 +31,7 @@ const EditMoneyAccModal = ({
   onClose,
   accData,
 }: {
-  accData: MoneyAccWithBankInfo | MoneyAccount;
+  accData: FormMoneyAccount | MoneyAccount;
   isOpen: boolean;
   onClose: () => void;
 }) => {
@@ -41,12 +41,12 @@ const EditMoneyAccModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<MoneyAccWithBankInfo>({
-    defaultValues: defaultMoneyAccValues,
+  } = useForm<FormMoneyAccount>({
+    defaultValues: defaultMoneyAccData,
     resolver: zodResolver(validateMoneyAccount),
   });
   const handleOnClose = () => {
-    reset(defaultMoneyAccValues);
+    reset(defaultMoneyAccData);
     onClose();
   };
   useEffect(() => {
@@ -72,7 +72,7 @@ const EditMoneyAccModal = ({
     })
   );
 
-  const submitFunc = async (data: MoneyAccWithBankInfo) => {
+  const submitFunc = async (data: FormMoneyAccount) => {
     mutate(data);
   };
 

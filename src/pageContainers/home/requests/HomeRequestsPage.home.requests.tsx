@@ -1,5 +1,11 @@
 import { Tr, useDisclosure } from '@chakra-ui/react';
-import type { MoneyRequest } from '@prisma/client';
+import type {
+  CostCategory,
+  ExpenseReport,
+  MoneyRequest,
+  Project,
+  Transaction,
+} from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import DateCell from '../../../components/DynamicTables/DynamicCells/DateCell';
 import EnumTextCell from '../../../components/DynamicTables/DynamicCells/EnumTextCell';
@@ -19,11 +25,20 @@ import {
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import RowOptionsHomeRequests from './rowOptions.home.requests';
 
+type completeMoneyReq = MoneyRequest & {
+  transactions: Transaction[];
+  expenseReports: ExpenseReport[];
+  project: Project | null;
+  costCategory: CostCategory | null;
+};
+
 const MoneyRequestsPage = () => {
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null
   );
-  const [reqForReport, setReqForReport] = useState<MoneyRequest | null>(null);
+  const [reqForReport, setReqForReport] = useState<completeMoneyReq | null>(
+    null
+  );
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {

@@ -18,7 +18,7 @@ import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import {
   defaultTaxPayer,
-  taxPayerValidate,
+  validateTaxPayer,
 } from '../../lib/validations/taxtPayer.validate';
 import { taxPayerMock } from '../../__tests__/mocks/Mocks';
 import SeedButton from '../DevTools/SeedButton';
@@ -28,11 +28,17 @@ import { handleUseMutationAlerts } from '../Toasts/MyToast';
 const CreateTaxPayerModal = ({
   isOpen,
   onClose,
-  onSubmit,
+  handleSetRucAndRazonSocial,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: any;
+  handleSetRucAndRazonSocial?: ({
+    ruc,
+    razonSocial,
+  }: {
+    ruc: string;
+    razonSocial: string;
+  }) => void;
 }) => {
   const context = trpcClient.useContext();
 
@@ -43,7 +49,7 @@ const CreateTaxPayerModal = ({
     formState: { errors, isSubmitting },
   } = useForm<TaxPayer>({
     defaultValues: defaultTaxPayer,
-    resolver: zodResolver(taxPayerValidate),
+    resolver: zodResolver(validateTaxPayer),
   });
 
   const handleOnClose = () => {
@@ -53,7 +59,13 @@ const CreateTaxPayerModal = ({
   const { error, mutate, isLoading } = trpcClient.taxPayer.create.useMutation(
     handleUseMutationAlerts({
       successText: 'El contribuyente ha sido creado.',
-      callback: () => {
+      callback: (res) => {
+        handleSetRucAndRazonSocial &&
+          handleSetRucAndRazonSocial({
+            razonSocial: res.razonSocial,
+            ruc: res.ruc,
+          });
+
         context.taxPayer.invalidate();
 
         handleOnClose();
@@ -67,7 +79,7 @@ const CreateTaxPayerModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={handleOnClose}>
-      <form onSubmit={handleSubmit(onSubmit ?? submitFunc)} noValidate>
+      <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Crear un contribuyente</ModalHeader>

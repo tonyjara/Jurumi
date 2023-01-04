@@ -11,5 +11,5 @@ export const signinValidation = (t: CustomTFunction<'validation'>) =>
       .min(6, t('validation:minPassword')),
   });
 
-export type signinData = z.infer<ReturnType<typeof signinValidation>>;
-export const defaultSigninData: signinData = { email: '', password: '' };
+export type FormSignin = z.infer<ReturnType<typeof signinValidation>>;
+export const defaultSigninData: FormSignin = { email: '', password: '' };

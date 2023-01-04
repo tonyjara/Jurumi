@@ -7,7 +7,7 @@ import {
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { initialSetupValidation } from '../../../lib/validations/setup.validate';
+import { validateInitialSetup } from '../../../lib/validations/setup.validate';
 
 export const accountsRouter = router({
   toggleActivation: adminModProcedure
@@ -50,7 +50,7 @@ export const accountsRouter = router({
   }),
 
   createOneUNSAFE: publicProcedure
-    .input(initialSetupValidation)
+    .input(validateInitialSetup)
     .mutation(async ({ input }) => {
       const accounts = await prisma?.account.findMany();
       if (accounts?.length) {

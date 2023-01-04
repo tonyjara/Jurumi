@@ -1,7 +1,7 @@
 import type { TaxPayer } from '@prisma/client';
 import * as z from 'zod';
 
-export const taxPayerValidate: z.ZodType<TaxPayer> = z.lazy(() =>
+export const validateTaxPayer: z.ZodType<TaxPayer> = z.lazy(() =>
   z.object({
     id: z.string(),
     createdAt: z.date(),
@@ -22,9 +22,9 @@ export const taxPayerValidate: z.ZodType<TaxPayer> = z.lazy(() =>
   })
 );
 
-export type TaxPayerFormType = z.infer<typeof taxPayerValidate>;
+export type FormTaxPayer = z.infer<typeof validateTaxPayer>;
 
-export const defaultTaxPayer: TaxPayerFormType = {
+export const defaultTaxPayer: FormTaxPayer = {
   id: '',
   createdAt: new Date(),
   updatedAt: null,

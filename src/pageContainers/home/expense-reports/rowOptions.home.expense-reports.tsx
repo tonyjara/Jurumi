@@ -12,7 +12,7 @@ import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import type { MyExpenseReport } from './ExpenseReportsPage.home.expense-reports';
 
-const RowOptionsHomeRequests = ({
+const RowOptionsHomeExpenseReports = ({
   x,
   setEditExpenseReport,
   onEditOpen,
@@ -60,4 +60,4 @@ const RowOptionsHomeRequests = ({
   );
 };
 
-export default RowOptionsHomeRequests;
+export default RowOptionsHomeExpenseReports;

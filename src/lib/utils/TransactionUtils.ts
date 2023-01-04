@@ -1,5 +1,6 @@
 import type { ExpenseReport, Transaction } from '@prisma/client';
 import { Prisma } from '@prisma/client';
+import type { BankAccWithTransactions } from '../../components/OrgCharts/Cards/bankAcc.card';
 import type { MoneyAccWithTransactions } from '../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
 import type { TransactionField } from '../validations/transaction.create.validate';
 import { decimalFormat } from './DecimalHelpers';
@@ -25,7 +26,9 @@ export const reduceTransactionFields = (x: TransactionField[]) => {
   }, new Prisma.Decimal(0));
 };
 
-export const formatedAccountBalance = (acc: MoneyAccWithTransactions) => {
+export const formatedAccountBalance = (
+  acc: MoneyAccWithTransactions | BankAccWithTransactions
+) => {
   if (acc?.transactions?.length) {
     const lastT = acc.transactions[0];
     const currentBalance = lastT?.openingBalance.sub(lastT.transactionAmount);

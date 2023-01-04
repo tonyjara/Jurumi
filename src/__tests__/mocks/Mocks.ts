@@ -2,17 +2,18 @@ import type { TaxPayer, Transaction } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import type {
-  BankInfoModelType,
-  MoneyAccWithBankInfo,
-} from '../../lib/validations/moneyAcc.validate';
-import { randEnumValue } from '../../lib/utils/TypescriptUtils';
-import type { ProjectWithCostCat } from '../../lib/validations/project.validate';
-import type { moneyRequestValidateData } from '../../lib/validations/moneyRequest.validate';
-import type { expenseReportValidateType } from '../../lib/validations/expenseReport.validate';
 
-const bankInfo: () => BankInfoModelType = () => {
-  const x: BankInfoModelType = {
+import { randEnumValue } from '../../lib/utils/TypescriptUtils';
+import type { FormProject } from '../../lib/validations/project.validate';
+import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
+import type {
+  FormBankInfo,
+  FormMoneyAccount,
+} from '../../lib/validations/moneyAcc.validate';
+import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
+
+const bankInfo: () => FormBankInfo = () => {
+  const x: FormBankInfo = {
     bankName: randEnumValue(BankNamesPy),
     type: 'SAVINGS',
     accountNumber: faker.finance.account(),
@@ -41,8 +42,8 @@ export const taxPayerMock: () => TaxPayer = () => {
   return x;
 };
 
-export const moneyAccMock: () => MoneyAccWithBankInfo = () => {
-  const x: MoneyAccWithBankInfo = {
+export const moneyAccMock: () => FormMoneyAccount = () => {
+  const x: FormMoneyAccount = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
@@ -59,8 +60,8 @@ export const moneyAccMock: () => MoneyAccWithBankInfo = () => {
   return x;
 };
 
-export const projectMock: () => ProjectWithCostCat = () => {
-  const x: ProjectWithCostCat = {
+export const projectMock: () => FormProject = () => {
+  const x: FormProject = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
@@ -105,8 +106,8 @@ export const projectMock: () => ProjectWithCostCat = () => {
   };
   return x;
 };
-export const moneyRequestMock: () => moneyRequestValidateData = () => {
-  const x: moneyRequestValidateData = {
+export const moneyRequestMock: () => FormMoneyRequest = () => {
+  const x: FormMoneyRequest = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
@@ -145,7 +146,7 @@ export const transactionMock: () => Transaction = () => {
   return x;
 };
 
-type mockExpenseReport = Omit<expenseReportValidateType, 'projectId'>;
+type mockExpenseReport = Omit<FormExpenseReport, 'projectId'>;
 
 export const expenseReportMock: ({
   moneyReqId,
@@ -153,12 +154,14 @@ export const expenseReportMock: ({
   moneyReqId: string;
 }) => mockExpenseReport = ({ moneyReqId }) => {
   const x: mockExpenseReport = {
-    facturaPictureUrl:
-      'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
-    imageName: '2c96c577-01a6-4a42-8681-907593b087aa',
-    taxPayerRuc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
-    taxPayerRazonSocial: faker.name.fullName(),
-
+    searchableImage: {
+      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+      imageName: '2c96c577-01a6-4a42-8681-907593b087aa',
+    },
+    taxPayer: {
+      razonSocial: faker.name.fullName(),
+      ruc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
+    },
     id: '',
     createdAt: new Date(),
     updatedAt: null,

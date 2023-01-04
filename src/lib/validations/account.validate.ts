@@ -2,9 +2,9 @@ import type { Account, AccountVerificationLinks } from '@prisma/client';
 import { Role } from '@prisma/client';
 import * as z from 'zod';
 
-type withNoPassword = Omit<Account, 'password'>;
+type FormAccount = Omit<Account, 'password'>;
 
-export const validateAccount: z.ZodType<withNoPassword> = z.lazy(() =>
+export const validateAccount: z.ZodType<FormAccount> = z.lazy(() =>
   z.object({
     id: z.string(),
     active: z.boolean(),
@@ -24,9 +24,7 @@ export const validateAccount: z.ZodType<withNoPassword> = z.lazy(() =>
   })
 );
 
-export type accCreateData = z.infer<typeof validateAccount>;
-
-export const defaultAccData: accCreateData = {
+export const defaultAccountData: FormAccount = {
   id: '',
   active: true,
   createdAt: new Date(),

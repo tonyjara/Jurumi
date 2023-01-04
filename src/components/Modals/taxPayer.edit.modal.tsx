@@ -11,14 +11,14 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { TaxPayer } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
+import type { FormTaxPayer } from '../../lib/validations/taxtPayer.validate';
 import {
   defaultTaxPayer,
-  taxPayerValidate,
+  validateTaxPayer,
 } from '../../lib/validations/taxtPayer.validate';
 import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
@@ -30,7 +30,7 @@ const EditTaxPayerModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  taxPayer: TaxPayer;
+  taxPayer: FormTaxPayer;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -38,9 +38,9 @@ const EditTaxPayerModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<TaxPayer>({
+  } = useForm<FormTaxPayer>({
     defaultValues: defaultTaxPayer,
-    resolver: zodResolver(taxPayerValidate),
+    resolver: zodResolver(validateTaxPayer),
   });
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const EditTaxPayerModal = ({
     })
   );
 
-  const submitFunc = async (data: TaxPayer) => {
+  const submitFunc = async (data: FormTaxPayer) => {
     mutate(data);
   };
 

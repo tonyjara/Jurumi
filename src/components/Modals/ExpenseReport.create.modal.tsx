@@ -16,15 +16,22 @@ import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import { defaultMoneyRequestValues } from '../../lib/validations/moneyRequest.validate';
 import { expenseReportMock } from '../../__tests__/mocks/Mocks';
-import type { MoneyRequest } from '@prisma/client';
-import type { expenseReportValidateType } from '../../lib/validations/expenseReport.validate';
+import type {
+  CostCategory,
+  ExpenseReport,
+  MoneyRequest,
+  Project,
+  Transaction,
+} from '@prisma/client';
+import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
 import {
   defaultExpenseReportData,
   validateExpenseReport,
 } from '../../lib/validations/expenseReport.validate';
 import ExpenseReportForm from '../Forms/ExpenseReport.form';
+import { reduceExpenseReports } from '../../lib/utils/TransactionUtils';
+import { decimalFormat } from '../../lib/utils/DecimalHelpers';
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -33,7 +40,12 @@ const CreateExpenseReportModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  moneyRequest: MoneyRequest;
+  moneyRequest: MoneyRequest & {
+    transactions: Transaction[];
+    expenseReports: ExpenseReport[];
+    project: Project | null;
+    costCategory: CostCategory | null;
+  };
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -42,12 +54,12 @@ const CreateExpenseReportModal = ({
     reset,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<expenseReportValidateType>({
+  } = useForm<FormExpenseReport>({
     defaultValues: defaultExpenseReportData,
     resolver: zodResolver(validateExpenseReport),
   });
   const handleOnClose = () => {
-    reset(defaultMoneyRequestValues);
+    reset(defaultExpenseReportData);
     onClose();
   };
 
@@ -71,16 +83,27 @@ const CreateExpenseReportModal = ({
       })
     );
 
-  const submitFunc = async (data: expenseReportValidateType) => {
+  const submitFunc = async (data: FormExpenseReport) => {
     mutate(data);
   };
+
+  const pendingAmount = () =>
+    decimalFormat(
+      moneyRequest.amountRequested.sub(
+        reduceExpenseReports(moneyRequest.expenseReports)
+      ),
+      moneyRequest.currency
+    );
 
   return (
     <Modal isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una rendición</ModalHeader>
+          <ModalHeader>
+            Crear una rendición. <br /> Pendiente: {pendingAmount()}
+          </ModalHeader>
+
           <ModalCloseButton />
           <ModalBody>
             <SeedButton

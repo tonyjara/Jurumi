@@ -3,7 +3,7 @@ import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 
 import { trpcClient } from '../../lib/utils/trpcClient';
-import type { OrgWithApproversAndMoneyAdmins } from '../../lib/validations/org.validate';
+import type { FormOrganization } from '../../lib/validations/org.validate';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
 
@@ -13,10 +13,7 @@ interface formProps<T extends FieldValues> {
   errors: FieldErrorsImpl<any>;
 }
 
-const OrgForm = ({
-  control,
-  errors,
-}: formProps<OrgWithApproversAndMoneyAdmins>) => {
+const OrgForm = ({ control, errors }: formProps<FormOrganization>) => {
   const { data: activeUsers } = trpcClient.account.getAllActive.useQuery();
   const usersAsOptions = activeUsers?.map((user) => ({
     displayName: `${user.displayName}`,
