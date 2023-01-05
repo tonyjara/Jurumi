@@ -1,68 +1,126 @@
 // Chakra imports
 import {
   Card,
-  CardBody,
   CardHeader,
+  chakra,
   Flex,
+  HStack,
+  IconButton,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Select,
   Table,
   Tbody,
+  Td,
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
   useColorModeValue,
 } from '@chakra-ui/react';
 import React from 'react';
 import SkeletonRows from './Utils/SkeletonRows';
 import ThreeDotTableButton from './Utils/ThreeDotTableButton';
-
-export interface IObjectKeys {
-  [key: string]: any;
-}
-export type NestedKeyOf<ObjectType extends IObjectKeys> = {
-  [Key in keyof ObjectType &
-    (string | number)]: ObjectType[Key] extends IObjectKeys
-    ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
-    : `${Key}`;
-}[keyof ObjectType & (string | number)];
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from '@chakra-ui/icons';
+import type { ColumnDef, Header, SortingState } from '@tanstack/react-table';
+import {
+  useReactTable,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/react-table';
+import { TbWorld } from 'react-icons/tb';
 
 export interface TableOptions {
   onClick: () => void;
   label: string;
 }
-export interface DynamicCellProps<T extends IObjectKeys> {
-  objectKey: NestedKeyOf<T>;
-  // objectKey: Extract<keyof T, string>;
-  data: T;
-  enumFunc?: (x: any) => string;
-}
 
 interface DynamicTableProps<T extends object> {
   title?: string;
   subTitle?: string;
-  headers: string[];
-  rows?: T[];
   options?: TableOptions[]; // enables three dot menu
   searchBar?: React.ReactNode;
   loading?: boolean;
   noHeader?: boolean;
+  data?: T[];
   h?: string;
+  columns?: ColumnDef<T, any>[];
+  pageIndex: number;
+  setPageIndex: React.Dispatch<React.SetStateAction<number>>;
+  pageSize: number;
+  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  count: number;
+  sorting: SortingState;
+  setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
+  globalFilter?: boolean;
 }
 
 const DynamicTable = <T extends object>({
   title,
-  headers,
-  rows,
   options,
   subTitle,
   searchBar,
   loading,
   noHeader,
-  h,
+  // h,
+  data,
+  columns,
+  pageIndex,
+  setPageIndex,
+  pageSize,
+  setPageSize,
+  count,
+  sorting,
+  setSorting,
+  globalFilter,
 }: DynamicTableProps<T>) => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
+  const nextPage = () => setPageIndex(pageIndex + 1);
+  const previousPage = () => setPageIndex(pageIndex - 1);
+  const canNextPage = data?.length === pageSize;
+  const canPreviousPage = pageIndex > 0;
+  const gotoPage = (x: number) => setPageIndex(x);
+  const lastPage = Math.ceil(count / pageSize);
+
+  const table = useReactTable({
+    columns: columns ?? [],
+    data: data ?? [],
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: !globalFilter ? setSorting : undefined,
+    getSortedRowModel: !globalFilter ? getSortedRowModel() : undefined,
+    state: !globalFilter
+      ? {
+          sorting,
+        }
+      : undefined,
+  });
+
+  const handleToggleSorting = (header: Header<T, unknown>) => {
+    if (!sorting.length) {
+      setSorting([{ id: header.column.id, desc: true }]);
+    }
+    if (sorting[0]?.desc) {
+      setSorting([{ id: header.column.id, desc: false }]);
+    }
+    if (sorting[0] && !sorting[0].desc) {
+      setSorting([]);
+    }
+  };
+
   return (
-    <Card h={h ?? '80vh'} overflow={'hidden'} backgroundColor={backgroundColor}>
+    <Card overflow={'auto'} backgroundColor={backgroundColor}>
       {!noHeader && (
         <CardHeader>
           <Flex justifyContent={'space-between'}>
@@ -73,27 +131,188 @@ const DynamicTable = <T extends object>({
               <Text fontSize="md">{subTitle}</Text>
               {searchBar}
             </Flex>
-            <ThreeDotTableButton options={options} />
+            <HStack>
+              <Tooltip label="Cuando el filtro global esta activado, al presionar sobre la cabecera de las columnas los datos serán filtrados en toda la base de datos. De lo contrario serán ordenados solamente en la lista cargada actualmente.">
+                {globalFilter ? (
+                  <IconButton
+                    colorScheme={'green'}
+                    aria-label="global filter active"
+                  >
+                    <TbWorld style={{ width: '30px', height: '30px' }} />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    colorScheme={'red'}
+                    aria-label="global filter inactive"
+                  >
+                    <TbWorld style={{ width: '30px', height: '30px' }} />
+                  </IconButton>
+                )}
+              </Tooltip>
+              <ThreeDotTableButton options={options} />
+            </HStack>
           </Flex>
         </CardHeader>
       )}
-      <CardBody overflow={'auto'}>
-        <Table size={['sm', 'md']} variant={'simple'}>
-          <Thead>
-            <Tr>
-              {headers.map((label, idx: number) => {
-                return <Th key={idx}>{label}</Th>;
+
+      <Table
+        size={['sm', 'md']}
+        variant={'simple'}
+        backgroundColor={backgroundColor}
+      >
+        <Thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
+                const meta: any = header.column.columnDef.meta;
+
+                return (
+                  <Th
+                    cursor={
+                      header.column.accessorFn?.length ? 'pointer' : undefined
+                    }
+                    key={header.id}
+                    onClick={() => handleToggleSorting(header)}
+                    isNumeric={meta?.isNumeric}
+                  >
+                    <Flex>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+
+                      <chakra.span pl="4">
+                        {!globalFilter && header.column.getIsSorted() ? (
+                          header.column.getIsSorted() === 'desc' ? (
+                            <TriangleDownIcon aria-label="sorted descending" />
+                          ) : (
+                            <TriangleUpIcon aria-label="sorted ascending" />
+                          )
+                        ) : null}
+                        {globalFilter &&
+                        sorting[0] &&
+                        sorting[0].id === header.column.id ? (
+                          sorting[0]?.desc ? (
+                            <TriangleDownIcon aria-label="sorted descending" />
+                          ) : (
+                            <TriangleUpIcon aria-label="sorted ascending" />
+                          )
+                        ) : null}
+                      </chakra.span>
+                    </Flex>
+                  </Th>
+                );
               })}
             </Tr>
-          </Thead>
-          <Tbody>
-            <>
-              {!loading && rows}
-              {(!rows || loading) && <SkeletonRows />}
-            </>
-          </Tbody>
-        </Table>
-      </CardBody>
+          ))}
+        </Thead>
+        <Tbody>
+          {!loading &&
+            data &&
+            table?.getRowModel().rows.map((row) => (
+              <Tr key={row.id}>
+                {row.getVisibleCells().map((cell) => {
+                  // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
+                  const meta: any = cell.column.columnDef.meta;
+                  return (
+                    <Td key={cell.id} isNumeric={meta?.isNumeric}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Td>
+                  );
+                })}
+              </Tr>
+            ))}
+          {(!data || loading) && <SkeletonRows />}
+        </Tbody>
+      </Table>
+      <Flex w={'100%'} justifyContent="space-between" m={4} alignItems="center">
+        <Flex>
+          <IconButton
+            onClick={() => gotoPage(0)}
+            isDisabled={!canPreviousPage}
+            icon={<ArrowLeftIcon h={3} w={3} />}
+            mr={4}
+            aria-label={''}
+          />
+
+          <IconButton
+            onClick={previousPage}
+            isDisabled={!canPreviousPage}
+            icon={<ChevronLeftIcon h={6} w={6} />}
+            aria-label={''}
+          />
+        </Flex>
+
+        <Flex alignItems="center">
+          <Text whiteSpace={'nowrap'} mr={8}>
+            Pag.{' '}
+            <Text fontWeight="bold" as="span">
+              {pageIndex + 1}
+            </Text>{' '}
+            de{' '}
+            <Text fontWeight="bold" as="span">
+              {lastPage}
+            </Text>
+          </Text>
+          <Text whiteSpace={'nowrap'}>Ir a pag.:</Text>{' '}
+          <NumberInput
+            ml={2}
+            mr={8}
+            w={28}
+            min={1}
+            max={lastPage}
+            onChange={(value) => {
+              const page = value ? parseInt(value) - 1 : 0;
+              gotoPage(page);
+            }}
+            defaultValue={pageIndex + 1}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <Select
+            w={32}
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+            }}
+            // minW="130px"
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Mostrar {pageSize}
+              </option>
+            ))}
+          </Select>
+        </Flex>
+
+        <Flex>
+          <IconButton
+            onClick={nextPage}
+            isDisabled={!canNextPage}
+            icon={<ChevronRightIcon h={6} w={6} />}
+            aria-label={''}
+          />
+
+          <IconButton
+            onClick={() => {
+              gotoPage(lastPage - 1);
+              // console.log(Math.ceil(count / pageSize));
+            }}
+            isDisabled={!canNextPage}
+            icon={<ArrowRightIcon h={3} w={3} />}
+            ml={4}
+            aria-label={''}
+          />
+        </Flex>
+      </Flex>
     </Card>
   );
 };

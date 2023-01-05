@@ -11,15 +11,20 @@ export const moneyApprovalRouter = router({
         where: { accountId: user.id, moneyRequestId: input.moneyRequestId },
       });
 
-      return await prisma?.moneyRequestApproval.upsert({
-        create: {
-          moneyRequestId: input.moneyRequestId,
-          status: 'ACCEPTED',
-          accountId: user.id,
-          rejectMessage: '',
-        },
-        update: { status: 'ACCEPTED', rejectMessage: '' },
-        where: { id: prevApproval?.id },
+      if (!prevApproval) {
+        return await prisma?.moneyRequestApproval.create({
+          data: {
+            moneyRequestId: input.moneyRequestId,
+            status: 'ACCEPTED',
+            accountId: user.id,
+            rejectMessage: '',
+          },
+        });
+      }
+
+      return await prisma?.moneyRequestApproval.update({
+        data: { status: 'ACCEPTED', rejectMessage: '' },
+        where: { id: prevApproval.id },
       });
     }),
   reject: adminModProcedure

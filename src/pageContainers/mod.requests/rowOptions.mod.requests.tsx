@@ -1,5 +1,4 @@
 import {
-  Td,
   Menu,
   MenuButton,
   IconButton,
@@ -42,60 +41,58 @@ const RowOptionsModRequests = ({
   );
 
   return (
-    <Td>
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="options button"
-          icon={<BsThreeDots />}
-        />
-        <MenuList>
-          <MenuItem
-            isDisabled={needsApproval && !hasBeenApproved}
-            onClick={() => {
-              router.push({
-                pathname: '/mod/transactions/create',
-                query: { moneyRequestId: x.id },
-              });
-            }}
-          >
-            Aceptar y ejecutar{' '}
-            {needsApproval && !hasBeenApproved && '( Necesita aprovación )'}
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              const rejected = cloneDeep(x);
-              rejected.status = 'REJECTED';
-              setEditMoneyRequest(rejected);
-              onEditOpen();
-            }}
-          >
-            Rechazar
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              setEditMoneyRequest(x);
-              onEditOpen();
-            }}
-          >
-            Editar
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              router.push({
-                pathname: '/mod/transactions',
-                query: { transactionIds: x.transactions.map((x) => x.id) },
-              });
-            }}
-          >
-            Ver transacciones
-          </MenuItem>
-          <MenuItem>Exportar como excel</MenuItem>
-          <MenuItem>Imprimir</MenuItem>
-          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
-        </MenuList>
-      </Menu>
-    </Td>
+    <Menu>
+      <MenuButton
+        as={IconButton}
+        aria-label="options button"
+        icon={<BsThreeDots />}
+      />
+      <MenuList>
+        <MenuItem
+          isDisabled={needsApproval && !hasBeenApproved}
+          onClick={() => {
+            router.push({
+              pathname: '/mod/transactions/create',
+              query: { moneyRequestId: x.id },
+            });
+          }}
+        >
+          Aceptar y ejecutar{' '}
+          {needsApproval && !hasBeenApproved && '( Necesita aprovación )'}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            const rejected = cloneDeep(x);
+            rejected.status = 'REJECTED';
+            setEditMoneyRequest(rejected);
+            onEditOpen();
+          }}
+        >
+          Rechazar
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setEditMoneyRequest(x);
+            onEditOpen();
+          }}
+        >
+          Editar
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            router.push({
+              pathname: '/mod/transactions',
+              query: { transactionIds: x.transactions.map((x) => x.id) },
+            });
+          }}
+        >
+          Ver transacciones
+        </MenuItem>
+        <MenuItem>Exportar como excel</MenuItem>
+        <MenuItem>Imprimir</MenuItem>
+        <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+      </MenuList>
+    </Menu>
   );
 };
 

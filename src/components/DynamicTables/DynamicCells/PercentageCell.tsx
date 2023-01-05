@@ -20,16 +20,14 @@ const PercentageCell = ({
 }) => {
   const percentage = executed.dividedBy(total).times(100).toFixed(0);
   return (
-    <Td>
-      <Tooltip label={decimalFormat(executed, currency)}>
-        <CircularProgress
-          value={parseInt(percentage)}
-          color={parseInt(percentage) < 100 ? 'orange.400' : 'green.400'}
-        >
-          <CircularProgressLabel>{percentage}%</CircularProgressLabel>
-        </CircularProgress>
-      </Tooltip>
-    </Td>
+    <Tooltip label={decimalFormat(executed, currency)}>
+      <CircularProgress
+        value={parseInt(percentage)}
+        color={parseInt(percentage) < 100 ? 'orange.400' : 'green.400'}
+      >
+        <CircularProgressLabel>{percentage}%</CircularProgressLabel>
+      </CircularProgress>
+    </Tooltip>
   );
 };
 

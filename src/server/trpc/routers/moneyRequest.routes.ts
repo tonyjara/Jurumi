@@ -36,17 +36,46 @@ export const moneyRequestRouter = router({
         where: { accountId: user.id, status: input.status },
       });
     }),
-
+  count: protectedProcedure.query(async () => prisma?.moneyRequest.count()),
   getManyComplete: adminModProcedure
     .input(
-      z.object({ status: z.nativeEnum(MoneyResquestApprovalStatus).optional() })
+      z.object({
+        status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
     )
     .query(async ({ input, ctx }) => {
       const user = ctx.session.user;
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+
+      //splits nested objects
+      const handleOrderBy = () => {
+        if (input.sorting && input.sorting[0]) {
+          const prop = input.sorting[0];
+          if (prop.id.includes('_')) {
+            const split = prop.id.split('_');
+            return {
+              [split[0] as string]: {
+                [split[1] as string]: prop.desc ? 'desc' : 'asc',
+              },
+            };
+          }
+          return { [prop.id]: prop.desc ? 'desc' : 'asc' };
+        }
+        return { createdAt: 'desc' } as any;
+      };
 
       return await prisma?.moneyRequest.findMany({
-        take: 20,
-        orderBy: { createdAt: 'desc' },
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy(),
+        // orderBy: { account: { displayName: 'asc' } },
         include: {
           account: true,
           project: true,
