@@ -4,7 +4,7 @@ import BankAccCardGroup from './CardGroups/BankAcc.cardGroup';
 import PettyCashCardGroup from './CardGroups/PettyCash.cardGroup';
 import ProjectCardGroup from './CardGroups/Project.cardGroup';
 
-const MainOverview = () => {
+const MainOrgChart = () => {
   return (
     <VStack transform={'scale(0.5)'}>
       <>
@@ -18,4 +18,4 @@ const MainOverview = () => {
   );
 };
 
-export default MainOverview;
+export default MainOrgChart;

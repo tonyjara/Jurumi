@@ -13,65 +13,74 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormOrganization } from '../../lib/validations/org.validate';
-import {
-  defaultOrgData,
-  validateOrganization,
-} from '../../lib/validations/org.validate';
-import OrgForm from '../Forms/Org.form';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
 
-const CreateOrgModal = ({
+import { trpcClient } from '../../lib/utils/trpcClient';
+import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import SeedButton from '../DevTools/SeedButton';
+import { imbursementMock } from '../../__tests__/mocks/Mocks';
+import {
+  defaultProjectData,
+  validateProject,
+} from '../../lib/validations/project.validate';
+import ImbursementForm from '../Forms/Imbursement.form';
+import type { FormImbursement } from '@/lib/validations/imbursement.validate';
+import { defaultImbursementData } from '@/lib/validations/imbursement.validate';
+
+const ImbursementCreateModal = ({
   isOpen,
   onClose,
-  onSubmit,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: any;
 }) => {
   const context = trpcClient.useContext();
-
   const {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<FormOrganization>({
-    defaultValues: defaultOrgData,
-    resolver: zodResolver(validateOrganization),
+  } = useForm<FormImbursement>({
+    defaultValues: defaultImbursementData,
+    resolver: zodResolver(validateProject),
   });
   const handleOnClose = () => {
-    reset(defaultOrgData);
+    reset(defaultProjectData);
     onClose();
   };
-  const { error, mutate, isLoading } = trpcClient.org.create.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Su organización ha sido creada! 🔥',
-      callback: () => {
-        handleOnClose();
-        reset();
-        context.org.invalidate();
-      },
-    })
-  );
 
-  const submitFunc = async (data: FormOrganization) => {
-    mutate(data);
+  const { error, mutate, isLoading } =
+    trpcClient.imbursement.create.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Su desembolso ha sido creado',
+        callback: () => {
+          handleOnClose();
+          context.imbursement.invalidate();
+        },
+      })
+    );
+
+  const submitFunc = async (data: FormImbursement) => {
+    console.log(data);
+
+    // mutate(data);
   };
 
   return (
     <Modal isOpen={isOpen} onClose={handleOnClose}>
-      <form onSubmit={handleSubmit(onSubmit ?? submitFunc)} noValidate>
+      <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una organización</ModalHeader>
+          <ModalHeader>Crear un desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <SeedButton reset={reset} mock={imbursementMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-
-            <OrgForm control={control} errors={errors as any} />
+            <ImbursementForm
+              setValue={setValue}
+              control={control}
+              errors={errors}
+            />
           </ModalBody>
 
           <ModalFooter>
@@ -93,4 +102,4 @@ const CreateOrgModal = ({
   );
 };
 
-export default CreateOrgModal;
+export default ImbursementCreateModal;

@@ -52,7 +52,7 @@ const NavbarProfileSection = () => {
         aria-label="open menu"
         icon={<FiBell />}
       />
-      <Flex alignItems={'center'}>
+      <Flex zIndex={99999} alignItems={'center'}>
         <Menu>
           {data && (
             <MenuButton
@@ -87,7 +87,7 @@ const NavbarProfileSection = () => {
           <MenuList
             // bg={useColorModeValue('white', 'gray.900')}
             // borderColor={useColorModeValue('gray.200', 'gray.700')}
-            zIndex={3}
+            zIndex={999999}
           >
             <MenuItem>Mi cuenta</MenuItem>
             {/* 

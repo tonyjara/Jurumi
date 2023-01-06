@@ -30,11 +30,11 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
     { projectId: projectId ?? '' },
     { enabled: !!projectId?.length }
   );
-  const { data: projects } = trpcClient.project.getMany.useQuery();
-  const { data: orgs } = trpcClient.org.getManyForSelect.useQuery();
-
   const currency = useWatch({ control, name: 'currency' });
   const status = useWatch({ control, name: 'status' });
+
+  const { data: projects } = trpcClient.project.getMany.useQuery();
+  const { data: orgs } = trpcClient.org.getManyForSelect.useQuery();
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,

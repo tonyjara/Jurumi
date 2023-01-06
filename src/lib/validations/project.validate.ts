@@ -1,8 +1,25 @@
-import type { CostCategory, Project } from '@prisma/client';
+import type { CostCategory, Project, ProjectStage } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { stringReqMinMax } from '../utils/ValidationHelpers';
+
+export const validateProjectStage: z.ZodType<
+  Omit<ProjectStage, 'expectedFunds'> & { expectedFunds?: any }
+> = z.lazy(() =>
+  z.object({
+    id: z.string(),
+    createdAt: z.date(),
+    updatedAt: z.date().nullable(),
+    createdById: z.string(),
+    updatedById: z.string().nullable(),
+    startDate: z.date(),
+    endDate: z.date(),
+    expectedFunds: z.any().transform((value) => new Prisma.Decimal(value)),
+    projectId: z.string(),
+  })
+);
+export type FormProjectStage = z.infer<typeof validateProjectStage>;
 
 export type FormCostCategory = Omit<
   CostCategory,
@@ -29,6 +46,7 @@ const validateCostCategory: z.ZodType<FormCostCategory> = z.lazy(() =>
 
 export interface FormProject extends Project {
   costCategories: FormCostCategory[];
+  projectStages: FormProjectStage[];
 }
 
 export const validateProject: z.ZodType<FormProject> = z.lazy(() =>
@@ -54,6 +72,7 @@ export const validateProject: z.ZodType<FormProject> = z.lazy(() =>
     softDeleted: z.boolean(),
     archived: z.boolean(),
     costCategories: validateCostCategory.array(),
+    projectStages: validateProjectStage.array(),
   })
 );
 
@@ -70,6 +89,18 @@ export const defaultCostCategoryData: FormCostCategory = {
   projectId: null,
 };
 
+export const defaultProjectStage: FormProjectStage = {
+  id: '',
+  createdAt: new Date(),
+  updatedAt: null,
+  createdById: '',
+  updatedById: null,
+  startDate: new Date(),
+  endDate: null,
+  expectedFunds: new Prisma.Decimal(0),
+  projectId: null,
+};
+
 export const defaultProjectData: FormProject = {
   id: '',
   createdAt: new Date(),
@@ -82,4 +113,5 @@ export const defaultProjectData: FormProject = {
   softDeleted: false,
   description: '',
   costCategories: [defaultCostCategoryData],
+  projectStages: [defaultProjectStage],
 };

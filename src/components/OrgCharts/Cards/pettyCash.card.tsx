@@ -15,12 +15,12 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
-import { translateCurrency } from '../../../lib/utils/TranslatedEnums';
+import { translateCurrency } from '@/lib/utils/TranslatedEnums';
 import EditMoneyAccModal from '../../Modals/moneyAcc.edit.modal';
-import { formatedAccountBalance } from '../../../lib/utils/TransactionUtils';
-import type { MoneyAccWithTransactions } from '../../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
+import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
+import type { MoneyAccWithTransactions } from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
 
 const PettyCashCard = (pettyCash: MoneyAccWithTransactions) => {
   const context = trpcClient.useContext();

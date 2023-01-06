@@ -1,12 +1,12 @@
 import React from 'react';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { HStack, Text } from '@chakra-ui/react';
 import ErrorBotLottie from '../../Spinners-Loading/ErrorBotLottie';
 import PettyCashCard from '../Cards/pettyCash.card';
-import type { MoneyAccWithTransactions } from '../../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
 import { Prisma } from '@prisma/client';
-import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
-import { reduceMoneyAccountValues } from '../../../lib/utils/MoneyAccountUtils';
+import { decimalFormat } from '@/lib/utils/DecimalHelpers';
+import { reduceMoneyAccountValues } from '@/lib/utils/MoneyAccountUtils';
+import type { MoneyAccWithTransactions } from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
 
 const PettyCashCardGroup = () => {
   const { data, isLoading, error } =

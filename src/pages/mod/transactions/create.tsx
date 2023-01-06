@@ -1,5 +1,5 @@
+import CreateTransactionPage from '@/pageContainers/mod/transactions/CreateTransactionPage.mod.transactions';
 import type { GetServerSideProps } from 'next';
-import CreateTransactionPage from '../../../pageContainers/mod.transactions/CreateTransactionPage.mod.transactions';
 
 export default CreateTransactionPage;
 

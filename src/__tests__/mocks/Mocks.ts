@@ -11,6 +11,7 @@ import type {
   FormMoneyAccount,
 } from '../../lib/validations/moneyAcc.validate';
 import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
+import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
@@ -103,6 +104,34 @@ export const projectMock: () => FormProject = () => {
         projectId: null,
       },
     ],
+    projectStages: [
+      {
+        id: '',
+        createdAt: new Date(),
+        updatedAt: null,
+        createdById: '',
+        updatedById: null,
+        startDate: new Date(),
+        endDate: null,
+        expectedFunds: new Prisma.Decimal(
+          faker.commerce.price(1000000, 3000000)
+        ),
+        projectId: null,
+      },
+      {
+        id: '',
+        createdAt: new Date(),
+        updatedAt: null,
+        createdById: '',
+        updatedById: null,
+        startDate: new Date(),
+        endDate: null,
+        expectedFunds: new Prisma.Decimal(
+          faker.commerce.price(1000000, 3000000)
+        ),
+        projectId: null,
+      },
+    ],
   };
   return x;
 };
@@ -142,6 +171,32 @@ export const transactionMock: () => Transaction = () => {
     moneyRequestId: null,
     imbursementId: null,
     expenseReturnId: null,
+  };
+  return x;
+};
+export const imbursementMock: () => FormImbursement = () => {
+  const x: FormImbursement = {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    createdById: '',
+    updatedById: null,
+    concept: faker.commerce.productDescription().substring(0, 123),
+    wasConvertedToOtherCurrency: true,
+    exchangeRate: 6500,
+    otherCurrency: 'USD',
+    amountInOtherCurrency: new Prisma.Decimal(
+      faker.commerce.price(1000, 10000)
+    ),
+    finalCurrency: 'PYG',
+    finalAmount: new Prisma.Decimal(0),
+    archived: false,
+    softDeleted: false,
+    projectStageId: null,
+    moneyAccountId: null,
+    projectId: null,
+    taxPayer: { razonSocial: '', ruc: '' },
+    searchableImage: { url: '', imageName: '' },
   };
   return x;
 };

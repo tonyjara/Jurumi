@@ -1,6 +1,6 @@
+import type { MoneyAccWithTransactions } from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
 import type { Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
-import type { MoneyAccWithTransactions } from '../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
 
 export const reduceMoneyAccountValues = (
   moneyAccs: MoneyAccWithTransactions[],

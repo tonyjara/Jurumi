@@ -10,13 +10,12 @@ import { BsCash, BsCashStack } from 'react-icons/bs';
 import { TbReceiptTax } from 'react-icons/tb';
 import { MdApproval } from 'react-icons/md';
 import { AiFillBank } from 'react-icons/ai';
-import { FaExchangeAlt } from 'react-icons/fa';
+import { FaExchangeAlt, FaDonate } from 'react-icons/fa';
 import { TbReportMoney } from 'react-icons/tb';
 import type { LinkItemChild } from './NavItemChild';
 import NavItemChild from './NavItemChild';
 import NavItem from './NavItem';
 import OrganizationSelect from './OrganizationSelect';
-
 interface SidebarProps extends BoxProps {
   onClose: () => void;
 }
@@ -54,6 +53,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           name: 'Cuentas',
           icon: AiFillBank,
           dest: '/mod/money-accounts',
+        },
+        {
+          name: 'Desembolsos',
+          icon: FaDonate,
+          dest: '/mod/imbursements',
         },
         {
           name: 'Transacciones',

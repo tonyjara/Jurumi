@@ -156,7 +156,8 @@ model Project {
   TaxPayer       TaxPayer[]
 
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  Imbursement    Imbursement[]
 }
 
 model ProjectStage {
@@ -214,6 +215,8 @@ model Imbursement {
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
   ProjectStage   ProjectStage? @relation(fields: [projectStageId], references: [id])
   projectStageId String?
+  Project        Project?      @relation(fields: [projectId], references: [id])
+  projectId      String?
 
   moneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
   moneyAccountId String?

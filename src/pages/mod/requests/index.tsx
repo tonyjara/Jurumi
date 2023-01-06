@@ -1,5 +1,5 @@
+import MoneyRequestsPage from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
 import type { GetServerSideProps } from 'next';
-import MoneyRequestsPage from '../../../pageContainers/mod.requests/MoneyRequestsPage.mod.requests';
 
 export default MoneyRequestsPage;
 

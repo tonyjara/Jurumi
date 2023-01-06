@@ -1,7 +1,8 @@
+import ApprovalsPage from '@/pageContainers/mod/approvals/PendingApprovalsPage.mod.approvals';
 import type { GetServerSideProps } from 'next';
-import ApprovalsPage from '../../../pageContainers/mod.approvals/PendingApprovalsPage.mod.approvals';
-import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
-import { getSelectedOrganizationId } from '../../../server/trpc/routers/utils/PreferencesRoutUtils';
+
+import { getServerAuthSession } from '@/server/common/get-server-auth-session';
+import { getSelectedOrganizationId } from '@/server/trpc/routers/utils/PreferencesRoutUtils';
 
 export default ApprovalsPage;
 

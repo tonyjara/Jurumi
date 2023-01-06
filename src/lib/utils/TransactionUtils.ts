@@ -1,7 +1,7 @@
+import type { MoneyAccWithTransactions } from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
 import type { ExpenseReport, Transaction } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import type { BankAccWithTransactions } from '../../components/OrgCharts/Cards/bankAcc.card';
-import type { MoneyAccWithTransactions } from '../../pageContainers/mod.money-accounts/MoneyAccountsPage.mod.money-accounts';
 import type { TransactionField } from '../validations/transaction.create.validate';
 import { decimalFormat } from './DecimalHelpers';
 

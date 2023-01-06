@@ -1,6 +1,6 @@
 import { HStack } from '@chakra-ui/react';
 import React from 'react';
-import { Tree, TreeNode } from 'react-organizational-chart';
+
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import ErrorBotLottie from '../../Spinners-Loading/ErrorBotLottie';
 import LoadingPlantLottie from '../../Spinners-Loading/LoadiingPlantLottie';
@@ -15,24 +15,25 @@ const ProjectCardGroup = () => {
     isLoading: isProjectsLoading,
     error: projectError,
   } = trpcClient.project.getMany.useQuery();
+
   return (
     <>
       {!isLoading && (
         <HStack>
-          {orgs?.map((org) => (
-            <Tree key={org.id} label={<OrgCard {...(org as any)} />}>
-              {projects
-                ?.filter((x) => x.organizationId === org.id)
-                .map((project) => (
-                  <TreeNode
-                    key={project.id}
-                    label={<ProjectCard {...project} />}
-                  >
-                    <TreeNode label={<div>Grand Child</div>} />
-                  </TreeNode>
-                ))}
-            </Tree>
-          ))}
+          {orgs?.map((org) => {
+            return (
+              <div key={org.id}>
+                <OrgCard {...(org as any)} />
+                <HStack m={'20px'}>
+                  {projects
+                    ?.filter((x) => x.organizationId === org.id)
+                    .map((project) => (
+                      <ProjectCard key={project.id} {...project} />
+                    ))}
+                </HStack>
+              </div>
+            );
+          })}
         </HStack>
       )}
       {(isLoading || isProjectsLoading) && <LoadingPlantLottie />}

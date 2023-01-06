@@ -10,6 +10,7 @@ import {
   IconButton,
   HStack,
   useDisclosure,
+  FormHelperText,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import type { DropdownIndicatorProps, GroupBase } from 'chakra-react-select';
@@ -37,6 +38,7 @@ interface InputProps<T extends FieldValues> {
   razonSocialName: Path<T>;
   autoFocus?: boolean;
   setValue: SetFieldValue<T>;
+  helperText?: string;
 }
 export interface datosPyResponse {
   razonsocial: string;
@@ -49,8 +51,15 @@ export interface datosPyResponse {
 const FormControlledTaxPayerId = <T extends FieldValues>(
   props: InputProps<T>
 ) => {
-  const { control, rucName, razonSocialName, errors, autoFocus, setValue } =
-    props;
+  const {
+    control,
+    rucName,
+    razonSocialName,
+    errors,
+    autoFocus,
+    setValue,
+    helperText,
+  } = props;
   const [loading, setLoading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectInput, setSelectInput] = useState('');
@@ -215,7 +224,9 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             regrese.
           </Text>
         )}
-        {errors[rucName] && (
+        {!errors[rucName] ? (
+          <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        ) : (
           //@ts-ignore
           <FormErrorMessage>{errors[rucName].message}</FormErrorMessage>
         )}
