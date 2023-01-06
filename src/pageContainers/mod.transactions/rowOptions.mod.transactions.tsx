@@ -1,5 +1,4 @@
 import {
-  Td,
   Menu,
   MenuButton,
   IconButton,
@@ -44,42 +43,40 @@ const RowOptionsModTransactions = ({
   };
 
   return (
-    <Td>
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="options button"
-          icon={<BsThreeDots />}
-        />
-        <MenuList>
-          <MenuItem
-            onClick={() => {
-              router.push({
-                pathname: '/mod/requests',
-                query: handleQueryParams(),
-              });
-            }}
-          >
-            Ir a destino de concepto
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              setEditTransaction(x);
-              onEditOpen();
-            }}
-          >
-            Editar
-          </MenuItem>
-          <MenuItem
-            onClick={() =>
-              deleteById({ id: x.id, moneyAccountId: x.moneyAccountId })
-            }
-          >
-            Eliminar
-          </MenuItem>
-        </MenuList>
-      </Menu>
-    </Td>
+    <Menu>
+      <MenuButton
+        as={IconButton}
+        aria-label="options button"
+        icon={<BsThreeDots />}
+      />
+      <MenuList>
+        <MenuItem
+          onClick={() => {
+            router.push({
+              pathname: '/mod/requests',
+              query: handleQueryParams(),
+            });
+          }}
+        >
+          Ir a destino de concepto
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setEditTransaction(x);
+            onEditOpen();
+          }}
+        >
+          Editar
+        </MenuItem>
+        <MenuItem
+          onClick={() =>
+            deleteById({ id: x.id, moneyAccountId: x.moneyAccountId })
+          }
+        >
+          Eliminar
+        </MenuItem>
+      </MenuList>
+    </Menu>
   );
 };
 

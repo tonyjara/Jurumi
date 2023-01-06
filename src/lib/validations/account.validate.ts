@@ -2,7 +2,7 @@ import type { Account, AccountVerificationLinks } from '@prisma/client';
 import { Role } from '@prisma/client';
 import * as z from 'zod';
 
-type FormAccount = Omit<Account, 'password'>;
+export type FormAccount = Omit<Account, 'password'>;
 
 export const validateAccount: z.ZodType<FormAccount> = z.lazy(() =>
   z.object({

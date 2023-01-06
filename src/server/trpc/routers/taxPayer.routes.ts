@@ -6,14 +6,33 @@ import {
   router,
   protectedProcedure,
 } from '../initTrpc';
+import { handleOrderBy } from './utils/SortingUtils';
 
 export const taxPayerRouter = router({
-  getMany: adminModProcedure.query(async () => {
-    return await prisma?.taxPayer.findMany({
-      take: 20,
-      orderBy: { razonSocial: 'asc' },
-    });
+  count: adminModProcedure.query(async () => {
+    return await prisma?.taxPayer.count();
   }),
+  getMany: adminModProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ input }) => {
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+
+      return await prisma?.taxPayer.findMany({
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy({ input }),
+      });
+    }),
   findFullTextSearch: adminModProcedure
     .input(z.object({ ruc: z.string() }))
     .query(async ({ input }) => {

@@ -49,6 +49,7 @@ export interface TableOptions {
 
 interface DynamicTableProps<T extends object> {
   title?: string;
+  headerComp?: React.ReactNode;
   subTitle?: string;
   options?: TableOptions[]; // enables three dot menu
   searchBar?: React.ReactNode;
@@ -85,6 +86,7 @@ const DynamicTable = <T extends object>({
   sorting,
   setSorting,
   globalFilter,
+  headerComp,
 }: DynamicTableProps<T>) => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
   const nextPage = () => setPageIndex(pageIndex + 1);
@@ -124,6 +126,7 @@ const DynamicTable = <T extends object>({
       {!noHeader && (
         <CardHeader>
           <Flex justifyContent={'space-between'}>
+            {headerComp}
             <Flex flexDirection={'column'}>
               <Text fontSize="xl" fontWeight="bold">
                 {title}

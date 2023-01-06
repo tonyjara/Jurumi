@@ -5,6 +5,7 @@ import type {
   Transaction,
 } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
+import { useDynamicTable } from '../../components/DynamicTables/UseDynamicTable';
 
 import TableSearchbar from '../../components/DynamicTables/Utils/TableSearchbar';
 import { trpcClient } from '../../lib/utils/trpcClient';
@@ -19,7 +20,8 @@ export type TransactionComplete = Transaction & {
 
 const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
   const [searchValue, setSearchValue] = useState('');
-
+  const dynamicTableProps = useDynamicTable();
+  const { pageIndex, globalFilter, pageSize, sorting } = dynamicTableProps;
   useEffect(() => {
     if (query.transactionIds) {
       setSearchValue(String(query.transactionIds) ?? '');
@@ -29,7 +31,11 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data } = trpcClient.transaction.getManyComplete.useQuery();
+  const { data } = trpcClient.transaction.getManyComplete.useQuery(
+    { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
+    { keepPreviousData: globalFilter ? true : false }
+  );
+  const { data: count } = trpcClient.transaction.count.useQuery();
   const { data: findByIdData, isFetching } =
     trpcClient.transaction.findManyCompleteById.useQuery(
       { ids: searchValue.split(',').map(Number) },
@@ -46,6 +52,8 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
     <TransactionsTable
       data={handleDataSource()}
       loading={isFetching}
+      count={count}
+      dynamicTableProps={dynamicTableProps}
       searchBar={
         <TableSearchbar
           type="text"

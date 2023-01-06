@@ -20,7 +20,7 @@ import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
 import FormContainer from '../../../components/Containers/FormContainer';
 import { knownErrors } from '../../../lib/dictionaries/knownErrors';
 import FormControlledText from '../../../components/FormControlled/FormControlledText';
-
+//This might no longer be needed because of modals
 const CreateTaxPayerPage = () => {
   const context = trpcClient.useContext();
   const router = useRouter();

@@ -5,10 +5,10 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import React from 'react';
-import CreateMoneyAccModal from '../../../components/Modals/MoneyAcc.create.modal';
-import CreateOrgModal from '../../../components/Modals/org.create.modal';
+import CreateMoneyAccModal from '../../components/Modals/MoneyAcc.create.modal';
+import CreateOrgModal from '../../components/Modals/org.create.modal';
 import { Select } from 'chakra-react-select';
-import CreateAccountModal from '../../../components/Modals/account.create.modal';
+import CreateAccountModal from '../../components/Modals/account.create.modal';
 
 const CreateTablesSelect = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

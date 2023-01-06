@@ -5,7 +5,7 @@ import {
   TransformComponent,
   TransformWrapper,
 } from '@pronestor/react-zoom-pan-pinch';
-import CreateTablesSelect from './_CreateTablesSelect';
+import CreateTablesSelect from '../../../pageContainers/mod.views/CreateTablesSelect.mod.views';
 
 const Overview = dynamic(
   () => import('../../../components/OrgCharts/orgChart.view.main'),
@@ -15,15 +15,16 @@ const Overview = dynamic(
 );
 const MainView = () => {
   return (
-    <TransformWrapper
-      // initialPositionX={-500}
-      initialPositionY={-100}
-      // velocityAnimation={{ animationType: 'easeInQuad', equalToMove: false }}
-      initialScale={1.5}
-    >
-      {/* {({ zoomIn, zoomOut, resetTransform }) => ( */}
-      <>
-        {/* <HStack
+    <>
+      <TransformWrapper
+        // initialPositionX={-500}
+        initialPositionY={-100}
+        // velocityAnimation={{ animationType: 'easeInQuad', equalToMove: false }}
+        initialScale={1.5}
+      >
+        {/* {({ zoomIn, zoomOut, resetTransform }) => ( */}
+        <>
+          {/* <HStack
             p={'10px'}
             backgroundColor={'gray.900'}
             zIndex={2}
@@ -39,17 +40,18 @@ const MainView = () => {
               RESET
             </Button>
           </HStack> */}
-        {/* <Flex> */}
-        <CreateTablesSelect />
-        <TransformComponent>
-          <Flex w={'100vw'} height={'100vh'}>
-            <Overview />
-          </Flex>
-        </TransformComponent>
-        {/* </Flex> */}
-      </>
-      {/* )} */}
-    </TransformWrapper>
+          {/* <Flex> */}
+          <CreateTablesSelect />
+          <TransformComponent>
+            <Flex w={'100vw'} height={'100vh'}>
+              <Overview />
+            </Flex>
+          </TransformComponent>
+          {/* </Flex> */}
+        </>
+        {/* )} */}
+      </TransformWrapper>
+    </>
   );
 };
 

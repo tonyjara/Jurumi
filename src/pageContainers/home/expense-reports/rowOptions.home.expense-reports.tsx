@@ -1,5 +1,4 @@
 import {
-  Td,
   Menu,
   MenuButton,
   IconButton,
@@ -36,27 +35,25 @@ const RowOptionsHomeExpenseReports = ({
     );
 
   return (
-    <Td>
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="options button"
-          icon={<BsThreeDots />}
-        />
-        <MenuList>
-          <MenuItem
-            onClick={() => {
-              setEditExpenseReport(x);
-              onEditOpen();
-            }}
-          >
-            Editar
-          </MenuItem>
+    <Menu>
+      <MenuButton
+        as={IconButton}
+        aria-label="options button"
+        icon={<BsThreeDots />}
+      />
+      <MenuList>
+        <MenuItem
+          onClick={() => {
+            setEditExpenseReport(x);
+            onEditOpen();
+          }}
+        >
+          Editar
+        </MenuItem>
 
-          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
-        </MenuList>
-      </Menu>
-    </Td>
+        <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+      </MenuList>
+    </Menu>
   );
 };
 

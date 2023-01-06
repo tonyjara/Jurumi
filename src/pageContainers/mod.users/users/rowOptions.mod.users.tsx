@@ -5,28 +5,29 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import type { TaxPayer } from '@prisma/client';
+import type { Account } from '@prisma/client';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
 import { trpcClient } from '../../../lib/utils/trpcClient';
+import type { FormAccount } from '../../../lib/validations/account.validate';
 
-const RowOptionsHomeTaxPayers = ({
+const RowOptionsModUsers = ({
   x,
-  setEditTaxPayer,
+  setEditAccount,
   onEditOpen,
 }: {
-  x: TaxPayer;
-  setEditTaxPayer: React.Dispatch<React.SetStateAction<TaxPayer | null>>;
   onEditOpen: () => void;
+  setEditAccount: React.Dispatch<React.SetStateAction<FormAccount | null>>;
+  x: Account;
 }) => {
   const context = trpcClient.useContext();
 
-  const { mutate: deleteById } = trpcClient.taxPayer.deleteById.useMutation(
+  const { mutate } = trpcClient.account.toggleActivation.useMutation(
     handleUseMutationAlerts({
-      successText: 'Se ha eliminado el contribuyente!',
+      successText: 'Se ha modificado la cuenta!',
       callback: () => {
-        context.taxPayer.invalidate();
+        context.account.getMany.invalidate();
       },
     })
   );
@@ -41,17 +42,22 @@ const RowOptionsHomeTaxPayers = ({
       <MenuList>
         <MenuItem
           onClick={() => {
-            setEditTaxPayer(x);
+            mutate({ id: x.id, active: !x.active });
+          }}
+        >
+          {x.active ? 'Desactivar cuenta' : 'Activar cuenta'}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setEditAccount(x);
             onEditOpen();
           }}
         >
           Editar
         </MenuItem>
-
-        <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
       </MenuList>
     </Menu>
   );
 };
 
-export default RowOptionsHomeTaxPayers;
+export default RowOptionsModUsers;

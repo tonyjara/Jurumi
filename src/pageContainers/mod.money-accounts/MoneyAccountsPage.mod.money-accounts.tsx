@@ -17,6 +17,7 @@ import {
 import type { MoneyAccount, Transaction } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import type { TableOptions } from '../../components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '../../components/DynamicTables/UseDynamicTable';
 import ThreeDotTableButton from '../../components/DynamicTables/Utils/ThreeDotTableButton';
 import CreateMoneyAccModal from '../../components/Modals/MoneyAcc.create.modal';
 import EditMoneyAccModal from '../../components/Modals/moneyAcc.edit.modal';
@@ -28,10 +29,15 @@ import AccordionOptionsMoneyAccountsPage from './accordionOptions.mod.money-acco
 
 export interface MoneyAccWithTransactions extends MoneyAccount {
   transactions: Transaction[];
+  _count?: {
+    transactions: number;
+  };
 }
 
 const MoneyAccountsPage = () => {
   const [editData, setEditData] = useState<MoneyAccount | null>(null);
+  const dynamicTableProps = useDynamicTable();
+
   const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
@@ -84,53 +90,57 @@ const MoneyAccountsPage = () => {
           allowToggle
         >
           {data &&
-            data.map((moneyAcc) => (
-              <AccordionItem key={moneyAcc.id}>
-                <AccordionButton as={Flex}>
-                  <AccordionIcon />
+            data.map((moneyAcc) => {
+              return (
+                <AccordionItem key={moneyAcc.id}>
+                  <AccordionButton as={Flex}>
+                    <AccordionIcon />
 
-                  <HStack minW={'600px'} h={'35px'}>
-                    <Text
-                      textOverflow={'ellipsis'}
-                      w={'250px'}
-                      overflow="hidden"
-                      whiteSpace={'nowrap'}
-                      fontSize={'lg'}
-                    >
-                      {moneyAcc.displayName}
-                    </Text>
-                    <Divider orientation="vertical" />
-                    <Text pl={'5px'} w={'150px'} fontSize={'lg'}>
-                      {moneyAcc.bankInfo
-                        ? translateBankNames(moneyAcc.bankInfo?.bankName)
-                        : 'Caja chica'}
-                    </Text>
-                    <Divider orientation="vertical" />
-                    <Text
-                      pl={'5px'}
-                      w={'150px'}
-                      fontWeight="bold"
-                      fontSize={'lg'}
-                    >
-                      {formatedAccountBalance(moneyAcc)}
-                    </Text>
+                    <HStack minW={'600px'} h={'35px'}>
+                      <Text
+                        textOverflow={'ellipsis'}
+                        w={'250px'}
+                        overflow="hidden"
+                        whiteSpace={'nowrap'}
+                        fontSize={'lg'}
+                      >
+                        {moneyAcc.displayName}
+                      </Text>
+                      <Divider orientation="vertical" />
+                      <Text pl={'5px'} w={'150px'} fontSize={'lg'}>
+                        {moneyAcc.bankInfo
+                          ? translateBankNames(moneyAcc.bankInfo?.bankName)
+                          : 'Caja chica'}
+                      </Text>
+                      <Divider orientation="vertical" />
+                      <Text
+                        pl={'5px'}
+                        w={'150px'}
+                        fontWeight="bold"
+                        fontSize={'lg'}
+                      >
+                        {formatedAccountBalance(moneyAcc)}
+                      </Text>
 
-                    <AccordionOptionsMoneyAccountsPage
-                      setEditData={setEditData}
-                      accountData={moneyAcc}
+                      <AccordionOptionsMoneyAccountsPage
+                        setEditData={setEditData}
+                        accountData={moneyAcc}
+                      />
+                    </HStack>
+                  </AccordionButton>
+
+                  <AccordionPanel pb={4}>
+                    <TransactionsTable
+                      loading={isFetching}
+                      data={moneyAcc.transactions as any}
+                      count={moneyAcc._count.transactions}
+                      dynamicTableProps={dynamicTableProps}
                     />
-                  </HStack>
-                </AccordionButton>
-
-                <AccordionPanel pb={4}>
-                  <TransactionsTable
-                    loading={isFetching}
-                    data={moneyAcc.transactions as any}
-                  />
-                </AccordionPanel>
-                <Divider ml={'10px'} w={'98%'} />
-              </AccordionItem>
-            ))}
+                  </AccordionPanel>
+                  <Divider ml={'10px'} w={'98%'} />
+                </AccordionItem>
+              );
+            })}
         </Accordion>
         {editData && (
           <EditMoneyAccModal

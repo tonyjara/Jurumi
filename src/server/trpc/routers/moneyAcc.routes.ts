@@ -12,12 +12,14 @@ export const moneyAccRouter = router({
   getManyWithTransactions: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       include: {
+        _count: { select: { transactions: true } },
         bankInfo: true,
         transactions: {
           orderBy: { id: 'desc' },
           include: {
             account: { select: { displayName: true } },
             moneyAccount: { select: { displayName: true } },
+            moneyRequest: { select: { description: true } },
           },
         },
       },

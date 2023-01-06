@@ -7,11 +7,11 @@ import type {
   Project,
   Transaction,
 } from '@prisma/client';
-import type { SortingState } from '@tanstack/react-table';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import type { TableOptions } from '../../components/DynamicTables/DynamicTable';
 import DynamicTable from '../../components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '../../components/DynamicTables/UseDynamicTable';
 import TableSearchbar from '../../components/DynamicTables/Utils/TableSearchbar';
 import EditMoneyRequestModal from '../../components/Modals/MoneyReq.edit.modal';
 import CreateMoneyRequestModal from '../../components/Modals/MoneyRequest.create.modal';
@@ -34,10 +34,9 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null
   );
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState(false);
+  const dynamicTableProps = useDynamicTable();
+  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
+    dynamicTableProps;
 
   useEffect(() => {
     if (query.moneyRequestId) {
@@ -119,14 +118,8 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         loading={isFetching || isLoading}
         options={tableOptions}
         data={handleDataSource() ?? []}
-        pageIndex={pageIndex}
-        setPageIndex={setPageIndex}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
         count={count ?? 0}
-        sorting={sorting}
-        setSorting={setSorting}
-        globalFilter={globalFilter}
+        {...dynamicTableProps}
       />
       <CreateMoneyRequestModal orgId={null} isOpen={isOpen} onClose={onClose} />
       {editMoneyRequest && (

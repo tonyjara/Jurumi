@@ -16,6 +16,9 @@ export const knownErrors = (error: string) => {
   if (error.includes('No secret or selectedOrg')) {
     return 'No hay una organización seleccionada.';
   }
+  if (error.includes('Only admins can create admins.')) {
+    return 'Solo admins puededen crear admins.';
+  }
 
   return 'Hubo un error, favor intente nuevamente';
 };

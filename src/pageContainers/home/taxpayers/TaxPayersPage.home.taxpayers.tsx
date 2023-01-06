@@ -1,38 +1,23 @@
-import { Tr, useDisclosure } from '@chakra-ui/react';
-import type {
-  Account,
-  MoneyRequest,
-  Project,
-  TaxPayer,
-  Transaction,
-} from '@prisma/client';
-import { debounce } from 'lodash';
-import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
-import DateCell from '../../../components/DynamicTables/DynamicCells/DateCell';
-import TextCell from '../../../components/DynamicTables/DynamicCells/TextCell';
+import { useDisclosure } from '@chakra-ui/react';
+import type { TaxPayer } from '@prisma/client';
+import React, { useState } from 'react';
 import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
 import DynamicTable from '../../../components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '../../../components/DynamicTables/UseDynamicTable';
 import TableSearchbar from '../../../components/DynamicTables/Utils/TableSearchbar';
 import CreateTaxPayerModal from '../../../components/Modals/taxPayer.create.modal';
 import EditTaxPayerModal from '../../../components/Modals/taxPayer.edit.modal';
 import useDebounce from '../../../lib/hooks/useDebounce';
 import { trpcClient } from '../../../lib/utils/trpcClient';
-import RowOptionsHomeTaxPayers from './rowOptions.home.taxpayers';
-
-export type MoneyRequestComplete = MoneyRequest & {
-  account: Account;
-  project: Project | null;
-  transactions: Transaction[];
-};
+import { taxpayersColumns } from './columns.home.taxpayers';
 
 const TaxPayersPage = () => {
-  const session = useSession();
-  const user = session.data?.user;
   const [searchValue, setSearchValue] = useState('');
   const [editTaxPayer, setEditTaxPayer] = useState<TaxPayer | null>(null);
   const debouncedSearchValue = useDebounce(searchValue, 500);
-
+  const dynamicTableProps = useDynamicTable();
+  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
+    dynamicTableProps;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isEditOpen,
@@ -41,7 +26,11 @@ const TaxPayersPage = () => {
   } = useDisclosure();
 
   const { data: taxPayers, isFetching: isFetchingTaxPayers } =
-    trpcClient.taxPayer.getMany.useQuery();
+    trpcClient.taxPayer.getMany.useQuery(
+      { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
+      { keepPreviousData: globalFilter ? true : false }
+    );
+  const { data: count } = trpcClient.taxPayer.count.useQuery();
   const { data: findByIdData, isFetching: isFetchingFindData } =
     trpcClient.taxPayer.findFullTextSearch.useQuery(
       { ruc: debouncedSearchValue },
@@ -59,24 +48,15 @@ const TaxPayersPage = () => {
       onClick: onOpen,
       label: 'Agregar contribuyente',
     },
+    {
+      onClick: () => setGlobalFilter(true),
+      label: `${globalFilter ? '✅' : '❌'} Filtro global`,
+    },
+    {
+      onClick: () => setGlobalFilter(false),
+      label: `${!globalFilter ? '✅' : '❌'} Filtro local`,
+    },
   ];
-
-  const rowHandler = handleDataSource().map((x) => {
-    return (
-      <Tr key={x.id}>
-        <DateCell date={x.createdAt} />
-
-        <TextCell text={x.fantasyName?.length ? x.fantasyName : '-'} />
-        <TextCell text={x.razonSocial} />
-        <TextCell text={x.ruc} />
-        <RowOptionsHomeTaxPayers
-          x={x}
-          onEditOpen={onEditOpen}
-          setEditTaxPayer={setEditTaxPayer}
-        />
-      </Tr>
-    );
-  });
 
   return (
     <>
@@ -92,14 +72,15 @@ const TaxPayersPage = () => {
         }
         loading={isFetchingTaxPayers || isFetchingFindData}
         options={tableOptions}
-        headers={[
-          'F. Creacion',
-          'N. de Fantasía',
-          'Razón social',
-          'R.U.C.',
-          'Opciones',
-        ]}
-        rows={rowHandler}
+        data={handleDataSource()}
+        columns={taxpayersColumns({
+          onEditOpen,
+          setEditTaxPayer,
+          pageIndex,
+          pageSize,
+        })}
+        count={count ?? 0}
+        {...dynamicTableProps}
       />
       <CreateTaxPayerModal isOpen={isOpen} onClose={onClose} />
 

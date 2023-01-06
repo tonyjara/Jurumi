@@ -1,27 +1,41 @@
-import { Tr, useDisclosure } from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import type { Transaction } from '@prisma/client';
+import type { SortingState } from '@tanstack/react-table';
 import React, { useEffect, useState } from 'react';
-import DateCell from '../../components/DynamicTables/DynamicCells/DateCell';
-import MoneyCell from '../../components/DynamicTables/DynamicCells/MoneyCell';
-import TextCell from '../../components/DynamicTables/DynamicCells/TextCell';
+import type { TableOptions } from '../../components/DynamicTables/DynamicTable';
 import DynamicTable from '../../components/DynamicTables/DynamicTable';
 import EditTransactionModal from '../../components/Modals/Transaction.edit.modal';
-import { translatedMoneyReqType } from '../../lib/utils/TranslatedEnums';
-import RowOptionsModTransactions from './rowOptions.mod.transactions';
+import { modTransactionsColumns } from './columns.mod.transactions';
 import type { TransactionComplete } from './TransactionsPage.mod.transactions';
 
 const TransactionsTable = ({
   data,
   searchBar,
   loading,
+  count,
+  dynamicTableProps,
 }: {
   data: TransactionComplete[];
   searchBar?: React.ReactNode;
   loading: boolean;
+  count?: number;
+  dynamicTableProps: {
+    pageIndex: number;
+    setPageIndex: React.Dispatch<React.SetStateAction<number>>;
+    pageSize: number;
+    setPageSize: React.Dispatch<React.SetStateAction<number>>;
+    sorting: SortingState;
+    setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
+    globalFilter: boolean;
+    setGlobalFilter: React.Dispatch<React.SetStateAction<boolean>>;
+  };
 }) => {
   const [editTransaction, setEditTransaction] = useState<Transaction | null>(
     null
   );
+  const { pageIndex, setGlobalFilter, globalFilter, pageSize } =
+    dynamicTableProps;
+
   const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
@@ -35,49 +49,34 @@ const TransactionsTable = ({
 
     return () => {};
   }, [editTransaction, isEditOpen]);
-  const handleTransactionConcept = (x: TransactionComplete) => {
-    if (x.moneyRequest) {
-      return translatedMoneyReqType(x.moneyRequest.moneyRequestType);
-    }
 
-    return '';
-  };
-  const rowHandler = data.map((x) => {
-    return (
-      <Tr key={x.id}>
-        <TextCell text={x.id.toString()} />
-        <DateCell date={x.createdAt} />
-
-        <TextCell text={handleTransactionConcept(x)} />
-        <MoneyCell objectKey={'transactionAmount'} data={x} />
-        <TextCell text={x.account.displayName} />
-        <TextCell text={x.moneyAccount.displayName} />
-
-        <RowOptionsModTransactions
-          x={x}
-          setEditTransaction={setEditTransaction}
-          onEditOpen={onEditOpen}
-        />
-      </Tr>
-    );
-  });
+  const tableOptions: TableOptions[] = [
+    {
+      onClick: () => setGlobalFilter(true),
+      label: `${globalFilter ? '✅' : '❌'} Filtro global`,
+    },
+    {
+      onClick: () => setGlobalFilter(false),
+      label: `${!globalFilter ? '✅' : '❌'} Filtro local`,
+    },
+  ];
 
   return (
     <>
       <DynamicTable
         title={'Transacciones'}
         searchBar={searchBar}
-        headers={[
-          'ID',
-          'F. Creacion',
-          'Concepto',
-          'Monto',
-          'Creador',
-          'Cuenta',
-          'Opciones',
-        ]}
-        rows={rowHandler}
         loading={loading}
+        columns={modTransactionsColumns({
+          onEditOpen,
+          setEditTransaction,
+          pageIndex,
+          pageSize,
+        })}
+        options={tableOptions}
+        data={data}
+        count={count ?? 0}
+        {...dynamicTableProps}
       />
       {editTransaction && (
         <EditTransactionModal

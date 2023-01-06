@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es5",
+    "noErrorTruncation": true,
     "plugins": [
       {
         "name": "next"

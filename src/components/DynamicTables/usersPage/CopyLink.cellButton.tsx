@@ -1,22 +1,12 @@
-import { Button, Td, useClipboard } from '@chakra-ui/react';
-import type { AccountVerificationLinks } from '@prisma/client';
+import { Button, useClipboard } from '@chakra-ui/react';
 import React from 'react';
 
-const CopyLinkCellButton = ({
-  hasBeenUsed,
-  verificationLink,
-}: AccountVerificationLinks) => {
-  const { onCopy, hasCopied } = useClipboard(verificationLink);
+const CopyLinkCellButton = ({ link }: { link: string }) => {
+  const { onCopy, hasCopied } = useClipboard(link);
 
   return (
     <>
-      {!hasBeenUsed ? (
-        <Td>
-          <Button onClick={onCopy}>{hasCopied ? 'Copiado!' : 'Copiar'}</Button>
-        </Td>
-      ) : (
-        <Td></Td>
-      )}
+      <Button onClick={onCopy}>{hasCopied ? 'Copiado!' : 'Copiar'}</Button>
     </>
   );
 };

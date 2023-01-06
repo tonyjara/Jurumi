@@ -3,6 +3,7 @@ import { reduceTransactionFields } from '../../../lib/utils/TransactionUtils';
 import { validateTransactionCreate } from '../../../lib/validations/transaction.create.validate';
 import { validateTransactionEdit } from '../../../lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
+import { handleOrderBy } from './utils/SortingUtils';
 import {
   checkIfIsLastTransaction,
   checkIfUserIsMoneyAdmin,
@@ -16,19 +17,36 @@ export const transactionsRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
-  getManyComplete: adminModProcedure.query(async () => {
-    return await prisma?.transaction.findMany({
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        moneyAccount: true,
-        account: true,
-        moneyRequest: true,
-        Imbursement: true,
-        ExpenseReturn: true,
-      },
-    });
+  count: adminModProcedure.query(async () => {
+    return await prisma?.transaction.count();
   }),
+  getManyComplete: adminModProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ input }) => {
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+      return await prisma?.transaction.findMany({
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy({ input }),
+        include: {
+          moneyAccount: true,
+          account: true,
+          moneyRequest: true,
+          Imbursement: true,
+          ExpenseReturn: true,
+        },
+      });
+    }),
   findManyCompleteById: adminModProcedure
     .input(z.object({ ids: z.number().array() }))
     .query(async ({ input }) => {

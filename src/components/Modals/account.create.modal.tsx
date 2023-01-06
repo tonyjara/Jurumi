@@ -77,6 +77,7 @@ const CreateAccountModal = ({
   const roleOptions: { value: Role; label: string }[] = [
     { value: 'USER', label: 'Usuario' },
     { value: 'MODERATOR', label: 'Moderador' },
+    { value: 'ADMIN', label: 'Admin' },
   ];
 
   return (
@@ -86,39 +87,45 @@ const CreateAccountModal = ({
         <ModalContent>
           <ModalHeader>Crear un usuario</ModalHeader>
           <ModalCloseButton />
-          {value && (
-            <Container textAlign={'center'}>
-              <Text fontWeight={'bold'} fontSize={'xl'}>
-                Comparte el link con la persona que quieres invitar.
-              </Text>
-              <Button onClick={onCopy} mb={10} mt={1}>
-                {hasCopied ? 'Copiado!' : 'Copiar link de invitación'}
-              </Button>
-            </Container>
-          )}
           <ModalBody>
-            {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <FormControlledText
-              control={control}
-              errors={errors}
-              name="email"
-              label="Correo electrónico"
-              autoFocus={true}
-            />
-            <FormControlledText
-              control={control}
-              errors={errors}
-              name="displayName"
-              label="Nombre del usuario"
-              autoFocus={true}
-            />
-            <FormControlledSelect
-              control={control}
-              errors={errors}
-              name="role"
-              label="Seleccione un rol"
-              options={roleOptions ?? []}
-            />
+            {value && (
+              <Container textAlign={'center'}>
+                <Text fontWeight={'bold'} fontSize={'xl'}>
+                  Comparte el link con la persona que quieres invitar.
+                </Text>
+                <Button onClick={onCopy} mb={10} mt={1}>
+                  {hasCopied ? 'Copiado!' : 'Copiar link de invitación'}
+                </Button>
+              </Container>
+            )}
+            {!value && (
+              <>
+                {error && (
+                  <Text color="red.300">{knownErrors(error.message)}</Text>
+                )}
+                <FormControlledText
+                  control={control}
+                  errors={errors}
+                  name="email"
+                  label="Correo electrónico"
+                  autoFocus={true}
+                />
+                <FormControlledText
+                  control={control}
+                  errors={errors}
+                  name="displayName"
+                  label="Nombre del usuario"
+                  autoFocus={true}
+                />
+                <FormControlledSelect
+                  control={control}
+                  errors={errors}
+                  name="role"
+                  label="Seleccione un rol"
+                  options={roleOptions ?? []}
+                />
+              </>
+            )}
           </ModalBody>
 
           <ModalFooter>

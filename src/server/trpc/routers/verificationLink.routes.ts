@@ -9,15 +9,34 @@ import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { makeSignedToken } from './utils/VerificationLinkRouteUtils';
 import { getSelectedOrganizationId } from './utils/PreferencesRoutUtils';
+import { handleOrderBy } from './utils/SortingUtils';
 
 export const verificationLinksRouter = router({
-  getVerificationLinks: adminModProcedure.query(async () => {
-    return await prisma?.accountVerificationLinks.findMany({
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-      include: { account: { select: { displayName: true } } },
-    });
+  count: adminModProcedure.query(async () => {
+    return await prisma?.accountVerificationLinks.count();
   }),
+  getVerificationLinks: adminModProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ input }) => {
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+
+      return await prisma?.accountVerificationLinks.findMany({
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy({ input }),
+        include: { account: { select: { displayName: true } } },
+      });
+    }),
   generateVerificationLink: adminModProcedure
     .input(z.object({ email: z.string(), displayName: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -101,6 +120,12 @@ export const verificationLinksRouter = router({
     .input(validateAccount)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
+      if (input.role === 'ADMIN' && user.role !== 'ADMIN') {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Only admins can create admins.',
+        });
+      }
       const prefs = await getSelectedOrganizationId(user);
       const secret = process.env.JWT_SECRET;
       const uuid = uuidv4();

@@ -19,25 +19,55 @@ export const expenseReportsRouter = router({
       },
     });
   }),
+  count: protectedProcedure.query(async () => prisma?.expenseReport.count()),
+  getManyComplete: protectedProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = ctx.session.user;
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
 
-  getManyComplete: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.session.user;
-    if (!user) return;
+      //splits nested objects
+      const handleOrderBy = () => {
+        if (input.sorting && input.sorting[0]) {
+          const prop = input.sorting[0];
+          if (prop.id.includes('_')) {
+            const split = prop.id.split('_');
+            return {
+              [split[0] as string]: {
+                [split[1] as string]: prop.desc ? 'desc' : 'asc',
+              },
+            };
+          }
+          return { [prop.id]: prop.desc ? 'desc' : 'asc' };
+        }
+        return { createdAt: 'desc' } as any;
+      };
 
-    return await prisma?.expenseReport.findMany({
-      where: { accountId: user.id },
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        CostCategory: { select: { displayName: true, id: true } },
-        Project: { select: { displayName: true, id: true } },
-        taxPayer: {
-          select: { fantasyName: true, razonSocial: true, ruc: true },
+      return await prisma?.expenseReport.findMany({
+        where: { accountId: user.id },
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy(),
+        include: {
+          CostCategory: { select: { displayName: true, id: true } },
+          Project: { select: { displayName: true, id: true } },
+          taxPayer: {
+            select: { fantasyName: true, razonSocial: true, ruc: true },
+          },
+          searchableImage: { select: { url: true, imageName: true } },
         },
-        searchableImage: { select: { url: true, imageName: true } },
-      },
-    });
-  }),
+      });
+    }),
   findCompleteById: adminModProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {

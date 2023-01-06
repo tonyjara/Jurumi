@@ -28,18 +28,17 @@ const ImageModalCell = ({
   const { isOpen, onClose, onOpen } = useDisclosure();
   return (
     <>
-      <Td>
-        <Flex
-          cursor={'pointer'}
-          onClick={onOpen}
-          alignItems={'center'}
-          direction="column"
-        >
-          <Icon fontSize={'2xl'}>
-            <BsFillImageFill />
-          </Icon>
-        </Flex>
-      </Td>
+      <Flex
+        cursor={'pointer'}
+        onClick={onOpen}
+        alignItems={'center'}
+        direction="column"
+      >
+        <Icon fontSize={'2xl'}>
+          <BsFillImageFill />
+        </Icon>
+      </Flex>
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
