@@ -7,7 +7,7 @@ import { adminProcedure, protectedProcedure, router } from '../initTrpc';
 export const projectRouter = router({
   getMany: protectedProcedure.query(async () => {
     return await prisma?.project.findMany({
-      include: { costCategories: true },
+      include: { costCategories: true, projectStages: true },
     });
   }),
   getCostCatsForProject: protectedProcedure

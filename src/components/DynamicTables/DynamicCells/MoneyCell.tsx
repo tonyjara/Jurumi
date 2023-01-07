@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from '@chakra-ui/react';
-import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
+import { decimalFormat } from '@/lib/utils/DecimalHelpers';
 import type { Currency } from '@prisma/client';
 import type { Decimal } from '@prisma/client/runtime';
 

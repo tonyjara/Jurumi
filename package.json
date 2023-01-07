@@ -9,7 +9,8 @@
     "start": "next start",
     "test": "jest --watch",
     "postinstall": "prisma generate",
-    "ts-lint": "tsc --noEmit --incremental --watch"
+    "ts-lint": "tsc --noEmit --incremental --watch",
+    "docker-compose-prod": "docker compose up --build --force-recreate"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.12.0",
