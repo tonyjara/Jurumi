@@ -1,14 +1,14 @@
 name: Build & Push to Azure Container Registry
 on:
   push:
-    branch: staging
+    branch: master
   workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout reporitory
-        uses: actions/checkout@staging
+        uses: actions/checkout@main
 
       - name: Login to Azure Contanier Registry
         uses: azure/docker-login@v1
