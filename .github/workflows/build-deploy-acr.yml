@@ -27,4 +27,5 @@ jobs:
             NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
             STORAGE_SASTOKEN=${{ secrets.STORAGE_SASTOKEN }}
             STORAGE_RESOURCE_NAME=${{ secrets.STORAGE_RESOURCE_NAME }}
+          tags: ${{ secrets.ACR_ENDPOINT }}/sysopadesstaging
           file: ./Dockerfile
