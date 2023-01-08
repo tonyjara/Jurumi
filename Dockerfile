@@ -35,6 +35,8 @@ COPY package.json yarn.lock ./
 COPY --from=deps /app/node_modules ./node_modules
 
 COPY .env.staging ./.env
+# generated prisma files
+COPY prisma ./prisma/
 
 COPY . .
 
