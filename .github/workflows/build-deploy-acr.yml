@@ -1,7 +1,8 @@
 name: Build & Push to Azure Container Registry
 on:
   push:
-    branch: master
+    branches:
+      - staging
   workflow_dispatch:
 jobs:
   build:
