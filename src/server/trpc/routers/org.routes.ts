@@ -7,6 +7,7 @@ import {
   router,
   protectedProcedure,
 } from '../initTrpc';
+import prisma from '@/server/db/client';
 
 export const orgRouter = router({
   getMany: adminModProcedure.query(async () => {

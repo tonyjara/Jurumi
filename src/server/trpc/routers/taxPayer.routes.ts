@@ -7,6 +7,7 @@ import {
   protectedProcedure,
 } from '../initTrpc';
 import { handleOrderBy } from './utils/SortingUtils';
+import prisma from '@/server/db/client';
 
 export const taxPayerRouter = router({
   count: adminModProcedure.query(async () => {

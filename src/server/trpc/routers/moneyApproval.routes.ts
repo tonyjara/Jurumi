@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { adminModProcedure, router } from '../initTrpc';
+import prisma from '@/server/db/client';
 
 export const moneyApprovalRouter = router({
   approve: adminModProcedure

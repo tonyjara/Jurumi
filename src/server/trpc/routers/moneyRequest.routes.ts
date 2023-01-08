@@ -9,6 +9,7 @@ import {
 } from '../initTrpc';
 import { handleWhereImApprover } from './utils/MoneyRequestUtils';
 import { handleOrderBy } from './utils/SortingUtils';
+import prisma from '@/server/db/client';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {

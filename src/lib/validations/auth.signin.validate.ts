@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import type { CustomTFunction } from '../../../@types/I18n.types';
+import type { CustomTFunction } from '@/@types/I18n.types';
 
 export const signinValidation = (t: CustomTFunction<'validation'>) =>
   z.object({

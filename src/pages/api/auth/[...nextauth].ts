@@ -2,7 +2,7 @@ import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 // Prisma adapter for NextAuth, optional and can be removed
 import bcrypt from 'bcryptjs';
-import prisma from '../../../server/db/client';
+import prisma from '@/server/db/client';
 import type { Account } from '@prisma/client';
 
 // CALLBACKS GET EVERY TIME THE APP GETS REFRESHED

@@ -1,6 +1,6 @@
 import React from 'react';
 import Lottie from 'react-lottie';
-import animationData from '../../../public/plant-loading.json';
+import animationData from '@/public/plant-loading.json';
 
 function LoadingPlantLottie() {
   const defaultOptions = {

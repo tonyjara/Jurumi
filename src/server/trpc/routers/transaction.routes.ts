@@ -9,6 +9,7 @@ import {
   checkIfUserIsMoneyAdmin,
   createManyMoneyAccountTransactions,
 } from './utils/TransactionRouteUtils';
+import prisma from '@/server/db/client';
 
 export const transactionsRouter = router({
   getMany: adminModProcedure.query(async () => {

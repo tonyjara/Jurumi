@@ -7,6 +7,7 @@ import {
   protectedProcedure,
   router,
 } from '../initTrpc';
+import prisma from '@/server/db/client';
 
 export const expenseReportsRouter = router({
   getMany: protectedProcedure.query(async ({ ctx }) => {

@@ -1,3 +1,4 @@
+import prisma from '@/server/db/client';
 import {
   Container,
   Stack,
@@ -138,7 +139,7 @@ export default Setup;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   //Redirects if more than one account exists
-  const accounts = await prisma?.account.findMany();
+  const accounts = await prisma.account.findMany();
 
   const session = await getServerAuthSession(ctx);
   if (accounts?.length && !session) {

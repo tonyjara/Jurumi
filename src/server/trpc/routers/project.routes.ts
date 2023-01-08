@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateProject } from '../../../lib/validations/project.validate';
 import { adminProcedure, protectedProcedure, router } from '../initTrpc';
+import prisma from '@/server/db/client';
 
 export const projectRouter = router({
   getMany: protectedProcedure.query(async () => {

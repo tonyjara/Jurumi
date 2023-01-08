@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { makeSignedToken } from './utils/VerificationLinkRouteUtils';
 import { getSelectedOrganizationId } from './utils/PreferencesRoutUtils';
 import { handleOrderBy } from './utils/SortingUtils';
+import prisma from '@/server/db/client';
 
 export const verificationLinksRouter = router({
   count: adminModProcedure.query(async () => {

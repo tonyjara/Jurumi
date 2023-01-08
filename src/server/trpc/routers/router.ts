@@ -14,7 +14,7 @@ import { preferencesRouter } from './preferences.routes';
 import { verificationLinksRouter } from './verificationLink.routes';
 import { taxPayerRouter } from './taxPayer.routes';
 import { expenseReportsRouter } from './ExpenseReport.routes';
-import { imbursementsRouter } from './imbursements.routs';
+import { imbursementsRouter } from './imbursements.routes';
 
 export const appRouter = router({
   account: accountsRouter,

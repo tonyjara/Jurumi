@@ -1,5 +1,4 @@
 //generates types based on schema, useful for reference. Do not commit.
-
 generator zod {
   provider              = "zod-prisma"
   output                = "./zod"
@@ -14,6 +13,7 @@ generator zod {
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {

@@ -6,11 +6,13 @@ ARG NEXTAUTH_SECRET
 ARG NEXTAUTH_URL
 ARG STORAGE_SASTOKEN
 ARG STORAGE_RESOURCE_NAME
+ARG JWT_SECRET
 ENV DATABASE_URL ${DATABASE_URL}
 ENV NEXTAUTH_SECRET ${NEXTAUTH_SECRET}
 ENV NEXTAUTH_URL ${NEXTAUTH_URL}
 ENV STORAGE_SASTOKEN ${STORAGE_SASTOKEN}
 ENV STORAGE_RESOURCE_NAME ${STORAGE_RESOURCE_NAME}
+ENV JWT_SECRET ${JWT_SECRET}
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
@@ -32,9 +34,11 @@ COPY next.config.js ./
 COPY package.json yarn.lock ./ 
 COPY --from=deps /app/node_modules ./node_modules
 
+COPY .env.staging ./.env
+
 COPY . .
 
-RUN yarn build
+RUN yarn build:staging
 
 # Prodcution image, copy all the files and run next
 FROM node:16-alpine AS runner

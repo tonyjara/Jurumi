@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { FormBankInfo } from '../../../lib/validations/moneyAcc.validate';
 import { validateMoneyAccount } from '../../../lib/validations/moneyAcc.validate';
 import { adminProcedure, adminModProcedure, router } from '../initTrpc';
+import prisma from '@/server/db/client';
 
 export const moneyAccRouter = router({
   getMany: adminModProcedure.query(async () => {

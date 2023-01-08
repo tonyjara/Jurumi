@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { validateInitialSetup } from '../../../lib/validations/setup.validate';
 import { handleOrderBy } from './utils/SortingUtils';
 import { validateAccount } from '../../../lib/validations/account.validate';
+import prisma from '@/server/db/client';
 
 export const accountsRouter = router({
   toggleActivation: adminModProcedure

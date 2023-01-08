@@ -1,6 +1,6 @@
 import React from 'react';
 import Lottie from 'react-lottie';
-import animationData from '../../../public/not-available.json';
+import animationData from '@/public/not-available.json';
 
 function NotAvailableLottie() {
   const defaultOptions = {

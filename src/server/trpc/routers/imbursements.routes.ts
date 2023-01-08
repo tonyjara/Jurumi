@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { validateMoneyRequest } from '../../../lib/validations/moneyRequest.validate';
 import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 import { handleOrderBy } from './utils/SortingUtils';
+import prisma from '@/server/db/client';
 
 export const imbursementsRouter = router({
   getMany: adminModProcedure.query(async () => {
