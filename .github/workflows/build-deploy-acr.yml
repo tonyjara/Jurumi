@@ -1,6 +1,6 @@
 name: Build & Push to Azure Container Registry
 on:
-  [workflow_dispatch, push]
+  [workflow_dispatch]
   # branches:
   #   - staging
 jobs:
