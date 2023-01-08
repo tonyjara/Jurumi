@@ -1,9 +1,8 @@
 name: Build & Push to Azure Container Registry
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - staging
+  [workflow_dispatch, push]
+  # branches:
+  #   - staging
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,7 +21,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          secrets: |
+          build-args: |
             "DATABASE_URL=${{ secrets.DATABASE_URL }}"
             "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}"
             "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}"
