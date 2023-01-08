@@ -30,5 +30,15 @@ jobs:
             STORAGE_SASTOKEN=${{ secrets.STORAGE_SASTOKEN }}
             STORAGE_RESOURCE_NAME=${{ secrets.STORAGE_RESOURCE_NAME }}
             NEXT_PUBLIC_WEB_URL=${{ secrets.NEXT_PUBLIC_WEB_URL }}
+          run: |
+            touch .env
+            echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+            echo NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} >> .env
+            echo NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} >> .env
+            echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+            echo STORAGE_SASTOKEN=${{ secrets.STORAGE_SASTOKEN }} >> .env
+            echo STORAGE_RESOURCE_NAME=${{ secrets.STORAGE_RESOURCE_NAME }} >> .env
+            echo NEXT_PUBLIC_WEB_URL=${{ secrets.NEXT_PUBLIC_WEB_URL }} >> .env
+
           tags: ${{ secrets.ACR_ENDPOINT }}/sysopadesstaging:v1.03
           file: ./Staging-Dockerfile
