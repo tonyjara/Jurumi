@@ -40,5 +40,5 @@ jobs:
             echo STORAGE_RESOURCE_NAME=${{ secrets.STORAGE_RESOURCE_NAME }} >> .env
             echo NEXT_PUBLIC_WEB_URL=${{ secrets.NEXT_PUBLIC_WEB_URL }} >> .env
 
-          tags: ${{ secrets.ACR_ENDPOINT }}/sysopadesstaging:v1.04
+          tags: ${{ secrets.ACR_ENDPOINT }}/sysopadesstaging:v1.05
           file: ./Staging-Dockerfile
