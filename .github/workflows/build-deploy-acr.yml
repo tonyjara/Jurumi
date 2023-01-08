@@ -1,13 +1,8 @@
 name: Build & Push to Azure Container Registry
-on:
-  push:
-    branches:
-      - staging
-  workflow_dispatch:
+on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }} # Run only if triggered manually
     steps:
       # - name: Checkout reporitory
       #   uses: actions/checkout@main
