@@ -1,5 +1,9 @@
 name: Build & Push to Azure Container Registry
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
