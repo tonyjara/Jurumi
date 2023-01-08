@@ -4,7 +4,6 @@
 import * as trpcNext from '@trpc/server/adapters/next';
 import { createContext } from '../../../server/trpc/context';
 import { appRouter } from '../../../server/trpc/routers/router';
-import prisma from '@/server/db/client';
 
 export default trpcNext.createNextApiHandler({
   router: appRouter,

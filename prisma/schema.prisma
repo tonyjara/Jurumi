@@ -1,14 +1,14 @@
 //generates types based on schema, useful for reference. Do not commit.
-generator zod {
-  provider              = "zod-prisma"
-  output                = "./zod"
-  relationModel         = true
-  modelCase             = "PascalCase"
-  modelSuffix           = "Model"
-  useDecimalJs          = true
-  imports               = null
-  prismaJsonNullability = true
-}
+// generator zod {
+//   provider              = "zod-prisma"
+//   output                = "./zod"
+//   relationModel         = true
+//   modelCase             = "PascalCase"
+//   modelSuffix           = "Model"
+//   useDecimalJs          = true
+//   imports               = null
+//   prismaJsonNullability = true
+// }
 
 generator client {
   provider        = "prisma-client-js"

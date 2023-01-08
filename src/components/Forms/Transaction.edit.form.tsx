@@ -4,7 +4,6 @@ import type { Decimal } from '@prisma/client/runtime';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
-import { decimalFormat } from '../../lib/utils/DecimalHelpers';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
 import { formatedAccountBalance } from '../../lib/utils/TransactionUtils';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
