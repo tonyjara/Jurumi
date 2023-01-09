@@ -22,10 +22,10 @@
         "name": "next"
       }
     ],
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/@types/*": ["../@types/*"],
-      "@/public/*": ["../public/*"],
+      "@/@types/*": ["@types/*"],
+      "@/public/*": ["public/*"],
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
       "@/pages/*": ["pages/*"],
@@ -41,5 +41,5 @@
     "next.config.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "jest.config.js", "jest.setup.js"]
+  "exclude": ["node_modules", "prisma/zod", "jest.config.js", "jest.setup.js"]
 }
