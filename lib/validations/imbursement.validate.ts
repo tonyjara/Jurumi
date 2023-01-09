@@ -21,7 +21,7 @@ export const validateImbursement: z.ZodType<FormImbursement> = z.lazy(() =>
     updatedAt: z.date().nullable(),
     createdById: z.string(),
     updatedById: z.string().nullable(),
-    concept: stringReqMinMax('Favor ingrese concepto del desembolso.', 2, 64),
+    concept: stringReqMinMax('Favor ingrese concepto del desembolso.', 2, 128),
     wasConvertedToOtherCurrency: z.boolean(),
     exchangeRate: z.number(),
     otherCurrency: z.nativeEnum(Currency),
@@ -34,7 +34,7 @@ export const validateImbursement: z.ZodType<FormImbursement> = z.lazy(() =>
     finalCurrency: z.nativeEnum(Currency),
     projectStageId: z.string(),
     projectId: z.string(),
-    moneyAccountId: z.string(),
+    moneyAccountId: z.string().min(2, 'Favor seleccione una cuenta.'),
     searchableImage: z
       .object({
         imageName: z.string().min(1, 'Favor suba la imágen de su comprobante'),

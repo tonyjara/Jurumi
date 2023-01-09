@@ -24,7 +24,10 @@ import {
 } from '../../lib/validations/project.validate';
 import ImbursementForm from '../Forms/Imbursement.form';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
-import { defaultImbursementData } from '@/lib/validations/imbursement.validate';
+import {
+  defaultImbursementData,
+  validateImbursement,
+} from '@/lib/validations/imbursement.validate';
 
 const ImbursementCreateModal = ({
   isOpen,
@@ -42,12 +45,13 @@ const ImbursementCreateModal = ({
     formState: { errors, isSubmitting },
   } = useForm<FormImbursement>({
     defaultValues: defaultImbursementData,
-    resolver: zodResolver(validateProject),
+    resolver: zodResolver(validateImbursement),
   });
   const handleOnClose = () => {
-    reset(defaultProjectData);
+    reset(defaultImbursementData);
     onClose();
   };
+  console.log(errors);
 
   const { error, mutate, isLoading } =
     trpcClient.imbursement.create.useMutation(

@@ -18,6 +18,13 @@ export const projectRouter = router({
         where: { projectId: input.projectId },
       });
     }),
+  getProjectStages: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma?.projectStage.findMany({
+        where: { projectId: input.projectId },
+      });
+    }),
 
   create: protectedProcedure
     .input(validateProject)

@@ -208,11 +208,14 @@ model Imbursement {
   finalCurrency               Currency  @default(PYG)
   finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
 
-  archived        Boolean          @default(false)
-  softDeleted     Boolean          @default(false)
-  transactions    Transaction[]
+  canceled    Boolean @default(false)
+  archived    Boolean @default(false)
+  softDeleted Boolean @default(false)
+
   searchableImage searchableImage?
 
+  transactionId  Int           @unique
+  trasaction     Transaction   @relation(fields: [transactionId], references: [id])
   taxPayerId     String
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
   ProjectStage   ProjectStage? @relation(fields: [projectStageId], references: [id])
@@ -344,8 +347,8 @@ model Transaction {
   moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
   expenseReturnId String?
   ExpenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
-  imbursementId   String?
-  Imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
+
+  Imbursement Imbursement?
 }
 
 model searchableImage {
