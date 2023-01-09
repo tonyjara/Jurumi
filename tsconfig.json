@@ -41,5 +41,5 @@
     "next.config.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "prisma/zod", "jest.config.js", "jest.setup.js"]
+  "exclude": ["node_modules", "jest.config.js", "jest.setup.js"]
 }
