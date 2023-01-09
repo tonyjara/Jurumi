@@ -5,7 +5,7 @@ const nextConfig = {
   i18n,
   reactStrictMode: true,
   swcMinify: true,
-  output: 'standalone',
+  // output: 'standalone', only for docker deploy
   experimental: {
     swcPlugins: [
       [
