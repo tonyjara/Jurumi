@@ -2,15 +2,14 @@ import 'react-day-picker/dist/style.css';
 import React, { useState, useEffect } from 'react';
 import es from 'date-fns/locale/es';
 
-import {
+import type {
   Control,
-  Controller,
   DeepMap,
   FieldError,
   FieldValues,
   Path,
-  useWatch,
 } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 import { DayPicker } from 'react-day-picker';
 import format from 'date-fns/format';
 import { fromUnixTime, getUnixTime, isValid, parse } from 'date-fns';

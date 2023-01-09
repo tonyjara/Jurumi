@@ -28,7 +28,7 @@
       "@/public/*": ["public/*"],
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
-      "@/pages/*": ["pages/*"],
+      "@/pages/*": ["not-working-pages/*"],
       "@/pageContainers/*": ["pageContainers/*"],
       "@/server/*": ["server/*"]
     }

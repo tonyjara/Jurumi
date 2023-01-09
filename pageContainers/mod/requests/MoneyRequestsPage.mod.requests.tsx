@@ -16,7 +16,7 @@ import TableSearchbar from '@/components/DynamicTables/Utils/TableSearchbar';
 import EditMoneyRequestModal from '@/components/Modals/MoneyReq.edit.modal';
 import CreateMoneyRequestModal from '@/components/Modals/MoneyRequest.create.modal';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { MoneyRequestsPageProps } from '@/pages/mod/requests';
+import type { MoneyRequestsPageProps } from 'not-working-pages/mod/requests';
 import { moneyRequestsColumns } from './columns.mod.requests';
 
 export type MoneyRequestComplete = MoneyRequest & {
