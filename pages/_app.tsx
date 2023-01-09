@@ -16,16 +16,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
-      <ChakraProvider theme={theme}>
-        <NextNProgress height={4} />
-        <CheckAccounIsActive />
-        <Toaster />
-        <RootLayout>
-          <Component {...pageProps} />
-        </RootLayout>
-      </ChakraProvider>
-    </SessionProvider>
+    // <SessionProvider session={session}>
+    //   <ChakraProvider theme={theme}>
+    //     <NextNProgress height={4} />
+    //     <CheckAccounIsActive />
+    //     <Toaster />
+    //     <RootLayout>
+    //       <Component {...pageProps} />
+    //     </RootLayout>
+    //   </ChakraProvider>
+    // </SessionProvider>
+    <div>hey</div>
   );
 };
 
