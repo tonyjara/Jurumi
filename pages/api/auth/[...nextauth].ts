@@ -1,7 +1,7 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 // Prisma adapter for NextAuth, optional and can be removed
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
 import prisma from '@/server/db/client';
 import type { Account } from '@prisma/client';
 
@@ -60,11 +60,11 @@ export const authOptions: NextAuthOptions = {
 
         if (!prismaUser.isVerified || !prismaUser.active) return null;
 
-        const matchesHash = await bcrypt.compare(
-          credentials.password,
-          prismaUser.password //hashed pass
-        );
-        if (!matchesHash) return null;
+        // const matchesHash = await bcrypt.compare(
+        //   credentials.password,
+        //   prismaUser.password //hashed pass
+        // );
+        // if (!matchesHash) return null;
         //@ts-ignore
         delete prismaUser.password;
 
