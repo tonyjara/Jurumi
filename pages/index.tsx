@@ -127,35 +127,35 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
   );
 }
 
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   const { p = '/' } = ctx.query;
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { p = '/' } = ctx.query;
 
-//   const session = await getServerAuthSession(ctx);
+  const session = await getServerAuthSession(ctx);
 
-//   const destination = () => {
-//     if (p.toString().length === 1) return '/home';
-//     return p.toString();
-//   };
+  const destination = () => {
+    if (p.toString().length === 1) return '/home';
+    return p.toString();
+  };
 
-//   if (session) {
-//     return {
-//       redirect: {
-//         destination: destination(),
-//         permanent: false,
-//       },
-//       props: {},
-//     };
-//   }
+  if (session) {
+    return {
+      redirect: {
+        destination: destination(),
+        permanent: false,
+      },
+      props: {},
+    };
+  }
 
-//   return {
-//     props: {
-//       ...(await serverSideTranslations(ctx.locale ?? 'es', [
-//         'signin',
-//         'common',
-//         'validation',
-//         'forms',
-//       ])),
-//       // Will be passed to the page component as props
-//     },
-//   };
-// };
+  return {
+    props: {
+      ...(await serverSideTranslations(ctx.locale ?? 'es', [
+        'signin',
+        'common',
+        'validation',
+        'forms',
+      ])),
+      // Will be passed to the page component as props
+    },
+  };
+};

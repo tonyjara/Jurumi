@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import Home from '../../not-working-pages/index';
+import Home from '../../pages/index';
 import {
   unauthenticatedMock,
   authenticateUserMock,

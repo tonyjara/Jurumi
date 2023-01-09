@@ -1,32 +1,31 @@
 import { type AppType } from 'next/app';
 import { type Session } from 'next-auth';
-// import { SessionProvider } from 'next-auth/react';
-// import { ChakraProvider } from '@chakra-ui/react';
+import { SessionProvider } from 'next-auth/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { trpcClient } from '../lib/utils/trpcClient';
 import { appWithTranslation } from 'next-i18next';
-// import NextNProgress from 'nextjs-progressbar';
-// import '../styles/globals.css';
-// import { Toaster } from 'react-hot-toast';
-// import RootLayout from '../layouts/RootLayout';
-// import { theme } from '../styles/Theme';
-// import CheckAccounIsActive from '../lib/utils/CheckAccounIsActive';
+import NextNProgress from 'nextjs-progressbar';
+import '../styles/globals.css';
+import { Toaster } from 'react-hot-toast';
+import RootLayout from '../layouts/RootLayout';
+import { theme } from '../styles/Theme';
+import CheckAccounIsActive from '../lib/utils/CheckAccounIsActive';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    // <SessionProvider session={session}>
-    //   <ChakraProvider theme={theme}>
-    //     <NextNProgress height={4} />
-    //     <CheckAccounIsActive />
-    //     <Toaster />
-    //     <RootLayout>
-    //       <Component {...pageProps} />
-    //     </RootLayout>
-    //   </ChakraProvider>
-    // </SessionProvider>
-    <div>hey</div>
+    <SessionProvider session={session}>
+      <ChakraProvider theme={theme}>
+        <NextNProgress height={4} />
+        <CheckAccounIsActive />
+        <Toaster />
+        <RootLayout>
+          <Component {...pageProps} />
+        </RootLayout>
+      </ChakraProvider>
+    </SessionProvider>
   );
 };
 

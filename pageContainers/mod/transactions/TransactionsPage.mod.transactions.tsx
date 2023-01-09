@@ -9,7 +9,7 @@ import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
 
 import TableSearchbar from '@/components/DynamicTables/Utils/TableSearchbar';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { TransactionsPageProps } from 'not-working-pages/mod/transactions';
+import type { TransactionsPageProps } from 'pages/mod/transactions';
 import TransactionsTable from './TransactionsTable';
 
 export type TransactionComplete = Transaction & {
