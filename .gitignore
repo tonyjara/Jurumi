@@ -39,6 +39,13 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.vscode
+
+.env.prod
+.env.staging
 
 
 prisma/zod
+/test-results/
+/playwright-report/
+/playwright/.cache/

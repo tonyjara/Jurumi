@@ -1,0 +1,6 @@
+{
+  "requiredEmail": "Favor ingrese un correo electrónico.",
+  "invalidEmail": "Su correo no es válido.",
+  "requiredPassword": "Favor ingrese su contraseña.",
+  "minPassword": "Su contraseña debe tener al menos 6 caractéres."
+}
