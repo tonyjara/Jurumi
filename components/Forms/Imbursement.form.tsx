@@ -164,8 +164,8 @@ const ImbursementForm = ({
             idName="searchableImage.imageName"
             label="Comprobante del desembolso"
             setValue={setValue}
-            userId={user.id}
             helperText="Favor tener en cuenta la orientación y legibilidad del documento."
+            userId={user.id}
           />
         )}
       </VStack>

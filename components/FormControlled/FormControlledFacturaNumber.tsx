@@ -60,9 +60,7 @@ const FormControlledFacturaNumber = <T extends FieldValues>(
             <PatternFormat
               value={inputValue}
               label={label}
-              error={errors.facturaNumber?.message ? true : false}
-              helperText={helperText}
-              fullWidth
+              error={errors.facturaNumber?.message ?? undefined}
               customInput={Input}
               allowEmptyFormatting
               onValueChange={({ formattedValue, value }) => {
