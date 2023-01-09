@@ -12,10 +12,12 @@ import type {
 import { Controller, useWatch } from 'react-hook-form';
 import { DayPicker } from 'react-day-picker';
 import format from 'date-fns/format';
-import { fromUnixTime, getUnixTime, isValid, parse } from 'date-fns';
+import { isValid, parse } from 'date-fns';
 import {
   Button,
   FormControl,
+  FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Input,
   InputGroup,
@@ -26,6 +28,7 @@ import {
 } from '@chakra-ui/react';
 
 import { CalendarIcon } from '@chakra-ui/icons';
+import useDebounce from '@/lib/hooks/useDebounce';
 
 interface controllerProps<T extends FieldValues> {
   control: Control<T>;
@@ -33,41 +36,49 @@ interface controllerProps<T extends FieldValues> {
   errors: DeepMap<any, FieldError>;
   label: string;
   hidden?: boolean;
+  helperText?: string;
+  index?: number; //used for form arrays errors
+  error?: string; // escape hatch for nested objects
 }
 
 const FormControlledDatePicker = <T extends FieldValues>(
   props: controllerProps<T>
 ) => {
-  const { name, control, errors, label, hidden } = props;
-  const [selected, setSelected] = React.useState<Date>();
+  const { name, control, errors, label, hidden, helperText, error } = props;
+  const [selectedDate, setSelectedDate] = React.useState<Date>();
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState<string>('');
 
   const watchValue = useWatch({ control, name });
 
+  const debouncedWatchValue = useDebounce(watchValue, 500);
+
+  // Converts selected value to parsed string for input
   useEffect(() => {
-    if (watchValue) {
-      setSelected(fromUnixTime(watchValue));
-      const date = format(fromUnixTime(watchValue), 'dd-MM-y');
+    if (debouncedWatchValue) {
+      setSelectedDate(debouncedWatchValue);
+      const date = format(debouncedWatchValue, 'dd-MM-y');
       setInputValue(date);
     }
 
     return () => {};
-  }, [watchValue]);
+  }, [debouncedWatchValue]);
 
+  // when changing the input if the date is valid it selects the date
   const handleInputChangeWithField = (e: any, onChange: any) => {
     open && setOpen(false);
     setInputValue(e.currentTarget.value);
     const date = parse(e.currentTarget.value, 'dd-MM-y', new Date());
     if (isValid(date)) {
-      setSelected(date);
-      onChange(getUnixTime(date));
+      setSelectedDate(date);
+      onChange(date);
     } else {
-      setSelected(undefined);
+      setSelectedDate(undefined);
+      onChange(undefined);
     }
   };
   const handleDaySelect = (date: Date | undefined) => {
-    setSelected(date);
+    setSelectedDate(date);
 
     if (date) {
       setInputValue(format(date, 'dd-MM-y'));
@@ -79,7 +90,10 @@ const FormControlledDatePicker = <T extends FieldValues>(
   };
 
   return (
-    <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
+    <FormControl
+      display={hidden ? 'none' : 'block'}
+      isInvalid={!!errors[name] || !!error?.length}
+    >
       <FormLabel fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -92,7 +106,7 @@ const FormControlledDatePicker = <T extends FieldValues>(
               <PopoverTrigger>
                 <InputGroup>
                   <Input
-                    onClick={() => setOpen(true)}
+                    onClick={() => open && setOpen(false)}
                     type="text"
                     placeholder={format(new Date(), 'dd-MM-y')}
                     value={inputValue}
@@ -112,12 +126,12 @@ const FormControlledDatePicker = <T extends FieldValues>(
               <PopoverContent>
                 <DayPicker
                   mode="single"
-                  defaultMonth={selected}
-                  selected={selected}
+                  defaultMonth={selectedDate}
+                  selected={selectedDate}
                   onSelect={(e: Date | undefined) => {
                     handleDaySelect(e);
 
-                    field.onChange(e ? getUnixTime(e) : null);
+                    field.onChange(e ? e : null);
                   }}
                   locale={es}
                 />
@@ -128,6 +142,13 @@ const FormControlledDatePicker = <T extends FieldValues>(
           );
         }}
       />
+      {!!error?.length && <FormErrorMessage>{error}</FormErrorMessage>}
+      {!errors[name] ? (
+        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+      ) : (
+        //@ts-ignore
+        <FormErrorMessage>{errors[name]?.message}</FormErrorMessage>
+      )}
     </FormControl>
   );
 };

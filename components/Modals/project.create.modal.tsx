@@ -86,7 +86,7 @@ const ProjectCreateModal = ({
             >
               Guardar
             </Button>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
+            <Button colorScheme="gray" onClick={onClose}>
               Cerrar
             </Button>
           </ModalFooter>
