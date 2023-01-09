@@ -29,5 +29,5 @@ jobs:
             "STORAGE_SASTOKEN=${{ secrets.STORAGE_SASTOKEN }}"
             "STORAGE_RESOURCE_NAME=${{ secrets.STORAGE_RESOURCE_NAME }}"
             "NEXT_PUBLIC_WEB_URL=${{ secrets.NEXT_PUBLIC_WEB_URL }}"
-          tags: ${{ secrets.ACR_ENDPOINT }}/sysopadesstaging:v1.09
+          tags: ${{ secrets.ACR_ENDPOINT }}/sysopadesstaging:v1.10
           file: ./Staging-Dockerfile
