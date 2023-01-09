@@ -17,6 +17,8 @@ export const validateProjectStage: z.ZodType<
     endDate: z.date(),
     expectedFunds: z.any().transform((value) => new Prisma.Decimal(value)),
     projectId: z.string(),
+    displayName: z.string(),
+    currency: z.nativeEnum(Currency),
   })
 );
 export type FormProjectStage = z.infer<typeof validateProjectStage>;
@@ -99,6 +101,8 @@ export const defaultProjectStage: FormProjectStage = {
   endDate: null,
   expectedFunds: new Prisma.Decimal(0),
   projectId: null,
+  displayName: '',
+  currency: 'PYG',
 };
 
 export const defaultProjectData: FormProject = {

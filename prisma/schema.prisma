@@ -168,6 +168,8 @@ model ProjectStage {
   updatedById   String?
   startDate     DateTime
   endDate       DateTime?
+  currency      Currency
+  displayName   String
   expectedFunds Decimal       @default(0) @db.Decimal(19, 4)
   donors        TaxPayer[]
   receivedFunds Imbursement[]

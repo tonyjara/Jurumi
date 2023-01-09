@@ -14,7 +14,7 @@
     "test": "jest --watch",
     "ts-lint": "tsc --noEmit --incremental --watch",
     "docker-staging": "docker compose -f compose-staging.yml up --build --force-recreate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.12.0",
