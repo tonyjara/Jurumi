@@ -37,10 +37,6 @@ const ProjectStageForm = ({ control, errors }: formProps<FormProject>) => {
       </HStack>
       {fields.map((x, index) => {
         const currency = x.currency;
-        console.log(
-          errors.projectStages &&
-            errors?.projectStages[index]?.startDate?.message
-        );
 
         return (
           <VStack mt={'10px'} spacing={5} key={x.id}>

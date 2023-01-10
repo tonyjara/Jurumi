@@ -29,8 +29,6 @@ export const projectRouter = router({
   create: protectedProcedure
     .input(validateProject)
     .mutation(async ({ input, ctx }) => {
-      // console.log(input);
-
       if (!ctx.session.user) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',

@@ -117,7 +117,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
 
       setLoading(false);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setLoading(false);
       setSelectOptions(null);
     }

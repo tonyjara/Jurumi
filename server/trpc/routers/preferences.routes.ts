@@ -7,8 +7,6 @@ export const preferencesRouter = router({
   upsertSelectedOrg: protectedProcedure
     .input(z.object({ organizationId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      console.log(input);
-
       const user = ctx.session.user;
       return await prisma?.preferences.upsert({
         create: {

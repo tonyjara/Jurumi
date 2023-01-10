@@ -15,6 +15,12 @@ const createBlobInContainer = async (
   await blobClient.uploadData(file, options);
 };
 
+// AllowedOrigins: ['*'],
+// AllowedMethods: ['GET'],
+// AllowedHeaders: [],
+// ExposedHeaders: [],
+// MaxAgeInSeconds: 60
+
 const uploadFileToBlob = async (
   file: File | null,
   containerName: string,
@@ -23,10 +29,22 @@ const uploadFileToBlob = async (
   if (!file) return null;
 
   const blobService = new BlobServiceClient(connectionString);
+  // blobService.setProperties({
+  //   cors: [
+  //     {
+  //       allowedOrigins: '*',
+  //       allowedMethods: 'PUT',
+  //       allowedHeaders: '',
+  //       exposedHeaders: '',
+  //       maxAgeInSeconds: 60,
+  //     },
+  //   ],
+  // });
 
   // get Container - full public read access
   const containerClient: ContainerClient =
     blobService.getContainerClient(containerName);
+
   await containerClient.createIfNotExists({
     access: 'container',
   });

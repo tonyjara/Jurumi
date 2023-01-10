@@ -50,7 +50,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
 
     if (x?.error) {
       //handle
-      // console.log(x.error);
+      // console.error(x.error);
       myToast.error('Hubo un error favor intente nuevamente.');
     }
   };
