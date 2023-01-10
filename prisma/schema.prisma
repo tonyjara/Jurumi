@@ -208,14 +208,11 @@ model Imbursement {
   finalCurrency               Currency  @default(PYG)
   finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
 
-  canceled    Boolean @default(false)
   archived    Boolean @default(false)
   softDeleted Boolean @default(false)
 
   searchableImage searchableImage?
 
-  transactionId  Int           @unique
-  trasaction     Transaction   @relation(fields: [transactionId], references: [id])
   taxPayerId     String
   taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
   ProjectStage   ProjectStage? @relation(fields: [projectStageId], references: [id])
@@ -225,6 +222,7 @@ model Imbursement {
 
   moneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
   moneyAccountId String?
+  Transaction    Transaction[]
 }
 
 model TaxPayer {
@@ -335,7 +333,13 @@ model Transaction {
   currency          Currency
   openingBalance    Decimal   @default(0) @db.Decimal(19, 4)
   transactionAmount Decimal   @default(0) @db.Decimal(19, 4)
+  isCancellation    Boolean   @default(false)
 
+  //Self relation
+  cancellationId  Int?             @unique
+  cancellation    Transaction?     @relation("cancellation", fields: [cancellationId], references: [id])
+  transactions    Transaction?     @relation("cancellation")
+  //
   searchableImage searchableImage?
 
   moneyAccountId String
@@ -347,8 +351,8 @@ model Transaction {
   moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
   expenseReturnId String?
   ExpenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
-
-  Imbursement Imbursement?
+  imbursementId   String?
+  Imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
 }
 
 model searchableImage {

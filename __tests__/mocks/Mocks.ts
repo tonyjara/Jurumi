@@ -169,10 +169,12 @@ export const transactionMock: () => Transaction = () => {
     transactionAmount: new Prisma.Decimal(
       faker.commerce.price(1000000, 3000000)
     ),
+    isCancellation: false,
     moneyAccountId: '',
     moneyRequestId: null,
     imbursementId: null,
     expenseReturnId: null,
+    cancellationId: null,
   };
   return x;
 };
