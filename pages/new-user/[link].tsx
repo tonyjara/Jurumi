@@ -146,7 +146,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   const verify = (await verifyToken(token, secret).catch((err) => {
-    console.log('Verify err: ' + JSON.stringify(err));
+    console.error('Verify err: ' + JSON.stringify(err));
   })) as {
     data: { email: string; displayName: string; linkId: string };
   } | null;
