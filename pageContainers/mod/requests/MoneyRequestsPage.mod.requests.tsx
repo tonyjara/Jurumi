@@ -27,7 +27,7 @@ export type MoneyRequestComplete = MoneyRequest & {
   expenseReports: ExpenseReport[];
 };
 
-const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
+const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
   const user = session.data?.user;
   const [searchValue, setSearchValue] = useState('');
@@ -133,4 +133,4 @@ const MoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   );
 };
 
-export default MoneyRequestsPage;
+export default ModMoneyRequestsPage;

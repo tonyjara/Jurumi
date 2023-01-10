@@ -24,7 +24,10 @@ const CostCategoryForm = ({ control, errors }: formProps<FormProject>) => {
     <>
       <Divider my={'10px'} />
       <HStack justifyContent={'space-between'}>
-        <Text fontSize={'lg'}> Lineas presupuestarias</Text>
+        <Text fontSize={'lg'} fontWeight="bold">
+          {' '}
+          Lineas presupuestarias
+        </Text>
         <IconButton
           onClick={() => prepend(defaultCostCategoryData)}
           aria-label="add"
@@ -35,17 +38,16 @@ const CostCategoryForm = ({ control, errors }: formProps<FormProject>) => {
         const currency = x.currency;
         return (
           <HStack key={x.id} spacing={5}>
-            <IconButton
-              onClick={() => remove(index)}
-              mt={'22px'}
-              aria-label="delete"
-              icon={<DeleteIcon />}
-            />
             <FormControlledText
               control={control}
               errors={errors}
               name={`costCategories.${index}.displayName`}
               label="Nombre"
+              error={
+                errors.costCategories
+                  ? errors?.costCategories[index]?.displayName?.message
+                  : ''
+              }
             />
             <FormControlledMoneyInput
               control={control}
@@ -54,6 +56,11 @@ const CostCategoryForm = ({ control, errors }: formProps<FormProject>) => {
               label="Balance inicial."
               prefix={translateCurrencyPrefix(currency)}
               currency={currency}
+            />
+            <IconButton
+              onClick={() => remove(index)}
+              aria-label="delete"
+              icon={<DeleteIcon />}
             />
           </HStack>
         );

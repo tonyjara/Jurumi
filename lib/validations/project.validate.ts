@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { stringReqMinMax } from '../utils/ValidationHelpers';
 
 export const validateProjectStage: z.ZodType<
-  Omit<ProjectStage, 'expectedFunds'> & { expectedFunds?: any }
+  Omit<ProjectStage, 'expectedFunds' | 'projectId'> & { expectedFunds?: any }
 > = z.lazy(() =>
   z.object({
     id: z.string(),
@@ -13,11 +13,10 @@ export const validateProjectStage: z.ZodType<
     updatedAt: z.date().nullable(),
     createdById: z.string(),
     updatedById: z.string().nullable(),
-    startDate: z.date(),
-    endDate: z.date(),
+    startDate: z.date({ required_error: 'Favor ingrese una fecha de inicio.' }),
+    endDate: z.date().nullable(),
     expectedFunds: z.any().transform((value) => new Prisma.Decimal(value)),
-    projectId: z.string(),
-    displayName: z.string(),
+    displayName: stringReqMinMax('Favor ingrese un nombre', 3, 32),
     currency: z.nativeEnum(Currency),
   })
 );
@@ -38,7 +37,7 @@ const validateCostCategory: z.ZodType<FormCostCategory> = z.lazy(() =>
     updatedAt: z.date().nullable(),
     createdById: z.string(),
     updatedById: z.string().nullable(),
-    displayName: z.string(),
+    displayName: stringReqMinMax('Favor ingrese un nombre', 3, 32),
     openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
     executedAmount: z.any().transform((value) => new Prisma.Decimal(value)),
     projectId: z.string().nullable(),
@@ -100,7 +99,6 @@ export const defaultProjectStage: FormProjectStage = {
   startDate: new Date(),
   endDate: null,
   expectedFunds: new Prisma.Decimal(0),
-  projectId: null,
   displayName: '',
   currency: 'PYG',
 };

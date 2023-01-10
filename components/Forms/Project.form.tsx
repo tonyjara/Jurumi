@@ -4,6 +4,7 @@ import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import type { FormProject } from '../../lib/validations/project.validate';
 import FormControlledText from '../FormControlled/FormControlledText';
 import CostCategoryForm from './CostCategory.form';
+import ProjectStageForm from './ProjectStage.form';
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -29,6 +30,7 @@ const ProjectForm = ({ control, errors }: formProps<FormProject>) => {
         />
       </VStack>
       <CostCategoryForm control={control} errors={errors} />
+      <ProjectStageForm control={control} errors={errors} />
     </>
   );
 };

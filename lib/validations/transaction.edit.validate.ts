@@ -21,6 +21,7 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
         accountId: z.string(),
         updatedById: z.string().nullable(),
         currency: z.nativeEnum(Currency),
+        isCancellation: z.boolean(),
         openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
         transactionAmount: z
           .any()
@@ -28,6 +29,7 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
         moneyRequestId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
         imbursementId: z.string().nullable(),
+        cancellationId: z.number().nullable(),
         moneyAccountId: z
           .string({
             required_error:
@@ -60,4 +62,6 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   moneyRequestId: null,
   imbursementId: null,
   expenseReturnId: null,
+  isCancellation: false,
+  cancellationId: null,
 };

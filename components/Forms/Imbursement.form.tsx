@@ -1,8 +1,10 @@
 import { currencyOptions } from '@/lib/utils/SelectOptions';
+import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
 import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import { Button, Divider, VStack } from '@chakra-ui/react';
+import type { Currency } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import type { FieldValues, Control, UseFormSetValue } from 'react-hook-form';
@@ -46,7 +48,7 @@ const ImbursementForm = ({
     setValue('finalAmount', amountInOtherCurrency * exchangeRate);
   };
 
-  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
+  const { data: projectStages } = trpcClient.project.getProjectStages.useQuery(
     { projectId: projectId ?? '' },
     { enabled: !!projectId?.length }
   );
@@ -57,11 +59,22 @@ const ImbursementForm = ({
     label: `${proj.displayName}`,
   }));
 
-  const costCatOptions = () =>
-    costCats?.map((cat) => ({
-      value: cat.id,
-      label: `${cat.displayName}`,
+  const projectStageOptions = () =>
+    projectStages?.map((stage) => ({
+      value: stage.id,
+      label: `${stage.displayName}`,
     }));
+
+  const { data: moneyAccs } =
+    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
+
+  const moneyAccOptions = (currency: Currency) =>
+    moneyAccs
+      ?.filter((x) => x.currency === currency)
+      .map((acc) => ({
+        value: acc.id,
+        label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
+      }));
 
   return (
     <>
@@ -131,7 +144,14 @@ const ImbursementForm = ({
           </>
         )}
         <Divider />
-
+        <FormControlledSelect
+          control={control}
+          errors={errors}
+          name={'moneyAccountId'}
+          label="Seleccione una cuenta para recibir el fondo."
+          options={moneyAccOptions(finalCurrency) ?? []}
+          isClearable={true}
+        />
         <FormControlledSelect
           control={control}
           errors={errors}
@@ -139,6 +159,15 @@ const ImbursementForm = ({
           label="Seleccione un proyecto"
           options={projectOptions ?? []}
         />
+        {projectStageOptions()?.length && (
+          <FormControlledSelect
+            control={control}
+            errors={errors}
+            name="projectStageId"
+            label="Etapa del proyecto"
+            options={projectStageOptions() ?? []}
+          />
+        )}
         <FormControlledTaxPayerId
           control={control}
           errors={errors}
@@ -147,15 +176,6 @@ const ImbursementForm = ({
           setValue={setValue}
           helperText="Ruc del donante."
         />
-        {/* {costCatOptions()?.length && (
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            name="costCategoryId"
-            label="Linea presupuestaria"
-            options={costCatOptions() ?? []}
-          />
-        )} */}
         {user && (
           <FormControlledImageUpload
             control={control}
@@ -164,8 +184,8 @@ const ImbursementForm = ({
             idName="searchableImage.imageName"
             label="Comprobante del desembolso"
             setValue={setValue}
-            userId={user.id}
             helperText="Favor tener en cuenta la orientación y legibilidad del documento."
+            userId={user.id}
           />
         )}
       </VStack>
