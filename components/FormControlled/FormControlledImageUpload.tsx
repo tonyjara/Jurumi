@@ -27,6 +27,7 @@ import uploadFileToBlob from '../../lib/utils/azure-storage-blob';
 import { compressCoverPhoto } from '../../lib/utils/ImageCompressor';
 import { myToast } from '../Toasts/MyToast';
 import { v4 as uuidV4 } from 'uuid';
+import axios from 'axios';
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
@@ -74,8 +75,17 @@ const FormControlledImageUpload = <T extends FieldValues>(
         lastModified: getFile.lastModified,
       });
       const compressed = await compressCoverPhoto(file);
-      const url = await uploadFileToBlob(compressed, userId);
+      // const url = await uploadFileToBlob(compressed, userId);
+      const endpoint = '/api/upload';
+      const formData = new FormData();
+      formData.append('file', compressed);
 
+      const req = await axios.post(endpoint, formData);
+      console.log(req.data);
+      if (req.data.error) {
+        myToast.error();
+      }
+      const { url } = req.data;
       setValue(urlName, url);
       setValue(idName, imageUuid);
       setUploading(false);

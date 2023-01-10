@@ -1,7 +1,7 @@
-import MoneyRequestsPage from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
+import ModMoneyRequestsPage from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
 import type { GetServerSideProps } from 'next';
 
-export default MoneyRequestsPage;
+export default ModMoneyRequestsPage;
 
 export interface MoneyRequestsPageProps {
   moneyRequestId?: string;
