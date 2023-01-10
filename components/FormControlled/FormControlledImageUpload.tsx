@@ -75,17 +75,13 @@ const FormControlledImageUpload = <T extends FieldValues>(
         lastModified: getFile.lastModified,
       });
       const compressed = await compressCoverPhoto(file);
-      // const url = await uploadFileToBlob(compressed, userId);
-      const endpoint = '/api/upload';
-      const formData = new FormData();
-      formData.append('file', compressed);
 
-      const req = await axios.post(endpoint, formData);
+      const req = await axios('/api/get-connection-string');
       console.log(req.data);
-      if (req.data.error) {
-        myToast.error();
-      }
-      const { url } = req.data;
+      const { connectionString } = req.data;
+
+      const url = await uploadFileToBlob(compressed, userId, connectionString);
+
       setValue(urlName, url);
       setValue(idName, imageUuid);
       setUploading(false);

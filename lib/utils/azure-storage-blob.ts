@@ -1,15 +1,6 @@
 import type { ContainerClient } from '@azure/storage-blob';
 import { BlobServiceClient } from '@azure/storage-blob';
 
-// const containerName = `tutorial-container`; //name of folder
-const sasToken = process.env.NEXT_PUBLIC_STORAGE_SASTOKEN;
-const storageAccountName = process.env.NEXT_PUBLIC_STORAGE_RESOURCE_NAME;
-
-// Feature flag - disable storage feature to app if not configured
-export const isStorageConfigured = () => {
-  return !storageAccountName || !sasToken ? false : true;
-};
-
 const createBlobInContainer = async (
   containerClient: ContainerClient,
   file: File
@@ -26,17 +17,12 @@ const createBlobInContainer = async (
 
 const uploadFileToBlob = async (
   file: File | null,
-  containerName: string
+  containerName: string,
+  connectionString: string
 ): Promise<string | null> => {
-  if (!isStorageConfigured) {
-    throw 'storage not configured';
-  }
   if (!file) return null;
 
-  // get BlobService = notice `?` is pulled out of sasToken - if created in Azure portal
-  const blobService = new BlobServiceClient(
-    `https://${storageAccountName}.blob.core.windows.net/?${sasToken}`
-  );
+  const blobService = new BlobServiceClient(connectionString);
 
   // get Container - full public read access
   const containerClient: ContainerClient =
