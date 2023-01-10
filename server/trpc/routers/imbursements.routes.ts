@@ -1,5 +1,5 @@
 import { validateImbursement } from '@/lib/validations/imbursement.validate';
-import { MoneyResquestApprovalStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateMoneyRequest } from '../../../lib/validations/moneyRequest.validate';
@@ -14,10 +14,9 @@ export const imbursementsRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
-  getMyOwnComplete: adminModProcedure
+  getManyComplete: adminModProcedure
     .input(
       z.object({
-        status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
         pageIndex: z.number().nullish(),
         pageSize: z.number().min(1).max(100).nullish(),
         sorting: z
@@ -26,26 +25,26 @@ export const imbursementsRouter = router({
           .nullish(),
       })
     )
-    .query(async ({ input, ctx }) => {
-      const user = ctx.session.user;
+    .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
       const pageIndex = input.pageIndex ?? 0;
 
-      return await prisma?.moneyRequest.findMany({
+      return await prisma?.imbursement.findMany({
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         include: {
-          project: true,
-          costCategory: true,
-          transactions: true,
-          expenseReports: true,
+          transaction: { select: { id: true } },
+          taxPayer: { select: { razonSocial: true, ruc: true, id: true } },
+          project: { select: { id: true, displayName: true } },
+          projectStage: { select: { id: true, displayName: true } },
+          searchableImage: { select: { imageName: true, url: true } },
+          moneyAccount: { select: { displayName: true } },
+          account: { select: { id: true, displayName: true } },
         },
-
-        where: { accountId: user.id, status: input.status },
       });
     }),
-  count: adminModProcedure.query(async () => prisma?.moneyRequest.count()),
+  count: adminModProcedure.query(async () => prisma?.imbursement.count()),
 
   create: adminModProcedure
     .input(validateImbursement)
@@ -63,34 +62,69 @@ export const imbursementsRouter = router({
         },
         update: {},
       });
-      if (!taxPayer || !input.searchableImage) {
-        throw new TRPCError({
-          code: 'PRECONDITION_FAILED',
-          message: 'taxpayer failed',
-        });
-      }
+      return await prisma?.$transaction(async (txCtx) => {
+        if (!taxPayer || !input.searchableImage || !input.moneyAccountId) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'taxpayer failed',
+          });
+        }
 
-      return await prisma?.imbursement.create({
-        data: {
-          createdById: user.id,
-          concept: input.concept,
-          wasConvertedToOtherCurrency: input.wasConvertedToOtherCurrency,
-          exchangeRate: input.exchangeRate,
-          otherCurrency: input.otherCurrency,
-          amountInOtherCurrency: input.amountInOtherCurrency,
-          finalCurrency: input.finalCurrency,
-          finalAmount: input.finalAmount,
-          projectStageId: input.projectStageId,
-          moneyAccountId: input.moneyAccountId,
-          taxPayerId: taxPayer.id,
-          searchableImage: {
-            create: {
-              url: input.searchableImage.url,
-              imageName: input.searchableImage.imageName,
-              text: '',
+        // 1. Create imbursement
+        const imbursement = await txCtx?.imbursement.create({
+          data: {
+            accountId: user.id,
+            concept: input.concept,
+            wasConvertedToOtherCurrency: input.wasConvertedToOtherCurrency,
+            exchangeRate: input.exchangeRate,
+            otherCurrency: input.otherCurrency,
+            amountInOtherCurrency: input.amountInOtherCurrency,
+            finalCurrency: input.finalCurrency,
+            finalAmount: input.finalAmount,
+            projectStageId: input.projectStageId,
+            moneyAccountId: input.moneyAccountId,
+            taxPayerId: taxPayer.id,
+            searchableImage: {
+              create: {
+                url: input.searchableImage.url,
+                imageName: input.searchableImage.imageName,
+                text: '',
+              },
             },
           },
-        },
+        });
+
+        // 2. Get latest transaction of the bank Account
+        const getLatestTx = await txCtx.moneyAccount.findUnique({
+          where: { id: input.moneyAccountId },
+          include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+        });
+        //TODO check what happens when there is no previous tx
+        if (!getLatestTx) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'No money request or transaction.',
+          });
+        }
+        // 3. Calculate balance based on transaction
+        const lastTx = getLatestTx?.transactions[0];
+        const currentBalance = lastTx
+          ? lastTx.openingBalance.sub(lastTx.transactionAmount)
+          : getLatestTx.initialBalance;
+
+        // 4. Create transaction
+        await txCtx.transaction.create({
+          data: {
+            transactionAmount: input.finalAmount,
+            accountId: user.id,
+            currency: input.finalCurrency,
+            openingBalance: currentBalance,
+            moneyAccountId: input.moneyAccountId,
+            moneyRequestId: null,
+            imbursementId: imbursement.id,
+            expenseReturnId: null,
+          },
+        });
       });
     }),
   // edit executed amount when going from other than accepted
@@ -121,7 +155,8 @@ export const imbursementsRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const x = await prisma?.moneyRequest.delete({
+      //TODO check if it can be deleted
+      const x = await prisma?.imbursement.delete({
         where: { id: input.id },
       });
       return x;

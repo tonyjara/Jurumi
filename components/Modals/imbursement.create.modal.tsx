@@ -51,7 +51,6 @@ const ImbursementCreateModal = ({
     reset(defaultImbursementData);
     onClose();
   };
-  console.log(errors);
 
   const { error, mutate, isLoading } =
     trpcClient.imbursement.create.useMutation(
@@ -65,9 +64,7 @@ const ImbursementCreateModal = ({
     );
 
   const submitFunc = async (data: FormImbursement) => {
-    console.log(data);
-
-    // mutate(data);
+    mutate(data);
   };
 
   return (

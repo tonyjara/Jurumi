@@ -183,7 +183,6 @@ export const imbursementMock: () => FormImbursement = () => {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
-    createdById: '',
     updatedById: null,
     concept: faker.commerce.productDescription().substring(0, 123),
     wasConvertedToOtherCurrency: true,
@@ -201,6 +200,7 @@ export const imbursementMock: () => FormImbursement = () => {
     projectId: null,
     taxPayer: { razonSocial: '', ruc: '' },
     searchableImage: { url: '', imageName: '' },
+    accountId: '',
   };
   return x;
 };

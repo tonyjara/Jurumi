@@ -1,34 +1,45 @@
 import ImbursementCreateModal from '@/components/Modals/imbursement.create.modal';
 import { useDisclosure } from '@chakra-ui/react';
-import type {
-  CostCategory,
-  ExpenseReport,
-  MoneyRequest,
-  Project,
-  Transaction,
-} from '@prisma/client';
+import type { Imbursement } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
-import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
-import DynamicTable from '../../../components/DynamicTables/DynamicTable';
-import { useDynamicTable } from '../../../components/DynamicTables/UseDynamicTable';
-import CreateExpenseReportModal from '../../../components/Modals/ExpenseReport.create.modal';
-import EditMoneyRequestModal from '../../../components/Modals/MoneyReq.edit.modal';
-import CreateMoneyRequestModal from '../../../components/Modals/MoneyRequest.create.modal';
-import { trpcClient } from '../../../lib/utils/trpcClient';
-// import { homeRequestsColumns } from './columns.home.requests';
+import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
+import DynamicTable from '@/components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import { imbursementsColumns } from './colums.mod.imbursements';
 
-export type CompleteMoneyReqHome = MoneyRequest & {
-  transactions: Transaction[];
-  expenseReports: ExpenseReport[];
-  project: Project | null;
-  costCategory: CostCategory | null;
+export type imbursementComplete = Imbursement & {
+  transaction: {
+    id: number;
+  }[];
+  taxPayer: {
+    id: string;
+    razonSocial: string;
+    ruc: string;
+  };
+  project: {
+    id: string;
+    displayName: string;
+  } | null;
+  projectStage: {
+    id: string;
+    displayName: string;
+  } | null;
+  searchableImage: {
+    imageName: string;
+    url: string;
+  } | null;
+  moneyAccount: {
+    displayName: string;
+  } | null;
+  account: {
+    id: string;
+    displayName: string;
+  };
 };
 
 const ImbursementsPage = () => {
-  const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
-    null
-  );
-  const [reqForReport, setReqForReport] = useState<CompleteMoneyReqHome | null>(
+  const [editImbursement, setEditImbursement] = useState<Imbursement | null>(
     null
   );
   const dynamicTableProps = useDynamicTable();
@@ -37,38 +48,27 @@ const ImbursementsPage = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
-    isOpen: isExpRepOpen,
-    onOpen: onExpRepOpen,
-    onClose: onExpRepClose,
-  } = useDisclosure();
-  const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
     onClose: onEditClose,
   } = useDisclosure();
 
   useEffect(() => {
-    if (!isEditOpen && editMoneyRequest) {
-      setEditMoneyRequest(null);
+    if (!isEditOpen && editImbursement) {
+      setEditImbursement(null);
     }
     return () => {};
-  }, [editMoneyRequest, isEditOpen]);
-  useEffect(() => {
-    if (!isExpRepOpen && reqForReport) {
-      setReqForReport(null);
-    }
-    return () => {};
-  }, [reqForReport, isExpRepOpen]);
+  }, [editImbursement, isEditOpen]);
 
-  const { data: moneyRequests, isFetching } =
-    trpcClient.moneyRequest.getMyOwnComplete.useQuery(
+  const { data: imbursements, isFetching } =
+    trpcClient.imbursement.getManyComplete.useQuery(
       { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
       { keepPreviousData: globalFilter ? true : false }
     );
-  const { data: count } = trpcClient.moneyRequest.countMyOwn.useQuery();
+  const { data: count } = trpcClient.imbursement.count.useQuery();
 
   const handleDataSource = () => {
-    if (moneyRequests) return moneyRequests;
+    if (imbursements) return imbursements;
     return [];
   };
 
@@ -93,7 +93,12 @@ const ImbursementsPage = () => {
         title={'Desembolsos'}
         loading={isFetching}
         options={tableOptions}
-        columns={[]}
+        columns={imbursementsColumns({
+          onEditOpen,
+          setEditImbursement,
+          pageIndex,
+          pageSize,
+        })}
         data={handleDataSource()}
         count={count ?? 0}
         {...dynamicTableProps}
@@ -101,13 +106,13 @@ const ImbursementsPage = () => {
 
       <ImbursementCreateModal isOpen={isOpen} onClose={onClose} />
 
-      {editMoneyRequest && (
+      {/* {editMoneyRequest && (
         <EditMoneyRequestModal
           moneyRequest={editMoneyRequest}
           isOpen={isEditOpen}
           onClose={onEditClose}
         />
-      )}
+      )} */}
     </>
   );
 };
