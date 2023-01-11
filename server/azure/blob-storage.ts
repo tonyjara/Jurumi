@@ -19,7 +19,10 @@ const createConnectionString = () => {
     services: AccountSASServices.parse('btqf').toString(), // blobs, tables, queues, files
     resourceTypes: AccountSASResourceTypes.parse('sco').toString(), // service, container, object
     permissions: AccountSASPermissions.parse('rwdlacupi'), // permissions
-    protocol: SASProtocol.Https,
+    protocol:
+      process.env.NODE_ENV === 'development'
+        ? SASProtocol.HttpsAndHttp
+        : SASProtocol.Https,
     startsOn: new Date(),
     expiresOn: new Date(new Date().valueOf() + 10 * 60 * 1000), // 10 minutes
   };
