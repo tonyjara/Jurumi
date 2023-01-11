@@ -5,7 +5,7 @@ import type { Account } from 'next-auth';
 
 export const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL;
 
-const redirect = (x: string) => NextResponse.redirect(`${WEB_URL}${x}`);
+const redirect = (x: string) => NextResponse.redirect(WEB_URL + x);
 
 export async function middleware(req: NextRequest) {
   const session = (await getToken({
