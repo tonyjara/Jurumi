@@ -4,8 +4,6 @@ import {
   IconButton,
   MenuList,
   MenuItem,
-  Box,
-  Button,
 } from '@chakra-ui/react';
 import type { MoneyAccount } from '@prisma/client';
 import React from 'react';

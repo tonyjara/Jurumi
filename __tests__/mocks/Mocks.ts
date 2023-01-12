@@ -153,7 +153,7 @@ export const moneyRequestMock: () => FormMoneyRequest = () => {
     softDeleted: false,
     rejectionMessage: '',
     organizationId: '',
-    costCategoryId: '',
+    costCategoryId: null,
   };
   return x;
 };
@@ -166,6 +166,7 @@ export const transactionMock: () => Transaction = () => {
     updatedById: null,
     currency: 'PYG',
     openingBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+    currentBalance: new Prisma.Decimal(0),
     transactionAmount: new Prisma.Decimal(
       faker.commerce.price(1000000, 3000000)
     ),
@@ -201,6 +202,7 @@ export const imbursementMock: () => FormImbursement = () => {
     taxPayer: { razonSocial: '', ruc: '' },
     searchableImage: { url: '', imageName: '' },
     accountId: '',
+    wasCancelled: false,
   };
   return x;
 };

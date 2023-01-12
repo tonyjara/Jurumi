@@ -7,6 +7,8 @@ import DynamicTable from '@/components/DynamicTables/DynamicTable';
 import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { imbursementsColumns } from './colums.mod.imbursements';
+import ImbursementEditModal from '@/components/Modals/imbursement.edit.modal';
+import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 
 export type imbursementComplete = Imbursement & {
   transaction: {
@@ -39,9 +41,8 @@ export type imbursementComplete = Imbursement & {
 };
 
 const ImbursementsPage = () => {
-  const [editImbursement, setEditImbursement] = useState<Imbursement | null>(
-    null
-  );
+  const [editImbursement, setEditImbursement] =
+    useState<FormImbursement | null>(null);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
@@ -101,18 +102,19 @@ const ImbursementsPage = () => {
         })}
         data={handleDataSource()}
         count={count ?? 0}
+        colorRedKey={'wasCancelled'}
         {...dynamicTableProps}
       />
 
       <ImbursementCreateModal isOpen={isOpen} onClose={onClose} />
 
-      {/* {editMoneyRequest && (
-        <EditMoneyRequestModal
-          moneyRequest={editMoneyRequest}
+      {editImbursement && (
+        <ImbursementEditModal
+          imbursement={editImbursement}
           isOpen={isEditOpen}
           onClose={onEditClose}
         />
-      )} */}
+      )}
     </>
   );
 };

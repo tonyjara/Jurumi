@@ -17,6 +17,7 @@ export type FormImbursement = Omit<
 export const validateImbursement: z.ZodType<FormImbursement> = z.lazy(() =>
   z.object({
     id: z.string(),
+    wasCancelled: z.boolean(),
     createdAt: z.date(),
     updatedAt: z.date().nullable(),
     accountId: z.string(),
@@ -33,8 +34,10 @@ export const validateImbursement: z.ZodType<FormImbursement> = z.lazy(() =>
     archived: z.boolean(),
     finalCurrency: z.nativeEnum(Currency),
     projectStageId: z.string().nullable(),
-    projectId: z.string(),
-    moneyAccountId: z.string().min(2, 'Favor seleccione una cuenta.'),
+    projectId: z.string().nullable(),
+    moneyAccountId: z
+      .string({ invalid_type_error: 'Favor seleccione una cuenta.' })
+      .min(2, 'Favor seleccione una cuenta.'),
     searchableImage: z
       .object({
         imageName: z.string().min(1, 'Favor suba la imágen de su comprobante'),
@@ -58,6 +61,7 @@ export const defaultImbursementData: FormImbursement = {
   updatedAt: null,
   accountId: '',
   updatedById: null,
+  wasCancelled: false,
   concept: '',
   wasConvertedToOtherCurrency: true,
   exchangeRate: 0,

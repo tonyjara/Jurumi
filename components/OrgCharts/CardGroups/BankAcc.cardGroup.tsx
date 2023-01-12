@@ -3,24 +3,29 @@ import BankAccCard from '../Cards/bankAcc.card';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { HStack, Text } from '@chakra-ui/react';
 import ErrorBotLottie from '../../Spinners-Loading/ErrorBotLottie';
+import type { BankInfo, MoneyAccount, Transaction } from '@prisma/client';
 import { Prisma } from '@prisma/client';
-import { reduceMoneyAccountValues } from '@/lib/utils/MoneyAccountUtils';
+import { reduceBankAccValues } from '@/lib/utils/MoneyAccountUtils';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import type { MoneyAccWithTransactions } from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
+
+export type BankAccsWithLastTx = MoneyAccount & {
+  transactions: Transaction[];
+  bankInfo: BankInfo | null;
+};
 
 const BankAccCardGroup = () => {
   const {
     data: bankAccs,
     isLoading: isBankLoading,
     error: bankError,
-  } = trpcClient.moneyAcc.getManyBankAccs.useQuery();
-  const reduceToGs = (bankAccs?: MoneyAccWithTransactions[]) => {
+  } = trpcClient.moneyAcc.getManyBankAccWithLastTx.useQuery();
+  const reduceToGs = (bankAccs?: BankAccsWithLastTx[]) => {
     if (!bankAccs) return new Prisma.Decimal(0);
-    return reduceMoneyAccountValues(bankAccs, 'PYG');
+    return reduceBankAccValues(bankAccs, 'PYG');
   };
-  const reduceToUsd = (bankAccs?: MoneyAccWithTransactions[]) => {
+  const reduceToUsd = (bankAccs?: BankAccsWithLastTx[]) => {
     if (!bankAccs) return new Prisma.Decimal(0);
-    return reduceMoneyAccountValues(bankAccs, 'USD');
+    return reduceBankAccValues(bankAccs, 'USD');
   };
   return (
     <>

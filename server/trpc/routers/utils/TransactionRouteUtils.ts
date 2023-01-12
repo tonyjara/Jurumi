@@ -1,6 +1,6 @@
 import type { Account, Transaction } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
-import type { FormTransactionCreate } from '../../../../lib/validations/transaction.create.validate';
+import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import { getSelectedOrganizationId } from './PreferencesRoutUtils';
 
 export async function createManyMoneyAccountTransactions({
@@ -15,36 +15,48 @@ export async function createManyMoneyAccountTransactions({
     for (const tx of formTransaction.transactions) {
       const moneyAccountId = tx.moneyAccountId;
 
-      // 1. Get latest transaction of the bank Account
-      const getLatestTx = await txCtx.moneyAccount.findUnique({
+      // 1. Get latest transaction of the money Account
+      const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUnique({
         where: { id: moneyAccountId },
         include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
       });
-      if (!getLatestTx) {
+      if (!getMoneyAccAndLatestTx) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'No money request or transaction.',
         });
       }
 
-      const lastTx = getLatestTx?.transactions[0];
+      // 2. Calculate balance based on transaction or initialbalance
 
-      // 2. Calculate balance substracting from opening balance
-      // If there are no transactions take the money account initial balance
+      const lastTx = getMoneyAccAndLatestTx?.transactions[0];
+      const openingBalance = lastTx
+        ? lastTx.currentBalance
+        : getMoneyAccAndLatestTx.initialBalance;
       const currentBalance = lastTx
-        ? lastTx.openingBalance.sub(lastTx.transactionAmount)
-        : getLatestTx.initialBalance;
+        ? lastTx.currentBalance.sub(tx.transactionAmount)
+        : getMoneyAccAndLatestTx.initialBalance.sub(tx.transactionAmount);
 
       const operation = await txCtx.transaction.create({
         data: {
           transactionAmount: tx.transactionAmount,
           accountId,
           currency: tx.currency,
-          openingBalance: currentBalance,
+          openingBalance: openingBalance,
+          currentBalance: currentBalance,
           moneyAccountId,
           moneyRequestId: formTransaction.moneyRequestId,
           imbursementId: formTransaction.imbursementId,
           expenseReturnId: formTransaction.expenseReturnId,
+          searchableImage: formTransaction.searchableImage
+            ? {
+                create: {
+                  url: formTransaction.searchableImage.url,
+                  imageName: formTransaction.searchableImage.imageName,
+                  text: '',
+                },
+              }
+            : {},
         },
       });
 

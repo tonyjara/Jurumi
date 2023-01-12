@@ -28,6 +28,7 @@ interface InputProps<T extends FieldValues> {
   inputLeft?: any;
   prefix?: string;
   hidden?: boolean;
+  disable?: boolean;
 }
 
 const FormControlledNumberInput = <T extends FieldValues>({
@@ -40,6 +41,7 @@ const FormControlledNumberInput = <T extends FieldValues>({
   inputLeft,
   prefix,
   hidden,
+  disable,
 }: InputProps<T>) => {
   return (
     <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
@@ -69,6 +71,7 @@ const FormControlledNumberInput = <T extends FieldValues>({
               }}
               customInput={Input}
               borderColor={'gray.300'}
+              disabled={disable}
             />
 
             {inputRight}

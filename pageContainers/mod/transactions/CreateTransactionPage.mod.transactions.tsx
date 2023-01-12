@@ -57,6 +57,7 @@ const CreateTransactionPage = ({
         successText: 'Su solicitud ha sido aprobada y ejecutada!',
         callback: () => {
           context.moneyRequest.invalidate();
+          context.moneyAcc.invalidate();
           reset(defaultTransactionCreateData);
           handleGoBack();
         },
@@ -112,6 +113,7 @@ const CreateTransactionPage = ({
           amountExecuted={reduceTransactionAmounts(moneyRequest?.transactions)}
           control={control}
           errors={errors}
+          setValue={setValue}
         />
 
         <Text mt={'10px'} color={'red.400'}>

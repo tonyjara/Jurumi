@@ -32,6 +32,7 @@ interface InputProps<T extends FieldValues> {
   hidden?: boolean;
   currency: Currency;
   totalAmount?: Decimal;
+  disable?: boolean;
 }
 
 const FormControlledMoneyInput = <T extends FieldValues>({
@@ -44,6 +45,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
   hidden,
   currency,
   totalAmount,
+  disable,
 }: InputProps<T>) => {
   return (
     <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
@@ -56,6 +58,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
         render={({ field }) => (
           <InputGroup>
             <CurrencyInput
+              disabled={disable}
               id="input-example"
               customInput={Input}
               name={name}

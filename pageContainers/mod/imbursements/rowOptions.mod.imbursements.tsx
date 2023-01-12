@@ -5,29 +5,23 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import type { MoneyRequest } from '@prisma/client';
-import { cloneDeep } from 'lodash';
-import router from 'next/router';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { imbursementComplete } from './ImbursementsPage.mod.imbursements';
+import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 
-const RowOptionsModRequests = ({
+const RowOptionsImbursements = ({
   x,
-  setEditMoneyRequest,
+  setEditImbursement,
   onEditOpen,
-  needsApproval,
-  hasBeenApproved,
 }: {
   x: imbursementComplete;
-  setEditMoneyRequest: React.Dispatch<
-    React.SetStateAction<MoneyRequest | null>
+  setEditImbursement: React.Dispatch<
+    React.SetStateAction<FormImbursement | null>
   >;
   onEditOpen: () => void;
-  needsApproval: boolean;
-  hasBeenApproved: boolean;
 }) => {
   const context = trpcClient.useContext();
 
@@ -35,11 +29,22 @@ const RowOptionsModRequests = ({
     handleUseMutationAlerts({
       successText: 'Se ha eliminado el desembolso!',
       callback: () => {
-        context.moneyRequest.getManyComplete.invalidate();
+        context.imbursement.invalidate();
+        context.moneyAcc.invalidate();
       },
     })
   );
 
+  const { mutate: cancelById } = trpcClient.imbursement.cancelById.useMutation(
+    handleUseMutationAlerts({
+      successText: 'Se ha anulado la transaccion!',
+      callback: () => {
+        context.imbursement.invalidate();
+        context.moneyAcc.invalidate();
+        context.transaction.invalidate();
+      },
+    })
+  );
   return (
     <Menu>
       <MenuButton
@@ -48,45 +53,21 @@ const RowOptionsModRequests = ({
         icon={<BsThreeDots />}
       />
       <MenuList>
+        {!!x.wasCancelled && <MenuItem>Este desembolso fue anulado.</MenuItem>}
         <MenuItem
-          isDisabled={needsApproval && !hasBeenApproved}
           onClick={() => {
-            router.push({
-              pathname: '/mod/transactions/create',
-              query: { moneyRequestId: x.id },
-            });
+            setEditImbursement(x);
+            onEditOpen();
           }}
-        >
-          Aceptar y ejecutar{' '}
-          {needsApproval && !hasBeenApproved && '( Necesita aprovación )'}
-        </MenuItem>
-        <MenuItem
-        // onClick={() => {
-        //   const rejected = cloneDeep(x);
-        //   rejected.status = 'REJECTED';
-        //   setEditMoneyRequest(rejected);
-        //   onEditOpen();
-        // }}
-        >
-          Rechazar
-        </MenuItem>
-        <MenuItem
-        // onClick={() => {
-        //   setEditMoneyRequest(x);
-        //   onEditOpen();
-        // }}
+          isDisabled={x.wasCancelled}
         >
           Editar
         </MenuItem>
         <MenuItem
-        // onClick={() => {
-        //   router.push({
-        //     pathname: '/mod/transactions',
-        //     query: { transactionIds: x.transactions.map((x) => x.id) },
-        //   });
-        // }}
+          isDisabled={x.wasCancelled}
+          onClick={() => cancelById({ id: x.id })}
         >
-          Ver transacciones
+          Anular
         </MenuItem>
 
         <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
@@ -95,4 +76,4 @@ const RowOptionsModRequests = ({
   );
 };
 
-export default RowOptionsModRequests;
+export default RowOptionsImbursements;

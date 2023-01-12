@@ -1,13 +1,15 @@
+import type { FormTransactionEdit } from '@/lib/validations/transaction.edit.validate';
 import { VStack } from '@chakra-ui/react';
-import type { Transaction } from '@prisma/client';
 import type { Decimal } from '@prisma/client/runtime';
+import { useSession } from 'next-auth/react';
 import React from 'react';
-import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
+import type { FieldValues, Control, UseFormSetValue } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
 import { formatedAccountBalance } from '../../lib/utils/TransactionUtils';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
@@ -15,15 +17,21 @@ import FormControlledSelect from '../FormControlled/FormControlledSelect';
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<T>;
+  errors: any;
   totalAmount?: Decimal;
+  setValue: UseFormSetValue<T>;
+  isEditable: boolean;
 }
 
 const TransactionEditForm = ({
   control,
   errors,
   totalAmount,
-}: formProps<Transaction>) => {
+  setValue,
+  isEditable,
+}: formProps<FormTransactionEdit>) => {
+  const user = useSession().data?.user;
+
   const { data: moneyAccs } =
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
@@ -44,6 +52,7 @@ const TransactionEditForm = ({
         name="currency"
         label="Moneda"
         options={currencyOptions}
+        disable={!isEditable}
       />
       <FormControlledSelect
         control={control}
@@ -52,6 +61,7 @@ const TransactionEditForm = ({
         label="Seleccione un medio de extracción"
         options={moneyAccOptions ?? []}
         isClearable={true}
+        disable={!isEditable}
       />
       <FormControlledMoneyInput
         control={control}
@@ -61,7 +71,20 @@ const TransactionEditForm = ({
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
         totalAmount={totalAmount}
+        disable={!isEditable}
       />
+      {user && (
+        <FormControlledImageUpload
+          control={control}
+          errors={errors}
+          urlName="searchableImage.url"
+          idName="searchableImage.imageName"
+          label="Comprobante del desembolso"
+          setValue={setValue}
+          helperText="Favor tener en cuenta la orientación y legibilidad del documento."
+          userId={user.id}
+        />
+      )}
     </VStack>
   );
 };

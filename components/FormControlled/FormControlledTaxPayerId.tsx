@@ -20,7 +20,6 @@ import React, { useEffect, useState } from 'react';
 import type {
   Control,
   ControllerRenderProps,
-  FieldErrorsImpl,
   FieldValues,
   Path,
   SetFieldValue,
@@ -33,7 +32,7 @@ import CreateTaxPayerModal from '../Modals/taxPayer.create.modal';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<T>;
+  errors: any;
   rucName: Path<T>;
   razonSocialName: Path<T>;
   autoFocus?: boolean;
@@ -172,10 +171,19 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const rucNameSplit = rucName.split('.');
+  const taxPayerString = rucNameSplit[0];
+  const rucString = rucNameSplit[1];
+  const taxPayerError =
+    (taxPayerString &&
+      rucString &&
+      errors[taxPayerString] &&
+      errors[taxPayerString][rucString]) ??
+    '';
 
   return (
     <>
-      <FormControl isInvalid={!!errors[rucName]}>
+      <FormControl isInvalid={!!taxPayerError}>
         <FormLabel fontSize={'md'} color={'gray.500'}>
           Contribuyente
         </FormLabel>
@@ -224,11 +232,11 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             regrese.
           </Text>
         )}
-        {!errors[rucName] ? (
+        {!taxPayerError.message ? (
           <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
         ) : (
           //@ts-ignore
-          <FormErrorMessage>{errors[rucName].message}</FormErrorMessage>
+          <FormErrorMessage>{taxPayerError.message}</FormErrorMessage>
         )}
       </FormControl>
       <CreateTaxPayerModal

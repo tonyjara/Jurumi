@@ -30,6 +30,16 @@ const RowOptionsModTransactions = ({
       successText: 'Se ha eliminado la transaccion!',
       callback: () => {
         context.transaction.invalidate();
+        context.moneyAcc.invalidate();
+      },
+    })
+  );
+  const { mutate: cancelById } = trpcClient.transaction.cancelById.useMutation(
+    handleUseMutationAlerts({
+      successText: 'Se ha anulado la transaccion!',
+      callback: () => {
+        context.transaction.invalidate();
+        context.moneyAcc.invalidate();
       },
     })
   );
@@ -50,7 +60,11 @@ const RowOptionsModTransactions = ({
         icon={<BsThreeDots />}
       />
       <MenuList>
+        {!!x.cancellationId && (
+          <MenuItem>Esta transacción fue anulada.</MenuItem>
+        )}
         <MenuItem
+          isDisabled={!!x.cancellationId}
           onClick={() => {
             router.push({
               pathname: '/mod/requests',
@@ -61,12 +75,19 @@ const RowOptionsModTransactions = ({
           Ir a destino de concepto
         </MenuItem>
         <MenuItem
+          isDisabled={!!x.cancellationId}
           onClick={() => {
             setEditTransaction(x);
             onEditOpen();
           }}
         >
           Editar
+        </MenuItem>
+        <MenuItem
+          isDisabled={!!x.cancellationId}
+          onClick={() => cancelById({ id: x.id })}
+        >
+          Anular
         </MenuItem>
         <MenuItem
           onClick={() =>

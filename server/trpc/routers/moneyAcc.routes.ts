@@ -21,6 +21,10 @@ export const moneyAccRouter = router({
             account: { select: { displayName: true } },
             moneyAccount: { select: { displayName: true } },
             moneyRequest: { select: { description: true } },
+            Imbursement: { select: { concept: true } },
+            searchableImage: {
+              select: { id: true, url: true, imageName: true },
+            },
           },
         },
       },
@@ -29,7 +33,7 @@ export const moneyAccRouter = router({
     });
   }),
 
-  getManyBankAccs: adminModProcedure.query(async () => {
+  getManyBankAccWithLastTx: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: false },
       include: {
@@ -38,7 +42,7 @@ export const moneyAccRouter = router({
       },
     });
   }),
-  getManyCashAccs: adminModProcedure.query(async () => {
+  getManyCashAccsWithLastTx: adminModProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: true },
       include: { transactions: { take: 1, orderBy: { id: 'desc' } } },

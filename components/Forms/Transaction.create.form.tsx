@@ -13,8 +13,9 @@ import {
 import type { Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import type { Decimal } from '@prisma/client/runtime';
+import { useSession } from 'next-auth/react';
 import React from 'react';
-import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
+import type { FieldValues, Control, UseFormSetValue } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
@@ -28,6 +29,7 @@ import type {
   FormTransactionCreate,
   TransactionField,
 } from '../../lib/validations/transaction.create.validate';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
@@ -35,9 +37,10 @@ import FormControlledSelect from '../FormControlled/FormControlledSelect';
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<T>;
+  errors: any;
   totalAmount?: Decimal;
   amountExecuted: Decimal;
+  setValue: UseFormSetValue<T>;
 }
 
 const TransactionForm = ({
@@ -45,7 +48,9 @@ const TransactionForm = ({
   errors,
   totalAmount,
   amountExecuted,
+  setValue,
 }: formProps<FormTransactionCreate>) => {
+  const user = useSession().data?.user;
   const { fields, prepend, remove, update } = useFieldArray({
     control,
     name: 'transactions',
@@ -153,6 +158,18 @@ const TransactionForm = ({
               currency={currency}
               totalAmount={totalAmount?.sub(formAmounts)}
             />
+            {user && (
+              <FormControlledImageUpload
+                control={control}
+                errors={errors}
+                urlName="searchableImage.url"
+                idName="searchableImage.imageName"
+                label="Comprobante del desembolso"
+                setValue={setValue}
+                helperText="Favor tener en cuenta la orientación y legibilidad del documento."
+                userId={user.id}
+              />
+            )}
           </VStack>
         );
       })}

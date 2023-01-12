@@ -28,6 +28,7 @@ interface InputProps<T extends FieldValues> {
   isMulti?: boolean;
   optionLabel?: string;
   optionValue?: string;
+  disable?: boolean;
 }
 
 const FormControlledSelect = <T extends FieldValues>({
@@ -43,6 +44,7 @@ const FormControlledSelect = <T extends FieldValues>({
   isMulti,
   optionLabel,
   optionValue,
+  disable,
 }: InputProps<T>) => {
   const handleOnChange = (e: any, field: ControllerRenderProps<T, Path<T>>) => {
     if (!isMulti) {
@@ -78,6 +80,7 @@ const FormControlledSelect = <T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <Select
+            isDisabled={disable}
             instanceId={name}
             options={options}
             onChange={(e) => {

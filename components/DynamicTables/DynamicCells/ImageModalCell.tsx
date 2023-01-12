@@ -11,11 +11,12 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { BsFillImageFill } from 'react-icons/bs';
+
 import {
   TransformWrapper,
   TransformComponent,
 } from '@pronestor/react-zoom-pan-pinch';
+import { MdOutlineImageNotSupported, MdOutlineImage } from 'react-icons/md';
 
 const ImageModalCell = ({
   url,
@@ -28,13 +29,17 @@ const ImageModalCell = ({
   return (
     <>
       <Flex
-        cursor={'pointer'}
-        onClick={onOpen}
+        cursor={url && 'pointer'}
+        onClick={() => url && onOpen()}
         alignItems={'center'}
         direction="column"
       >
         <Icon fontSize={'2xl'}>
-          <BsFillImageFill />
+          {url && url?.length > 0 ? (
+            <MdOutlineImage />
+          ) : (
+            <MdOutlineImageNotSupported />
+          )}
         </Icon>
       </Flex>
 

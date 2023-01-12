@@ -41,6 +41,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { TbWorld } from 'react-icons/tb';
+import { customScrollbar } from 'styles/CssUtils';
 
 export interface TableOptions {
   onClick: () => void;
@@ -66,6 +67,7 @@ interface DynamicTableProps<T extends object> {
   sorting: SortingState;
   setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
   globalFilter?: boolean;
+  colorRedKey?: string;
 }
 
 const DynamicTable = <T extends object>({
@@ -87,6 +89,7 @@ const DynamicTable = <T extends object>({
   setSorting,
   globalFilter,
   headerComp,
+  colorRedKey,
 }: DynamicTableProps<T>) => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
   const nextPage = () => setPageIndex(pageIndex + 1);
@@ -121,8 +124,14 @@ const DynamicTable = <T extends object>({
     }
   };
 
+  const redRowColor = useColorModeValue('red.700', 'red.300');
+
   return (
-    <Card overflow={'auto'} backgroundColor={backgroundColor}>
+    <Card
+      css={customScrollbar}
+      overflow={'auto'}
+      backgroundColor={backgroundColor}
+    >
       {!noHeader && (
         <CardHeader>
           <Flex justifyContent={'space-between'}>
@@ -159,6 +168,9 @@ const DynamicTable = <T extends object>({
       )}
 
       <Table
+        css={customScrollbar}
+        display={'block'}
+        overflowX={'scroll'}
         size={['sm', 'md']}
         variant={'simple'}
         backgroundColor={backgroundColor}
@@ -214,7 +226,15 @@ const DynamicTable = <T extends object>({
           {!loading &&
             data &&
             table?.getRowModel().rows.map((row) => (
-              <Tr key={row.id}>
+              <Tr
+                color={
+                  //@ts-ignore
+                  colorRedKey && !!row.original[colorRedKey]
+                    ? redRowColor
+                    : undefined
+                }
+                key={row.id}
+              >
                 {row.getVisibleCells().map((cell) => {
                   // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
                   const meta: any = cell.column.columnDef.meta;

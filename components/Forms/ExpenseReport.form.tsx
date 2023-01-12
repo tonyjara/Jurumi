@@ -5,7 +5,7 @@ import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
-  SetFieldValue,
+  UseFormSetValue,
 } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
@@ -23,7 +23,7 @@ import type { FormExpenseReport } from '../../lib/validations/expenseReport.vali
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
-  setValue: SetFieldValue<T>;
+  setValue: UseFormSetValue<T>;
 }
 
 const ExpenseReportForm = ({
