@@ -49,7 +49,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel whiteSpace={'nowrap'} fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
       <Controller

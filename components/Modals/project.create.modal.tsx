@@ -39,6 +39,7 @@ const ProjectCreateModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormProject>({
     defaultValues: defaultProjectData,
@@ -74,7 +75,11 @@ const ProjectCreateModal = ({
           <ModalBody>
             <SeedButton reset={reset} mock={projectMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <ProjectForm control={control} errors={errors} />
+            <ProjectForm
+              setValue={setValue}
+              control={control}
+              errors={errors}
+            />
           </ModalBody>
 
           <ModalFooter>
