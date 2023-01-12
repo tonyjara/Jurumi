@@ -76,11 +76,20 @@ export const imbursementsColumns = ({
   columnHelper.display({
     cell: (x) => (
       <ImageModalCell
-        imageName={x.row.original.searchableImage?.imageName}
-        url={x.row.original.searchableImage?.url}
+        imageName={x.row.original.imbursementProof?.imageName}
+        url={x.row.original.imbursementProof?.url}
       />
     ),
-    header: 'Comprobante',
+    header: 'Comprobante desembolso',
+  }),
+  columnHelper.display({
+    cell: (x) => (
+      <ImageModalCell
+        imageName={x.row.original.invoiceFromOrg?.imageName}
+        url={x.row.original.invoiceFromOrg?.url}
+      />
+    ),
+    header: 'Factura',
   }),
   columnHelper.accessor('taxPayer.razonSocial', {
     cell: (x) => <TextCell text={x.getValue()} />,
@@ -89,12 +98,6 @@ export const imbursementsColumns = ({
   columnHelper.display({
     cell: (x) => <TextCell text={x.row.original.project?.displayName ?? '-'} />,
     header: 'Proyecto',
-  }),
-  columnHelper.display({
-    cell: (x) => (
-      <TextCell text={x.row.original.projectStage?.displayName ?? '-'} />
-    ),
-    header: 'Etapa proyecto',
   }),
 
   columnHelper.display({

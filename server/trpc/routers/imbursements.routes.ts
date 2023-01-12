@@ -35,8 +35,8 @@ export const imbursementsRouter = router({
           transaction: { select: { id: true } },
           taxPayer: { select: { razonSocial: true, ruc: true, id: true } },
           project: { select: { id: true, displayName: true } },
-          projectStage: { select: { id: true, displayName: true } },
-          searchableImage: { select: { imageName: true, url: true } },
+          imbursementProof: { select: { imageName: true, url: true } },
+          invoiceFromOrg: { select: { imageName: true, url: true } },
           moneyAccount: { select: { displayName: true } },
           account: { select: { id: true, displayName: true } },
         },
@@ -61,12 +61,39 @@ export const imbursementsRouter = router({
         update: {},
       });
       return await prisma?.$transaction(async (txCtx) => {
-        if (!taxPayer || !input.searchableImage || !input.moneyAccountId) {
+        if (!taxPayer || !input.imbursementProof || !input.moneyAccountId) {
           throw new TRPCError({
             code: 'PRECONDITION_FAILED',
             message: 'taxpayer failed',
           });
         }
+        const imbursementProof = await prisma?.searchableImage.upsert({
+          where: {
+            imageName: input.imbursementProof?.imageName,
+          },
+          create: {
+            url: input.imbursementProof.url,
+            imageName: input.imbursementProof.imageName,
+            text: '',
+          },
+          update: {},
+        });
+        const createInvoiceFromOrg = async () => {
+          if (!input.invoiceFromOrg) return null;
+
+          return await prisma?.searchableImage.upsert({
+            where: {
+              imageName: input.imbursementProof?.imageName,
+            },
+            create: {
+              url: input.invoiceFromOrg.url,
+              imageName: input.invoiceFromOrg.imageName,
+              text: '',
+            },
+            update: {},
+          });
+        };
+        const invoiceFromOrg = await createInvoiceFromOrg();
 
         // 1. Create imbursement
         const imbursement = await txCtx?.imbursement.create({
@@ -80,19 +107,23 @@ export const imbursementsRouter = router({
             amountInOtherCurrency: input.amountInOtherCurrency,
             finalCurrency: input.finalCurrency,
             finalAmount: input.finalAmount,
-            projectStageId: input.projectStageId,
             moneyAccountId: input.moneyAccountId,
             taxPayerId: taxPayer.id,
-            searchableImage: {
-              create: {
-                url: input.searchableImage.url,
-                imageName: input.searchableImage.imageName,
-                text: '',
-              },
-            },
+            imbursementProofId: imbursementProof.id,
+            invoiceFromOrgId: invoiceFromOrg?.id ?? null,
           },
-          include: { searchableImage: { select: { id: true } } },
+          include: { imbursementProof: { select: { id: true } } },
         });
+
+        if (input.projectId) {
+          //connect taxpayer to project as a donor.
+          await txCtx.project.update({
+            where: { id: input.projectId },
+            data: {
+              TaxPayer: { connect: { id: taxPayer.id } },
+            },
+          });
+        }
 
         // 2. Get latest transaction of the bank Account
         const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUnique({
@@ -133,8 +164,8 @@ export const imbursementsRouter = router({
             moneyRequestId: null,
             imbursementId: imbursement.id,
             expenseReturnId: null,
-            searchableImage: imbursement.searchableImage?.id
-              ? { connect: { id: imbursement.searchableImage?.id } }
+            searchableImage: imbursement.imbursementProof?.id
+              ? { connect: { id: imbursement.imbursementProof?.id } }
               : {},
           },
         });
@@ -158,50 +189,76 @@ export const imbursementsRouter = router({
         update: {},
       });
 
-      if (!taxPayer || !input.searchableImage || !input.moneyAccountId) {
+      if (!taxPayer || !input.imbursementProof || !input.moneyAccountId) {
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
           message: 'taxpayer failed',
         });
       }
+      const imbursementProof = await prisma?.searchableImage.upsert({
+        where: {
+          imageName: input.imbursementProof?.imageName,
+        },
+        create: {
+          url: input.imbursementProof.url,
+          imageName: input.imbursementProof.imageName,
+          text: '',
+        },
+        update: {},
+      });
+      const createInvoiceFromOrg = async () => {
+        if (!input.invoiceFromOrg) return null;
 
+        return await prisma?.searchableImage.upsert({
+          where: {
+            imageName: input.imbursementProof?.imageName,
+          },
+          create: {
+            url: input.invoiceFromOrg.url,
+            imageName: input.invoiceFromOrg.imageName,
+            text: '',
+          },
+          update: {},
+        });
+      };
+      const invoiceFromOrg = await createInvoiceFromOrg();
       const updatedImbursement = await prisma?.imbursement.update({
         where: { id: input.id },
         data: {
           concept: input.concept,
           projectId: input.projectId,
           wasConvertedToOtherCurrency: input.wasConvertedToOtherCurrency,
-          // exchangeRate: input.exchangeRate,
-          // otherCurrency: input.otherCurrency,
-          // amountInOtherCurrency: input.amountInOtherCurrency,
-          // finalCurrency: input.finalCurrency,
-          // finalAmount: input.finalAmount,
-          projectStageId: input.projectStageId,
           moneyAccountId: input.moneyAccountId,
           taxPayerId: taxPayer.id,
-          searchableImage: {
-            create: {
-              url: input.searchableImage.url,
-              imageName: input.searchableImage.imageName,
-              text: '',
-            },
-          },
+          imbursementProofId: imbursementProof.id,
+          invoiceFromOrgId: invoiceFromOrg?.id ?? null,
         },
         include: {
           transaction: { select: { id: true } },
-          searchableImage: { select: { id: true } },
+          imbursementProof: { select: { id: true } },
+          invoiceFromOrg: { select: { id: true } },
         },
       });
-      if (updatedImbursement.searchableImage?.id) {
-      }
-      await prisma.transaction.update({
-        where: { id: updatedImbursement.transaction[0]?.id },
-        data: {
-          searchableImage: {
-            connect: { id: updatedImbursement.searchableImage?.id },
+
+      if (input.projectId) {
+        //connect taxpayer to project as a donor.
+        await prisma.project.update({
+          where: { id: input.projectId },
+          data: {
+            TaxPayer: { connect: { id: taxPayer.id } },
           },
-        },
-      });
+        });
+      }
+      if (updatedImbursement.imbursementProofId) {
+        await prisma.transaction.update({
+          where: { id: updatedImbursement.transaction[0]?.id },
+          data: {
+            searchableImage: {
+              connect: { id: updatedImbursement.imbursementProofId },
+            },
+          },
+        });
+      }
     }),
   //TODO substract from costcategory if it was accepted
   deleteById: adminProcedure
@@ -234,7 +291,7 @@ export const imbursementsRouter = router({
         const imbursement = await txCtx.imbursement.update({
           where: { id: input.id },
           data: { wasCancelled: true },
-          include: { transaction: true, searchableImage: true },
+          include: { transaction: true },
         });
 
         const tx = imbursement.transaction[0];
@@ -258,9 +315,9 @@ export const imbursementsRouter = router({
             imbursementId: tx.imbursementId,
             expenseReturnId: tx.expenseReturnId,
             cancellationId: tx.id,
-            searchableImage: imbursement.searchableImage?.id
+            searchableImage: imbursement.imbursementProofId
               ? {
-                  connect: { id: imbursement.searchableImage?.id },
+                  connect: { id: imbursement.imbursementProofId },
                 }
               : {},
           },

@@ -9,7 +9,6 @@ import type {
 import type { FormProject } from '../../lib/validations/project.validate';
 import FormControlledText from '../FormControlled/FormControlledText';
 import CostCategoryForm from './CostCategory.form';
-import ProjectStageForm from './ProjectStage.form';
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -36,7 +35,6 @@ const ProjectForm = ({ control, errors, setValue }: formProps<FormProject>) => {
         />
       </VStack>
       <CostCategoryForm setValue={setValue} control={control} errors={errors} />
-      <ProjectStageForm setValue={setValue} control={control} errors={errors} />
     </>
   );
 };

@@ -61,7 +61,7 @@ const FormControlledNumberInput = <T extends FieldValues>({
             <NumericFormat
               value={field.value}
               thousandSeparator=","
-              decimalScale={0}
+              decimalScale={2}
               prefix={prefix}
               onValueChange={(v: any) => {
                 field.onChange(v?.floatValue ?? 0);

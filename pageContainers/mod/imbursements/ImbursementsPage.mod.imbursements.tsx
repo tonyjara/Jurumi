@@ -11,33 +11,33 @@ import ImbursementEditModal from '@/components/Modals/imbursement.edit.modal';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 
 export type imbursementComplete = Imbursement & {
-  transaction: {
-    id: number;
-  }[];
-  taxPayer: {
+  account: {
     id: string;
-    razonSocial: string;
-    ruc: string;
+    displayName: string;
   };
   project: {
     id: string;
     displayName: string;
   } | null;
-  projectStage: {
-    id: string;
-    displayName: string;
-  } | null;
-  searchableImage: {
-    imageName: string;
-    url: string;
-  } | null;
   moneyAccount: {
     displayName: string;
   } | null;
-  account: {
+  taxPayer: {
     id: string;
-    displayName: string;
+    ruc: string;
+    razonSocial: string;
   };
+  transaction: {
+    id: number;
+  }[];
+  imbursementProof: {
+    url: string;
+    imageName: string;
+  } | null;
+  invoiceFromOrg: {
+    url: string;
+    imageName: string;
+  } | null;
 };
 
 const ImbursementsPage = () => {

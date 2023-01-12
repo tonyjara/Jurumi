@@ -60,8 +60,8 @@ export const expenseReportsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy(),
         include: {
-          CostCategory: { select: { displayName: true, id: true } },
-          Project: { select: { displayName: true, id: true } },
+          costCategory: { select: { displayName: true, id: true } },
+          project: { select: { displayName: true, id: true } },
           taxPayer: {
             select: { fantasyName: true, razonSocial: true, ruc: true },
           },

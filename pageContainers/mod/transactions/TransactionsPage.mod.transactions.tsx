@@ -15,16 +15,16 @@ import type { TransactionsPageProps } from 'pages/mod/transactions';
 import TransactionsTable from './TransactionsTable';
 
 export type TransactionComplete = Transaction & {
-  searchableImage: {
-    id: string;
-    imageName: string;
-    url: string;
-  } | null;
   moneyAccount: MoneyAccount;
   account: Account;
   moneyRequest: MoneyRequest | null;
-  Imbursement: Imbursement | null;
-  ExpenseReturn: ExpenseReturn | null;
+  imbursement: Imbursement | null;
+  expenseReturn: ExpenseReturn | null;
+  searchableImage: {
+    id: string;
+    url: string;
+    imageName: string;
+  } | null;
 };
 
 const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
