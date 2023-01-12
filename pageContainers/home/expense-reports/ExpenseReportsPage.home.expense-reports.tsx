@@ -15,18 +15,18 @@ export type MyExpenseReport = ExpenseReport & {
     url: string;
     imageName: string;
   } | null;
-  Project: {
+  project: {
     id: string;
     displayName: string;
   } | null;
-  CostCategory: {
+  costCategory: {
     id: string;
     displayName: string;
   } | null;
   taxPayer: {
+    ruc: string;
     razonSocial: string;
     fantasyName: string | null;
-    ruc: string;
   };
 };
 

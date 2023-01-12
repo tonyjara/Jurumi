@@ -17,8 +17,8 @@ const handleTransactionConcept = (
   if (x.moneyRequest?.description) {
     return x.moneyRequest.description;
   }
-  if (x.Imbursement?.concept) {
-    return x.Imbursement.concept;
+  if (x.imbursement?.concept) {
+    return x.imbursement.concept;
   }
   // if(x.im)
 
@@ -31,7 +31,7 @@ const handleOperationType = (
   if (x.moneyRequest?.description) {
     return 'Solicitud de Fondo';
   }
-  if (x.Imbursement?.concept) {
+  if (x.imbursement?.concept) {
     return 'Desembolso';
   }
   // if(x.im)

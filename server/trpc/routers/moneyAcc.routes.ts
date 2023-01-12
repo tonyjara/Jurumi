@@ -21,7 +21,7 @@ export const moneyAccRouter = router({
             account: { select: { displayName: true } },
             moneyAccount: { select: { displayName: true } },
             moneyRequest: { select: { description: true } },
-            Imbursement: { select: { concept: true } },
+            imbursement: { select: { concept: true } },
             searchableImage: {
               select: { id: true, url: true, imageName: true },
             },

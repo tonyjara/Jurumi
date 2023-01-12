@@ -115,41 +115,28 @@ model BankInfo {
 }
 
 model Project {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime?       @updatedAt
-  createdById    String
-  updatedById    String?
-  displayName    String          @unique
-  description    String
-  archived       Boolean         @default(false)
-  softDeleted    Boolean         @default(false)
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime?   @updatedAt
+  createdById String
+  endDate     DateTime?
+  updatedById String?
+  displayName String      @unique
+  description String
+  archived    Boolean     @default(false)
+  softDeleted Boolean     @default(false)
+  projectType ProjectType @default(SUBSIDY)
+
   organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
   costCategories CostCategory[]
   expenseReports ExpenseReport[]
-  Imbursement    Imbursement[]
+  imbursement    Imbursement[]
   moneyRequest   MoneyRequest[]
-  organization   Organization    @relation(fields: [organizationId], references: [id])
-  projectStages  ProjectStage[]
-  allowedUsers   Account[]       @relation("AccountToProject")
-  TaxPayer       TaxPayer[]      @relation("ProjectToTaxPayer")
-}
 
-model ProjectStage {
-  id            String        @id @default(cuid())
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime?     @updatedAt
-  createdById   String
-  updatedById   String?
-  startDate     DateTime
-  endDate       DateTime?
-  expectedFunds Decimal       @default(0) @db.Decimal(19, 4)
-  projectId     String?
-  currency      Currency
-  displayName   String
-  receivedFunds Imbursement[]
-  Project       Project?      @relation(fields: [projectId], references: [id])
-  donors        TaxPayer[]    @relation("ProjectStageToTaxPayer")
+  allowedUsers Account[]  @relation("AccountToProject")
+  TaxPayer     TaxPayer[] @relation("ProjectToTaxPayer")
 }
 
 model CostCategory {
@@ -163,27 +150,32 @@ model CostCategory {
   projectId      String?
   executedAmount Decimal         @default(0) @db.Decimal(19, 4)
   openingBalance Decimal         @default(0) @db.Decimal(19, 4)
-  Project        Project?        @relation(fields: [projectId], references: [id])
+  project        Project?        @relation(fields: [projectId], references: [id])
   expenseReports ExpenseReport[]
   moneyRequests  MoneyRequest[]
 }
 
 model Imbursement {
-  id                          String           @id @default(cuid())
-  wasCancelled                Boolean          @default(false)
-  createdAt                   DateTime         @default(now())
-  updatedAt                   DateTime?        @updatedAt
+  id                          String    @id @default(cuid())
+  wasCancelled                Boolean   @default(false)
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime? @updatedAt
   updatedById                 String?
   concept                     String
-  wasConvertedToOtherCurrency Boolean          @default(false)
-  exchangeRate                Int
+  wasConvertedToOtherCurrency Boolean   @default(false)
+  exchangeRate                Float
   otherCurrency               Currency
-  finalCurrency               Currency         @default(PYG)
-  amountInOtherCurrency       Decimal          @default(0) @db.Decimal(19, 4)
-  finalAmount                 Decimal          @default(0) @db.Decimal(19, 4)
-  archived                    Boolean          @default(false)
-  softDeleted                 Boolean          @default(false)
-  searchableImage             searchableImage?
+  finalCurrency               Currency  @default(PYG)
+  amountInOtherCurrency       Decimal   @default(0) @db.Decimal(19, 4)
+  finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
+  archived                    Boolean   @default(false)
+  softDeleted                 Boolean   @default(false)
+
+  imbursementProofId String?          @unique
+  imbursementProof   searchableImage? @relation("imbursementProof", fields: [imbursementProofId], references: [id])
+
+  invoiceFromOrgId String?          @unique
+  invoiceFromOrg   searchableImage? @relation("invoiceFromOrg", fields: [invoiceFromOrgId], references: [id])
 
   accountId      String
   account        Account       @relation(fields: [accountId], references: [id])
@@ -191,11 +183,10 @@ model Imbursement {
   moneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
   projectId      String?
   project        Project?      @relation(fields: [projectId], references: [id])
-  projectStageId String?
-  projectStage   ProjectStage? @relation(fields: [projectStageId], references: [id])
-  taxPayerId     String
-  taxPayer       TaxPayer      @relation(fields: [taxPayerId], references: [id])
-  transaction    Transaction[]
+
+  taxPayerId  String
+  taxPayer    TaxPayer      @relation(fields: [taxPayerId], references: [id])
+  transaction Transaction[]
 }
 
 model TaxPayer {
@@ -209,9 +200,8 @@ model TaxPayer {
   fantasyName   String?
   archived      Boolean         @default(false)
   softDeleted   Boolean         @default(false)
-  ExpenseReport ExpenseReport[]
+  expenseReport ExpenseReport[]
   imbursements  Imbursement[]
-  projectStage  ProjectStage[]  @relation("ProjectStageToTaxPayer")
   project       Project[]       @relation("ProjectToTaxPayer")
 }
 
@@ -224,7 +214,7 @@ model MoneyRequestApproval {
   accountId      String
   moneyRequestId String
   account        Account                     @relation(fields: [accountId], references: [id])
-  aoneyRequest   MoneyRequest                @relation(fields: [moneyRequestId], references: [id])
+  moneyRequest   MoneyRequest                @relation(fields: [moneyRequestId], references: [id])
 }
 
 model MoneyRequest {
@@ -267,9 +257,9 @@ model ExpenseReport {
   comments        String
   accountId       String
   account         Account          @relation(fields: [accountId], references: [id])
-  CostCategory    CostCategory?    @relation(fields: [costCategoryId], references: [id])
-  MoneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
-  Project         Project?         @relation(fields: [projectId], references: [id])
+  costCategory    CostCategory?    @relation(fields: [costCategoryId], references: [id])
+  moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
+  project         Project?         @relation(fields: [projectId], references: [id])
   taxPayer        TaxPayer         @relation(fields: [taxPayerId], references: [id])
   searchableImage searchableImage?
 
@@ -282,7 +272,7 @@ model ExpenseReturn {
   updatedAt       DateTime?        @updatedAt
   amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
   moneyRequestId  String
-  MoneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
+  moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
   transactions    Transaction[]
   searchableImage searchableImage?
 }
@@ -306,8 +296,8 @@ model Transaction {
   account           Account          @relation(fields: [accountId], references: [id])
   cancellation      Transaction?     @relation("cancellation", fields: [cancellationId], references: [id])
   transactions      Transaction?     @relation("cancellation")
-  ExpenseReturn     ExpenseReturn?   @relation(fields: [expenseReturnId], references: [id])
-  Imbursement       Imbursement?     @relation(fields: [imbursementId], references: [id])
+  expenseReturn     ExpenseReturn?   @relation(fields: [expenseReturnId], references: [id])
+  imbursement       Imbursement?     @relation(fields: [imbursementId], references: [id])
   moneyAccount      MoneyAccount     @relation(fields: [moneyAccountId], references: [id])
   moneyRequest      MoneyRequest?    @relation(fields: [moneyRequestId], references: [id])
   searchableImage   searchableImage?
@@ -319,7 +309,7 @@ model searchableImage {
   updatedAt       DateTime?      @updatedAt
   url             String
   text            String
-  imageName       String
+  imageName       String         @unique
   accountId       String?
   imbursementId   String?        @unique
   expenseReportId String?        @unique
@@ -328,8 +318,10 @@ model searchableImage {
   accounts        Account?       @relation(fields: [accountId], references: [id])
   expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
   expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
-  Imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
   transaction     Transaction?   @relation(fields: [transactionId], references: [id])
+
+  invoicesFromOrgs  Imbursement? @relation("invoiceFromOrg")
+  imbursementProofs Imbursement? @relation("imbursementProof")
 }
 
 enum Role {
@@ -367,6 +359,11 @@ enum BankDocType {
   CRC
   PASSPORT
   RUC
+}
+
+enum ProjectType {
+  SUBSIDY
+  CONSULTING
 }
 
 enum Currency {

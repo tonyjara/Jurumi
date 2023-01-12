@@ -43,7 +43,6 @@ const ImbursementForm = ({
     control,
     name: 'wasConvertedToOtherCurrency',
   });
-  const projectId = useWatch({ control, name: 'projectId' });
 
   const handleConvert = () => {
     setValue('finalAmount', amountInOtherCurrency * exchangeRate);
@@ -51,10 +50,6 @@ const ImbursementForm = ({
 
   //Data getters
 
-  const { data: projectStages } = trpcClient.project.getProjectStages.useQuery(
-    { projectId: projectId ?? '' },
-    { enabled: !!projectId?.length }
-  );
   const { data: projects } = trpcClient.project.getMany.useQuery();
   const { data: moneyAccs } =
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
@@ -65,11 +60,6 @@ const ImbursementForm = ({
   }));
 
   // Options for select
-  const projectStageOptions = () =>
-    projectStages?.map((stage) => ({
-      value: stage.id,
-      label: `${stage.displayName}`,
-    }));
 
   // If it was not converted to another currency, then only take account in the initial currency otherwhise take accounts in the final currency
   const moneyAccOptions = () => {
@@ -184,15 +174,6 @@ const ImbursementForm = ({
           label="Seleccione un proyecto"
           options={projectOptions ?? []}
         />
-        {projectStageOptions()?.length && (
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            name="projectStageId"
-            label="Etapa del proyecto"
-            options={projectStageOptions() ?? []}
-          />
-        )}
         <FormControlledTaxPayerId
           control={control}
           errors={errors}
@@ -205,9 +186,21 @@ const ImbursementForm = ({
           <FormControlledImageUpload
             control={control}
             errors={errors}
-            urlName="searchableImage.url"
-            idName="searchableImage.imageName"
+            urlName="imbursementProof.url"
+            idName="imbursementProof.imageName"
             label="Comprobante del desembolso"
+            setValue={setValue}
+            helperText="Favor tener en cuenta la orientación y legibilidad del documento."
+            userId={user.id}
+          />
+        )}
+        {user && (
+          <FormControlledImageUpload
+            control={control}
+            errors={errors}
+            urlName="invoiceFromOrg.url"
+            idName="invoiceFromOrg.imageName"
+            label="Factura por el desembolso"
             setValue={setValue}
             helperText="Favor tener en cuenta la orientación y legibilidad del documento."
             userId={user.id}

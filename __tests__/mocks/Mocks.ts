@@ -68,6 +68,7 @@ export const projectMock: () => FormProject = () => {
     updatedAt: null,
     createdById: '',
     updatedById: null,
+    endDate: null,
     displayName:
       faker.commerce.productAdjective() + ' ' + faker.company.bsBuzz(),
     organizationId: '',
@@ -104,36 +105,7 @@ export const projectMock: () => FormProject = () => {
         projectId: null,
       },
     ],
-    projectStages: [
-      {
-        id: '',
-        createdAt: new Date(),
-        updatedAt: null,
-        createdById: '',
-        updatedById: null,
-        startDate: new Date(),
-        endDate: null,
-        expectedFunds: new Prisma.Decimal(
-          faker.commerce.price(1000000, 3000000)
-        ),
-        displayName: faker.commerce.department(),
-        currency: 'PYG',
-      },
-      {
-        id: '',
-        createdAt: new Date(),
-        updatedAt: null,
-        createdById: '',
-        updatedById: null,
-        startDate: new Date(),
-        endDate: null,
-        expectedFunds: new Prisma.Decimal(
-          faker.commerce.price(1000000, 3000000)
-        ),
-        displayName: faker.commerce.department(),
-        currency: 'PYG',
-      },
-    ],
+    projectType: 'SUBSIDY',
   };
   return x;
 };
@@ -196,11 +168,11 @@ export const imbursementMock: () => FormImbursement = () => {
     finalAmount: new Prisma.Decimal(0),
     archived: false,
     softDeleted: false,
-    projectStageId: null,
     moneyAccountId: null,
     projectId: null,
     taxPayer: { razonSocial: '', ruc: '' },
-    searchableImage: { url: '', imageName: '' },
+    invoiceFromOrg: { url: '', imageName: '' },
+    imbursementProof: { url: '', imageName: '' },
     accountId: '',
     wasCancelled: false,
   };

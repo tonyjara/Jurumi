@@ -6,11 +6,16 @@ import { stringReqMinMax } from '../utils/ValidationHelpers';
 
 export type FormImbursement = Omit<
   Imbursement,
-  'amountInOtherCurrency' | 'finalAmount' | 'taxPayerId'
+  | 'amountInOtherCurrency'
+  | 'finalAmount'
+  | 'taxPayerId'
+  | 'imbursementProofId'
+  | 'invoiceFromOrgId'
 > & {
   amountInOtherCurrency?: any;
   finalAmount?: any;
-  searchableImage: { imageName: string; url: string } | null;
+  imbursementProof: { imageName: string; url: string } | null;
+  invoiceFromOrg: { imageName: string; url: string } | null;
   taxPayer: { razonSocial: string; ruc: string };
 };
 
@@ -33,15 +38,20 @@ export const validateImbursement: z.ZodType<FormImbursement> = z.lazy(() =>
     softDeleted: z.boolean(),
     archived: z.boolean(),
     finalCurrency: z.nativeEnum(Currency),
-    projectStageId: z.string().nullable(),
     projectId: z.string().nullable(),
     moneyAccountId: z
       .string({ invalid_type_error: 'Favor seleccione una cuenta.' })
       .min(2, 'Favor seleccione una cuenta.'),
-    searchableImage: z
+    imbursementProof: z
       .object({
         imageName: z.string().min(1, 'Favor suba la imágen de su comprobante'),
         url: z.string().min(1, 'Favor suba la imágen de su comprobante'),
+      })
+      .nullable(),
+    invoiceFromOrg: z
+      .object({
+        imageName: z.string(),
+        url: z.string(),
       })
       .nullable(),
     taxPayer: z.object({
@@ -71,9 +81,9 @@ export const defaultImbursementData: FormImbursement = {
   finalAmount: new Prisma.Decimal(1),
   archived: false,
   softDeleted: false,
-  projectStageId: null,
   moneyAccountId: '',
   projectId: null,
   taxPayer: { razonSocial: '', ruc: '' },
-  searchableImage: { url: '', imageName: '' },
+  imbursementProof: { url: '', imageName: '' },
+  invoiceFromOrg: { url: '', imageName: '' },
 };

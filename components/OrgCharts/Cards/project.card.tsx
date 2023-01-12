@@ -20,7 +20,7 @@ import React from 'react';
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '../../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../../Toasts/MyToast';
-import type { CostCategory, Project, ProjectStage } from '@prisma/client';
+import type { CostCategory, Project } from '@prisma/client';
 import EditProjectModal from '../../Modals/project.edit.modal';
 import CreateMoneyRequestModal from '../../Modals/MoneyRequest.create.modal';
 import { addDecimals, decimalFormat } from '../../../lib/utils/DecimalHelpers';
@@ -28,7 +28,6 @@ import { addDecimals, decimalFormat } from '../../../lib/utils/DecimalHelpers';
 const ProjectCard = (
   project: Project & {
     costCategories: CostCategory[];
-    projectStages: ProjectStage[];
   }
 ) => {
   const context = trpcClient.useContext();

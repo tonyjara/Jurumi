@@ -43,8 +43,8 @@ export const transactionsRouter = router({
           moneyAccount: true,
           account: true,
           moneyRequest: true,
-          Imbursement: true,
-          ExpenseReturn: true,
+          imbursement: true,
+          expenseReturn: true,
           searchableImage: { select: { id: true, url: true, imageName: true } },
         },
       });
@@ -59,8 +59,8 @@ export const transactionsRouter = router({
           moneyAccount: true,
           account: true,
           moneyRequest: true,
-          Imbursement: true,
-          ExpenseReturn: true,
+          imbursement: true,
+          expenseReturn: true,
           searchableImage: { select: { id: true, url: true, imageName: true } },
         },
       });
@@ -202,6 +202,12 @@ export const transactionsRouter = router({
               : {},
           },
         });
+        if (cancellation.imbursementId) {
+          await txCtx.imbursement.update({
+            where: { id: cancellation.imbursementId },
+            data: { wasCancelled: true },
+          });
+        }
 
         await txCtx.transaction.update({
           where: { id: input.id },

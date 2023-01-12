@@ -66,12 +66,12 @@ export const expenseReportColums = ({
     header: 'Contribuyente',
   }),
   columnHelper.display({
-    cell: (x) => <TextCell text={x.row.original.Project?.displayName ?? '-'} />,
+    cell: (x) => <TextCell text={x.row.original.project?.displayName ?? '-'} />,
     header: 'Proyecto',
   }),
   columnHelper.display({
     cell: (x) => (
-      <TextCell text={x.row.original.CostCategory?.displayName ?? '-'} />
+      <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
     ),
     header: 'L. Presup.',
   }),
