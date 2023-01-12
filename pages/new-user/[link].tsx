@@ -25,6 +25,7 @@ import {
 } from '../../lib/validations/newUser.validate';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
+import prisma from '@/server/db/client';
 
 export default function NewUser(props?: {
   token: string;

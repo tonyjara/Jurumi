@@ -1,7 +1,6 @@
 import { validateAccount } from '../../../lib/validations/account.validate';
 import { adminModProcedure, publicProcedure, router } from '../initTrpc';
 import { TRPCError } from '@trpc/server';
-import { getBaseUrl } from '../../../lib/utils/trpcClient';
 import { validateNewUser } from '../../../lib/validations/newUser.validate';
 import { verifyToken } from '../../../lib/utils/asyncJWT';
 import bcrypt from 'bcryptjs';
@@ -55,7 +54,7 @@ export const verificationLinksRouter = router({
         uuid,
         secret
       );
-      const baseUrl = getBaseUrl();
+      const baseUrl = process.env.NEXT_PUBLIC_WEB_URL;
       const link = `${baseUrl}/new-user/${signedToken}`;
 
       return await prisma?.account.update({
@@ -142,7 +141,8 @@ export const verificationLinksRouter = router({
         uuid,
         secret
       );
-      const baseUrl = getBaseUrl();
+      const baseUrl = process.env.NEXT_PUBLIC_WEB_URL;
+
       const link = `${baseUrl}/new-user/${signedToken}`;
 
       return await prisma?.account.create({
