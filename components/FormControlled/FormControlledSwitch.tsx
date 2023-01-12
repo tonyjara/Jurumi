@@ -18,6 +18,7 @@ interface InputProps<T extends FieldValues> {
   helperText?: string;
   type?: string;
   inputRight?: any;
+  disable?: boolean;
 }
 
 const FormControlledSwitch = <T extends FieldValues>({
@@ -26,6 +27,7 @@ const FormControlledSwitch = <T extends FieldValues>({
   errors,
   label,
   helperText,
+  disable,
 }: InputProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name]}>
@@ -36,6 +38,7 @@ const FormControlledSwitch = <T extends FieldValues>({
           name={name}
           render={({ field }) => (
             <Switch
+              isDisabled={disable}
               marginTop={-2}
               size={'lg'}
               isChecked={field.value}

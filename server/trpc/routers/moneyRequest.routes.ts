@@ -91,7 +91,7 @@ export const moneyRequestRouter = router({
           account: true,
           project: true,
           costCategory: true,
-          transactions: true,
+          transactions: { where: { cancellationId: null } },
           moneyRequestApprovals: true,
           expenseReports: true,
           organization: {

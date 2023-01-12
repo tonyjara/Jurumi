@@ -1,12 +1,43 @@
 import type { Transaction } from '@prisma/client';
+import type { CellContext } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import DateCell from '@/components/DynamicTables/DynamicCells/DateCell';
 import MoneyCell from '@/components/DynamicTables/DynamicCells/MoneyCell';
 import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
 import RowOptionsModTransactions from './rowOptions.mod.transactions';
 import type { TransactionComplete } from './TransactionsPage.mod.transactions';
+import ImageModalCell from '@/components/DynamicTables/DynamicCells/ImageModalCell';
 
 const columnHelper = createColumnHelper<TransactionComplete>();
+
+const handleTransactionConcept = (
+  ctx: CellContext<TransactionComplete, unknown>
+) => {
+  const x = ctx.row.original;
+  if (x.moneyRequest?.description) {
+    return x.moneyRequest.description;
+  }
+  if (x.Imbursement?.concept) {
+    return x.Imbursement.concept;
+  }
+  // if(x.im)
+
+  return '-';
+};
+const handleOperationType = (
+  ctx: CellContext<TransactionComplete, unknown>
+) => {
+  const x = ctx.row.original;
+  if (x.moneyRequest?.description) {
+    return 'Solicitud de Fondo';
+  }
+  if (x.Imbursement?.concept) {
+    return 'Desembolso';
+  }
+  // if(x.im)
+
+  return '-';
+};
 
 export const modTransactionsColumns = ({
   onEditOpen,
@@ -32,11 +63,19 @@ export const modTransactionsColumns = ({
     header: 'Fecha de C.',
     sortingFn: 'datetime',
   }),
-  columnHelper.accessor('moneyRequest.description', {
+  columnHelper.display({
     cell: (x) => (
-      <TextCell text={x.getValue()} shortenString hover={x.getValue()} />
+      <TextCell
+        text={handleTransactionConcept(x)}
+        shortenString
+        hover={handleTransactionConcept(x)}
+      />
     ),
     header: 'Concepto',
+  }),
+  columnHelper.display({
+    cell: (x) => <TextCell text={handleOperationType(x)} />,
+    header: 'T. Operación',
   }),
   columnHelper.accessor('transactionAmount', {
     header: 'Monto',
@@ -51,6 +90,15 @@ export const modTransactionsColumns = ({
   columnHelper.accessor('moneyAccount.displayName', {
     header: 'Cuenta',
     cell: (x) => <TextCell text={x.getValue()} />,
+  }),
+  columnHelper.display({
+    cell: (x) => (
+      <ImageModalCell
+        imageName={x.row.original.searchableImage?.imageName}
+        url={x.row.original.searchableImage?.url}
+      />
+    ),
+    header: 'Comprobante',
   }),
   columnHelper.display({
     header: 'Opciones',

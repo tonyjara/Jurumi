@@ -1,9 +1,9 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import DateCell from '../../../components/DynamicTables/DynamicCells/DateCell';
-import FacturaNumberCell from '../../../components/DynamicTables/DynamicCells/FacturaNumberCell';
-import ImageModalCell from '../../../components/DynamicTables/DynamicCells/ImageModalCell';
-import MoneyCell from '../../../components/DynamicTables/DynamicCells/MoneyCell';
-import TextCell from '../../../components/DynamicTables/DynamicCells/TextCell';
+import DateCell from '@/components/DynamicTables/DynamicCells/DateCell';
+import FacturaNumberCell from '@/components/DynamicTables/DynamicCells/FacturaNumberCell';
+import ImageModalCell from '@/components/DynamicTables/DynamicCells/ImageModalCell';
+import MoneyCell from '@/components/DynamicTables/DynamicCells/MoneyCell';
+import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
 import type { MyExpenseReport } from './ExpenseReportsPage.home.expense-reports';
 import RowOptionsHomeExpenseReports from './rowOptions.home.expense-reports';
 

@@ -23,13 +23,10 @@ import {
   translateCurrency,
 } from '../../../lib/utils/TranslatedEnums';
 import EditBankAccModal from '../../Modals/moneyAcc.edit.modal';
-import type { FormMoneyAccount } from '../../../lib/validations/moneyAcc.validate';
 import { formatedAccountBalance } from '../../../lib/utils/TransactionUtils';
-import type { Transaction } from '@prisma/client';
-export interface BankAccWithTransactions extends FormMoneyAccount {
-  transactions: Transaction[];
-}
-const BankAccCard = (bankAcc: BankAccWithTransactions) => {
+import type { BankAccsWithLastTx } from '../CardGroups/BankAcc.cardGroup';
+
+const BankAccCard = (bankAcc: BankAccsWithLastTx) => {
   const context = trpcClient.useContext();
 
   const {
@@ -42,7 +39,7 @@ const BankAccCard = (bankAcc: BankAccWithTransactions) => {
     handleUseMutationAlerts({
       successText: 'La cuenta ha sido eliminada! 💩',
       callback: () => {
-        context.moneyAcc.getManyBankAccs.invalidate();
+        context.moneyAcc.invalidate();
       },
     })
   );

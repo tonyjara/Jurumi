@@ -20,9 +20,9 @@ import { handleUseMutationAlerts } from '../../Toasts/MyToast';
 import { translateCurrency } from '@/lib/utils/TranslatedEnums';
 import EditMoneyAccModal from '../../Modals/moneyAcc.edit.modal';
 import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
-import type { MoneyAccWithTransactions } from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
+import type { CashAccsWithLastTx } from '../CardGroups/PettyCash.cardGroup';
 
-const PettyCashCard = (pettyCash: MoneyAccWithTransactions) => {
+const PettyCashCard = (pettyCash: CashAccsWithLastTx) => {
   const context = trpcClient.useContext();
   const cardBackground = useColorModeValue('white', 'gray.700');
   const {
@@ -35,7 +35,7 @@ const PettyCashCard = (pettyCash: MoneyAccWithTransactions) => {
     handleUseMutationAlerts({
       successText: 'La caja chica ha sido eliminada! 💩',
       callback: () => {
-        context.moneyAcc.getManyCashAccs.invalidate();
+        context.moneyAcc.invalidate();
       },
     })
   );

@@ -7,6 +7,7 @@ import DynamicTable from '@/components/DynamicTables/DynamicTable';
 import EditTransactionModal from '@/components/Modals/Transaction.edit.modal';
 import { modTransactionsColumns } from './columns.mod.transactions';
 import type { TransactionComplete } from './TransactionsPage.mod.transactions';
+import type { FormTransactionEdit } from '@/lib/validations/transaction.edit.validate';
 
 const TransactionsTable = ({
   data,
@@ -77,6 +78,7 @@ const TransactionsTable = ({
         data={data}
         count={count ?? 0}
         {...dynamicTableProps}
+        colorRedKey="cancellationId"
       />
       {editTransaction && (
         <EditTransactionModal

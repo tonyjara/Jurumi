@@ -3,22 +3,27 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import { HStack, Text } from '@chakra-ui/react';
 import ErrorBotLottie from '../../Spinners-Loading/ErrorBotLottie';
 import PettyCashCard from '../Cards/pettyCash.card';
+import type { MoneyAccount, Transaction } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import { reduceMoneyAccountValues } from '@/lib/utils/MoneyAccountUtils';
-import type { MoneyAccWithTransactions } from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
+import type {} from '@/pageContainers/mod/money-accounts/MoneyAccountsPage.mod.money-accounts';
+import { reduceCashAccValues } from '@/lib/utils/MoneyAccountUtils';
+
+export type CashAccsWithLastTx = MoneyAccount & {
+  transactions: Transaction[];
+};
 
 const PettyCashCardGroup = () => {
   const { data, isLoading, error } =
-    trpcClient.moneyAcc.getManyCashAccs.useQuery();
+    trpcClient.moneyAcc.getManyCashAccsWithLastTx.useQuery();
 
-  const reduceToGs = (cashAccs?: MoneyAccWithTransactions[]) => {
+  const reduceToGs = (cashAccs?: CashAccsWithLastTx[]) => {
     if (!cashAccs) return new Prisma.Decimal(0);
-    return reduceMoneyAccountValues(cashAccs, 'PYG');
+    return reduceCashAccValues(cashAccs, 'PYG');
   };
-  const reduceToUsd = (cashAccs?: MoneyAccWithTransactions[]) => {
+  const reduceToUsd = (cashAccs?: CashAccsWithLastTx[]) => {
     if (!cashAccs) return new Prisma.Decimal(0);
-    return reduceMoneyAccountValues(cashAccs, 'USD');
+    return reduceCashAccValues(cashAccs, 'USD');
   };
 
   return (

@@ -7,11 +7,14 @@ type withMoney = Omit<
   Transaction,
   | 'openingBalance'
   | 'transactionAmount'
+  | 'currentBalance'
   | 'currency'
   | 'moneyAccountId'
   | 'transactionProofUrl'
 > & {
   openingBalance?: any;
+  currentBalance?: any;
+  searchableImage: { imageName: string; url: string } | null;
 };
 
 export interface TransactionField {
@@ -53,10 +56,17 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         isCancellation: z.boolean(),
         updatedById: z.string().nullable(),
         openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
+        currentBalance: z.any().transform((value) => new Prisma.Decimal(value)),
         cancellationId: z.number().nullable(),
         moneyRequestId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
         imbursementId: z.string().nullable(),
+        searchableImage: z
+          .object({
+            imageName: z.string(),
+            url: z.string(),
+          })
+          .nullable(),
       })
       .superRefine((val, ctx) => {
         if (!(val.expenseReturnId || val.imbursementId || val.moneyRequestId)) {
@@ -85,9 +95,11 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
     },
   ],
   openingBalance: new Prisma.Decimal(0),
+  currentBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
   imbursementId: null,
   expenseReturnId: null,
   cancellationId: null,
   isCancellation: false,
+  searchableImage: { url: '', imageName: '' },
 };

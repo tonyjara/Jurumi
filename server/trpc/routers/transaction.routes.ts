@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { reduceTransactionFields } from '../../../lib/utils/TransactionUtils';
-import { validateTransactionCreate } from '../../../lib/validations/transaction.create.validate';
-import { validateTransactionEdit } from '../../../lib/validations/transaction.edit.validate';
+import { reduceTransactionFields } from '@/lib/utils/TransactionUtils';
+import { validateTransactionCreate } from '@/lib/validations/transaction.create.validate';
+import { validateTransactionEdit } from '@/lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
 import { handleOrderBy } from './utils/SortingUtils';
 import {
@@ -45,6 +45,7 @@ export const transactionsRouter = router({
           moneyRequest: true,
           Imbursement: true,
           ExpenseReturn: true,
+          searchableImage: { select: { id: true, url: true, imageName: true } },
         },
       });
     }),
@@ -60,6 +61,7 @@ export const transactionsRouter = router({
           moneyRequest: true,
           Imbursement: true,
           ExpenseReturn: true,
+          searchableImage: { select: { id: true, url: true, imageName: true } },
         },
       });
     }),
@@ -103,13 +105,6 @@ export const transactionsRouter = router({
   edit: adminModProcedure
     .input(validateTransactionEdit)
     .mutation(async ({ input, ctx }) => {
-      // For the moment being it will only allow edit if it's the last transaction
-
-      await checkIfIsLastTransaction({
-        moneyAccountId: input.moneyAccountId,
-        transactionId: input.id,
-      });
-
       const x = await prisma?.transaction.update({
         where: { id: input.id },
         data: {
@@ -121,9 +116,38 @@ export const transactionsRouter = router({
           moneyRequestId: input.moneyRequestId,
           imbursementId: input.imbursementId,
           expenseReturnId: input.expenseReturnId,
+          searchableImage: input.searchableImage
+            ? {
+                create: {
+                  url: input.searchableImage.url,
+                  imageName: input.searchableImage.imageName,
+                  text: '',
+                },
+              }
+            : {},
         },
       });
       return x;
+    }),
+  isLastTransaction: adminModProcedure
+    .input(z.object({ moneyAccountId: z.string(), transactionId: z.number() }))
+    .query(async ({ input }) => {
+      const moneyAccWithLastTx = await prisma.moneyAccount.findUnique({
+        where: { id: input.moneyAccountId },
+        include: {
+          transactions: {
+            take: 1,
+            orderBy: { id: 'desc' },
+          },
+        },
+      });
+
+      if (!moneyAccWithLastTx) return true;
+
+      if (moneyAccWithLastTx.transactions[0]?.id === input.transactionId)
+        return true;
+
+      return false;
     }),
   deleteById: adminProcedure
     .input(
@@ -143,5 +167,50 @@ export const transactionsRouter = router({
         where: { id: input.id },
       });
       return x;
+    }),
+  cancelById: adminModProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await prisma.$transaction(async (txCtx) => {
+        // Create a transaction that reverses the previous one and reference the new and old one with each other.,
+        const tx = await txCtx.transaction.findUniqueOrThrow({
+          where: { id: input.id },
+          include: { searchableImage: { select: { id: true } } },
+        });
+
+        const cancellation = await txCtx.transaction.create({
+          data: {
+            isCancellation: true,
+            transactionAmount: tx.transactionAmount,
+            accountId: tx.accountId,
+            currency: tx.currency,
+            openingBalance: tx.currentBalance,
+            currentBalance: tx.openingBalance,
+            moneyAccountId: tx.moneyAccountId,
+            moneyRequestId: tx.moneyRequestId,
+            imbursementId: tx.imbursementId,
+            expenseReturnId: tx.expenseReturnId,
+            cancellationId: tx.id,
+            searchableImage: tx.searchableImage?.id
+              ? {
+                  connect: { id: tx.searchableImage?.id },
+                }
+              : {},
+          },
+        });
+
+        await txCtx.transaction.update({
+          where: { id: input.id },
+          data: {
+            cancellationId: cancellation.id,
+          },
+        });
+
+        return;
+      });
     }),
 });

@@ -84,7 +84,7 @@ const CreateMoneyRequestModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear una solicitud desembolso</ModalHeader>
+          <ModalHeader>Crear una solicitud de fondos</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <SeedButton reset={reset} mock={moneyRequestMock} />

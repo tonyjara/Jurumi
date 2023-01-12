@@ -14,7 +14,7 @@ import {
   CardHeader,
   Flex,
 } from '@chakra-ui/react';
-import type { MoneyAccount, Transaction } from '@prisma/client';
+import type { BankInfo, MoneyAccount, Transaction } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
 import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
@@ -26,13 +26,33 @@ import { translateBankNames } from '@/lib/utils/TranslatedEnums';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import TransactionsTable from '../transactions/TransactionsTable';
 import AccordionOptionsMoneyAccountsPage from './accordionOptions.mod.money-accounts';
+import { customScrollbar } from 'styles/CssUtils';
 
-export interface MoneyAccWithTransactions extends MoneyAccount {
-  transactions: Transaction[];
-  _count?: {
+export type MoneyAccWithTransactions = MoneyAccount & {
+  transactions: (Transaction & {
+    Imbursement: {
+      concept: string;
+    } | null;
+    account: {
+      displayName: string;
+    };
+    moneyRequest: {
+      description: string;
+    } | null;
+    moneyAccount: {
+      displayName: string;
+    };
+    searchableImage: {
+      id: string;
+      url: string;
+      imageName: string;
+    } | null;
+  })[];
+  bankInfo: BankInfo | null;
+  _count: {
     transactions: number;
   };
-}
+};
 
 const MoneyAccountsPage = () => {
   const [editData, setEditData] = useState<MoneyAccount | null>(null);
@@ -70,6 +90,7 @@ const MoneyAccountsPage = () => {
       label: 'Crear cuenta',
     },
   ];
+
   return (
     <Card backgroundColor={cardBg}>
       <CardHeader>
@@ -84,10 +105,13 @@ const MoneyAccountsPage = () => {
       </CardHeader>
       <CardBody>
         <Accordion
-          overflow={'auto'}
           borderRadius={'8px'}
           backgroundColor={bg}
           allowToggle
+          display={'block'}
+          css={customScrollbar}
+          overflow={'auto'}
+          w={'100%'}
         >
           {data &&
             data.map((moneyAcc) => {
@@ -96,7 +120,7 @@ const MoneyAccountsPage = () => {
                   <AccordionButton as={Flex}>
                     <AccordionIcon />
 
-                    <HStack minW={'600px'} h={'35px'}>
+                    <HStack minW={'600px'} h={'35px'} pr="20px">
                       <Text
                         textOverflow={'ellipsis'}
                         w={'250px'}
@@ -118,6 +142,7 @@ const MoneyAccountsPage = () => {
                         w={'150px'}
                         fontWeight="bold"
                         fontSize={'lg'}
+                        whiteSpace="nowrap"
                       >
                         {formatedAccountBalance(moneyAcc)}
                       </Text>

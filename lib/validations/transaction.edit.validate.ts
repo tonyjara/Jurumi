@@ -5,10 +5,12 @@ import { z } from 'zod';
 
 export type FormTransactionEdit = Omit<
   Transaction,
-  'openingBalance' | 'transactionAmount'
+  'openingBalance' | 'transactionAmount' | 'currentBalance'
 > & {
   openingBalance?: any;
   transactionAmount?: any;
+  currentBalance?: any;
+  searchableImage: { imageName: string; url: string } | null;
 };
 
 export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
@@ -23,6 +25,7 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
         currency: z.nativeEnum(Currency),
         isCancellation: z.boolean(),
         openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
+        currentBalance: z.any().transform((value) => new Prisma.Decimal(value)),
         transactionAmount: z
           .any()
           .transform((value) => new Prisma.Decimal(value)),
@@ -36,6 +39,14 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
               'Favor seleccione una cuenta de donde extraer el dinero.',
           })
           .min(2, 'Favor seleccione una cuenta de donde extraer el dinero.'),
+        searchableImage: z
+          .object({
+            imageName: z
+              .string()
+              .min(1, 'Favor suba la imágen de su comprobante'),
+            url: z.string().min(1, 'Favor suba la imágen de su comprobante'),
+          })
+          .nullable(),
       })
       .superRefine((val, ctx) => {
         if (!(val.expenseReturnId || val.imbursementId || val.moneyRequestId)) {
@@ -57,6 +68,7 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   updatedById: null,
   currency: 'PYG',
   transactionAmount: new Prisma.Decimal(0),
+  currentBalance: new Prisma.Decimal(0),
   moneyAccountId: '',
   openingBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
@@ -64,4 +76,5 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   expenseReturnId: null,
   isCancellation: false,
   cancellationId: null,
+  searchableImage: { url: '', imageName: '' },
 };

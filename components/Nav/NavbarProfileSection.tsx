@@ -14,6 +14,7 @@ import {
   Text,
   useColorMode,
   Button,
+  Divider,
 } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -34,6 +35,7 @@ const NavbarProfileSection = () => {
   const changeTo = router.locale === 'en' ? 'es' : 'en';
 
   const flagIcon = () => (router.locale === 'en' ? '🇺🇲' : '🇪🇸');
+
   return (
     <HStack spacing={{ base: '0', md: '1' }}>
       <IconButton
@@ -89,6 +91,18 @@ const NavbarProfileSection = () => {
             // borderColor={useColorModeValue('gray.200', 'gray.700')}
             zIndex={999999}
           >
+            <VStack
+              display={{ base: 'flex', md: 'none' }}
+              alignItems="flex-start"
+              spacing="1px"
+              ml="2"
+            >
+              <Text fontSize="sm">{data?.user.displayName}</Text>
+              <Text fontSize="xs" color="gray.600">
+                {data?.user.role}
+              </Text>
+            </VStack>
+            <Divider mt={'10px'} />
             <MenuItem>Mi cuenta</MenuItem>
             {/* 
             <MenuItem>Settings</MenuItem>

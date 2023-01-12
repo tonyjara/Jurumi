@@ -3,8 +3,7 @@ import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
 import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
-import { Button, Divider, VStack } from '@chakra-ui/react';
-import type { Currency } from '@prisma/client';
+import { Button, Divider, Text, VStack } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import type { FieldValues, Control, UseFormSetValue } from 'react-hook-form';
@@ -22,12 +21,14 @@ interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
   setValue: UseFormSetValue<T>;
+  isEditForm?: boolean;
 }
 
 const ImbursementForm = ({
   control,
   errors,
   setValue,
+  isEditForm,
 }: formProps<FormImbursement>) => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -48,37 +49,51 @@ const ImbursementForm = ({
     setValue('finalAmount', amountInOtherCurrency * exchangeRate);
   };
 
+  //Data getters
+
   const { data: projectStages } = trpcClient.project.getProjectStages.useQuery(
     { projectId: projectId ?? '' },
     { enabled: !!projectId?.length }
   );
   const { data: projects } = trpcClient.project.getMany.useQuery();
+  const { data: moneyAccs } =
+    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
     label: `${proj.displayName}`,
   }));
 
+  // Options for select
   const projectStageOptions = () =>
     projectStages?.map((stage) => ({
       value: stage.id,
       label: `${stage.displayName}`,
     }));
 
-  const { data: moneyAccs } =
-    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
-
-  const moneyAccOptions = (currency: Currency) =>
-    moneyAccs
-      ?.filter((x) => x.currency === currency)
+  // If it was not converted to another currency, then only take account in the initial currency otherwhise take accounts in the final currency
+  const moneyAccOptions = () => {
+    return moneyAccs
+      ?.filter(
+        (x) =>
+          x.currency ===
+          (wasConvertedToOtherCurrency ? finalCurrency : otherCurrency)
+      )
       .map((acc) => ({
         value: acc.id,
         label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
       }));
+  };
 
   return (
     <>
       <VStack spacing={5}>
+        {isEditForm && (
+          <Text fontSize={'sm'} color={'red.500'}>
+            Algunos campos no pueden editarse, en caso que necesite modificarlos
+            favor anular el desembolso y crear uno nuevo.
+          </Text>
+        )}
         <FormControlledText
           control={control}
           errors={errors}
@@ -92,6 +107,9 @@ const ImbursementForm = ({
           name="otherCurrency"
           label="Moneda recibida"
           options={currencyOptions}
+          disable={isEditForm}
+          //resets money account on change
+          onChangeMw={() => setValue('moneyAccountId', null)}
         />
         <FormControlledMoneyInput
           control={control}
@@ -100,15 +118,14 @@ const ImbursementForm = ({
           label="Monto recibido"
           prefix={translateCurrencyPrefix(otherCurrency)}
           currency={otherCurrency}
-          helperText={
-            'Una vez creada la cuenta este valor NO se puede modificar.'
-          }
+          disable={isEditForm}
         />
         <FormControlledSwitch
           control={control}
           errors={errors}
           name="wasConvertedToOtherCurrency"
           label="Convertir a otra moneda:  No - Si"
+          disable={isEditForm}
         />
 
         {wasConvertedToOtherCurrency && (
@@ -121,6 +138,7 @@ const ImbursementForm = ({
               helperText={`Un ${translateCurrencyPrefix(
                 otherCurrency
               )} es igual a tantos ${translateCurrencyPrefix(finalCurrency)}`}
+              disable={isEditForm}
             />
             <FormControlledRadioButtons
               control={control}
@@ -128,6 +146,9 @@ const ImbursementForm = ({
               name="finalCurrency"
               label="Convertir a:"
               options={currencyOptions}
+              disable={isEditForm}
+              //resets money account on change
+              onChangeMw={() => setValue('moneyAccountId', null)}
             />
             <FormControlledMoneyInput
               control={control}
@@ -139,8 +160,11 @@ const ImbursementForm = ({
               helperText={
                 'Ingresar manualmente o presiona el botón para convertir.'
               }
+              disable={isEditForm}
             />
-            <Button onClick={handleConvert}>Convertir</Button>
+            <Button isDisabled={isEditForm} onClick={handleConvert}>
+              Convertir
+            </Button>
           </>
         )}
         <Divider />
@@ -149,8 +173,9 @@ const ImbursementForm = ({
           errors={errors}
           name={'moneyAccountId'}
           label="Seleccione una cuenta para recibir el fondo."
-          options={moneyAccOptions(finalCurrency) ?? []}
+          options={moneyAccOptions() ?? []}
           isClearable={true}
+          disable={isEditForm}
         />
         <FormControlledSelect
           control={control}

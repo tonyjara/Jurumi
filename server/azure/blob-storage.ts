@@ -16,15 +16,17 @@ const credentials = new StorageSharedKeyCredential(accountName, accountKey);
 
 const createConnectionString = () => {
   const sasOptions = {
-    services: AccountSASServices.parse('btqf').toString(), // blobs, tables, queues, files
+    services: AccountSASServices.parse('b').toString(), // blobs, tables, queues, files
     resourceTypes: AccountSASResourceTypes.parse('sco').toString(), // service, container, object
-    permissions: AccountSASPermissions.parse('rwdlacupi'), // permissions
+    // permissions: AccountSASPermissions.parse('rwdlacupi'), // permissions
+    permissions: AccountSASPermissions.parse('rw'), // permissions
     protocol:
       process.env.NODE_ENV === 'development'
         ? SASProtocol.HttpsAndHttp
         : SASProtocol.Https,
     startsOn: new Date(),
-    expiresOn: new Date(new Date().valueOf() + 10 * 60 * 1000), // 10 minutes
+    // expiresOn: new Date(new Date().valueOf() + 10 * 60 * 1000), // 10 minutes
+    expiresOn: new Date(new Date().valueOf() + 60 * 60 * 24 * 365 * 50), // 50 years
   };
 
   const sasToken = generateAccountSASQueryParameters(

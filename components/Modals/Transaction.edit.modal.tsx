@@ -17,13 +17,14 @@ import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import { projectMock } from '../../__tests__/mocks/Mocks';
-import type { Transaction } from '@prisma/client';
 
+import type { FormTransactionEdit } from '../../lib/validations/transaction.edit.validate';
 import {
   defaultTransactionEditValues,
   validateTransactionEdit,
 } from '../../lib/validations/transaction.edit.validate';
 import TransactionEditForm from '../Forms/Transaction.edit.form';
+import type { Transaction } from '@prisma/client';
 
 const EditTransactionModal = ({
   isOpen,
@@ -39,8 +40,9 @@ const EditTransactionModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<Transaction>({
+  } = useForm<FormTransactionEdit>({
     defaultValues: defaultTransactionEditValues,
     resolver: zodResolver(validateTransactionEdit),
   });
@@ -56,6 +58,11 @@ const EditTransactionModal = ({
     reset(defaultTransactionEditValues);
     onClose();
   };
+  const { data: isLastTransaction } =
+    trpcClient.transaction.isLastTransaction.useQuery({
+      moneyAccountId: transaction.moneyAccountId,
+      transactionId: transaction.id,
+    });
 
   const { error, mutate, isLoading } = trpcClient.transaction.edit.useMutation(
     handleUseMutationAlerts({
@@ -68,7 +75,7 @@ const EditTransactionModal = ({
     })
   );
 
-  const submitFunc = async (data: Transaction) => {
+  const submitFunc = async (data: FormTransactionEdit) => {
     mutate(data);
   };
 
@@ -80,9 +87,20 @@ const EditTransactionModal = ({
           <ModalHeader>Editar una transacción</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            {!isLastTransaction && (
+              <Text fontSize={'sm'} color={'red.500'}>
+                Algunos campos no pueden editarse, en caso que necesite
+                modificarlos favor anular la transacción y crear una nueva.
+              </Text>
+            )}
             <SeedButton reset={reset} mock={projectMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <TransactionEditForm control={control} errors={errors} />
+            <TransactionEditForm
+              setValue={setValue}
+              control={control}
+              errors={errors}
+              isEditable={!!isLastTransaction}
+            />
           </ModalBody>
 
           <ModalFooter>

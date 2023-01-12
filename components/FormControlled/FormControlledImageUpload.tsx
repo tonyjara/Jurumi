@@ -16,7 +16,6 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type {
   Control,
-  FieldErrorsImpl,
   FieldValues,
   Path,
   SetFieldValue,
@@ -30,7 +29,7 @@ import { v4 as uuidV4 } from 'uuid';
 import axios from 'axios';
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<T>;
+  errors: any;
   urlName: Path<T>; // the url returned from azure
   idName: Path<T>; //The uuid that gets assigned to images as name.
   label: string;
@@ -101,8 +100,18 @@ const FormControlledImageUpload = <T extends FieldValues>(
   });
   const activeBg = useColorModeValue('gray.100', 'gray.600');
 
+  const imageNameSplit = idName.split('.');
+  const imageObjectKey = imageNameSplit[0];
+  const imageName = imageNameSplit[1];
+  const imageError =
+    (imageObjectKey &&
+      imageName &&
+      errors[imageObjectKey] &&
+      errors[imageObjectKey][imageName]) ??
+    '';
+
   return (
-    <FormControl hidden={hidden} isInvalid={!!errors[urlName || idName]}>
+    <FormControl hidden={hidden} isInvalid={!!imageError}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -150,11 +159,11 @@ const FormControlledImageUpload = <T extends FieldValues>(
         />
       </HStack>
 
-      {!errors[urlName] ? (
+      {!imageError.message ? (
         <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
       ) : (
         //@ts-ignore
-        <FormErrorMessage>{errors[urlName].message}</FormErrorMessage>
+        <FormErrorMessage>{imageError.message}</FormErrorMessage>
       )}
     </FormControl>
   );
