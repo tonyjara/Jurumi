@@ -68,7 +68,7 @@ export const translateBankNames = (bankName?: BankNamesPy) => {
 
 export const translatedMoneyReqStatus = (status: MoneyRequestStatus) => {
   const x: { [key in MoneyRequestStatus]?: string } = {
-    ACCEPTED: '🟩Ejecutado',
+    ACCEPTED: '🟩Aprobado',
     PENDING: '🟨 Pendiente',
     REJECTED: '🟥Rechazado',
   };

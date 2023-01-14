@@ -22,13 +22,11 @@ import {
   validateMoneyRequest,
 } from '../../lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
-import { useSession } from 'next-auth/react';
 import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
 
 const CreateMoneyRequestModal = ({
   isOpen,
   onClose,
-  projectId,
   orgId,
 }: {
   isOpen: boolean;
@@ -37,7 +35,6 @@ const CreateMoneyRequestModal = ({
   orgId: string | null;
 }) => {
   const context = trpcClient.useContext();
-  const { data: session } = useSession();
   const {
     handleSubmit,
     control,
@@ -73,9 +70,6 @@ const CreateMoneyRequestModal = ({
     );
 
   const submitFunc = async (data: FormMoneyRequest) => {
-    //Admins and moderators add projectId Manually
-    const isUser = session?.user.role === 'USER';
-    data.projectId = isUser && projectId ? projectId : data.projectId;
     mutate(data);
   };
 

@@ -83,12 +83,12 @@ const RowOptionsModTransactions = ({
         >
           Editar
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           isDisabled={!!x.cancellationId}
           onClick={() => cancelById({ id: x.id })}
         >
           Anular
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           onClick={() =>
             deleteById({ id: x.id, moneyAccountId: x.moneyAccountId })

@@ -60,6 +60,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     return () => {};
   }, [editMoneyRequest, isEditOpen]);
 
+  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
   const { data: count } = trpcClient.moneyRequest.count.useQuery();
 
   const { data: moneyRequests, isLoading } =
@@ -121,7 +122,13 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         count={count ?? 0}
         {...dynamicTableProps}
       />
-      <CreateMoneyRequestModal orgId={null} isOpen={isOpen} onClose={onClose} />
+      {prefs?.selectedOrganization && (
+        <CreateMoneyRequestModal
+          orgId={prefs.selectedOrganization}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
       {editMoneyRequest && (
         <EditMoneyRequestModal
           moneyRequest={editMoneyRequest}

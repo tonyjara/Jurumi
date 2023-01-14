@@ -34,7 +34,11 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
   const status = useWatch({ control, name: 'status' });
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
-  const { data: orgs } = trpcClient.org.getManyForSelect.useQuery();
+  const { data: orgs } = isAdminOrMod
+    ? trpcClient.org.getManyForSelect.useQuery({
+        enabled: false,
+      })
+    : { data: [] };
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
@@ -80,18 +84,18 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
         currency={currency}
       />
 
-      {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
       <Divider pb={3} />
 
+      <FormControlledSelect
+        control={control}
+        errors={errors}
+        name="projectId"
+        label="Seleccione un proyecto"
+        options={projectOptions ?? []}
+      />
+      {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
       {isAdminOrMod && (
         <>
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            name="projectId"
-            label="Seleccione un proyecto"
-            options={projectOptions ?? []}
-          />
           {costCatOptions()?.length && (
             <FormControlledSelect
               control={control}

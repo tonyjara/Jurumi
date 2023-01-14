@@ -30,3 +30,4 @@ const MyApp: AppType<{ session: Session | null }> = ({
 };
 
 export default trpcClient.withTRPC(appWithTranslation(MyApp));
+// export default MyApp;

@@ -20,15 +20,19 @@ import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
 import FormControlledText from '../FormControlled/FormControlledText';
 import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
+import type { ExpenseReportMoneyRequest } from '../Modals/ExpenseReport.create.modal';
+import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
   setValue: UseFormSetValue<T>;
+  moneyRequest?: ExpenseReportMoneyRequest;
 }
 
 const ExpenseReportForm = ({
   control,
   errors,
+  moneyRequest,
   setValue,
 }: formProps<FormExpenseReport>) => {
   const { data: session } = useSession();
@@ -69,6 +73,12 @@ const ExpenseReportForm = ({
         label="Monto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
+        totalAmount={
+          moneyRequest &&
+          moneyRequest.amountRequested.sub(
+            reduceExpenseReports(moneyRequest.expenseReports)
+          )
+        }
       />
 
       <FormControlledTaxPayerId

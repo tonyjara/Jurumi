@@ -26,7 +26,7 @@ export const orgRouter = router({
       select: { organizations: { select: { id: true, displayName: true } } },
     });
   }),
-  getManyForSelect: adminModProcedure.query(async () => {
+  getManyForSelect: adminModProcedure.input(z.object({})).query(async () => {
     return await prisma?.organization.findMany({
       select: { id: true, displayName: true },
     });

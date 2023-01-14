@@ -33,6 +33,13 @@ import ExpenseReportForm from '../Forms/ExpenseReport.form';
 import { reduceExpenseReports } from '../../lib/utils/TransactionUtils';
 import { decimalFormat } from '../../lib/utils/DecimalHelpers';
 
+export type ExpenseReportMoneyRequest = MoneyRequest & {
+  transactions: Transaction[];
+  expenseReports: ExpenseReport[];
+  project: Project | null;
+  costCategory: CostCategory | null;
+};
+
 const CreateExpenseReportModal = ({
   isOpen,
   onClose,
@@ -40,12 +47,7 @@ const CreateExpenseReportModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  moneyRequest: MoneyRequest & {
-    transactions: Transaction[];
-    expenseReports: ExpenseReport[];
-    project: Project | null;
-    costCategory: CostCategory | null;
-  };
+  moneyRequest: ExpenseReportMoneyRequest;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -112,6 +114,7 @@ const CreateExpenseReportModal = ({
             />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ExpenseReportForm
+              moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}
               errors={errors as any}

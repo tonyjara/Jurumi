@@ -25,7 +25,7 @@ import {
   validateProject,
 } from '../../lib/validations/project.validate';
 
-const ProjectCreateModal = ({
+const CreateProjectModal = ({
   isOpen,
   onClose,
   orgId,
@@ -55,7 +55,7 @@ const ProjectCreateModal = ({
       successText: 'Su proyecto ha sido creada! 🔥',
       callback: () => {
         handleOnClose();
-        context.project.getMany.invalidate();
+        context.project.invalidate();
       },
     })
   );
@@ -101,4 +101,4 @@ const ProjectCreateModal = ({
   );
 };
 
-export default ProjectCreateModal;
+export default CreateProjectModal;
