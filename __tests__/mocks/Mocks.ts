@@ -148,6 +148,8 @@ export const transactionMock: () => Transaction = () => {
     imbursementId: null,
     expenseReturnId: null,
     cancellationId: null,
+    projectId: null,
+    costCategoryId: null,
   };
   return x;
 };
@@ -199,9 +201,7 @@ export const expenseReportMock: ({
     createdAt: new Date(),
     updatedAt: null,
     currency: 'PYG',
-    // projectId: null,
     moneyRequestId: moneyReqId,
-    costCategoryId: null,
     amountSpent: new Prisma.Decimal(faker.commerce.price(100000, 300000)),
     facturaNumber: faker.random.numeric(11),
     comments: faker.commerce.productDescription().substring(0, 123),

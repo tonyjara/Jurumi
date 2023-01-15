@@ -120,7 +120,7 @@ export const imbursementsRouter = router({
           await txCtx.project.update({
             where: { id: input.projectId },
             data: {
-              TaxPayer: { connect: { id: taxPayer.id } },
+              taxPayer: { connect: { id: taxPayer.id } },
             },
           });
         }
@@ -245,7 +245,7 @@ export const imbursementsRouter = router({
         await prisma.project.update({
           where: { id: input.projectId },
           data: {
-            TaxPayer: { connect: { id: taxPayer.id } },
+            taxPayer: { connect: { id: taxPayer.id } },
           },
         });
       }

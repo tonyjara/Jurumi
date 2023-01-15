@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { reduceTransactionFields } from '@/lib/utils/TransactionUtils';
 import { validateTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import { validateTransactionEdit } from '@/lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../initTrpc';
@@ -80,25 +79,25 @@ export const transactionsRouter = router({
 
       if (input.moneyRequestId && x) {
         //3. Change request status
-        const moneyRequest = await prisma?.moneyRequest.update({
+        await prisma?.moneyRequest.update({
           where: { id: input.moneyRequestId },
           data: { status: 'ACCEPTED' },
         });
         //3. Substract from cost categories
-        if (!moneyRequest || !moneyRequest.costCategoryId) return;
-        const costCat = await prisma?.costCategory.findUnique({
-          where: { id: moneyRequest.costCategoryId },
-        });
-        if (!costCat) return;
+        // if (!moneyRequest || !moneyRequest.costCategoryId) return;
+        // const costCat = await prisma?.costCategory.findUnique({
+        //   where: { id: moneyRequest.costCategoryId },
+        // });
+        // if (!costCat) return;
 
-        await prisma?.costCategory.update({
-          where: { id: moneyRequest?.costCategoryId },
-          data: {
-            executedAmount: costCat.executedAmount.add(
-              reduceTransactionFields(input.transactions)
-            ),
-          },
-        });
+        //   await prisma?.costCategory.update({
+        //     where: { id: moneyRequest?.costCategoryId },
+        //     data: {
+        //       executedAmount: costCat.executedAmount.add(
+        //         reduceTransactionFields(input.transactions)
+        //       ),
+        //     },
+        //   });
       }
       return x;
     }),

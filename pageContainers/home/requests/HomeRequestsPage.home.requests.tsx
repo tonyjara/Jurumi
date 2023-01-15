@@ -1,6 +1,5 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type {
-  CostCategory,
   ExpenseReport,
   MoneyRequest,
   Project,
@@ -17,10 +16,9 @@ import { trpcClient } from '../../../lib/utils/trpcClient';
 import { homeRequestsColumns } from './columns.home.requests';
 
 export type CompleteMoneyReqHome = MoneyRequest & {
-  transactions: Transaction[];
-  expenseReports: ExpenseReport[];
   project: Project | null;
-  costCategory: CostCategory | null;
+  expenseReports: ExpenseReport[];
+  transactions: Transaction[];
 };
 
 const MoneyRequestsPage = () => {
@@ -58,6 +56,8 @@ const MoneyRequestsPage = () => {
     }
     return () => {};
   }, [reqForReport, isExpRepOpen]);
+
+  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
 
   const { data: moneyRequests, isFetching } =
     trpcClient.moneyRequest.getMyOwnComplete.useQuery(
@@ -105,7 +105,13 @@ const MoneyRequestsPage = () => {
         {...dynamicTableProps}
       />
 
-      <CreateMoneyRequestModal orgId={null} isOpen={isOpen} onClose={onClose} />
+      {prefs?.selectedOrganization && (
+        <CreateMoneyRequestModal
+          orgId={prefs.selectedOrganization}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
       {reqForReport && (
         <CreateExpenseReportModal
           moneyRequest={reqForReport}

@@ -1,11 +1,6 @@
 import type { GroupBase, OptionsOrGroups } from 'chakra-react-select';
 import { Select } from 'chakra-react-select';
 import React from 'react';
-import type { CostCategory, Project } from '@prisma/client';
-
-export type ProjectComplete = Project & {
-  costCategories: CostCategory[];
-};
 
 interface props {
   setSelectedProject: React.Dispatch<

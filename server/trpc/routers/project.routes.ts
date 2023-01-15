@@ -2,13 +2,34 @@ import type { CostCategory } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateProject } from '../../../lib/validations/project.validate';
-import { adminProcedure, protectedProcedure, router } from '../initTrpc';
+import {
+  adminModProcedure,
+  adminProcedure,
+  protectedProcedure,
+  router,
+} from '../initTrpc';
 import prisma from '@/server/db/client';
 
 export const projectRouter = router({
-  getMany: protectedProcedure.query(async () => {
+  getMany: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    const isModOrAdmin = user.role !== 'USER';
+    console.log(isModOrAdmin);
+
     return await prisma?.project.findMany({
-      include: { costCategories: true },
+      include: {
+        costCategories: true,
+        allowedUsers: {
+          where: {
+            role: 'USER',
+            isVerified: true,
+            active: true,
+            //if user is not admin or mod only return projects which user is member off.
+          },
+          select: { displayName: true, email: true, id: true },
+        },
+      },
+      where: { allowedUsers: !isModOrAdmin ? { some: { id: user.id } } : {} },
     });
   }),
   getCostCatsForProject: protectedProcedure
@@ -34,7 +55,6 @@ export const projectRouter = router({
           ({
             displayName: cat.displayName,
             openingBalance: cat.openingBalance,
-            executedAmount: cat.executedAmount,
             createdById: ctx.session.user.id,
             currency: cat.currency,
           } as CostCategory)
@@ -64,7 +84,6 @@ export const projectRouter = router({
             create: {
               displayName: cat.displayName,
               openingBalance: cat.openingBalance,
-              executedAmount: cat.executedAmount,
               createdById: ctx.session.user.id,
               currency: cat.currency,
               projectId: input.id,
@@ -72,7 +91,6 @@ export const projectRouter = router({
             update: {
               displayName: cat.displayName,
               openingBalance: cat.openingBalance,
-              executedAmount: cat.executedAmount,
               createdById: ctx.session.user.id,
               currency: cat.currency,
             },
@@ -91,6 +109,42 @@ export const projectRouter = router({
         },
       });
       return project;
+    }),
+  addAccountToProject: adminModProcedure
+    .input(
+      z.object({
+        accountId: z.string(),
+        projectId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Throw if user doesn't exist, is not verified or not active
+      await prisma.account.findFirstOrThrow({
+        where: { id: input.accountId, isVerified: true, active: true },
+      });
+
+      return await prisma.project.update({
+        where: { id: input.projectId },
+        data: { allowedUsers: { connect: { id: input.accountId } } },
+      });
+    }),
+  removeAccountFromProject: adminModProcedure
+    .input(
+      z.object({
+        accountId: z.string(),
+        projectId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Throw if user doesn't exist, is not verified or not active
+      await prisma.account.findFirstOrThrow({
+        where: { id: input.accountId, isVerified: true, active: true },
+      });
+
+      return await prisma.project.update({
+        where: { id: input.projectId },
+        data: { allowedUsers: { disconnect: { id: input.accountId } } },
+      });
     }),
   deleteById: adminProcedure
     .input(

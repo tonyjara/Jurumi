@@ -52,7 +52,7 @@ const CostCategoryForm = ({
       {fields.map((x, index) => {
         const currency = watchedFields[index]?.currency;
         return (
-          <VStack key={x.id} spacing={5}>
+          <VStack mt="10px" key={x.id} spacing={5}>
             <FormControlledText
               control={control}
               errors={errors}

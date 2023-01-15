@@ -1,33 +1,28 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type { ExpenseReport } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
-
-import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
-import DynamicTable from '../../../components/DynamicTables/DynamicTable';
-import { useDynamicTable } from '../../../components/DynamicTables/UseDynamicTable';
-import TableSearchbar from '../../../components/DynamicTables/Utils/TableSearchbar';
-import EditExpenseReportModal from '../../../components/Modals/expenseReport.edit.modal';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
+import DynamicTable from '@/components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
+import TableSearchbar from '@/components/DynamicTables/Utils/TableSearchbar';
+import EditExpenseReportModal from '@/components/Modals/expenseReport.edit.modal';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { expenseReportColums } from './columns.expense-reports';
 
 export type MyExpenseReport = ExpenseReport & {
-  searchableImage: {
-    url: string;
-    imageName: string;
-  } | null;
   project: {
     id: string;
     displayName: string;
   } | null;
-  costCategory: {
-    id: string;
-    displayName: string;
-  } | null;
   taxPayer: {
-    ruc: string;
-    razonSocial: string;
     fantasyName: string | null;
+    razonSocial: string;
+    ruc: string;
   };
+  searchableImage: {
+    url: string;
+    imageName: string;
+  } | null;
 };
 
 const MyExpenseReportsPage = () => {

@@ -2,19 +2,14 @@ import HorizontalBarchart from '@/components/Charts/HorizontalBarchart';
 import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
 import ThreeDotTableButton from '@/components/DynamicTables/Utils/ThreeDotTableButton';
 import CreateProjectModal from '@/components/Modals/project.create.modal';
-import {
-  addDecimals,
-  addDecimalsToNumber,
-  decimalFormat,
-} from '@/lib/utils/DecimalHelpers';
+import { myToast } from '@/components/Toasts/MyToast';
+
 import { trpcClient } from '@/lib/utils/trpcClient';
 import {
-  Box,
   Card,
   CardBody,
   CardHeader,
   Flex,
-  HStack,
   Tab,
   TabList,
   TabPanel,
@@ -23,10 +18,19 @@ import {
   useColorModeValue,
   useDisclosure,
 } from '@chakra-ui/react';
+import type { CostCategory, Project } from '@prisma/client';
 import React, { useState } from 'react';
 import ProjectMembers from './ProjectMembers.mod';
-import type { ProjectComplete } from './SelectProject.mod.projects';
 import ProjectSelect from './SelectProject.mod.projects';
+
+export type ProjectComplete = Project & {
+  costCategories: CostCategory[];
+  allowedUsers: {
+    id: string;
+    email: string;
+    displayName: string;
+  }[];
+};
 
 const ProjectsPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,7 +66,10 @@ const ProjectsPage = () => {
 
   const tableOptions: TableOptions[] = [
     {
-      onClick: onOpen,
+      onClick: () =>
+        preferences?.selectedOrganization
+          ? onOpen()
+          : myToast.error('Favor seleccione una organización'),
       label: 'Crear proyecto',
     },
   ];

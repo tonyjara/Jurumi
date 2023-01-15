@@ -29,7 +29,6 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z.lazy(() =>
     moneyRequestId: z.string().min(1),
     accountId: z.string(),
     projectId: z.string({ invalid_type_error: 'Favor seleccione un proyecto' }),
-    costCategoryId: z.string().nullable(),
     searchableImage: z
       .object({
         imageName: z.string().min(1, 'Favor suba la imágen de su comprobante'),
@@ -54,7 +53,6 @@ export const defaultExpenseReportData: FormExpenseReport = {
   facturaNumber: '',
   amountSpent: new Prisma.Decimal(0),
   moneyRequestId: '',
-  costCategoryId: '',
   currency: 'PYG',
   projectId: '',
   comments: '',

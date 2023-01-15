@@ -74,12 +74,12 @@ export const modApprovalsColumns = ({
       <TextCell text={x.row.original?.project?.displayName ?? '-'} />
     ),
   }),
-  columnHelper.display({
-    header: 'L. Presu.',
-    cell: (x) => (
-      <TextCell text={x.row.original?.costCategory?.displayName ?? '-'} />
-    ),
-  }),
+  // columnHelper.display({
+  //   header: 'L. Presu.',
+  //   cell: (x) => (
+  //     <TextCell text={x.row.original?.costCategory?.displayName ?? '-'} />
+  //   ),
+  // }),
   columnHelper.display({
     header: 'Opciones',
     cell: (x) => {

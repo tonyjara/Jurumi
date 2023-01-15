@@ -69,12 +69,12 @@ export const expenseReportColums = ({
     cell: (x) => <TextCell text={x.row.original.project?.displayName ?? '-'} />,
     header: 'Proyecto',
   }),
-  columnHelper.display({
-    cell: (x) => (
-      <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
-    ),
-    header: 'L. Presup.',
-  }),
+  // columnHelper.display({
+  //   cell: (x) => (
+  //     <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
+  //   ),
+  //   header: 'L. Presup.',
+  // }),
   columnHelper.display({
     header: 'Opciones',
     cell: (x) => {

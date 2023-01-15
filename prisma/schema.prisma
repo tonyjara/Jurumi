@@ -135,23 +135,23 @@ model Project {
   imbursement    Imbursement[]
   moneyRequest   MoneyRequest[]
 
-  allowedUsers Account[]  @relation("AccountToProject")
-  TaxPayer     TaxPayer[] @relation("ProjectToTaxPayer")
+  allowedUsers Account[]     @relation("AccountToProject")
+  taxPayer     TaxPayer[]    @relation("ProjectToTaxPayer")
+  transaction  Transaction[]
 }
 
 model CostCategory {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime?       @updatedAt
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime?     @updatedAt
   createdById    String
   updatedById    String?
   displayName    String
   currency       Currency
   projectId      String?
-  openingBalance Decimal         @default(0) @db.Decimal(19, 4)
-  project        Project?        @relation(fields: [projectId], references: [id])
-  expenseReports ExpenseReport[]
-  moneyRequests  MoneyRequest[]
+  openingBalance Decimal       @default(0) @db.Decimal(19, 4)
+  project        Project?      @relation(fields: [projectId], references: [id])
+  transactions   Transaction[]
 }
 
 model Imbursement {
@@ -233,7 +233,6 @@ model MoneyRequest {
   accountId             String
   account               Account                @relation(fields: [accountId], references: [id])
   costCategoryId        String?
-  costCategory          CostCategory?          @relation(fields: [costCategoryId], references: [id])
   organizationId        String
   organization          Organization           @relation(fields: [organizationId], references: [id])
   projectId             String?
@@ -253,8 +252,6 @@ model ExpenseReport {
 
   accountId       String
   account         Account          @relation(fields: [accountId], references: [id])
-  costCategoryId  String?
-  costCategory    CostCategory?    @relation(fields: [costCategoryId], references: [id])
   moneyRequestId  String
   moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
   projectId       String?
@@ -302,6 +299,10 @@ model Transaction {
   moneyAccount    MoneyAccount   @relation(fields: [moneyAccountId], references: [id])
   moneyRequestId  String?
   moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
+  projectId       String?
+  project         Project?       @relation(fields: [projectId], references: [id])
+  costCategoryId  String?
+  costCategory    CostCategory?  @relation(fields: [costCategoryId], references: [id])
 
   searchableImage searchableImage?
 }

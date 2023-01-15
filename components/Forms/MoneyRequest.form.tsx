@@ -84,18 +84,18 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
         currency={currency}
       />
 
-      <Divider pb={3} />
-
       <FormControlledSelect
         control={control}
         errors={errors}
         name="projectId"
         label="Seleccione un proyecto"
         options={projectOptions ?? []}
+        isClearable
       />
       {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
       {isAdminOrMod && (
         <>
+          <Divider pb={3} />
           {costCatOptions()?.length && (
             <FormControlledSelect
               control={control}
@@ -122,17 +122,16 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
             label="Estado del desembolso"
             options={moneyRequestStatusOptions}
           />
+          {status === 'REJECTED' && (
+            <FormControlledText
+              control={control}
+              errors={errors}
+              name="rejectionMessage"
+              isTextArea={true}
+              label="Motivo del rechazo"
+            />
+          )}
         </>
-      )}
-
-      {status === 'REJECTED' && (
-        <FormControlledText
-          control={control}
-          errors={errors}
-          name="rejectionMessage"
-          isTextArea={true}
-          label="Motivo del rechazo"
-        />
       )}
     </VStack>
   );

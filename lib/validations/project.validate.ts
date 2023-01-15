@@ -22,7 +22,6 @@ const validateCostCategory: z.ZodType<FormCostCategory> = z.lazy(() =>
     updatedById: z.string().nullable(),
     displayName: stringReqMinMax('Favor ingrese un nombre', 3, 32),
     openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
-    executedAmount: z.any().transform((value) => new Prisma.Decimal(value)),
     projectId: z.string().nullable(),
     currency: z.nativeEnum(Currency),
   })

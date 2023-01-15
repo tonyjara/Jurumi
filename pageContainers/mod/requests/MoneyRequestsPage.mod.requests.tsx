@@ -1,9 +1,9 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type {
   Account,
-  CostCategory,
   ExpenseReport,
   MoneyRequest,
+  MoneyRequestApproval,
   Project,
   Transaction,
 } from '@prisma/client';
@@ -20,13 +20,22 @@ import type { MoneyRequestsPageProps } from 'pages/mod/requests';
 import { moneyRequestsColumns } from './columns.mod.requests';
 
 export type MoneyRequestComplete = MoneyRequest & {
-  account: Account;
-  project: Project | null;
-  transactions: Transaction[];
-  costCategory: CostCategory | null;
   expenseReports: ExpenseReport[];
+  transactions: Transaction[];
+  account: Account;
+  organization: {
+    moneyRequestApprovers: {
+      id: string;
+      displayName: string;
+    }[];
+    moneyAdministrators: {
+      id: string;
+      displayName: string;
+    }[];
+  };
+  project: Project | null;
+  moneyRequestApprovals: MoneyRequestApproval[];
 };
-
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
   const user = session.data?.user;

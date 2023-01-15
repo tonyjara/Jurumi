@@ -113,4 +113,22 @@ export const accountsRouter = router({
         },
       });
     }),
+
+  findByEmail: adminModProcedure
+    .input(z.object({ email: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma?.account.findMany({
+        take: 20,
+        orderBy: { email: 'asc' },
+        where: {
+          email: {
+            search: input.email,
+          },
+          role: 'USER',
+          isVerified: true,
+          active: true,
+        },
+        select: { displayName: true, email: true, id: true, role: true },
+      });
+    }),
 });

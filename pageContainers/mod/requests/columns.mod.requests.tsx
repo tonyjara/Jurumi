@@ -91,12 +91,12 @@ export const moneyRequestsColumns = ({
       <TextCell text={x.row.original?.project?.displayName ?? '-'} />
     ),
   }),
-  columnHelper.display({
-    header: 'L. Presu.',
-    cell: (x) => (
-      <TextCell text={x.row.original?.costCategory?.displayName ?? '-'} />
-    ),
-  }),
+  // columnHelper.display({
+  //   header: 'L. Presu.',
+  //   cell: (x) => (
+  //     <TextCell text={x.row.original?.costCategory?.displayName ?? '-'} />
+  //   ),
+  // }),
   columnHelper.accessor('description', {
     cell: (x) => (
       <TextCell text={x.getValue()} shortenString hover={x.getValue()} />

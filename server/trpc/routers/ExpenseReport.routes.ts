@@ -60,7 +60,6 @@ export const expenseReportsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy(),
         include: {
-          costCategory: { select: { displayName: true, id: true } },
           project: { select: { displayName: true, id: true } },
           taxPayer: {
             select: { fantasyName: true, razonSocial: true, ruc: true },
@@ -78,7 +77,6 @@ export const expenseReportsRouter = router({
         include: {
           account: true,
           project: true,
-          costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
           expenseReports: true,
@@ -127,8 +125,6 @@ export const expenseReportsRouter = router({
           moneyRequestId: input.moneyRequestId,
           taxPayerId: taxPayer.id,
           projectId: input.projectId,
-          costCategoryId: input.costCategoryId,
-
           searchableImage: {
             create: {
               url: input.searchableImage.url,
@@ -175,7 +171,6 @@ export const expenseReportsRouter = router({
           currency: input.currency,
           moneyRequestId: input.moneyRequestId,
           taxPayerId: taxPayer.id,
-          costCategoryId: input.costCategoryId,
           projectId: input.projectId,
           // searchableImage: {
           //   create: {

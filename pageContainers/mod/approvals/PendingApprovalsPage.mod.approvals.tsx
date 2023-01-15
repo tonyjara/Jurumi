@@ -7,7 +7,6 @@ import {
 } from '@chakra-ui/react';
 import type {
   Account,
-  CostCategory,
   ExpenseReport,
   MoneyRequest,
   MoneyRequestApproval,
@@ -26,8 +25,8 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import { modApprovalsColumns } from './columns.mod.approvals';
 
 export type MoneyRequestCompleteWithApproval = MoneyRequest & {
-  transactions: Transaction[];
   expenseReports: ExpenseReport[];
+  transactions: Transaction[];
   account: Account;
   organization: {
     moneyRequestApprovers: {
@@ -40,7 +39,6 @@ export type MoneyRequestCompleteWithApproval = MoneyRequest & {
     }[];
   };
   project: Project | null;
-  costCategory: CostCategory | null;
   moneyRequestApprovals: MoneyRequestApproval[];
 };
 

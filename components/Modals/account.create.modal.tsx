@@ -49,8 +49,8 @@ const CreateAccountModal = ({
     resolver: zodResolver(validateAccount),
   });
   const handleOnClose = () => {
-    reset(defaultAccountData);
     setValue('');
+    reset(defaultAccountData);
     onClose();
   };
   const { error, mutate, isLoading } =
@@ -64,8 +64,8 @@ const CreateAccountModal = ({
           setValue(verifyLink);
           // handleOnClose();
           reset(defaultAccountData);
-          context.verificationLinks.getVerificationLinks.invalidate();
-          context.account.getMany.invalidate();
+          context.verificationLinks.invalidate();
+          context.account.invalidate();
         },
       })
     );
@@ -88,7 +88,7 @@ const CreateAccountModal = ({
           <ModalHeader>Crear un usuario</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {value && (
+            {value.length > 0 && (
               <Container textAlign={'center'}>
                 <Text fontWeight={'bold'} fontSize={'xl'}>
                   Comparte el link con la persona que quieres invitar.
@@ -98,7 +98,7 @@ const CreateAccountModal = ({
                 </Button>
               </Container>
             )}
-            {!value && (
+            {!value.length && (
               <>
                 {error && (
                   <Text color="red.300">{knownErrors(error.message)}</Text>
@@ -106,16 +106,15 @@ const CreateAccountModal = ({
                 <FormControlledText
                   control={control}
                   errors={errors}
-                  name="email"
-                  label="Correo electrónico"
+                  name="displayName"
+                  label="Nombre del usuario"
                   autoFocus={true}
                 />
                 <FormControlledText
                   control={control}
                   errors={errors}
-                  name="displayName"
-                  label="Nombre del usuario"
-                  autoFocus={true}
+                  name="email"
+                  label="Correo electrónico"
                 />
                 <FormControlledSelect
                   control={control}
@@ -137,7 +136,7 @@ const CreateAccountModal = ({
             >
               Guardar
             </Button>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
+            <Button colorScheme="gray" mr={3} onClick={handleOnClose}>
               Cerrar
             </Button>
           </ModalFooter>

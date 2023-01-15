@@ -17,13 +17,6 @@ import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import { expenseReportMock } from '../../__tests__/mocks/Mocks';
-import type {
-  CostCategory,
-  ExpenseReport,
-  MoneyRequest,
-  Project,
-  Transaction,
-} from '@prisma/client';
 import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
 import {
   defaultExpenseReportData,
@@ -32,13 +25,7 @@ import {
 import ExpenseReportForm from '../Forms/ExpenseReport.form';
 import { reduceExpenseReports } from '../../lib/utils/TransactionUtils';
 import { decimalFormat } from '../../lib/utils/DecimalHelpers';
-
-export type ExpenseReportMoneyRequest = MoneyRequest & {
-  transactions: Transaction[];
-  expenseReports: ExpenseReport[];
-  project: Project | null;
-  costCategory: CostCategory | null;
-};
+import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -47,7 +34,7 @@ const CreateExpenseReportModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  moneyRequest: ExpenseReportMoneyRequest;
+  moneyRequest: CompleteMoneyReqHome;
 }) => {
   const context = trpcClient.useContext();
   const {
