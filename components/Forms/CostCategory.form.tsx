@@ -72,14 +72,14 @@ const CostCategoryForm = ({
                 label="Moneda"
                 options={currencyOptions}
                 onChangeMw={() =>
-                  setValue(`costCategories.${index}.openingBalance`, 0)
+                  setValue(`costCategories.${index}.assignedAmount`, 0)
                 }
               />
               <FormControlledMoneyInput
                 control={control}
                 errors={errors}
-                name={`costCategories.${index}.openingBalance`}
-                label="Balance inicial."
+                name={`costCategories.${index}.assignedAmount`}
+                label="Monto asignado."
                 prefix={translateCurrencyPrefix(currency ?? 'PYG')}
                 currency={currency ?? 'PYG'}
               />

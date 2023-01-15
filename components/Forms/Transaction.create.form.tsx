@@ -18,17 +18,17 @@ import React from 'react';
 import type { FieldValues, Control, UseFormSetValue } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
-import { currencyOptions } from '../../lib/utils/SelectOptions';
+import { currencyOptions } from '@/lib/utils/SelectOptions';
 import {
   formatedAccountBalance,
   reduceTransactionFields,
-} from '../../lib/utils/TransactionUtils';
-import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import { trpcClient } from '../../lib/utils/trpcClient';
+} from '@/lib/utils/TransactionUtils';
+import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import type {
   FormTransactionCreate,
   TransactionField,
-} from '../../lib/validations/transaction.create.validate';
+} from '@/lib/validations/transaction.create.validate';
 import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
@@ -104,7 +104,15 @@ const TransactionForm = ({
 
   return (
     <>
-      <HStack justifyContent={'space-between'}>
+      <FormControlledSelect
+        control={control}
+        errors={errors}
+        name="projectId"
+        label="Seleccione un proyecto"
+        options={projectOptions ?? []}
+        isClearable
+      />
+      <HStack mt={'20px'} justifyContent={'space-between'}>
         <CircularProgress value={parseInt(percentage)} color="green.400">
           <CircularProgressLabel>{percentage}%</CircularProgressLabel>
         </CircularProgress>
@@ -178,14 +186,7 @@ const TransactionForm = ({
                 ''
               }
             />
-            <FormControlledSelect
-              control={control}
-              errors={errors}
-              name="projectId"
-              label="Seleccione un proyecto"
-              options={projectOptions ?? []}
-              isClearable
-            />
+
             {costCatOptions()?.length && (
               <FormControlledSelect
                 control={control}

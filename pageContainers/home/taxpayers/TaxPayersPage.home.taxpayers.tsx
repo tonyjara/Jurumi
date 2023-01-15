@@ -1,14 +1,14 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type { TaxPayer } from '@prisma/client';
 import React, { useState } from 'react';
-import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
-import DynamicTable from '../../../components/DynamicTables/DynamicTable';
-import { useDynamicTable } from '../../../components/DynamicTables/UseDynamicTable';
-import TableSearchbar from '../../../components/DynamicTables/Utils/TableSearchbar';
-import CreateTaxPayerModal from '../../../components/Modals/taxPayer.create.modal';
-import EditTaxPayerModal from '../../../components/Modals/taxPayer.edit.modal';
-import useDebounce from '../../../lib/hooks/useDebounce';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
+import DynamicTable from '@/components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
+import TableSearchbar from '@/components/DynamicTables/Utils/TableSearchbar';
+import CreateTaxPayerModal from '@/components/Modals/taxPayer.create.modal';
+import EditTaxPayerModal from '@/components/Modals/taxPayer.edit.modal';
+import useDebounce from '@/lib/hooks/useDebounce';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { taxpayersColumns } from './columns.home.taxpayers';
 
 const TaxPayersPage = () => {

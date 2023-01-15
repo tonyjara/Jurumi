@@ -3,14 +3,14 @@ import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-import { randEnumValue } from '../../lib/utils/TypescriptUtils';
-import type { FormProject } from '../../lib/validations/project.validate';
-import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
+import { randEnumValue } from '@/lib/utils/TypescriptUtils';
+import type { FormProject } from '@/lib/validations/project.validate';
+import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
 import type {
   FormBankInfo,
   FormMoneyAccount,
-} from '../../lib/validations/moneyAcc.validate';
-import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
+} from '@/lib/validations/moneyAcc.validate';
+import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 
 const bankInfo: () => FormBankInfo = () => {
@@ -84,10 +84,9 @@ export const projectMock: () => FormProject = () => {
         updatedById: null,
         displayName: faker.commerce.product(),
         currency: 'PYG',
-        openingBalance: new Prisma.Decimal(
+        assignedAmount: new Prisma.Decimal(
           faker.commerce.price(1000000, 3000000)
         ),
-        executedAmount: new Prisma.Decimal(0),
         projectId: null,
       },
       {
@@ -98,10 +97,9 @@ export const projectMock: () => FormProject = () => {
         updatedById: null,
         displayName: faker.commerce.product(),
         currency: 'PYG',
-        openingBalance: new Prisma.Decimal(
+        assignedAmount: new Prisma.Decimal(
           faker.commerce.price(1000000, 3000000)
         ),
-        executedAmount: new Prisma.Decimal(0),
         projectId: null,
       },
     ],

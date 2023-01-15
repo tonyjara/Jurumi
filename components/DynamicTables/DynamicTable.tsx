@@ -327,7 +327,6 @@ const DynamicTable = <T extends object>({
           <IconButton
             onClick={() => {
               gotoPage(lastPage - 1);
-              // console.log(Math.ceil(count / pageSize));
             }}
             isDisabled={!canNextPage}
             icon={<ArrowRightIcon h={3} w={3} />}

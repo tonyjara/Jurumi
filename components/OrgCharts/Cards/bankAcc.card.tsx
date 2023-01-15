@@ -16,14 +16,14 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
-import { trpcClient } from '../../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../../Toasts/MyToast';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
 import {
   translateBankNames,
   translateCurrency,
-} from '../../../lib/utils/TranslatedEnums';
-import EditBankAccModal from '../../Modals/moneyAcc.edit.modal';
-import { formatedAccountBalance } from '../../../lib/utils/TransactionUtils';
+} from '@/lib/utils/TranslatedEnums';
+import EditBankAccModal from '@/components/Modals/moneyAcc.edit.modal';
+import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
 import type { BankAccsWithLastTx } from '../CardGroups/BankAcc.cardGroup';
 
 const BankAccCard = (bankAcc: BankAccsWithLastTx) => {

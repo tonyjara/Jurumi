@@ -149,7 +149,7 @@ model CostCategory {
   displayName    String
   currency       Currency
   projectId      String?
-  openingBalance Decimal       @default(0) @db.Decimal(19, 4)
+  assignedAmount Decimal       @default(0) @db.Decimal(19, 4) //this can keep being edit
   project        Project?      @relation(fields: [projectId], references: [id])
   transactions   Transaction[]
 }
@@ -295,8 +295,8 @@ model Transaction {
   expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
   imbursementId   String?
   imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
-  moneyAccountId  String
-  moneyAccount    MoneyAccount   @relation(fields: [moneyAccountId], references: [id])
+  moneyAccountId  String?
+  moneyAccount    MoneyAccount?  @relation(fields: [moneyAccountId], references: [id])
   moneyRequestId  String?
   moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
   projectId       String?

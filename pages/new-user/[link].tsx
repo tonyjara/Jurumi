@@ -9,22 +9,18 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
-import FormControlledText from '../../components/FormControlled/FormControlledText';
-
-import {
-  handleUseMutationAlerts,
-  myToast,
-} from '../../components/Toasts/MyToast';
+import FormControlledText from '@/components/FormControlled/FormControlledText';
+import { handleUseMutationAlerts, myToast } from '@/components/Toasts/MyToast';
 import type { GetServerSideProps } from 'next';
-import { verifyToken } from '../../lib/utils/asyncJWT';
+import { verifyToken } from '@/lib/utils/asyncJWT';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { FormNewUser } from '../../lib/validations/newUser.validate';
+import type { FormNewUser } from '@/lib/validations/newUser.validate';
 import {
   defaultNewUserData,
   validateNewUser,
-} from '../../lib/validations/newUser.validate';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
+} from '@/lib/validations/newUser.validate';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import prisma from '@/server/db/client';
 
 export default function NewUser(props?: {

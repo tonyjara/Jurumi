@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateTaxPayer } from '../../../lib/validations/taxtPayer.validate';
+import { validateTaxPayer } from '@/lib/validations/taxtPayer.validate';
 import {
   adminProcedure,
   adminModProcedure,

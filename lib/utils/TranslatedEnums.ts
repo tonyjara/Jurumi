@@ -5,8 +5,17 @@ import type {
   MoneyRequestStatus,
   MoneyRequestType,
   MoneyResquestApprovalStatus,
+  ProjectType,
 } from '@prisma/client';
 
+export const translateProjectType = (type: ProjectType) => {
+  const types: { [key in ProjectType]?: string } = {
+    SUBSIDY: 'Subsidio',
+    CONSULTING: 'Consultoria',
+  };
+
+  return types[type] ?? 'Error';
+};
 export const translateCurrencyPrefix = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
     PYG: 'Gs ',

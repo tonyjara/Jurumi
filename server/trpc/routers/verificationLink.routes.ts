@@ -1,8 +1,8 @@
-import { validateAccount } from '../../../lib/validations/account.validate';
+import { validateAccount } from '@/lib/validations/account.validate';
 import { adminModProcedure, publicProcedure, router } from '../initTrpc';
 import { TRPCError } from '@trpc/server';
-import { validateNewUser } from '../../../lib/validations/newUser.validate';
-import { verifyToken } from '../../../lib/utils/asyncJWT';
+import { validateNewUser } from '@/lib/validations/newUser.validate';
+import { verifyToken } from '@/lib/utils/asyncJWT';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';

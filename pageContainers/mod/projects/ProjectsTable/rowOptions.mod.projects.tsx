@@ -5,30 +5,20 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import type { MoneyRequest } from '@prisma/client';
-
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { CompleteMoneyReqHome } from './HomeRequestsPage.home.requests';
+import type { ProjectForTable } from './ProjectsTable.mod.projects';
 
-const RowOptionsHomeRequests = ({
+const RowOptionsModProjects = ({
   x,
-  setEditMoneyRequest,
+  setEditProject,
   onEditOpen,
-  onExpRepOpen,
-  setReqForReport,
 }: {
-  x: CompleteMoneyReqHome;
-  setEditMoneyRequest: React.Dispatch<
-    React.SetStateAction<MoneyRequest | null>
-  >;
-  setReqForReport: React.Dispatch<
-    React.SetStateAction<CompleteMoneyReqHome | null>
-  >;
+  x: ProjectForTable;
+  setEditProject: React.Dispatch<React.SetStateAction<ProjectForTable | null>>;
   onEditOpen: () => void;
-  onExpRepOpen: () => void;
 }) => {
   const context = trpcClient.useContext();
 
@@ -51,16 +41,7 @@ const RowOptionsHomeRequests = ({
       <MenuList>
         <MenuItem
           onClick={() => {
-            setReqForReport(x);
-            onExpRepOpen();
-          }}
-        >
-          Crear rendición
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            setEditMoneyRequest(x);
+            setEditProject(x);
             onEditOpen();
           }}
         >
@@ -73,4 +54,4 @@ const RowOptionsHomeRequests = ({
   );
 };
 
-export default RowOptionsHomeRequests;
+export default RowOptionsModProjects;

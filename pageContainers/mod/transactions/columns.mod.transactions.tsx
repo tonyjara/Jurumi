@@ -87,9 +87,17 @@ export const modTransactionsColumns = ({
     header: 'Creador',
     cell: (x) => <TextCell text={x.getValue()} />,
   }),
-  columnHelper.accessor('moneyAccount.displayName', {
+  columnHelper.display({
     header: 'Cuenta',
-    cell: (x) => <TextCell text={x.getValue()} />,
+    cell: (x) => (
+      <TextCell text={x.row.original.moneyAccount?.displayName ?? '-'} />
+    ),
+  }),
+  columnHelper.display({
+    header: 'L. Presupuestaria',
+    cell: (x) => (
+      <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
+    ),
   }),
   columnHelper.display({
     cell: (x) => (

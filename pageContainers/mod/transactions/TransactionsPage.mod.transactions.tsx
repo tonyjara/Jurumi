@@ -1,5 +1,6 @@
 import type {
   Account,
+  CostCategory,
   ExpenseReturn,
   Imbursement,
   MoneyAccount,
@@ -15,10 +16,11 @@ import type { TransactionsPageProps } from 'pages/mod/transactions';
 import TransactionsTable from './TransactionsTable';
 
 export type TransactionComplete = Transaction & {
-  moneyAccount: MoneyAccount;
   account: Account;
-  moneyRequest: MoneyRequest | null;
+  moneyAccount: MoneyAccount | null;
+  costCategory: CostCategory | null;
   imbursement: Imbursement | null;
+  moneyRequest: MoneyRequest | null;
   expenseReturn: ExpenseReturn | null;
   searchableImage: {
     id: string;

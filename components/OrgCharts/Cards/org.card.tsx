@@ -19,11 +19,11 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
-import { trpcClient } from '../../../lib/utils/trpcClient';
-import CreateProjectModal from '../../Modals/project.create.modal';
-import EditOrgModal from '../../Modals/org.edit.modal';
-import { handleUseMutationAlerts } from '../../Toasts/MyToast';
-import type { FormOrganization } from '../../../lib/validations/org.validate';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import CreateProjectModal from '@/components/Modals/project.create.modal';
+import EditOrgModal from '@/components/Modals/org.edit.modal';
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import type { FormOrganization } from '@/lib/validations/org.validate';
 
 const OrgCard = (org: FormOrganization) => {
   const context = trpcClient.useContext();

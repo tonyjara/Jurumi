@@ -1,5 +1,5 @@
 import { toast } from 'react-hot-toast';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
 export const myToast = {
   success: (text: string) => toast.success(text),
   error: (text?: string) =>

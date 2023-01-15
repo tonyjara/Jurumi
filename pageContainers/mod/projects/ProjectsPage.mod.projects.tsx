@@ -20,7 +20,8 @@ import {
 } from '@chakra-ui/react';
 import type { CostCategory, Project } from '@prisma/client';
 import React, { useState } from 'react';
-import ProjectMembers from './ProjectMembers.mod';
+import ProjectMembers from './ProjectMembers.mod.projects';
+import ProjectsTable from './ProjectsTable/ProjectsTable.mod.projects';
 import ProjectSelect from './SelectProject.mod.projects';
 
 export type ProjectComplete = Project & {
@@ -111,7 +112,7 @@ const ProjectsPage = () => {
                 <ProjectMembers project={project} />
               </TabPanel>
               <TabPanel>
-                <p>three!</p>
+                <ProjectsTable />
               </TabPanel>
             </TabPanels>
           </CardBody>

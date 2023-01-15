@@ -12,17 +12,17 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
+import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import {
   defaultMoneyRequestData,
   validateMoneyRequest,
-} from '../../lib/validations/moneyRequest.validate';
+} from '@/lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
-import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
+import { moneyRequestMock } from '@/__tests__/mocks/Mocks';
 
 const CreateMoneyRequestModal = ({
   isOpen,

@@ -1,6 +1,6 @@
 import { MoneyResquestApprovalStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
-import { validateMoneyRequest } from '../../../lib/validations/moneyRequest.validate';
+import { validateMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import {
   adminModProcedure,
   adminProcedure,
@@ -89,7 +89,9 @@ export const moneyRequestRouter = router({
         include: {
           account: true,
           project: true,
-          transactions: { where: { cancellationId: null } },
+          transactions: {
+            where: { cancellationId: null, costCategoryId: null },
+          },
           moneyRequestApprovals: true,
           expenseReports: true,
           organization: {

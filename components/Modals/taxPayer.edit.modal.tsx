@@ -13,13 +13,13 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormTaxPayer } from '../../lib/validations/taxtPayer.validate';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 import {
   defaultTaxPayer,
   validateTaxPayer,
-} from '../../lib/validations/taxtPayer.validate';
+} from '@/lib/validations/taxtPayer.validate';
 import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 

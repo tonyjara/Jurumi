@@ -1,7 +1,7 @@
 import type { CostCategory } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { validateProject } from '../../../lib/validations/project.validate';
+import { validateProject } from '@/lib/validations/project.validate';
 import {
   adminModProcedure,
   adminProcedure,
@@ -9,17 +9,18 @@ import {
   router,
 } from '../initTrpc';
 import prisma from '@/server/db/client';
+import { handleOrderBy } from './utils/SortingUtils';
 
 export const projectRouter = router({
   getMany: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     const isModOrAdmin = user.role !== 'USER';
-    console.log(isModOrAdmin);
 
     return await prisma?.project.findMany({
       include: {
         costCategories: true,
         allowedUsers: {
+          take: 20,
           where: {
             role: 'USER',
             isVerified: true,
@@ -32,6 +33,47 @@ export const projectRouter = router({
       where: { allowedUsers: !isModOrAdmin ? { some: { id: user.id } } : {} },
     });
   }),
+  getManyForTable: adminModProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ input }) => {
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+      return await prisma?.project.findMany({
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy({ input }),
+        include: {
+          _count: { select: { allowedUsers: true } },
+          costCategories: {
+            include: {
+              transactions: true,
+              //  {
+              //   take: 1,
+              //   orderBy: { id: 'desc' },
+              //   select: {
+              //     openingBalance: true,
+              //     currency: true,
+              //     currentBalance: true,
+              //     transactionAmount: true,
+              //   },
+              // },
+              project: { select: { displayName: true, id: true } },
+            },
+          },
+        },
+      });
+    }),
+  count: protectedProcedure.query(async () => prisma?.project.count()),
+
   getCostCatsForProject: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input }) => {
@@ -54,7 +96,7 @@ export const projectRouter = router({
         (cat) =>
           ({
             displayName: cat.displayName,
-            openingBalance: cat.openingBalance,
+            assignedAmount: cat.assignedAmount,
             createdById: ctx.session.user.id,
             currency: cat.currency,
           } as CostCategory)
@@ -83,14 +125,14 @@ export const projectRouter = router({
           await prisma?.costCategory.upsert({
             create: {
               displayName: cat.displayName,
-              openingBalance: cat.openingBalance,
+              assignedAmount: cat.assignedAmount,
               createdById: ctx.session.user.id,
               currency: cat.currency,
               projectId: input.id,
             },
             update: {
               displayName: cat.displayName,
-              openingBalance: cat.openingBalance,
+              assignedAmount: cat.assignedAmount,
               createdById: ctx.session.user.id,
               currency: cat.currency,
             },

@@ -6,13 +6,13 @@ import type {
   Transaction,
 } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
-import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
-import DynamicTable from '../../../components/DynamicTables/DynamicTable';
-import { useDynamicTable } from '../../../components/DynamicTables/UseDynamicTable';
-import CreateExpenseReportModal from '../../../components/Modals/ExpenseReport.create.modal';
-import EditMoneyRequestModal from '../../../components/Modals/MoneyReq.edit.modal';
-import CreateMoneyRequestModal from '../../../components/Modals/MoneyRequest.create.modal';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
+import DynamicTable from '@/components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
+import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.modal';
+import EditMoneyRequestModal from '@/components/Modals/MoneyReq.edit.modal';
+import CreateMoneyRequestModal from '@/components/Modals/MoneyRequest.create.modal';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { homeRequestsColumns } from './columns.home.requests';
 
 export type CompleteMoneyReqHome = MoneyRequest & {

@@ -19,10 +19,10 @@ import {
 import React from 'react';
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../../Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
 import type { CostCategory, Project } from '@prisma/client';
-import EditProjectModal from '../../Modals/project.edit.modal';
-import CreateMoneyRequestModal from '../../Modals/MoneyRequest.create.modal';
+import EditProjectModal from '@/components/Modals/project.edit.modal';
+import CreateMoneyRequestModal from '@/components/Modals/MoneyRequest.create.modal';
 import { addDecimals } from '@/lib/utils/DecimalHelpers';
 
 const ProjectCard = (
@@ -67,7 +67,7 @@ const ProjectCard = (
             <Heading whiteSpace={'nowrap'} size="md">
               Monto asignado:
               <br />
-              {addDecimals(project.costCategories, 'openingBalance')}
+              {addDecimals(project.costCategories, 'assignedAmount')}
             </Heading>
             <Text>Lineas Presupuestarias:</Text>
             <List>

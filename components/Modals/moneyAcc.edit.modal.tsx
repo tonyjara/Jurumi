@@ -12,17 +12,17 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
 
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormMoneyAccount } from '../../lib/validations/moneyAcc.validate';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { FormMoneyAccount } from '@/lib/validations/moneyAcc.validate';
 import {
   defaultMoneyAccData,
   validateMoneyAccount,
-} from '../../lib/validations/moneyAcc.validate';
+} from '@/lib/validations/moneyAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import { moneyAccMock } from '../../__tests__/mocks/Mocks';
+import { moneyAccMock } from '@/__tests__/mocks/Mocks';
 import EditMoneyAccForm from '../Forms/MoneyAcc.edit.form';
 import type { MoneyAccount } from '@prisma/client';
 

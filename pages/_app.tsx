@@ -9,7 +9,6 @@ import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
 import RootLayout from '../layouts/RootLayout';
 import { theme } from '../styles/Theme';
-import CheckAccounIsActive from '../lib/utils/CheckAccounIsActive';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -19,7 +18,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
         <NextNProgress height={4} />
-        <CheckAccounIsActive />
         <Toaster />
         <RootLayout>
           <Component {...pageProps} />
@@ -30,4 +28,3 @@ const MyApp: AppType<{ session: Session | null }> = ({
 };
 
 export default trpcClient.withTRPC(appWithTranslation(MyApp));
-// export default MyApp;

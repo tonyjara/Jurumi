@@ -10,16 +10,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
-import type { FormTaxPayer } from '../../../lib/validations/taxtPayer.validate';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 import {
   defaultTaxPayer,
   validateTaxPayer,
-} from '../../../lib/validations/taxtPayer.validate';
-import { trpcClient } from '../../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
-import FormContainer from '../../../components/Containers/FormContainer';
-import { knownErrors } from '../../../lib/dictionaries/knownErrors';
-import FormControlledText from '../../../components/FormControlled/FormControlledText';
+} from '@/lib/validations/taxtPayer.validate';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import FormContainer from '@/components/Containers/FormContainer';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import FormControlledText from '@/components/FormControlled/FormControlledText';
 //This might no longer be needed because of modals
 const CreateTaxPayerPage = () => {
   const context = trpcClient.useContext();

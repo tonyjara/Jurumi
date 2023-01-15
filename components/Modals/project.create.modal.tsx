@@ -12,18 +12,17 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-
-import { trpcClient } from '../../lib/utils/trpcClient';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import { projectMock } from '../../__tests__/mocks/Mocks';
+import { projectMock } from '@/__tests__/mocks/Mocks';
 import ProjectForm from '../Forms/Project.form';
-import type { FormProject } from '../../lib/validations/project.validate';
+import type { FormProject } from '@/lib/validations/project.validate';
 import {
   defaultProjectData,
   validateProject,
-} from '../../lib/validations/project.validate';
+} from '@/lib/validations/project.validate';
 
 const CreateProjectModal = ({
   isOpen,

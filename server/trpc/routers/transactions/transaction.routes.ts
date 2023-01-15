@@ -1,14 +1,10 @@
 import { z } from 'zod';
-import { validateTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import { validateTransactionEdit } from '@/lib/validations/transaction.edit.validate';
-import { adminModProcedure, adminProcedure, router } from '../initTrpc';
-import { handleOrderBy } from './utils/SortingUtils';
-import {
-  checkIfIsLastTransaction,
-  checkIfUserIsMoneyAdmin,
-  createManyMoneyAccountTransactions,
-} from './utils/TransactionRouteUtils';
+import { adminModProcedure, adminProcedure, router } from '../../initTrpc';
+import { handleOrderBy } from '../utils/SortingUtils';
+import { checkIfIsLastTransaction } from '../utils/TransactionRouteUtils';
 import prisma from '@/server/db/client';
+import { createManyTransactions } from './createMany.transaction.routes';
 
 export const transactionsRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -42,6 +38,7 @@ export const transactionsRouter = router({
           moneyAccount: true,
           account: true,
           moneyRequest: true,
+          costCategory: true,
           imbursement: true,
           expenseReturn: true,
           searchableImage: { select: { id: true, url: true, imageName: true } },
@@ -58,6 +55,7 @@ export const transactionsRouter = router({
           moneyAccount: true,
           account: true,
           moneyRequest: true,
+          costCategory: true,
           imbursement: true,
           expenseReturn: true,
           searchableImage: { select: { id: true, url: true, imageName: true } },
@@ -65,42 +63,7 @@ export const transactionsRouter = router({
       });
     }),
 
-  createMany: adminModProcedure
-    .input(validateTransactionCreate)
-    .mutation(async ({ input, ctx }) => {
-      const user = ctx.session.user;
-      //1. Check money admin permissions
-      await checkIfUserIsMoneyAdmin(user);
-      //2. Create transactions
-      const x = await createManyMoneyAccountTransactions({
-        accountId: ctx.session.user.id,
-        formTransaction: input,
-      });
-
-      if (input.moneyRequestId && x) {
-        //3. Change request status
-        await prisma?.moneyRequest.update({
-          where: { id: input.moneyRequestId },
-          data: { status: 'ACCEPTED' },
-        });
-        //3. Substract from cost categories
-        // if (!moneyRequest || !moneyRequest.costCategoryId) return;
-        // const costCat = await prisma?.costCategory.findUnique({
-        //   where: { id: moneyRequest.costCategoryId },
-        // });
-        // if (!costCat) return;
-
-        //   await prisma?.costCategory.update({
-        //     where: { id: moneyRequest?.costCategoryId },
-        //     data: {
-        //       executedAmount: costCat.executedAmount.add(
-        //         reduceTransactionFields(input.transactions)
-        //       ),
-        //     },
-        //   });
-      }
-      return x;
-    }),
+  createMany: createManyTransactions,
   edit: adminModProcedure
     .input(validateTransactionEdit)
     .mutation(async ({ input, ctx }) => {
@@ -129,8 +92,14 @@ export const transactionsRouter = router({
       return x;
     }),
   isLastTransaction: adminModProcedure
-    .input(z.object({ moneyAccountId: z.string(), transactionId: z.number() }))
+    .input(
+      z.object({
+        moneyAccountId: z.string().nullable(),
+        transactionId: z.number(),
+      })
+    )
     .query(async ({ input }) => {
+      if (!input.moneyAccountId) return false;
       const moneyAccWithLastTx = await prisma.moneyAccount.findUnique({
         where: { id: input.moneyAccountId },
         include: {
@@ -152,13 +121,16 @@ export const transactionsRouter = router({
     .input(
       z.object({
         id: z.number(),
-        moneyAccountId: z.string(),
+        moneyAccountId: z.string().nullable(),
+        costCategoryId: z.string().nullable(),
       })
     )
     .mutation(async ({ input }) => {
       //for the moment being it will only allow delete if it's the last transaction.
+
       await checkIfIsLastTransaction({
         moneyAccountId: input.moneyAccountId,
+        costCategoryId: input.costCategoryId,
         transactionId: input.id,
       });
 

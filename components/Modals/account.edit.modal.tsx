@@ -13,14 +13,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { Role } from '@prisma/client';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormAccount } from '../../lib/validations/account.validate';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { FormAccount } from '@/lib/validations/account.validate';
 import {
   defaultAccountData,
   validateAccount,
-} from '../../lib/validations/account.validate';
-
+} from '@/lib/validations/account.validate';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
