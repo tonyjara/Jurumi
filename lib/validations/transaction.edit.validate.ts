@@ -1,4 +1,5 @@
 import type { Transaction } from '@prisma/client';
+import { TransactionType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { z } from 'zod';
@@ -35,6 +36,7 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
         expenseReturnId: z.string().nullable(),
         imbursementId: z.string().nullable(),
         cancellationId: z.number().nullable(),
+        transactionType: z.nativeEnum(TransactionType),
         moneyAccountId: z
           .string({
             required_error:
@@ -80,5 +82,6 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   expenseReturnId: null,
   isCancellation: false,
   cancellationId: null,
+  transactionType: 'MONEY_ACCOUNT',
   searchableImage: { url: '', imageName: '' },
 };

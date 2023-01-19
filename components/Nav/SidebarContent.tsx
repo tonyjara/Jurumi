@@ -70,6 +70,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           dest: '/mod/transactions',
         },
         { name: 'Solicitudes', icon: BsCashStack, dest: '/mod/requests' },
+        { name: 'Contribuyentes', icon: TbReceiptTax, dest: '/mod/taxpayers' },
+
         { name: 'Aprobaciones', icon: MdApproval, dest: '/mod/approvals' },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },
       ]
@@ -80,7 +82,6 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     // ...adminLinks,
     ...adminOrModLinks,
     //Public links
-    { name: 'Contribuyentes', icon: TbReceiptTax, dest: '/home/taxpayers' },
     { name: 'Mis solicitudes', icon: BsCash, dest: '/home/requests' },
     {
       name: 'Mis rendiciones',

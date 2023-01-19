@@ -1,5 +1,6 @@
-import type { CostCategory, Currency } from '@prisma/client';
+import type { CostCategory, Currency, Transaction } from '@prisma/client';
 import { Prisma } from '@prisma/client';
+import type { Decimal } from '@prisma/client/runtime';
 
 export const projectExecutedAmount = ({
   costCats,
@@ -13,14 +14,30 @@ export const projectExecutedAmount = ({
     }[];
   })[];
 }) => {
-  const gs = new Prisma.Decimal(0);
-  const usd = new Prisma.Decimal(0);
+  let gs = new Prisma.Decimal(0);
+  let usd = new Prisma.Decimal(0);
   for (const costCat of costCats) {
-    if (!costCat.transactions.length) continue;
     const lastTx = costCat.transactions[0];
-    if (lastTx?.currency === 'PYG') gs.add(lastTx.currentBalance);
-    if (lastTx?.currency === 'USD') usd.add(lastTx.currentBalance);
+    // if (!costCat.transactions.length || !lastTx) continue;
+
+    if (lastTx?.currency === 'PYG') gs = gs.add(lastTx.currentBalance);
+    if (lastTx?.currency === 'USD') usd = usd.add(lastTx.currentBalance);
   }
 
   return { gs, usd };
+};
+
+export const projectDisbursedAmount = ({
+  transactions,
+}: {
+  transactions: {
+    openingBalance: Decimal;
+    currency: Currency;
+    currentBalance: Decimal;
+    transactionAmount: Decimal;
+  }[];
+}) => {
+  const lastTx = transactions[0];
+
+  return lastTx ? lastTx.currentBalance : new Prisma.Decimal(0);
 };

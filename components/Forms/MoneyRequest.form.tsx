@@ -25,11 +25,7 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
   const { data: session } = useSession();
   const user = session?.user;
   const isAdminOrMod = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
-  const projectId = useWatch({ control, name: 'projectId' });
-  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
-    { projectId: projectId ?? '' },
-    { enabled: !!projectId?.length }
-  );
+
   const currency = useWatch({ control, name: 'currency' });
   const status = useWatch({ control, name: 'status' });
 
@@ -44,12 +40,6 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
     value: proj.id,
     label: `${proj.displayName}`,
   }));
-
-  const costCatOptions = () =>
-    costCats?.map((cat) => ({
-      value: cat.id,
-      label: `${cat.displayName}`,
-    }));
 
   return (
     <VStack spacing={5}>
@@ -96,15 +86,7 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
       {isAdminOrMod && (
         <>
           <Divider pb={3} />
-          {costCatOptions()?.length && (
-            <FormControlledSelect
-              control={control}
-              errors={errors}
-              name="costCategoryId"
-              label="Linea presupuestaria"
-              options={costCatOptions() ?? []}
-            />
-          )}
+
           <FormControlledSelect
             control={control}
             errors={errors}

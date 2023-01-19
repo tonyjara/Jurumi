@@ -81,7 +81,7 @@ export const taxPayerRouter = router({
       });
       return x;
     }),
-  edit: protectedProcedure
+  edit: adminModProcedure
     .input(validateTaxPayer)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;

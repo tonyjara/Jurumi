@@ -18,13 +18,16 @@ const PercentageCell = ({
   currency: Currency;
 }) => {
   const percentage = executed.dividedBy(total).times(100).toFixed(0);
+
   return (
     <Tooltip label={decimalFormat(executed, currency)}>
       <CircularProgress
-        value={parseInt(percentage)}
+        value={isNaN(parseInt(percentage)) ? 0 : parseInt(percentage)}
         color={parseInt(percentage) < 100 ? 'orange.400' : 'green.400'}
       >
-        <CircularProgressLabel>{percentage}%</CircularProgressLabel>
+        <CircularProgressLabel>
+          {isNaN(parseInt(percentage)) ? '0' : percentage}%
+        </CircularProgressLabel>
       </CircularProgress>
     </Tooltip>
   );

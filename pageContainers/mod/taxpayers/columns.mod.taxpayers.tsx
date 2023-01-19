@@ -2,7 +2,7 @@ import type { TaxPayer } from '@prisma/client';
 import { createColumnHelper } from '@tanstack/react-table';
 import DateCell from '@/components/DynamicTables/DynamicCells/DateCell';
 import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
-import RowOptionsHomeTaxPayers from './rowOptions.home.taxpayers';
+import RowOptionsHomeTaxPayers from './rowOptions.mod.taxpayers';
 
 const columnHelper = createColumnHelper<TaxPayer>();
 

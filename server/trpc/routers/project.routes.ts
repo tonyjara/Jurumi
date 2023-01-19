@@ -55,19 +55,32 @@ export const projectRouter = router({
           _count: { select: { allowedUsers: true } },
           costCategories: {
             include: {
-              transactions: true,
-              //  {
-              //   take: 1,
-              //   orderBy: { id: 'desc' },
-              //   select: {
-              //     openingBalance: true,
-              //     currency: true,
-              //     currentBalance: true,
-              //     transactionAmount: true,
-              //   },
-              // },
-              project: { select: { displayName: true, id: true } },
+              transactions: {
+                take: 1,
+                orderBy: { id: 'desc' },
+                select: {
+                  openingBalance: true,
+                  currency: true,
+                  currentBalance: true,
+                  transactionAmount: true,
+                },
+              },
             },
+          },
+          transactions: {
+            take: 1,
+            orderBy: { id: 'desc' },
+            select: {
+              openingBalance: true,
+              currency: true,
+              currentBalance: true,
+              transactionAmount: true,
+            },
+          },
+          allowedUsers: {
+            take: 20,
+            where: { role: 'USER', active: true, isVerified: true },
+            select: { id: true, displayName: true, email: true },
           },
         },
       });

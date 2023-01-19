@@ -50,6 +50,7 @@ const RowOptionsHomeRequests = ({
       />
       <MenuList>
         <MenuItem
+          isDisabled={x.status !== 'ACCEPTED'}
           onClick={() => {
             setReqForReport(x);
             onExpRepOpen();

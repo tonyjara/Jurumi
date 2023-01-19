@@ -1,4 +1,5 @@
 import type { Transaction } from '@prisma/client';
+import { TransactionType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { z } from 'zod';
@@ -65,6 +66,7 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         cancellationId: z.number().nullable(),
         moneyRequestId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
+        transactionType: z.nativeEnum(TransactionType),
 
         imbursementId: z.string().nullable(),
         searchableImage: z
@@ -102,6 +104,7 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
       costCategoryId: null,
     },
   ],
+  transactionType: 'MONEY_ACCOUNT',
   openingBalance: new Prisma.Decimal(0),
   currentBalance: new Prisma.Decimal(0),
   moneyRequestId: null,

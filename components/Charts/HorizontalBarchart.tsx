@@ -22,28 +22,28 @@ export default function HorizontalBarchart({
     chart: {
       type: 'bar',
       height: 350,
-      stacked: true,
+      // stacked: true,
     },
     plotOptions: {
       bar: {
         horizontal: true,
 
         dataLabels: {
-          total: {
-            enabled: true,
-            offsetX: 10,
-            formatter: function (val) {
-              if (val && typeof val === 'number') {
-                return kFormatter(val);
-              }
-              return val ?? '';
-            },
-            style: {
-              fontSize: '20px',
-              fontWeight: 900,
-              color: fontColor,
-            },
-          },
+          // total: {
+          //   enabled: true,
+          //   offsetX: 10,
+          //   formatter: function (val) {
+          //     if (val && typeof val === 'number') {
+          //       return kFormatter(val);
+          //     }
+          //     return val ?? '';
+          //   },
+          //   style: {
+          //     fontSize: '20px',
+          //     fontWeight: 900,
+          //     color: fontColor,
+          //   },
+          // },
         },
       },
     },

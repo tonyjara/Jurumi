@@ -173,6 +173,7 @@ const ImbursementForm = ({
           name="projectId"
           label="Seleccione un proyecto"
           options={projectOptions ?? []}
+          isClearable
         />
         <FormControlledTaxPayerId
           control={control}

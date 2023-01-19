@@ -9,7 +9,7 @@ import CreateTaxPayerModal from '@/components/Modals/taxPayer.create.modal';
 import EditTaxPayerModal from '@/components/Modals/taxPayer.edit.modal';
 import useDebounce from '@/lib/hooks/useDebounce';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import { taxpayersColumns } from './columns.home.taxpayers';
+import { taxpayersColumns } from './columns.mod.taxpayers';
 
 const TaxPayersPage = () => {
   const [searchValue, setSearchValue] = useState('');

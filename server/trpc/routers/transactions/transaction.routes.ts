@@ -35,12 +35,13 @@ export const transactionsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         include: {
-          moneyAccount: true,
-          account: true,
+          moneyAccount: { select: { displayName: true, id: true } },
+          account: { select: { displayName: true, id: true } },
           moneyRequest: true,
-          costCategory: true,
+          costCategory: { select: { displayName: true, id: true } },
           imbursement: true,
           expenseReturn: true,
+          project: { select: { displayName: true, id: true } },
           searchableImage: { select: { id: true, url: true, imageName: true } },
         },
       });
@@ -52,12 +53,13 @@ export const transactionsRouter = router({
       return await prisma?.transaction.findMany({
         where: { id: { in: input.ids } },
         include: {
-          moneyAccount: true,
-          account: true,
+          moneyAccount: { select: { displayName: true, id: true } },
+          account: { select: { displayName: true, id: true } },
           moneyRequest: true,
-          costCategory: true,
+          costCategory: { select: { displayName: true, id: true } },
           imbursement: true,
           expenseReturn: true,
+          project: { select: { displayName: true, id: true } },
           searchableImage: { select: { id: true, url: true, imageName: true } },
         },
       });

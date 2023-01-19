@@ -4,6 +4,16 @@ import { z } from 'zod';
 import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 import { handleOrderBy } from './utils/SortingUtils';
 import prisma from '@/server/db/client';
+import { imbursementCreateUtils } from './utils/Imbursement.create.utils';
+
+const {
+  createMoneyAccountTx,
+  createProjectImbursementTx,
+  createInvoiceFromOrg,
+  createImbursement,
+  createImbursementProof,
+  upsertTaxPayter,
+} = imbursementCreateUtils;
 
 export const imbursementsRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -48,126 +58,48 @@ export const imbursementsRouter = router({
     .input(validateImbursement)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
-
-      const taxPayer = await prisma?.taxPayer.upsert({
-        where: {
-          ruc: input.taxPayer.ruc,
-        },
-        create: {
-          createdById: user.id,
-          razonSocial: input.taxPayer.razonSocial,
-          ruc: input.taxPayer.ruc,
-        },
-        update: {},
-      });
+      // Creates imbursments, connects taxpayer, creates images and transactions for money accounts and for projects.
       return await prisma?.$transaction(async (txCtx) => {
-        if (!taxPayer || !input.imbursementProof || !input.moneyAccountId) {
+        const taxPayer = await upsertTaxPayter({
+          input,
+          userId: user.id,
+        });
+
+        if (!taxPayer || !input.moneyAccountId) {
           throw new TRPCError({
             code: 'PRECONDITION_FAILED',
             message: 'taxpayer failed',
           });
         }
-        const imbursementProof = await prisma?.searchableImage.upsert({
-          where: {
-            imageName: input.imbursementProof?.imageName,
-          },
-          create: {
-            url: input.imbursementProof.url,
-            imageName: input.imbursementProof.imageName,
-            text: '',
-          },
-          update: {},
+        //create images
+        const imbursementProof = await createImbursementProof({
+          input,
         });
-        const createInvoiceFromOrg = async () => {
-          if (!input.invoiceFromOrg) return null;
+        const invoiceFromOrg = await createInvoiceFromOrg({
+          input,
+        });
 
-          return await prisma?.searchableImage.upsert({
-            where: {
-              imageName: input.imbursementProof?.imageName,
-            },
-            create: {
-              url: input.invoiceFromOrg.url,
-              imageName: input.invoiceFromOrg.imageName,
-              text: '',
-            },
-            update: {},
-          });
+        const props = {
+          invoiceFromOrg,
+          input,
+          taxPayer,
+          txCtx,
+          imbursementProof,
+          accountId: user.id,
         };
-        const invoiceFromOrg = await createInvoiceFromOrg();
 
-        // 1. Create imbursement
-        const imbursement = await txCtx?.imbursement.create({
-          data: {
-            accountId: user.id,
-            concept: input.concept,
-            projectId: input.projectId,
-            wasConvertedToOtherCurrency: input.wasConvertedToOtherCurrency,
-            exchangeRate: input.exchangeRate,
-            otherCurrency: input.otherCurrency,
-            amountInOtherCurrency: input.amountInOtherCurrency,
-            finalCurrency: input.finalCurrency,
-            finalAmount: input.finalAmount,
-            moneyAccountId: input.moneyAccountId,
-            taxPayerId: taxPayer.id,
-            imbursementProofId: imbursementProof.id,
-            invoiceFromOrgId: invoiceFromOrg?.id ?? null,
-          },
-          include: { imbursementProof: { select: { id: true } } },
+        const imbursement = await createImbursement({
+          ...props,
         });
 
-        if (input.projectId) {
-          //connect taxpayer to project as a donor.
-          await txCtx.project.update({
-            where: { id: input.projectId },
-            data: {
-              taxPayer: { connect: { id: taxPayer.id } },
-            },
-          });
-        }
-
-        // 2. Get latest transaction of the bank Account
-        const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUnique({
-          where: { id: input.moneyAccountId },
-          include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+        await createMoneyAccountTx({
+          ...props,
+          imbursement,
         });
 
-        //TODO check what happens when there is no previous tx
-        if (!getMoneyAccAndLatestTx) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'No money request or transaction.',
-          });
-        }
-        // 3. Calculate balance based on transaction or initialbalance
-        const transactionAmount = input.wasConvertedToOtherCurrency
-          ? input.finalAmount
-          : input.amountInOtherCurrency;
-        const lastTx = getMoneyAccAndLatestTx?.transactions[0];
-        const openingBalance = lastTx
-          ? lastTx.currentBalance
-          : getMoneyAccAndLatestTx.initialBalance;
-        const currentBalance = lastTx
-          ? lastTx.currentBalance.add(transactionAmount)
-          : getMoneyAccAndLatestTx.initialBalance.add(transactionAmount);
-
-        // 4. Create transaction, add values dependant of conversion
-        await txCtx.transaction.create({
-          data: {
-            transactionAmount,
-            accountId: user.id,
-            currency: input.wasConvertedToOtherCurrency
-              ? input.finalCurrency
-              : input.otherCurrency,
-            openingBalance: openingBalance,
-            currentBalance: currentBalance,
-            moneyAccountId: input.moneyAccountId,
-            moneyRequestId: null,
-            imbursementId: imbursement.id,
-            expenseReturnId: null,
-            searchableImage: imbursement.imbursementProof?.id
-              ? { connect: { id: imbursement.imbursementProof?.id } }
-              : {},
-          },
+        await createProjectImbursementTx({
+          ...props,
+          imbursement,
         });
       });
     }),

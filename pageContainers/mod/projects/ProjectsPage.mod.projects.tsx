@@ -1,49 +1,60 @@
 import HorizontalBarchart from '@/components/Charts/HorizontalBarchart';
-import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
-import ThreeDotTableButton from '@/components/DynamicTables/Utils/ThreeDotTableButton';
-import CreateProjectModal from '@/components/Modals/project.create.modal';
-import { myToast } from '@/components/Toasts/MyToast';
+import { forMatedreduceCostCatAsignedAmount } from '@/lib/utils/CostCatUtilts';
+import { projectExecutedAmount } from '@/lib/utils/ProjectUtils';
 
 import { trpcClient } from '@/lib/utils/trpcClient';
 import {
   Card,
   CardBody,
   CardHeader,
-  Flex,
+  Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
   useColorModeValue,
-  useDisclosure,
 } from '@chakra-ui/react';
-import type { CostCategory, Project } from '@prisma/client';
+import type { CostCategory, Currency, Project } from '@prisma/client';
+import type { Decimal } from '@prisma/client/runtime';
 import React, { useState } from 'react';
 import ProjectMembers from './ProjectMembers.mod.projects';
 import ProjectsTable from './ProjectsTable/ProjectsTable.mod.projects';
 import ProjectSelect from './SelectProject.mod.projects';
 
 export type ProjectComplete = Project & {
-  costCategories: CostCategory[];
+  costCategories: (CostCategory & {
+    transactions: {
+      openingBalance: Decimal;
+      currency: Currency;
+      currentBalance: Decimal;
+      transactionAmount: Decimal;
+    }[];
+  })[];
   allowedUsers: {
     id: string;
     email: string;
     displayName: string;
   }[];
+  _count: {
+    allowedUsers: number;
+  };
+  transactions: {
+    openingBalance: Decimal;
+    currency: Currency;
+    currentBalance: Decimal;
+    transactionAmount: Decimal;
+  }[];
 };
 
 const ProjectsPage = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedProject, setSelectedProject] = useState<{
     value: string;
     label: string;
   } | null>(null);
   const backgroundColor = useColorModeValue('white', 'gray.800');
 
-  const { data: projects, isLoading } = trpcClient.project.getMany.useQuery();
-  const { data: preferences } =
-    trpcClient.preferences.getMyPreferences.useQuery();
+  const { data: projects } = trpcClient.project.getManyForTable.useQuery({});
 
   const options = projects
     ? projects.map((opt) => ({
@@ -60,41 +71,59 @@ const ProjectsPage = () => {
 
   //Projects should have, total assigned, executed and imbursed
   const projectsSeries: ApexNonAxisChartSeries | ApexAxisChartSeries = [
-    { name: 'Asignado', data: [100000, 200000, 30000] },
-    { name: 'Desembolsado', data: [90000, 100000, 20000] },
-    { name: 'Ejecutado', data: [2000, 24000, 3400] },
-  ];
-
-  const tableOptions: TableOptions[] = [
     {
-      onClick: () =>
-        preferences?.selectedOrganization
-          ? onOpen()
-          : myToast.error('Favor seleccione una organización'),
-      label: 'Crear proyecto',
+      name: 'Asignado',
+      data: projects?.map((x) =>
+        forMatedreduceCostCatAsignedAmount({
+          costCats: x.costCategories,
+          currency: 'PYG',
+        })
+      ) ?? [0],
+    },
+    {
+      name: 'Desembolsado',
+      data: projects?.map(
+        (x) => x.transactions[0]?.currentBalance.toNumber() ?? 0
+      ) ?? [0],
+    },
+    {
+      name: 'Ejecutado',
+      data: projects?.map(
+        (x) =>
+          projectExecutedAmount({
+            costCats: x.costCategories,
+          }).gs.toNumber() ?? 0
+      ) ?? [0],
     },
   ];
 
   return (
     <>
-      <Tabs>
-        <Card backgroundColor={backgroundColor}>
+      <Card backgroundColor={backgroundColor}>
+        <Tabs overflow={'auto'}>
           <CardHeader>
-            <Flex justifyContent="space-between">
-              <div style={{ minWidth: '300px' }}>
+            <Stack
+              flexDir={{ base: 'column', md: 'row' }}
+              // justifyContent="space-between"
+            >
+              <TabList px={'10px'}>
+                <Tab>General</Tab>
+                <Tab>Miembros</Tab>
+                <Tab>Lista</Tab>
+              </TabList>
+              <div
+                style={{
+                  minWidth: '300px',
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
+                }}
+              >
                 <ProjectSelect
                   options={options}
                   setSelectedProject={setSelectedProject}
                 />
               </div>
-              <TabList>
-                <Tab>General</Tab>
-                <Tab>Miembros</Tab>
-                <Tab>Lista</Tab>
-              </TabList>
-
-              <ThreeDotTableButton options={tableOptions} />
-            </Flex>
+            </Stack>
           </CardHeader>
           <CardBody>
             <TabPanels>
@@ -106,7 +135,6 @@ const ProjectsPage = () => {
                     categories={projectsCats}
                   />
                 )}
-                {/* {project && <HorizontalBarchart title={project.displayName} />} */}
               </TabPanel>
               <TabPanel>
                 <ProjectMembers project={project} />
@@ -116,15 +144,8 @@ const ProjectsPage = () => {
               </TabPanel>
             </TabPanels>
           </CardBody>
-        </Card>
-      </Tabs>
-      {preferences?.selectedOrganization && (
-        <CreateProjectModal
-          orgId={preferences.selectedOrganization}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      )}
+        </Tabs>
+      </Card>
     </>
   );
 };

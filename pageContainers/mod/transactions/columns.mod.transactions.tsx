@@ -7,6 +7,8 @@ import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
 import RowOptionsModTransactions from './rowOptions.mod.transactions';
 import type { TransactionComplete } from './TransactionsPage.mod.transactions';
 import ImageModalCell from '@/components/DynamicTables/DynamicCells/ImageModalCell';
+import EnumTextCell from '@/components/DynamicTables/DynamicCells/EnumTextCell';
+import { translateTransactionType } from '@/lib/utils/TranslatedEnums';
 
 const columnHelper = createColumnHelper<TransactionComplete>();
 
@@ -94,9 +96,23 @@ export const modTransactionsColumns = ({
     ),
   }),
   columnHelper.display({
+    header: 'Proyecto',
+    cell: (x) => <TextCell text={x.row.original.project?.displayName ?? '-'} />,
+  }),
+  columnHelper.display({
     header: 'L. Presupuestaria',
     cell: (x) => (
       <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
+    ),
+  }),
+  columnHelper.accessor('transactionType', {
+    header: 'Tipo',
+    cell: (x) => (
+      <EnumTextCell
+        text={x.getValue()}
+        enumFunc={translateTransactionType}
+        hover={x.row.original.transactionType}
+      />
     ),
   }),
   columnHelper.display({

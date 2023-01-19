@@ -107,8 +107,11 @@ export const projectMock: () => FormProject = () => {
   };
   return x;
 };
-export const moneyRequestMock: () => FormMoneyRequest = () => {
-  const x: FormMoneyRequest = {
+export const moneyRequestMock: () => Omit<
+  FormMoneyRequest,
+  'organizationId'
+> = () => {
+  const x: Omit<FormMoneyRequest, 'organizationId'> = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
@@ -122,8 +125,6 @@ export const moneyRequestMock: () => FormMoneyRequest = () => {
     archived: false,
     softDeleted: false,
     rejectionMessage: '',
-    organizationId: '',
-    costCategoryId: null,
   };
   return x;
 };
@@ -148,6 +149,7 @@ export const transactionMock: () => Transaction = () => {
     cancellationId: null,
     projectId: null,
     costCategoryId: null,
+    transactionType: 'MONEY_ACCOUNT',
   };
   return x;
 };

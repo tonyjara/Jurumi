@@ -11,11 +11,12 @@ import type { TableOptions } from '../DynamicTable';
 
 const ThreeDotTableButton = ({ options }: { options?: TableOptions[] }) => {
   return (
-    <>
+    <div>
       {options?.length && (
         <Menu>
           <MenuButton
             as={IconButton}
+            maxW="40px"
             aria-label="options button"
             icon={<BsThreeDots />}
           />
@@ -29,7 +30,7 @@ const ThreeDotTableButton = ({ options }: { options?: TableOptions[] }) => {
           </MenuList>
         </Menu>
       )}
-    </>
+    </div>
   );
 };
 

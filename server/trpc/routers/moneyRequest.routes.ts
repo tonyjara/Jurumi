@@ -146,7 +146,6 @@ export const moneyRequestRouter = router({
           status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
-          costCategoryId: input.costCategoryId,
         },
       });
 
@@ -168,7 +167,6 @@ export const moneyRequestRouter = router({
           status: input.status === 'REJECTED' ? 'PENDING' : input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
-          costCategoryId: input.costCategoryId,
         },
       });
       return x;

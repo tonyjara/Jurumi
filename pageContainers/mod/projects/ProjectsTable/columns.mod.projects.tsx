@@ -7,7 +7,10 @@ import EnumTextCell from '@/components/DynamicTables/DynamicCells/EnumTextCell';
 import { translateProjectType } from '@/lib/utils/TranslatedEnums';
 import MoneyCell from '@/components/DynamicTables/DynamicCells/MoneyCell';
 import { reduceCostCatAsignedAmount } from '@/lib/utils/CostCatUtilts';
-import { projectExecutedAmount } from '@/lib/utils/ProjectUtils';
+import {
+  projectDisbursedAmount,
+  projectExecutedAmount,
+} from '@/lib/utils/ProjectUtils';
 
 const columnHelper = createColumnHelper<ProjectForTable>();
 
@@ -94,6 +97,17 @@ export const projectsColumn = ({
           }).usd
         }
         currency={'USD'}
+      />
+    ),
+  }),
+  columnHelper.display({
+    header: 'Desemb. Usd.',
+    cell: (x) => (
+      <MoneyCell
+        amount={projectDisbursedAmount({
+          transactions: x.row.original.transactions,
+        })}
+        currency={'PYG'}
       />
     ),
   }),
