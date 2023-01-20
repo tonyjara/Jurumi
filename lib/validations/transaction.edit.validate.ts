@@ -1,4 +1,5 @@
 import type { Transaction } from '@prisma/client';
+import { TransactionType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { z } from 'zod';
@@ -30,9 +31,12 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
           .any()
           .transform((value) => new Prisma.Decimal(value)),
         moneyRequestId: z.string().nullable(),
+        costCategoryId: z.string().nullable(),
+        projectId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
         imbursementId: z.string().nullable(),
         cancellationId: z.number().nullable(),
+        transactionType: z.nativeEnum(TransactionType),
         moneyAccountId: z
           .string({
             required_error:
@@ -72,9 +76,12 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   moneyAccountId: '',
   openingBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
+  projectId: null,
+  costCategoryId: null,
   imbursementId: null,
   expenseReturnId: null,
   isCancellation: false,
   cancellationId: null,
+  transactionType: 'MONEY_ACCOUNT',
   searchableImage: { url: '', imageName: '' },
 };

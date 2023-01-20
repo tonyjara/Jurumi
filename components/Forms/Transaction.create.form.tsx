@@ -18,17 +18,17 @@ import React from 'react';
 import type { FieldValues, Control, UseFormSetValue } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
-import { currencyOptions } from '../../lib/utils/SelectOptions';
+import { currencyOptions } from '@/lib/utils/SelectOptions';
 import {
   formatedAccountBalance,
   reduceTransactionFields,
-} from '../../lib/utils/TransactionUtils';
-import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import { trpcClient } from '../../lib/utils/trpcClient';
+} from '@/lib/utils/TransactionUtils';
+import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import type {
   FormTransactionCreate,
   TransactionField,
-} from '../../lib/validations/transaction.create.validate';
+} from '@/lib/validations/transaction.create.validate';
 import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 
@@ -58,6 +58,24 @@ const TransactionForm = ({
 
   const { data: moneyAccs } =
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
+  const projectId = useWatch({ control, name: 'projectId' });
+
+  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
+    { projectId: projectId ?? '' },
+    { enabled: !!projectId?.length }
+  );
+  const { data: projects } = trpcClient.project.getMany.useQuery();
+
+  const projectOptions = projects?.map((proj) => ({
+    value: proj.id,
+    label: `${proj.displayName}`,
+  }));
+
+  const costCatOptions = () =>
+    costCats?.map((cat) => ({
+      value: cat.id,
+      label: `${cat.displayName}`,
+    }));
 
   const moneyAccOptions = (currency: Currency) =>
     moneyAccs
@@ -72,6 +90,7 @@ const TransactionForm = ({
     transactionAmount: new Prisma.Decimal(0),
     moneyAccountId: '',
     transactionProofUrl: '',
+    costCategoryId: null,
   };
 
   const containerBorder = useColorModeValue('gray.100', 'white');
@@ -85,7 +104,15 @@ const TransactionForm = ({
 
   return (
     <>
-      <HStack justifyContent={'space-between'}>
+      <FormControlledSelect
+        control={control}
+        errors={errors}
+        name="projectId"
+        label="Seleccione un proyecto"
+        options={projectOptions ?? []}
+        isClearable
+      />
+      <HStack mt={'20px'} justifyContent={'space-between'}>
         <CircularProgress value={parseInt(percentage)} color="green.400">
           <CircularProgressLabel>{percentage}%</CircularProgressLabel>
         </CircularProgress>
@@ -105,6 +132,7 @@ const TransactionForm = ({
             currency,
             transactionProofUrl: '',
             transactionAmount: new Prisma.Decimal(0),
+            costCategoryId: null,
           });
         };
         return (
@@ -136,6 +164,15 @@ const TransactionForm = ({
               options={currencyOptions}
               onChangeMw={resetAccountSelectValues}
             />
+            <FormControlledMoneyInput
+              control={control}
+              errors={errors}
+              name={`transactions.${index}.transactionAmount`}
+              label="Monto"
+              prefix={translateCurrencyPrefix(currency)}
+              currency={currency}
+              totalAmount={totalAmount?.sub(formAmounts)}
+            />
             <FormControlledSelect
               control={control}
               errors={errors}
@@ -149,15 +186,17 @@ const TransactionForm = ({
                 ''
               }
             />
-            <FormControlledMoneyInput
-              control={control}
-              errors={errors}
-              name={`transactions.${index}.transactionAmount`}
-              label="Monto"
-              prefix={translateCurrencyPrefix(currency)}
-              currency={currency}
-              totalAmount={totalAmount?.sub(formAmounts)}
-            />
+
+            {costCatOptions()?.length && (
+              <FormControlledSelect
+                control={control}
+                errors={errors}
+                name={`transactions.${index}.costCategoryId`}
+                label="Linea presupuestaria"
+                options={costCatOptions() ?? []}
+                isClearable
+              />
+            )}
             {user && (
               <FormControlledImageUpload
                 control={control}

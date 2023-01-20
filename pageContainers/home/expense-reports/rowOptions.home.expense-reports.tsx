@@ -7,8 +7,8 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MyExpenseReport } from './ExpenseReportsPage.home.expense-reports';
 
 const RowOptionsHomeExpenseReports = ({

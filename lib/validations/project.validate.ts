@@ -5,12 +5,8 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { stringReqMinMax } from '../utils/ValidationHelpers';
 
-export type FormCostCategory = Omit<
-  CostCategory,
-  'openingBalance' | 'executedAmount'
-> & {
-  openingBalance?: any;
-  executedAmount?: any;
+export type FormCostCategory = Omit<CostCategory, 'assignedAmount'> & {
+  assignedAmount?: any;
 };
 
 const validateCostCategory: z.ZodType<FormCostCategory> = z.lazy(() =>
@@ -21,8 +17,7 @@ const validateCostCategory: z.ZodType<FormCostCategory> = z.lazy(() =>
     createdById: z.string(),
     updatedById: z.string().nullable(),
     displayName: stringReqMinMax('Favor ingrese un nombre', 3, 32),
-    openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
-    executedAmount: z.any().transform((value) => new Prisma.Decimal(value)),
+    assignedAmount: z.any().transform((value) => new Prisma.Decimal(value)),
     projectId: z.string().nullable(),
     currency: z.nativeEnum(Currency),
   })
@@ -68,8 +63,7 @@ export const defaultCostCategoryData: FormCostCategory = {
   updatedById: null,
   displayName: '',
   currency: 'PYG',
-  openingBalance: new Prisma.Decimal(0),
-  executedAmount: new Prisma.Decimal(0),
+  assignedAmount: new Prisma.Decimal(0),
   projectId: null,
 };
 

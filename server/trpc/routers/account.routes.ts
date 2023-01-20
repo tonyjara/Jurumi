@@ -7,9 +7,9 @@ import {
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { validateInitialSetup } from '../../../lib/validations/setup.validate';
+import { validateInitialSetup } from '@/lib/validations/setup.validate';
 import { handleOrderBy } from './utils/SortingUtils';
-import { validateAccount } from '../../../lib/validations/account.validate';
+import { validateAccount } from '@/lib/validations/account.validate';
 import prisma from '@/server/db/client';
 
 export const accountsRouter = router({
@@ -111,6 +111,24 @@ export const accountsRouter = router({
           email: input.email,
           role: input.role,
         },
+      });
+    }),
+
+  findByEmail: adminModProcedure
+    .input(z.object({ email: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma?.account.findMany({
+        take: 20,
+        orderBy: { email: 'asc' },
+        where: {
+          email: {
+            search: input.email,
+          },
+          role: 'USER',
+          isVerified: true,
+          active: true,
+        },
+        select: { displayName: true, email: true, id: true, role: true },
       });
     }),
 });

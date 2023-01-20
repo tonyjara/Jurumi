@@ -1,6 +1,6 @@
 import CreateTransactionPage from '@/pageContainers/mod/transactions/CreateTransactionPage.mod.transactions';
 import type { GetServerSideProps } from 'next';
-
+import prisma from '@/server/db/client';
 export default CreateTransactionPage;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {

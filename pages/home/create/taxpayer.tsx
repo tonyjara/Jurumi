@@ -1,3 +1,3 @@
-import CreateTaxPayerPage from '../../../pageContainers/home/taxpayers/CreateTaxPayer.home.taxpayers';
+import CreateTaxPayerPage from '@/pageContainers/mod/taxpayers/CreateTaxPayer.mod.taxpayers';
 
 export default CreateTaxPayerPage;

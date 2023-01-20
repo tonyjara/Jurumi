@@ -1,4 +1,5 @@
 import type { Transaction } from '@prisma/client';
+import { TransactionType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ type withMoney = Omit<
   | 'currency'
   | 'moneyAccountId'
   | 'transactionProofUrl'
+  | 'costCategoryId'
 > & {
   openingBalance?: any;
   currentBalance?: any;
@@ -22,6 +24,7 @@ export interface TransactionField {
   transactionAmount?: any;
   moneyAccountId: string;
   transactionProofUrl: string;
+  costCategoryId: string | null;
 }
 export interface FormTransactionCreate extends withMoney {
   transactions: TransactionField[];
@@ -37,6 +40,8 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
             transactionAmount: z
               .any()
               .transform((value) => new Prisma.Decimal(value)),
+
+            costCategoryId: z.string().nullable(),
             moneyAccountId: z
               .string({
                 required_error:
@@ -54,12 +59,15 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         updatedAt: z.date().nullable(),
         accountId: z.string(),
         isCancellation: z.boolean(),
+        projectId: z.string().nullable(),
         updatedById: z.string().nullable(),
         openingBalance: z.any().transform((value) => new Prisma.Decimal(value)),
         currentBalance: z.any().transform((value) => new Prisma.Decimal(value)),
         cancellationId: z.number().nullable(),
         moneyRequestId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
+        transactionType: z.nativeEnum(TransactionType),
+
         imbursementId: z.string().nullable(),
         searchableImage: z
           .object({
@@ -92,14 +100,18 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
       transactionAmount: new Prisma.Decimal(0),
       moneyAccountId: '',
       transactionProofUrl: '',
+
+      costCategoryId: null,
     },
   ],
+  transactionType: 'MONEY_ACCOUNT',
   openingBalance: new Prisma.Decimal(0),
   currentBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
   imbursementId: null,
   expenseReturnId: null,
   cancellationId: null,
+  projectId: null,
   isCancellation: false,
   searchableImage: { url: '', imageName: '' },
 };

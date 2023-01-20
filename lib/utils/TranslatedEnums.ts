@@ -5,8 +5,18 @@ import type {
   MoneyRequestStatus,
   MoneyRequestType,
   MoneyResquestApprovalStatus,
+  ProjectType,
+  TransactionType,
 } from '@prisma/client';
 
+export const translateProjectType = (type: ProjectType) => {
+  const types: { [key in ProjectType]?: string } = {
+    SUBSIDY: 'Subsidio',
+    CONSULTING: 'Consultoria',
+  };
+
+  return types[type] ?? 'Error';
+};
 export const translateCurrencyPrefix = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
     PYG: 'Gs ',
@@ -15,6 +25,17 @@ export const translateCurrencyPrefix = (currency: Currency) => {
 
   return prefixes[currency] ?? 'Gs ';
 };
+
+export const translateTransactionType = (transactionType: TransactionType) => {
+  const x: { [key in TransactionType]?: string } = {
+    COST_CATEGORY: 'L. Presupuestaria',
+    MONEY_ACCOUNT: 'Cuenta',
+    PROJECT_IMBURSEMENT: 'Desembolso',
+  };
+
+  return x[transactionType] ?? 'Error';
+};
+
 export const translateCurrency = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
     PYG: 'Guaranies ',
@@ -68,7 +89,7 @@ export const translateBankNames = (bankName?: BankNamesPy) => {
 
 export const translatedMoneyReqStatus = (status: MoneyRequestStatus) => {
   const x: { [key in MoneyRequestStatus]?: string } = {
-    ACCEPTED: '🟩Ejecutado',
+    ACCEPTED: '🟩Aprobado',
     PENDING: '🟨 Pendiente',
     REJECTED: '🟥Rechazado',
   };

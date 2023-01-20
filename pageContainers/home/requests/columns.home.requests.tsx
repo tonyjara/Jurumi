@@ -1,15 +1,15 @@
 import type { MoneyRequest } from '@prisma/client';
 import { createColumnHelper } from '@tanstack/react-table';
-import DateCell from '../../../components/DynamicTables/DynamicCells/DateCell';
-import EnumTextCell from '../../../components/DynamicTables/DynamicCells/EnumTextCell';
-import MoneyCell from '../../../components/DynamicTables/DynamicCells/MoneyCell';
-import PercentageCell from '../../../components/DynamicTables/DynamicCells/PercentageCell';
-import TextCell from '../../../components/DynamicTables/DynamicCells/TextCell';
-import { reduceExpenseReports } from '../../../lib/utils/TransactionUtils';
+import DateCell from '@/components/DynamicTables/DynamicCells/DateCell';
+import EnumTextCell from '@/components/DynamicTables/DynamicCells/EnumTextCell';
+import MoneyCell from '@/components/DynamicTables/DynamicCells/MoneyCell';
+import PercentageCell from '@/components/DynamicTables/DynamicCells/PercentageCell';
+import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
+import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
 import {
   translatedMoneyReqStatus,
   translatedMoneyReqType,
-} from '../../../lib/utils/TranslatedEnums';
+} from '@/lib/utils/TranslatedEnums';
 import type { CompleteMoneyReqHome } from './HomeRequestsPage.home.requests';
 import RowOptionsHomeRequests from './rowOptions.home.requests';
 

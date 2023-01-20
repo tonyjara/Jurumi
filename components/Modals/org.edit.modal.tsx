@@ -12,11 +12,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormOrganization } from '../../lib/validations/org.validate';
-import { validateOrganization } from '../../lib/validations/org.validate';
-import { defaultOrgData } from '../../lib/validations/org.validate';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { FormOrganization } from '@/lib/validations/org.validate';
+import { validateOrganization } from '@/lib/validations/org.validate';
+import { defaultOrgData } from '@/lib/validations/org.validate';
 
 import OrgForm from '../Forms/Org.form';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';

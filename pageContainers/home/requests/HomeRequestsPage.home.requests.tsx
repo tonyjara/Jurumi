@@ -1,26 +1,24 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type {
-  CostCategory,
   ExpenseReport,
   MoneyRequest,
   Project,
   Transaction,
 } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
-import type { TableOptions } from '../../../components/DynamicTables/DynamicTable';
-import DynamicTable from '../../../components/DynamicTables/DynamicTable';
-import { useDynamicTable } from '../../../components/DynamicTables/UseDynamicTable';
-import CreateExpenseReportModal from '../../../components/Modals/ExpenseReport.create.modal';
-import EditMoneyRequestModal from '../../../components/Modals/MoneyReq.edit.modal';
-import CreateMoneyRequestModal from '../../../components/Modals/MoneyRequest.create.modal';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
+import DynamicTable from '@/components/DynamicTables/DynamicTable';
+import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
+import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.modal';
+import EditMoneyRequestModal from '@/components/Modals/MoneyReq.edit.modal';
+import CreateMoneyRequestModal from '@/components/Modals/MoneyRequest.create.modal';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { homeRequestsColumns } from './columns.home.requests';
 
 export type CompleteMoneyReqHome = MoneyRequest & {
-  transactions: Transaction[];
-  expenseReports: ExpenseReport[];
   project: Project | null;
-  costCategory: CostCategory | null;
+  expenseReports: ExpenseReport[];
+  transactions: Transaction[];
 };
 
 const MoneyRequestsPage = () => {
@@ -58,6 +56,8 @@ const MoneyRequestsPage = () => {
     }
     return () => {};
   }, [reqForReport, isExpRepOpen]);
+
+  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
 
   const { data: moneyRequests, isFetching } =
     trpcClient.moneyRequest.getMyOwnComplete.useQuery(
@@ -105,7 +105,13 @@ const MoneyRequestsPage = () => {
         {...dynamicTableProps}
       />
 
-      <CreateMoneyRequestModal orgId={null} isOpen={isOpen} onClose={onClose} />
+      {prefs?.selectedOrganization && (
+        <CreateMoneyRequestModal
+          orgId={prefs.selectedOrganization}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
       {reqForReport && (
         <CreateExpenseReportModal
           moneyRequest={reqForReport}

@@ -12,23 +12,21 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
+import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import {
   defaultMoneyRequestData,
   validateMoneyRequest,
-} from '../../lib/validations/moneyRequest.validate';
+} from '@/lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
-import { useSession } from 'next-auth/react';
-import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
+import { moneyRequestMock } from '@/__tests__/mocks/Mocks';
 
 const CreateMoneyRequestModal = ({
   isOpen,
   onClose,
-  projectId,
   orgId,
 }: {
   isOpen: boolean;
@@ -37,7 +35,6 @@ const CreateMoneyRequestModal = ({
   orgId: string | null;
 }) => {
   const context = trpcClient.useContext();
-  const { data: session } = useSession();
   const {
     handleSubmit,
     control,
@@ -73,9 +70,6 @@ const CreateMoneyRequestModal = ({
     );
 
   const submitFunc = async (data: FormMoneyRequest) => {
-    //Admins and moderators add projectId Manually
-    const isUser = session?.user.role === 'USER';
-    data.projectId = isUser && projectId ? projectId : data.projectId;
     mutate(data);
   };
 

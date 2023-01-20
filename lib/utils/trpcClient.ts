@@ -5,7 +5,7 @@ import type { NextPageContext } from 'next';
 import superjson from 'superjson';
 // ℹ️ Type-only import:
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export
-import type { AppRouter } from '../../server/trpc/routers/router';
+import type { AppRouter } from '@/server/trpc/routers/router';
 import { Decimal } from 'decimal.js';
 
 //this solves the problem when serializing  superjson
@@ -120,32 +120,33 @@ export const trpcClient = createTRPCNext<AppRouter, SSRContext>({
   /**
    * @link https://trpc.io/docs/ssr
    */
-  ssr: true,
+  //! Had to disable this for next dynamic imports to work.
+  ssr: false,
   /**
    * Set headers or status code when doing SSR
    */
-  responseMeta(opts) {
-    const ctx = opts.ctx as SSRContext;
+  // responseMeta(opts) {
+  //   const ctx = opts.ctx as SSRContext;
 
-    if (ctx.status) {
-      // If HTTP status set, propagate that
-      return {
-        status: ctx.status,
-      };
-    }
+  //   if (ctx.status) {
+  //     // If HTTP status set, propagate that
+  //     return {
+  //       status: ctx.status,
+  //     };
+  //   }
 
-    const error = opts.clientErrors[0];
-    if (error) {
-      // Propagate http first error from API calls
-      return {
-        status: error.data?.httpStatus ?? 500,
-      };
-    }
+  //   const error = opts.clientErrors[0];
+  //   if (error) {
+  //     // Propagate http first error from API calls
+  //     return {
+  //       status: error.data?.httpStatus ?? 500,
+  //     };
+  //   }
 
-    // for app caching with SSR see https://trpc.io/docs/caching
+  //   // for app caching with SSR see https://trpc.io/docs/caching
 
-    return {};
-  },
+  //   return {};
+  // },
 });
 
 export type RouterInput = inferRouterInputs<AppRouter>;

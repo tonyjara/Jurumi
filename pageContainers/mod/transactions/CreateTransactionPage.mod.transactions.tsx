@@ -94,6 +94,7 @@ const CreateTransactionPage = ({
                 )}
               </span>
             </Text>
+            <Text fontSize={'xl'}>Concepto: {moneyRequest.description}</Text>
             {amountExecuted > 0 && (
               <Text fontSize={'xl'}>
                 Monto ejecutado:{' '}

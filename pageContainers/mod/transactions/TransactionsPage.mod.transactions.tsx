@@ -1,8 +1,6 @@
 import type {
-  Account,
   ExpenseReturn,
   Imbursement,
-  MoneyAccount,
   MoneyRequest,
   Transaction,
 } from '@prisma/client';
@@ -15,11 +13,25 @@ import type { TransactionsPageProps } from 'pages/mod/transactions';
 import TransactionsTable from './TransactionsTable';
 
 export type TransactionComplete = Transaction & {
-  moneyAccount: MoneyAccount;
-  account: Account;
   moneyRequest: MoneyRequest | null;
   imbursement: Imbursement | null;
   expenseReturn: ExpenseReturn | null;
+  moneyAccount: {
+    id: string;
+    displayName: string;
+  } | null;
+  account: {
+    id: string;
+    displayName: string;
+  };
+  costCategory: {
+    id: string;
+    displayName: string;
+  } | null;
+  project: {
+    id: string;
+    displayName: string;
+  } | null;
   searchableImage: {
     id: string;
     url: string;

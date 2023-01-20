@@ -1,6 +1,6 @@
 import { MoneyResquestApprovalStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
-import { validateMoneyRequest } from '../../../lib/validations/moneyRequest.validate';
+import { validateMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import {
   adminModProcedure,
   adminProcedure,
@@ -41,7 +41,6 @@ export const moneyRequestRouter = router({
         orderBy: handleOrderBy({ input }),
         include: {
           project: true,
-          costCategory: true,
           transactions: true,
           expenseReports: true,
         },
@@ -90,8 +89,9 @@ export const moneyRequestRouter = router({
         include: {
           account: true,
           project: true,
-          costCategory: true,
-          transactions: { where: { cancellationId: null } },
+          transactions: {
+            where: { cancellationId: null, costCategoryId: null },
+          },
           moneyRequestApprovals: true,
           expenseReports: true,
           organization: {
@@ -116,7 +116,6 @@ export const moneyRequestRouter = router({
         include: {
           account: true,
           project: true,
-          costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
           expenseReports: true,
@@ -147,7 +146,6 @@ export const moneyRequestRouter = router({
           status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
-          costCategoryId: input.costCategoryId,
         },
       });
 
@@ -165,10 +163,10 @@ export const moneyRequestRouter = router({
           description: input.description,
           moneyRequestType: input.moneyRequestType,
           projectId: input.projectId,
-          status: input.status,
+          //if it was rejected and edited, it automaticly gets reseted to pending
+          status: input.status === 'REJECTED' ? 'PENDING' : input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
-          costCategoryId: input.costCategoryId,
         },
       });
       return x;

@@ -135,24 +135,23 @@ model Project {
   imbursement    Imbursement[]
   moneyRequest   MoneyRequest[]
 
-  allowedUsers Account[]  @relation("AccountToProject")
-  TaxPayer     TaxPayer[] @relation("ProjectToTaxPayer")
+  allowedUsers Account[]     @relation("AccountToProject")
+  taxPayer     TaxPayer[]    @relation("ProjectToTaxPayer")
+  transactions Transaction[]
 }
 
 model CostCategory {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime?       @updatedAt
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime?     @updatedAt
   createdById    String
   updatedById    String?
   displayName    String
   currency       Currency
   projectId      String?
-  executedAmount Decimal         @default(0) @db.Decimal(19, 4)
-  openingBalance Decimal         @default(0) @db.Decimal(19, 4)
-  project        Project?        @relation(fields: [projectId], references: [id])
-  expenseReports ExpenseReport[]
-  moneyRequests  MoneyRequest[]
+  assignedAmount Decimal       @default(0) @db.Decimal(19, 4) //this can keep being edit
+  project        Project?      @relation(fields: [projectId], references: [id])
+  transactions   Transaction[]
 }
 
 model Imbursement {
@@ -218,48 +217,47 @@ model MoneyRequestApproval {
 }
 
 model MoneyRequest {
-  id                    String                 @id @default(cuid())
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime?              @updatedAt
-  description           String
-  status                MoneyRequestStatus
-  moneyRequestType      MoneyRequestType
-  currency              Currency
-  amountRequested       Decimal                @default(0) @db.Decimal(19, 4)
-  rejectionMessage      String
-  archived              Boolean                @default(false)
-  softDeleted           Boolean                @default(false)
+  id               String             @id @default(cuid())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+  description      String
+  status           MoneyRequestStatus
+  moneyRequestType MoneyRequestType
+  currency         Currency
+  amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
+  rejectionMessage String
+  archived         Boolean            @default(false)
+  softDeleted      Boolean            @default(false)
+
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  projectId      String?
+  project        Project?     @relation(fields: [projectId], references: [id])
+
   expenseReports        ExpenseReport[]
   expenseReturns        ExpenseReturn[]
-  accountId             String
-  account               Account                @relation(fields: [accountId], references: [id])
-  costCategoryId        String?
-  costCategory          CostCategory?          @relation(fields: [costCategoryId], references: [id])
-  organizationId        String
-  organization          Organization           @relation(fields: [organizationId], references: [id])
-  projectId             String?
-  project               Project?               @relation(fields: [projectId], references: [id])
   moneyRequestApprovals MoneyRequestApproval[]
   transactions          Transaction[]
 }
 
 model ExpenseReport {
-  id              String           @id @default(cuid())
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime?        @updatedAt
-  facturaNumber   String
-  amountSpent     Decimal          @default(0) @db.Decimal(19, 4)
-  taxPayerId      String
-  moneyRequestId  String
-  costCategoryId  String?
-  projectId       String?
-  currency        Currency
-  comments        String
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  facturaNumber String
+  amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
+  currency      Currency
+  comments      String
+
   accountId       String
   account         Account          @relation(fields: [accountId], references: [id])
-  costCategory    CostCategory?    @relation(fields: [costCategoryId], references: [id])
+  moneyRequestId  String
   moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
+  projectId       String?
   project         Project?         @relation(fields: [projectId], references: [id])
+  taxPayerId      String
   taxPayer        TaxPayer         @relation(fields: [taxPayerId], references: [id])
   searchableImage searchableImage?
 
@@ -277,30 +275,38 @@ model ExpenseReturn {
   searchableImage searchableImage?
 }
 
+//A transaction can be linked to a moneyAccount or to a CostCategory, everytime a transaction history is required it needs specific transactions
 model Transaction {
-  id                Int              @id @default(autoincrement())
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime?        @updatedAt
+  id                Int             @id @default(autoincrement())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime?       @updatedAt
   updatedById       String?
   currency          Currency
-  openingBalance    Decimal          @default(0) @db.Decimal(19, 4)
-  currentBalance    Decimal          @default(0) @db.Decimal(19, 4)
-  transactionAmount Decimal          @default(0) @db.Decimal(19, 4)
-  moneyAccountId    String
-  accountId         String
-  moneyRequestId    String?
-  expenseReturnId   String?
-  imbursementId     String?
-  cancellationId    Int?             @unique
-  isCancellation    Boolean          @default(false)
-  account           Account          @relation(fields: [accountId], references: [id])
-  cancellation      Transaction?     @relation("cancellation", fields: [cancellationId], references: [id])
-  transactions      Transaction?     @relation("cancellation")
-  expenseReturn     ExpenseReturn?   @relation(fields: [expenseReturnId], references: [id])
-  imbursement       Imbursement?     @relation(fields: [imbursementId], references: [id])
-  moneyAccount      MoneyAccount     @relation(fields: [moneyAccountId], references: [id])
-  moneyRequest      MoneyRequest?    @relation(fields: [moneyRequestId], references: [id])
-  searchableImage   searchableImage?
+  openingBalance    Decimal         @default(0) @db.Decimal(19, 4)
+  currentBalance    Decimal         @default(0) @db.Decimal(19, 4)
+  transactionAmount Decimal         @default(0) @db.Decimal(19, 4)
+  isCancellation    Boolean         @default(false)
+  transactionType   TransactionType @default(MONEY_ACCOUNT)
+
+  accountId       String
+  account         Account        @relation(fields: [accountId], references: [id])
+  cancellationId  Int?           @unique
+  cancellation    Transaction?   @relation("cancellation", fields: [cancellationId], references: [id])
+  transactions    Transaction?   @relation("cancellation")
+  expenseReturnId String?
+  expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
+  imbursementId   String?
+  imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
+  moneyAccountId  String?
+  moneyAccount    MoneyAccount?  @relation(fields: [moneyAccountId], references: [id])
+  moneyRequestId  String?
+  moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
+  projectId       String?
+  project         Project?       @relation(fields: [projectId], references: [id])
+  costCategoryId  String?
+  costCategory    CostCategory?  @relation(fields: [costCategoryId], references: [id])
+
+  searchableImage searchableImage?
 }
 
 model searchableImage {
@@ -387,4 +393,10 @@ enum MoneyResquestApprovalStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+enum TransactionType {
+  PROJECT_IMBURSEMENT
+  COST_CATEGORY
+  MONEY_ACCOUNT
 }

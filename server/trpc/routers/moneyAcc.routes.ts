@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
-import type { FormBankInfo } from '../../../lib/validations/moneyAcc.validate';
-import { validateMoneyAccount } from '../../../lib/validations/moneyAcc.validate';
+import type { FormBankInfo } from '@/lib/validations/moneyAcc.validate';
+import { validateMoneyAccount } from '@/lib/validations/moneyAcc.validate';
 import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 import prisma from '@/server/db/client';
 

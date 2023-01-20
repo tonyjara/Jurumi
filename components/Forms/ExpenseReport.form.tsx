@@ -20,24 +20,24 @@ import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
 import FormControlledText from '../FormControlled/FormControlledText';
 import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
+import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
+import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
   setValue: UseFormSetValue<T>;
+  moneyRequest?: CompleteMoneyReqHome;
 }
 
 const ExpenseReportForm = ({
   control,
   errors,
+  moneyRequest,
   setValue,
 }: formProps<FormExpenseReport>) => {
   const { data: session } = useSession();
   const user = session?.user;
-  const projectId = useWatch({ control, name: 'projectId' });
-  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
-    { projectId: projectId ?? '' },
-    { enabled: !!projectId?.length }
-  );
+
   const { data: projects } = trpcClient.project.getMany.useQuery();
 
   const currency = useWatch({ control, name: 'currency' });
@@ -46,12 +46,6 @@ const ExpenseReportForm = ({
     value: proj.id,
     label: `${proj.displayName}`,
   }));
-
-  const costCatOptions = () =>
-    costCats?.map((cat) => ({
-      value: cat.id,
-      label: `${cat.displayName}`,
-    }));
 
   return (
     <VStack spacing={5}>
@@ -69,6 +63,12 @@ const ExpenseReportForm = ({
         label="Monto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
+        totalAmount={
+          moneyRequest &&
+          moneyRequest.amountRequested.sub(
+            reduceExpenseReports(moneyRequest.expenseReports)
+          )
+        }
       />
 
       <FormControlledTaxPayerId
@@ -105,16 +105,6 @@ const ExpenseReportForm = ({
         options={projectOptions ?? []}
         isClearable
       />
-      {costCatOptions()?.length && (
-        <FormControlledSelect
-          control={control}
-          errors={errors}
-          name="costCategoryId"
-          label="Linea presupuestaria"
-          options={costCatOptions() ?? []}
-          isClearable
-        />
-      )}
 
       <FormControlledText
         control={control}

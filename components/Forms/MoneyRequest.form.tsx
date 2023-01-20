@@ -25,27 +25,21 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
   const { data: session } = useSession();
   const user = session?.user;
   const isAdminOrMod = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
-  const projectId = useWatch({ control, name: 'projectId' });
-  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
-    { projectId: projectId ?? '' },
-    { enabled: !!projectId?.length }
-  );
+
   const currency = useWatch({ control, name: 'currency' });
   const status = useWatch({ control, name: 'status' });
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
-  const { data: orgs } = trpcClient.org.getManyForSelect.useQuery();
+  const { data: orgs } = isAdminOrMod
+    ? trpcClient.org.getManyForSelect.useQuery({
+        enabled: false,
+      })
+    : { data: [] };
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
     label: `${proj.displayName}`,
   }));
-
-  const costCatOptions = () =>
-    costCats?.map((cat) => ({
-      value: cat.id,
-      label: `${cat.displayName}`,
-    }));
 
   return (
     <VStack spacing={5}>
@@ -80,27 +74,19 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
         currency={currency}
       />
 
+      <FormControlledSelect
+        control={control}
+        errors={errors}
+        name="projectId"
+        label="Seleccione un proyecto"
+        options={projectOptions ?? []}
+        isClearable
+      />
       {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
-      <Divider pb={3} />
-
       {isAdminOrMod && (
         <>
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            name="projectId"
-            label="Seleccione un proyecto"
-            options={projectOptions ?? []}
-          />
-          {costCatOptions()?.length && (
-            <FormControlledSelect
-              control={control}
-              errors={errors}
-              name="costCategoryId"
-              label="Linea presupuestaria"
-              options={costCatOptions() ?? []}
-            />
-          )}
+          <Divider pb={3} />
+
           <FormControlledSelect
             control={control}
             errors={errors}
@@ -118,17 +104,16 @@ const MoneyRequestForm = ({ control, errors }: formProps<FormMoneyRequest>) => {
             label="Estado del desembolso"
             options={moneyRequestStatusOptions}
           />
+          {status === 'REJECTED' && (
+            <FormControlledText
+              control={control}
+              errors={errors}
+              name="rejectionMessage"
+              isTextArea={true}
+              label="Motivo del rechazo"
+            />
+          )}
         </>
-      )}
-
-      {status === 'REJECTED' && (
-        <FormControlledText
-          control={control}
-          errors={errors}
-          name="rejectionMessage"
-          isTextArea={true}
-          label="Motivo del rechazo"
-        />
       )}
     </VStack>
   );

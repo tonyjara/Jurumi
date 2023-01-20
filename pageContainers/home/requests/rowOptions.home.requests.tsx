@@ -5,25 +5,13 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import type {
-  CostCategory,
-  ExpenseReport,
-  MoneyRequest,
-  Project,
-  Transaction,
-} from '@prisma/client';
+import type { MoneyRequest } from '@prisma/client';
 
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
-import { trpcClient } from '../../../lib/utils/trpcClient';
-
-type MyMoneyRequests = MoneyRequest & {
-  transactions: Transaction[];
-  project: Project | null;
-  costCategory: CostCategory | null;
-  expenseReports: ExpenseReport[];
-};
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { CompleteMoneyReqHome } from './HomeRequestsPage.home.requests';
 
 const RowOptionsHomeRequests = ({
   x,
@@ -32,11 +20,13 @@ const RowOptionsHomeRequests = ({
   onExpRepOpen,
   setReqForReport,
 }: {
-  x: MyMoneyRequests;
+  x: CompleteMoneyReqHome;
   setEditMoneyRequest: React.Dispatch<
     React.SetStateAction<MoneyRequest | null>
   >;
-  setReqForReport: React.Dispatch<React.SetStateAction<MyMoneyRequests | null>>;
+  setReqForReport: React.Dispatch<
+    React.SetStateAction<CompleteMoneyReqHome | null>
+  >;
   onEditOpen: () => void;
   onExpRepOpen: () => void;
 }) => {
@@ -60,6 +50,7 @@ const RowOptionsHomeRequests = ({
       />
       <MenuList>
         <MenuItem
+          isDisabled={x.status !== 'ACCEPTED'}
           onClick={() => {
             setReqForReport(x);
             onExpRepOpen();

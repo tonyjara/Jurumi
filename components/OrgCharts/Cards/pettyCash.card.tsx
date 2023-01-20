@@ -16,9 +16,9 @@ import {
 import React from 'react';
 import { MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../../Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
 import { translateCurrency } from '@/lib/utils/TranslatedEnums';
-import EditMoneyAccModal from '../../Modals/moneyAcc.edit.modal';
+import EditMoneyAccModal from '@/components/Modals/moneyAcc.edit.modal';
 import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
 import type { CashAccsWithLastTx } from '../CardGroups/PettyCash.cardGroup';
 

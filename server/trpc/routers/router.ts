@@ -8,7 +8,7 @@ import { greetingRouter } from './greeting.route';
 import { orgRouter } from './org.routes';
 import { projectRouter } from './project.routes';
 import { accountsRouter } from './account.routes';
-import { transactionsRouter } from './transaction.routes';
+import { transactionsRouter } from './transactions/transaction.routes';
 import { moneyApprovalRouter } from './moneyApproval.routes';
 import { preferencesRouter } from './preferences.routes';
 import { verificationLinksRouter } from './verificationLink.routes';

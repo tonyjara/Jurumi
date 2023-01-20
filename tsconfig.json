@@ -30,7 +30,8 @@
       "@/lib/*": ["lib/*"],
       "@/pages/*": ["pages/*"],
       "@/pageContainers/*": ["pageContainers/*"],
-      "@/server/*": ["server/*"]
+      "@/server/*": ["server/*"],
+      "@/__tests__/*": ["__tests__/*"]
     }
   },
   "include": [

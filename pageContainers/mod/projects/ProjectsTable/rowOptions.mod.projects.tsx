@@ -5,28 +5,28 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import type { TaxPayer } from '@prisma/client';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '../../../components/Toasts/MyToast';
-import { trpcClient } from '../../../lib/utils/trpcClient';
+import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { ProjectForTable } from './ProjectsTable.mod.projects';
 
-const RowOptionsHomeTaxPayers = ({
+const RowOptionsModProjects = ({
   x,
-  setEditTaxPayer,
+  setEditProject,
   onEditOpen,
 }: {
-  x: TaxPayer;
-  setEditTaxPayer: React.Dispatch<React.SetStateAction<TaxPayer | null>>;
+  x: ProjectForTable;
+  setEditProject: React.Dispatch<React.SetStateAction<ProjectForTable | null>>;
   onEditOpen: () => void;
 }) => {
   const context = trpcClient.useContext();
 
-  const { mutate: deleteById } = trpcClient.taxPayer.deleteById.useMutation(
+  const { mutate: deleteById } = trpcClient.moneyRequest.deleteById.useMutation(
     handleUseMutationAlerts({
-      successText: 'Se ha eliminado el contribuyente!',
+      successText: 'Se ha eliminado la solicitud!',
       callback: () => {
-        context.taxPayer.invalidate();
+        context.moneyRequest.getManyComplete.invalidate();
       },
     })
   );
@@ -41,7 +41,7 @@ const RowOptionsHomeTaxPayers = ({
       <MenuList>
         <MenuItem
           onClick={() => {
-            setEditTaxPayer(x);
+            setEditProject(x);
             onEditOpen();
           }}
         >
@@ -54,4 +54,4 @@ const RowOptionsHomeTaxPayers = ({
   );
 };
 
-export default RowOptionsHomeTaxPayers;
+export default RowOptionsModProjects;

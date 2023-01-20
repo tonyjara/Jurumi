@@ -1,3 +1,4 @@
+import { projectTypeOptions } from '@/lib/utils/SelectOptions';
 import { VStack } from '@chakra-ui/react';
 import React from 'react';
 import type {
@@ -7,6 +8,7 @@ import type {
   UseFormSetValue,
 } from 'react-hook-form';
 import type { FormProject } from '../../lib/validations/project.validate';
+import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledText from '../FormControlled/FormControlledText';
 import CostCategoryForm from './CostCategory.form';
 
@@ -25,6 +27,13 @@ const ProjectForm = ({ control, errors, setValue }: formProps<FormProject>) => {
           errors={errors}
           name="displayName"
           label="Nombre de su proyecto"
+        />
+        <FormControlledRadioButtons
+          control={control}
+          errors={errors}
+          name="projectType"
+          label="Tipo de proyecto"
+          options={projectTypeOptions}
         />
         <FormControlledText
           control={control}

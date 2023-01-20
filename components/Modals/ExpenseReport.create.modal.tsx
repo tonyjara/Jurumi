@@ -12,26 +12,20 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
-import { expenseReportMock } from '../../__tests__/mocks/Mocks';
-import type {
-  CostCategory,
-  ExpenseReport,
-  MoneyRequest,
-  Project,
-  Transaction,
-} from '@prisma/client';
-import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
+import { expenseReportMock } from '@/__tests__/mocks/Mocks';
+import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
 import {
   defaultExpenseReportData,
   validateExpenseReport,
-} from '../../lib/validations/expenseReport.validate';
+} from '@/lib/validations/expenseReport.validate';
 import ExpenseReportForm from '../Forms/ExpenseReport.form';
-import { reduceExpenseReports } from '../../lib/utils/TransactionUtils';
-import { decimalFormat } from '../../lib/utils/DecimalHelpers';
+import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
+import { decimalFormat } from '@/lib/utils/DecimalHelpers';
+import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -40,12 +34,7 @@ const CreateExpenseReportModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  moneyRequest: MoneyRequest & {
-    transactions: Transaction[];
-    expenseReports: ExpenseReport[];
-    project: Project | null;
-    costCategory: CostCategory | null;
-  };
+  moneyRequest: CompleteMoneyReqHome;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -112,6 +101,7 @@ const CreateExpenseReportModal = ({
             />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ExpenseReportForm
+              moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}
               errors={errors as any}
