@@ -7,8 +7,9 @@ interface NavItemProps extends FlexProps {
   icon: IconType;
   children: React.ReactNode;
   dest: string; //destination
+  minimized: boolean;
 }
-const NavItem = ({ icon, children, dest, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, dest, minimized }: NavItemProps) => {
   return (
     <Link
       href={dest}
@@ -26,7 +27,7 @@ const NavItem = ({ icon, children, dest, ...rest }: NavItemProps) => {
           bg: 'cyan.400',
           color: 'white',
         }}
-        {...rest}
+        justifyContent={minimized ? 'center' : 'left'}
       >
         {icon && (
           <Icon
@@ -38,7 +39,7 @@ const NavItem = ({ icon, children, dest, ...rest }: NavItemProps) => {
             as={icon}
           />
         )}
-        {children}
+        {!minimized && children}
       </Flex>
     </Link>
   );

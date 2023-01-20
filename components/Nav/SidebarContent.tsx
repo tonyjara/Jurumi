@@ -1,4 +1,5 @@
 import type { BoxProps } from '@chakra-ui/react';
+import { IconButton } from '@chakra-ui/react';
 import { AccordionIcon } from '@chakra-ui/react';
 import { AccordionPanel } from '@chakra-ui/react';
 import { Accordion, AccordionButton, AccordionItem } from '@chakra-ui/react';
@@ -16,6 +17,8 @@ import type { LinkItemChild } from './NavItemChild';
 import NavItemChild from './NavItemChild';
 import NavItem from './NavItem';
 import OrganizationSelect from './OrganizationSelect';
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { useState } from 'react';
 interface SidebarProps extends BoxProps {
   onClose: () => void;
 }
@@ -27,8 +30,10 @@ interface LinkItemProps {
   children?: LinkItemChild[];
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const SidebarContent = ({ onClose }: SidebarProps) => {
+  const [minimized, setMinimized] = useState(false);
   const { data } = useSession();
+
   // const isAdmin = data?.user.role === 'ADMIN';
   const isAdminOrMod =
     data?.user.role === 'ADMIN' || data?.user.role === 'MODERATOR';
@@ -93,32 +98,49 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   return (
     <Box
       zIndex={2}
-      transition="3s ease"
+      transition="0.5s ease"
       bg={useColorModeValue('white', 'gray.900')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', md: 60 }}
+      w={{ base: 'full', md: minimized ? 20 : 60 }}
       pos="fixed"
       h="full"
       overflowY={'auto'}
-      {...rest}
+      justifyContent="center"
+      alignItems={'center'}
+      justifyItems="center"
+      textAlign={'center'}
+      // maxW="80px"
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         {/* TEXT SHOWN ONLY ON DESKTOP */}
 
-        <OrganizationSelect />
+        {!minimized && <OrganizationSelect />}
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
+        <IconButton
+          aria-label="close drawer"
+          display={{ base: 'none', md: 'flex' }}
+          onClick={() => setMinimized(!minimized)}
+        >
+          {minimized ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+        </IconButton>
       </Flex>
+
       {LinkItems.map((link) => (
         <div key={link.name}>
           {link.children?.length && (
-            <Accordion allowToggle>
+            <Accordion mx={-4} allowToggle>
               <AccordionItem>
-                <AccordionButton>
-                  <AccordionIcon />
-                  <NavItem onClick={onClose} icon={link.icon} dest={link.dest}>
+                <AccordionButton justifyContent={'center'}>
+                  <NavItem
+                    minimized={minimized}
+                    onClick={onClose}
+                    icon={link.icon}
+                    dest={link.dest}
+                  >
                     {link.name}
                   </NavItem>
+                  {!minimized && <AccordionIcon />}
                 </AccordionButton>
                 {link.children.map((x) => (
                   <AccordionPanel key={x.name}>
@@ -129,7 +151,12 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             </Accordion>
           )}
           {!link.children?.length && (
-            <NavItem onClick={onClose} icon={link.icon} dest={link.dest}>
+            <NavItem
+              minimized={minimized}
+              onClick={onClose}
+              icon={link.icon}
+              dest={link.dest}
+            >
               {link.name}
             </NavItem>
           )}

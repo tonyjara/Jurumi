@@ -12,7 +12,7 @@ import MyTopBar from './MyTopBar';
 import SidebarContent from './SidebarContent';
 import { useSession } from 'next-auth/react';
 
-export default function MySidebarWithHeader({
+export default function DrawerWithTopBar({
   children,
 }: {
   children: ReactNode;
