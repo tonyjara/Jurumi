@@ -21,6 +21,8 @@ const MyTopBar = ({ onOpen, authenticated }: MobileProps) => {
       // justifyContent={{ base: 'space-between', md: 'flex-end' }}
       justifyContent={authenticated ? 'space-between' : 'flex-end'}
     >
+      {/* This pushes NavbarProfileSection to the end in desktop */}
+      <Flex display={{ base: 'none', md: 'flex' }}></Flex>
       {authenticated && (
         <IconButton
           display={{ base: 'flex', md: 'none' }}
