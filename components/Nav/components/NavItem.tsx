@@ -7,15 +7,11 @@ interface NavItemProps extends FlexProps {
   icon: IconType;
   children: React.ReactNode;
   dest: string; //destination
-  minimized: boolean;
+  minimized?: boolean;
 }
 const NavItem = ({ icon, children, dest, minimized }: NavItemProps) => {
   return (
-    <Link
-      href={dest}
-      style={{ textDecoration: 'none' }}
-      // _focus={{ boxShadow: 'none' }}
-    >
+    <Link href={dest} style={{ textDecoration: 'none' }}>
       <Flex
         align="center"
         p="4"
@@ -31,8 +27,8 @@ const NavItem = ({ icon, children, dest, minimized }: NavItemProps) => {
       >
         {icon && (
           <Icon
-            mr="4"
-            fontSize="16"
+            mr={minimized ? '0' : '4'}
+            fontSize="20px"
             _groupHover={{
               color: 'white',
             }}

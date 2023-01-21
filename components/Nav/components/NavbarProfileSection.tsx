@@ -86,11 +86,7 @@ const NavbarProfileSection = () => {
               </HStack>
             </MenuButton>
           )}
-          <MenuList
-            // bg={useColorModeValue('white', 'gray.900')}
-            // borderColor={useColorModeValue('gray.200', 'gray.700')}
-            zIndex={999999}
-          >
+          <MenuList>
             <VStack
               display={{ base: 'flex', md: 'none' }}
               alignItems="flex-start"
@@ -104,9 +100,7 @@ const NavbarProfileSection = () => {
             </VStack>
             <Divider mt={'10px'} />
             <MenuItem>Mi cuenta</MenuItem>
-            {/* 
-            <MenuItem>Settings</MenuItem>
-            <MenuItem>Billing</MenuItem> */}
+
             <MenuDivider />
             <MenuItem onClick={() => signOut()}>Cerrar sesión</MenuItem>
           </MenuList>
