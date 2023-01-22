@@ -8,7 +8,6 @@ import { useSession } from 'next-auth/react';
 import useDidMountEffect from '@/lib/hooks/useDidMountEffect';
 import DesktopSidebar from './Desktop/DesktopSidebar';
 import MobileSidebar from './Mobile/MobileSidebar';
-import { isMobile } from 'react-device-detect';
 
 export default function DrawerWithTopBar({
   children,
@@ -49,31 +48,26 @@ export default function DrawerWithTopBar({
 
       <MyTopBar authenticated={authenticated} onOpen={onOpen} />
 
-      {isMobile && (
-        <Box
-          //MOBILE
-          display={{ base: 'block', md: 'none' }}
-          transition="0.2s ease"
-          py={'100px'}
-          px={'10px'}
-        >
-          {children}
-        </Box>
-      )}
-      {!isMobile && (
-        <Box
-          //DESKTOP
-          display={{ base: 'none', md: 'block' }}
-          transition="0.2s ease"
-          py={{ base: '100px', md: '100px' }}
-          px={{ base: '10px', md: '10px' }}
-          ml={
-            !authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }
-          }
-        >
-          {children}
-        </Box>
-      )}
+      <Box
+        //MOBILE
+        display={{ base: 'block', md: 'none' }}
+        transition="0.2s ease"
+        py={'100px'}
+        px={'10px'}
+      >
+        {children}
+      </Box>
+
+      <Box
+        //DESKTOP
+        display={{ base: 'none', md: 'block' }}
+        transition="0.2s ease"
+        py={{ base: '100px', md: '100px' }}
+        px={{ base: '10px', md: '10px' }}
+        ml={!authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }

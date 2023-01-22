@@ -163,8 +163,7 @@ export const moneyRequestRouter = router({
           description: input.description,
           moneyRequestType: input.moneyRequestType,
           projectId: input.projectId,
-          //if it was rejected and edited, it automaticly gets reseted to pending
-          status: input.status === 'REJECTED' ? 'PENDING' : input.status,
+          status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
         },

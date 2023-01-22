@@ -1,5 +1,5 @@
 import type { IconType } from 'react-icons';
-import type { LinkItemChild } from './components/NavItemChild';
+import type { LinkItemChild } from '../components/NavItemChild';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
 import { BsCash, BsCashStack } from 'react-icons/bs';
 import {

@@ -85,6 +85,45 @@ export const projectRouter = router({
         },
       });
     }),
+  getProjectTransactions: adminModProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+        projectId: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.projectId) return;
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+
+      return await prisma?.project.findUnique({
+        where: { id: input.projectId },
+        include: {
+          _count: { select: { transactions: true } },
+
+          transactions: {
+            take: pageSize,
+            skip: pageIndex * pageSize,
+            orderBy: handleOrderBy({ input }),
+            include: {
+              account: { select: { displayName: true } },
+              moneyAccount: { select: { displayName: true } },
+              moneyRequest: { select: { description: true } },
+              imbursement: { select: { concept: true } },
+              searchableImage: {
+                select: { id: true, url: true, imageName: true },
+              },
+            },
+          },
+        },
+      });
+    }),
   count: protectedProcedure.query(async () => prisma?.project.count()),
 
   getCostCatsForProject: protectedProcedure

@@ -4,6 +4,7 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import type { Transaction } from '@prisma/client';
 import { useRouter } from 'next/router';
@@ -59,48 +60,50 @@ const RowOptionsModTransactions = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        {!!x.cancellationId && (
-          <MenuItem>Esta transacción fue anulada.</MenuItem>
-        )}
-        <MenuItem
-          isDisabled={!!x.cancellationId}
-          onClick={() => {
-            router.push({
-              pathname: '/mod/requests',
-              query: handleQueryParams(),
-            });
-          }}
-        >
-          Ir a destino de concepto
-        </MenuItem>
-        <MenuItem
-          isDisabled={!!x.cancellationId}
-          onClick={() => {
-            setEditTransaction(x);
-            onEditOpen();
-          }}
-        >
-          Editar
-        </MenuItem>
-        {/* <MenuItem
+      <Portal>
+        <MenuList>
+          {!!x.cancellationId && (
+            <MenuItem>Esta transacción fue anulada.</MenuItem>
+          )}
+          <MenuItem
+            isDisabled={!!x.cancellationId}
+            onClick={() => {
+              router.push({
+                pathname: '/mod/requests',
+                query: handleQueryParams(),
+              });
+            }}
+          >
+            Ir a destino de concepto
+          </MenuItem>
+          <MenuItem
+            isDisabled={!!x.cancellationId}
+            onClick={() => {
+              setEditTransaction(x);
+              onEditOpen();
+            }}
+          >
+            Editar
+          </MenuItem>
+          {/* <MenuItem
           isDisabled={!!x.cancellationId}
           onClick={() => cancelById({ id: x.id })}
         >
           Anular
         </MenuItem> */}
-        <MenuItem
-          onClick={() =>
-            deleteById({
-              id: x.id,
-              moneyAccountId: x.moneyAccountId,
-              costCategoryId: x.costCategoryId,
-            })
-          }
-        >
-          Eliminar
-        </MenuItem>
-      </MenuList>
+          <MenuItem
+            onClick={() =>
+              deleteById({
+                id: x.id,
+                moneyAccountId: x.moneyAccountId,
+                costCategoryId: x.costCategoryId,
+              })
+            }
+          >
+            Eliminar
+          </MenuItem>
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

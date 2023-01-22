@@ -24,6 +24,7 @@ import {
 } from '../../lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
 import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
+import { useRouter } from 'next/router';
 
 const EditMoneyRequestModal = ({
   isOpen,
@@ -34,6 +35,7 @@ const EditMoneyRequestModal = ({
   onClose: () => void;
   moneyRequest: MoneyRequest;
 }) => {
+  const router = useRouter();
   const context = trpcClient.useContext();
   const {
     handleSubmit,
@@ -68,6 +70,12 @@ const EditMoneyRequestModal = ({
   );
 
   const submitFunc = async (data: FormMoneyRequest) => {
+    //  if it was rejected and edited, it automaticly gets reseted to pending
+    const route = router.asPath;
+    if (moneyRequest.status === 'REJECTED' && route === '/home/requests') {
+      data.status = 'PENDING';
+    }
+
     mutate(data);
   };
 

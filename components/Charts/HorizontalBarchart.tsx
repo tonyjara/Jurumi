@@ -27,24 +27,6 @@ export default function HorizontalBarchart({
     plotOptions: {
       bar: {
         horizontal: true,
-
-        dataLabels: {
-          // total: {
-          //   enabled: true,
-          //   offsetX: 10,
-          //   formatter: function (val) {
-          //     if (val && typeof val === 'number') {
-          //       return kFormatter(val);
-          //     }
-          //     return val ?? '';
-          //   },
-          //   style: {
-          //     fontSize: '20px',
-          //     fontWeight: 900,
-          //     color: fontColor,
-          //   },
-          // },
-        },
       },
     },
     stroke: {

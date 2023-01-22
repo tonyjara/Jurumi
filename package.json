@@ -59,7 +59,6 @@
     "react-apexcharts": "^1.4.0",
     "react-currency-input-field": "^3.6.9",
     "react-day-picker": "^8.4.1",
-    "react-device-detect": "^2.2.2",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.42.1",

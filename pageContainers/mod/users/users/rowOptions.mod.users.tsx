@@ -4,6 +4,7 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import type { Account } from '@prisma/client';
 import React from 'react';
@@ -39,23 +40,25 @@ const RowOptionsModUsers = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        <MenuItem
-          onClick={() => {
-            mutate({ id: x.id, active: !x.active });
-          }}
-        >
-          {x.active ? 'Desactivar cuenta' : 'Activar cuenta'}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setEditAccount(x);
-            onEditOpen();
-          }}
-        >
-          Editar
-        </MenuItem>
-      </MenuList>
+      <Portal>
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              mutate({ id: x.id, active: !x.active });
+            }}
+          >
+            {x.active ? 'Desactivar cuenta' : 'Activar cuenta'}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setEditAccount(x);
+              onEditOpen();
+            }}
+          >
+            Editar
+          </MenuItem>
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

@@ -4,6 +4,7 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import type { MoneyRequest } from '@prisma/client';
 
@@ -48,28 +49,30 @@ const RowOptionsHomeRequests = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        <MenuItem
-          isDisabled={x.status !== 'ACCEPTED'}
-          onClick={() => {
-            setReqForReport(x);
-            onExpRepOpen();
-          }}
-        >
-          Crear rendición
-        </MenuItem>
+      <Portal>
+        <MenuList>
+          <MenuItem
+            isDisabled={x.status !== 'ACCEPTED'}
+            onClick={() => {
+              setReqForReport(x);
+              onExpRepOpen();
+            }}
+          >
+            Crear rendición
+          </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            setEditMoneyRequest(x);
-            onEditOpen();
-          }}
-        >
-          Editar
-        </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setEditMoneyRequest(x);
+              onEditOpen();
+            }}
+          >
+            Editar
+          </MenuItem>
 
-        <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
-      </MenuList>
+          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

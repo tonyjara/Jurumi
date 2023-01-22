@@ -132,6 +132,7 @@ async function createCostCategoryTransactions({
           openingBalance: openingBalance,
           currentBalance: currentBalance,
           costCategoryId,
+          projectId: formTransaction.projectId,
           transactionType: 'COST_CATEGORY',
           moneyRequestId: formTransaction.moneyRequestId,
           imbursementId: formTransaction.imbursementId,

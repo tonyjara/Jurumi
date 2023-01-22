@@ -31,5 +31,5 @@ export const forMatedreduceCostCatAsignedAmount = ({
     return acc;
   }, new Prisma.Decimal(0));
 
-  return data.toNumber();
+  return decimalFormat(data, currency);
 };

@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import NavItem from '../components/NavItem';
 import NavItemChild from '../components/NavItemChild';
 import OrganizationSelect from '../components/OrganizationSelect';
-import { SidebarLinks } from '../SidebarLinks';
+import { SidebarLinks } from '../Data/SidebarLinks';
 interface SidebarProps {
   onClose: () => void;
   isOpen: boolean;

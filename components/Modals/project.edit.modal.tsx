@@ -62,7 +62,7 @@ const EditProjectModal = ({
       successText: 'Su proyecto ha sido editado! ',
       callback: () => {
         handleOnClose();
-        context.project.getMany.invalidate();
+        context.project.invalidate();
       },
     })
   );

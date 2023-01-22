@@ -4,6 +4,7 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
@@ -41,18 +42,20 @@ const RowOptionsHomeExpenseReports = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        <MenuItem
-          onClick={() => {
-            setEditExpenseReport(x);
-            onEditOpen();
-          }}
-        >
-          Editar
-        </MenuItem>
+      <Portal>
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              setEditExpenseReport(x);
+              onEditOpen();
+            }}
+          >
+            Editar
+          </MenuItem>
 
-        <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
-      </MenuList>
+          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };
