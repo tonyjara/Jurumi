@@ -42,8 +42,7 @@ const OrgCard = (org: FormOrganization) => {
     handleUseMutationAlerts({
       successText: 'La organización ha sido eliminada! 💩',
       callback: () => {
-        context.org.getMany.invalidate();
-        context.org.getMyOrgs.invalidate();
+        context.org.invalidate();
       },
     })
   );

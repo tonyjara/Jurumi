@@ -20,7 +20,7 @@ import {
   defaultMoneyAccData,
   validateMoneyAccount,
 } from '../../lib/validations/moneyAcc.validate';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts, myToast } from '../Toasts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import { moneyAccMock } from '../../__tests__/mocks/Mocks';
 import MoneyAccForm from '../Forms/MoneyAcc.form';
@@ -58,6 +58,7 @@ const CreateMoneyAccModal = ({
   };
   const isCashAccount = useWatch({ control, name: 'isCashAccount' });
 
+  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
   const { error, mutate, isLoading } = trpcClient.moneyAcc.create.useMutation(
     handleUseMutationAlerts({
       successText: 'Su cuenta bancaria ha sido creada! 🔥',
@@ -70,6 +71,10 @@ const CreateMoneyAccModal = ({
   );
 
   const submitFunc = async (data: FormMoneyAccount) => {
+    if (!prefs?.selectedOrganization) {
+      return myToast.error('Seleccione una organización');
+    }
+    data.organizationId = prefs.selectedOrganization;
     mutate(data);
   };
 

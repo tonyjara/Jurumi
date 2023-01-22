@@ -42,7 +42,7 @@ export const imbursementsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         include: {
-          transaction: { select: { id: true } },
+          transactions: { select: { id: true } },
           taxPayer: { select: { razonSocial: true, ruc: true, id: true } },
           project: { select: { id: true, displayName: true } },
           imbursementProof: { select: { imageName: true, url: true } },
@@ -166,7 +166,7 @@ export const imbursementsRouter = router({
           invoiceFromOrgId: invoiceFromOrg?.id ?? null,
         },
         include: {
-          transaction: { select: { id: true } },
+          transactions: { select: { id: true } },
           imbursementProof: { select: { id: true } },
           invoiceFromOrg: { select: { id: true } },
         },
@@ -183,7 +183,7 @@ export const imbursementsRouter = router({
       }
       if (updatedImbursement.imbursementProofId) {
         await prisma.transaction.update({
-          where: { id: updatedImbursement.transaction[0]?.id },
+          where: { id: updatedImbursement.transactions[0]?.id },
           data: {
             searchableImage: {
               connect: { id: updatedImbursement.imbursementProofId },
@@ -223,10 +223,10 @@ export const imbursementsRouter = router({
         const imbursement = await txCtx.imbursement.update({
           where: { id: input.id },
           data: { wasCancelled: true },
-          include: { transaction: true },
+          include: { transactions: true },
         });
 
-        const tx = imbursement.transaction[0];
+        const tx = imbursement.transactions[0];
         if (!tx) {
           throw new TRPCError({
             code: 'PRECONDITION_FAILED',

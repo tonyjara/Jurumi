@@ -33,6 +33,7 @@ export type FormMoneyAccount = Omit<
   'initialBalance'
 > & {
   initialBalance?: any;
+  organizationId: string;
 };
 
 export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
@@ -54,6 +55,7 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
       archived: z.boolean(),
       softDeleted: z.boolean(),
       bankInfo: BankInfoModel.nullable(),
+      organizationId: z.string().min(2, 'Favor seleccione una organización.'),
     })
     .superRefine((val, ctx) => {
       if (
@@ -124,4 +126,5 @@ export const defaultMoneyAccData: FormMoneyAccount = {
   archived: false,
   softDeleted: false,
   bankInfo: defaultBankInfoData,
+  organizationId: '',
 };

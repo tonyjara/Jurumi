@@ -72,6 +72,7 @@ export const moneyAccRouter = router({
           currency: i.currency,
           initialBalance: new Prisma.Decimal(i.initialBalance),
           bankInfo: i.isCashAccount ? undefined : { create: bankInfo },
+          organization: { connect: { id: i.organizationId } },
         },
       });
       return x;

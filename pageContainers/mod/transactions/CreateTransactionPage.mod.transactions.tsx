@@ -45,6 +45,7 @@ const CreateTransactionPage = ({
   useEffect(() => {
     if (moneyRequest) {
       setValue('moneyRequestId', moneyRequest.id);
+      setValue('projectId', moneyRequest.projectId);
     }
 
     return () => {};

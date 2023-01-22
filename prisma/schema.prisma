@@ -132,7 +132,7 @@ model Project {
 
   costCategories CostCategory[]
   expenseReports ExpenseReport[]
-  imbursement    Imbursement[]
+  imbursements   Imbursement[]
   moneyRequest   MoneyRequest[]
 
   allowedUsers Account[]     @relation("AccountToProject")
@@ -183,9 +183,9 @@ model Imbursement {
   projectId      String?
   project        Project?      @relation(fields: [projectId], references: [id])
 
-  taxPayerId  String
-  taxPayer    TaxPayer      @relation(fields: [taxPayerId], references: [id])
-  transaction Transaction[]
+  taxPayerId   String
+  taxPayer     TaxPayer      @relation(fields: [taxPayerId], references: [id])
+  transactions Transaction[]
 }
 
 model TaxPayer {

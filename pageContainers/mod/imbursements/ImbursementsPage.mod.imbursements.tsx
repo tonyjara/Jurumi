@@ -11,6 +11,9 @@ import ImbursementEditModal from '@/components/Modals/imbursement.edit.modal';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 
 export type imbursementComplete = Imbursement & {
+  transactions: {
+    id: number;
+  }[];
   account: {
     id: string;
     displayName: string;
@@ -19,17 +22,14 @@ export type imbursementComplete = Imbursement & {
     id: string;
     displayName: string;
   } | null;
-  moneyAccount: {
-    displayName: string;
-  } | null;
   taxPayer: {
     id: string;
     ruc: string;
     razonSocial: string;
   };
-  transaction: {
-    id: number;
-  }[];
+  moneyAccount: {
+    displayName: string;
+  } | null;
   imbursementProof: {
     url: string;
     imageName: string;

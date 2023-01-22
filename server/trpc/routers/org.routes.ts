@@ -26,6 +26,31 @@ export const orgRouter = router({
       select: { organizations: { select: { id: true, displayName: true } } },
     });
   }),
+  getForDashboard: adminModProcedure
+    .input(z.object({ orgId: z.string().optional() }))
+    .query(async ({ input }) => {
+      if (!input.orgId) return null;
+
+      return await prisma?.organization.findUnique({
+        where: { id: input.orgId },
+        include: {
+          moneyAccounts: {
+            include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+          },
+          projects: {
+            include: {
+              transactions: { take: 1, orderBy: { id: 'desc' } },
+              costCategories: {
+                include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+              },
+              imbursements: {
+                include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+              },
+            },
+          },
+        },
+      });
+    }),
   getManyForSelect: adminModProcedure.input(z.object({})).query(async () => {
     return await prisma?.organization.findMany({
       select: { id: true, displayName: true },

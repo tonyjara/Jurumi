@@ -2,11 +2,8 @@ import type { IconType } from 'react-icons';
 import type { LinkItemChild } from '../components/NavItemChild';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
 import { BsCash, BsCashStack } from 'react-icons/bs';
-import {
-  TbChevronsLeft,
-  TbLayoutSidebarRightCollapse,
-  TbReceiptTax,
-} from 'react-icons/tb';
+import { TbReceiptTax } from 'react-icons/tb';
+import { CgOrganisation } from 'react-icons/cg';
 import { MdApproval } from 'react-icons/md';
 import { AiFillBank, AiOutlineProject } from 'react-icons/ai';
 import { FaExchangeAlt, FaDonate } from 'react-icons/fa';
@@ -33,6 +30,11 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               dest: '/mod/users/verification-links',
             },
           ],
+        },
+        {
+          name: 'Organización',
+          icon: CgOrganisation,
+          dest: '/mod/organization',
         },
         {
           name: 'Cuentas',

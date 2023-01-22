@@ -40,6 +40,7 @@ const RowOptionsModRequests = ({
       },
     })
   );
+  const isAccepted = x.status === 'ACCEPTED';
 
   return (
     <Menu>
@@ -51,7 +52,7 @@ const RowOptionsModRequests = ({
       <Portal>
         <MenuList>
           <MenuItem
-            isDisabled={needsApproval && !hasBeenApproved}
+            isDisabled={(needsApproval && !hasBeenApproved) || isAccepted}
             onClick={() => {
               router.push({
                 pathname: '/mod/transactions/create',
@@ -63,6 +64,7 @@ const RowOptionsModRequests = ({
             {needsApproval && !hasBeenApproved && '( Necesita aprovación )'}
           </MenuItem>
           <MenuItem
+            isDisabled={isAccepted}
             onClick={() => {
               const rejected = cloneDeep(x);
               rejected.status = 'REJECTED';
@@ -73,6 +75,7 @@ const RowOptionsModRequests = ({
             Rechazar
           </MenuItem>
           <MenuItem
+            isDisabled={isAccepted}
             onClick={() => {
               setEditMoneyRequest(x);
               onEditOpen();
@@ -92,6 +95,7 @@ const RowOptionsModRequests = ({
           </MenuItem>
           <MenuItem>Exportar como excel</MenuItem>
           <MenuItem>Imprimir</MenuItem>
+          <MenuItem>Anular</MenuItem>
           <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
         </MenuList>
       </Portal>

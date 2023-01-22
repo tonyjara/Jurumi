@@ -57,6 +57,7 @@ export const moneyAccMock: () => FormMoneyAccount = () => {
     archived: false,
     softDeleted: false,
     bankInfo: bankInfo(),
+    organizationId: '',
   };
   return x;
 };

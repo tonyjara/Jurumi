@@ -41,6 +41,7 @@ const RowOptionsHomeRequests = ({
       },
     })
   );
+  const isAccepted = x.status === 'ACCEPTED';
 
   return (
     <Menu>
@@ -52,7 +53,7 @@ const RowOptionsHomeRequests = ({
       <Portal>
         <MenuList>
           <MenuItem
-            isDisabled={x.status !== 'ACCEPTED'}
+            isDisabled={!isAccepted}
             onClick={() => {
               setReqForReport(x);
               onExpRepOpen();
@@ -62,6 +63,7 @@ const RowOptionsHomeRequests = ({
           </MenuItem>
 
           <MenuItem
+            isDisabled={isAccepted}
             onClick={() => {
               setEditMoneyRequest(x);
               onEditOpen();
