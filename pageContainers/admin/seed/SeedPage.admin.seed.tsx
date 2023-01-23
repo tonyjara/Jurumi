@@ -5,9 +5,12 @@ import {
   HStack,
   Radio,
   RadioGroup,
+  Stack,
   Text,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import DeleteSeeds from './DeleteSeeds.admin.seed';
+import ImbursementSeeds from './ImbursementSeeds.admin.seed';
 import MoneyReqSeeds from './MoneyReqSeeds.admin.seed';
 
 const SeedPage = () => {
@@ -28,7 +31,11 @@ const SeedPage = () => {
             <Radio value="10"> X 10</Radio>
           </HStack>
         </RadioGroup>
-        <MoneyReqSeeds multiplier={multiplier} />
+        <Stack spacing={10}>
+          <MoneyReqSeeds multiplier={multiplier} />
+          <ImbursementSeeds multiplier={multiplier} />
+          <DeleteSeeds />
+        </Stack>
       </CardBody>
     </Card>
   );

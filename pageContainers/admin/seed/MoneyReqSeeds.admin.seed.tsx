@@ -45,7 +45,9 @@ const MoneyReqSeeds = ({ multiplier }: { multiplier: string }) => {
 
   return (
     <Stack>
-      <Text fontSize={'2xl'}>Solicitudes</Text>
+      <Text mb={'10px'} fontSize={'2xl'}>
+        Solicitudes
+      </Text>
       <ButtonGroup>
         <Button onClick={handleCreateRequests}>Solas</Button>
         <Button onClick={handleCreateApprovedReqsWithTxs}>

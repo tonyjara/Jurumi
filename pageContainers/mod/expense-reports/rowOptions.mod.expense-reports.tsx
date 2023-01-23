@@ -10,18 +10,18 @@ import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { MyExpenseReport } from './ModExpenseReportsPage.mod.expense-reports';
 import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
 import { RowOptionCancelDialog } from '@/components/Toasts & Alerts/RowOptions.cancel.dialog';
+import type { ExpenseReportComplete } from './ModExpenseReportsPage.mod.expense-reports';
 
 const RowOptionsHomeExpenseReports = ({
   x,
   setEditExpenseReport,
   onEditOpen,
 }: {
-  x: MyExpenseReport;
+  x: ExpenseReportComplete;
   setEditExpenseReport: React.Dispatch<
-    React.SetStateAction<MyExpenseReport | null>
+    React.SetStateAction<ExpenseReportComplete | null>
   >;
   onEditOpen: () => void;
 }) => {

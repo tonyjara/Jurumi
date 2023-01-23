@@ -10,21 +10,23 @@ datasource db {
 }
 
 model Account {
-  id                       String                     @id @default(cuid())
-  active                   Boolean                    @default(true)
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime?                  @updatedAt
-  email                    String                     @unique
-  displayName              String                     @unique
-  password                 String
-  role                     Role                       @default(USER)
-  isVerified               Boolean                    @default(false)
+  id          String       @id @default(cuid())
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+  email       String       @unique
+  displayName String       @unique
+  password    String
+  role        Role         @default(USER)
+  isVerified  Boolean      @default(false)
+  preferences Preferences?
+  profile     Profile?
+
+  organizationPosts        OrganizationPost[]
   accountVerificationLinks AccountVerificationLinks[]
   expenseReports           ExpenseReport[]
   moneyRequests            MoneyRequest[]
   moneyApprovals           MoneyRequestApproval[]
-  preferences              Preferences?
-  profile                  Profile?
   transactions             Transaction[]
   searchableImage          searchableImage[]
   allowedOnProjects        Project[]                  @relation("AccountToProject")
@@ -52,6 +54,18 @@ model Preferences {
   account              Account   @relation(fields: [accountId], references: [id])
 }
 
+model OrganizationPost {
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
+  title          String
+  message        String
+  createdById    String
+  recipients     Account[]
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
 model AccountVerificationLinks {
   id               String   @id @default(cuid())
   createdAt        DateTime @default(now())
@@ -64,20 +78,21 @@ model AccountVerificationLinks {
 }
 
 model Organization {
-  id                    String         @id @default(cuid())
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime?      @updatedAt
+  id                    String             @id @default(cuid())
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime?          @updatedAt
   createdById           String
   updatedById           String?
-  displayName           String         @unique
-  archived              Boolean        @default(false)
-  softDeleted           Boolean        @default(false)
+  displayName           String             @unique
+  archived              Boolean            @default(false)
+  softDeleted           Boolean            @default(false)
   moneyRequests         MoneyRequest[]
   projects              Project[]
-  moneyAccounts         MoneyAccount[] @relation("MoneyAccountToOrganization")
-  members               Account[]      @relation("members")
-  moneyAdministrators   Account[]      @relation("moneyAdministrators")
-  moneyRequestApprovers Account[]      @relation("moneyRequestApprovers")
+  moneyAccounts         MoneyAccount[]     @relation("MoneyAccountToOrganization")
+  members               Account[]          @relation("members")
+  moneyAdministrators   Account[]          @relation("moneyAdministrators")
+  moneyRequestApprovers Account[]          @relation("moneyRequestApprovers")
+  organizationPosts     OrganizationPost[]
 }
 
 model MoneyAccount {

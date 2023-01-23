@@ -2,15 +2,13 @@ import BigStat from '@/components/Stats/BigStat';
 import SmallStat from '@/components/Stats/SmallStat';
 import { reduceCostCatAsignedAmount } from '@/lib/utils/CostCatUtilts';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import { StatGroup, Box, useColorModeValue } from '@chakra-ui/react';
+import { StatGroup, Box } from '@chakra-ui/react';
 import type { Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import React from 'react';
 import type { OrgForDashboard } from './OrganizationPage.mod.organization';
 
 const OrganizationStats = ({ org }: { org: OrgForDashboard | undefined }) => {
-  const labelColor = useColorModeValue('gray.600', 'gray.300');
-
   const accountTotal = (currency: Currency) => {
     return (
       org?.moneyAccounts.reduce((acc, value) => {
@@ -74,6 +72,7 @@ const OrganizationStats = ({ org }: { org: OrgForDashboard | undefined }) => {
     accountTotal(currency).sub(
       assignedInProjects(currency).sub(executedInProjectsTotal(currency))
     );
+  // .sub(imbursedTotal(currency));
 
   return (
     <Box>

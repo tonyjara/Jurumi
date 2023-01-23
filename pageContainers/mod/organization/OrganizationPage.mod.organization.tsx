@@ -33,6 +33,7 @@ export type OrgForDashboard = Organization & {
     })[];
   })[];
 };
+
 const OrganizationPage = () => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
 
@@ -55,6 +56,10 @@ const OrganizationPage = () => {
               <CardHeader>
                 <Text fontWeight={'bold'} fontSize={'3xl'}>
                   {org.displayName}
+                </Text>
+                <Text color={'gray.300'}>
+                  Libre significa: total de las cuentas - (total asignadio a los
+                  projectos - total ejecutado)
                 </Text>
               </CardHeader>
               <CardBody>
