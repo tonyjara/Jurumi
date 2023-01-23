@@ -30,6 +30,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       softDeleted: z.boolean(),
       rejectionMessage: z.string(),
       organizationId: z.string().min(1, 'Favor seleccione una organización.'),
+      wasCancelled: z.boolean(),
     })
     .superRefine((val, ctx) => {
       if (val.status === 'REJECTED' && val.rejectionMessage.length < 6) {
@@ -57,4 +58,5 @@ export const defaultMoneyRequestData: FormMoneyRequest = {
   softDeleted: false,
   rejectionMessage: '',
   organizationId: '',
+  wasCancelled: false,
 };

@@ -1,7 +1,7 @@
 import { Select } from '@chakra-ui/react';
 import React from 'react';
 import { trpcClient } from '../../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../../Toasts & Alerts/MyToast';
 
 const OrganizationSelect = () => {
   const context = trpcClient.useContext();

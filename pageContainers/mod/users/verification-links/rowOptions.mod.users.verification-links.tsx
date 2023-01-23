@@ -7,7 +7,10 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts, myToast } from '@/components/Toasts/MyToast';
+import {
+  handleUseMutationAlerts,
+  myToast,
+} from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { VerificationLinksWithAccountName } from './VerifyLinksPage.mod.users';
 

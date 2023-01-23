@@ -32,17 +32,9 @@ interface InputProps<T extends FieldValues> {
 const FormControlledFacturaNumber = <T extends FieldValues>(
   props: InputProps<T>
 ) => {
-  const {
-    control,
-    name,
-    errors,
-    label,
-    helperText,
-
-    hidden,
-    autoFocus,
-  } = props;
+  const { control, name, errors, label, helperText, hidden, autoFocus } = props;
   const watchValue = useWatch({ control, name });
+
   const [inputValue, setInputValue] = useState<string>(watchValue);
   return (
     <FormControl hidden={hidden} isInvalid={!!errors[name]}>

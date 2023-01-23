@@ -68,6 +68,7 @@ export const projectRouter = router({
             },
           },
           transactions: {
+            where: { transactionType: 'PROJECT_IMBURSEMENT' },
             take: 1,
             orderBy: { id: 'desc' },
             select: {
@@ -81,6 +82,31 @@ export const projectRouter = router({
             take: 20,
             where: { role: 'USER', active: true, isVerified: true },
             select: { id: true, displayName: true, email: true },
+          },
+        },
+      });
+    }),
+
+  getLastProjectTransaction: adminModProcedure
+    .input(
+      z.object({
+        projectId: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.projectId) return null;
+
+      return await prisma?.project.findUnique({
+        where: { id: input.projectId },
+        include: {
+          transactions: {
+            where: {
+              projectId: input.projectId,
+              transactionType: 'PROJECT_IMBURSEMENT',
+            },
+            take: 1,
+            orderBy: { id: 'desc' },
+            select: { currentBalance: true, currency: true },
           },
         },
       });

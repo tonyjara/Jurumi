@@ -28,6 +28,7 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z.lazy(() =>
     amountSpent: z.any().transform((value) => new Prisma.Decimal(value)),
     moneyRequestId: z.string().min(1),
     accountId: z.string(),
+    wasCancelled: z.boolean(),
     projectId: z.string({ invalid_type_error: 'Favor seleccione un proyecto' }),
     searchableImage: z
       .object({
@@ -59,4 +60,5 @@ export const defaultExpenseReportData: FormExpenseReport = {
   accountId: '',
   taxPayer: { razonSocial: '', ruc: '' },
   searchableImage: { url: '', imageName: '' },
+  wasCancelled: false,
 };

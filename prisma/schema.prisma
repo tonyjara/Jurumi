@@ -212,8 +212,10 @@ model MoneyRequestApproval {
   rejectMessage  String
   accountId      String
   moneyRequestId String
-  account        Account                     @relation(fields: [accountId], references: [id])
-  moneyRequest   MoneyRequest                @relation(fields: [moneyRequestId], references: [id])
+  wasCancelled   Boolean                     @default(false)
+
+  account      Account      @relation(fields: [accountId], references: [id])
+  moneyRequest MoneyRequest @relation(fields: [moneyRequestId], references: [id])
 }
 
 model MoneyRequest {
@@ -228,6 +230,7 @@ model MoneyRequest {
   rejectionMessage String
   archived         Boolean            @default(false)
   softDeleted      Boolean            @default(false)
+  wasCancelled     Boolean            @default(false)
 
   accountId      String
   account        Account      @relation(fields: [accountId], references: [id])
@@ -250,6 +253,7 @@ model ExpenseReport {
   amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
   currency      Currency
   comments      String
+  wasCancelled  Boolean   @default(false)
 
   accountId       String
   account         Account          @relation(fields: [accountId], references: [id])
@@ -265,9 +269,11 @@ model ExpenseReport {
 }
 
 model ExpenseReturn {
-  id              String           @id @default(cuid())
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime?        @updatedAt
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+  wasCancelled Boolean   @default(false)
+
   amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
   moneyRequestId  String
   moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])

@@ -5,6 +5,7 @@ import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 import { handleOrderBy } from './utils/SortingUtils';
 import prisma from '@/server/db/client';
 import { imbursementCreateUtils } from './utils/Imbursement.create.utils';
+import { cancelTransactions } from './utils/Cancelations';
 
 const {
   createMoneyAccountTx,
@@ -192,25 +193,7 @@ export const imbursementsRouter = router({
         });
       }
     }),
-  //TODO substract from costcategory if it was accepted
-  deleteById: adminProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      //TODO check if it can be deleted
 
-      await prisma.transaction.deleteMany({
-        where: { imbursementId: input.id },
-      });
-
-      const x = await prisma?.imbursement.delete({
-        where: { id: input.id },
-      });
-      return x;
-    }),
   cancelById: adminModProcedure
     .input(
       z.object({
@@ -234,35 +217,30 @@ export const imbursementsRouter = router({
           });
         }
 
-        const cancellation = await txCtx.transaction.create({
-          data: {
-            isCancellation: true,
-            transactionAmount: tx.transactionAmount,
-            accountId: tx.accountId,
-            currency: tx.currency,
-            openingBalance: tx.currentBalance,
-            currentBalance: tx.openingBalance,
-            moneyAccountId: tx.moneyAccountId,
-            moneyRequestId: tx.moneyRequestId,
-            imbursementId: tx.imbursementId,
-            expenseReturnId: tx.expenseReturnId,
-            cancellationId: tx.id,
-            searchableImage: imbursement.imbursementProofId
-              ? {
-                  connect: { id: imbursement.imbursementProofId },
-                }
-              : {},
-          },
-        });
-
-        await txCtx.transaction.update({
-          where: { id: tx.id },
-          data: {
-            cancellationId: cancellation.id,
-          },
+        await cancelTransactions({
+          txCtx,
+          transactions: imbursement.transactions,
         });
 
         return;
       });
+    }),
+  deleteById: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      //TODO check if it can be deleted
+
+      await prisma.transaction.deleteMany({
+        where: { imbursementId: input.id },
+      });
+
+      const x = await prisma?.imbursement.delete({
+        where: { id: input.id },
+      });
+      return x;
     }),
 });

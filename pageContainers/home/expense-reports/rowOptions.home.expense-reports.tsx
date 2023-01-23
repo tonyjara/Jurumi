@@ -8,9 +8,11 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MyExpenseReport } from './ExpenseReportsPage.home.expense-reports';
+import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
+import { RowOptionCancelDialog } from '@/components/Toasts & Alerts/RowOptions.cancel.dialog';
 
 const RowOptionsHomeExpenseReports = ({
   x,
@@ -25,6 +27,15 @@ const RowOptionsHomeExpenseReports = ({
 }) => {
   const context = trpcClient.useContext();
 
+  const { mutate: cancelById } =
+    trpcClient.expenseReport.cancelById.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Se ha anulado su rendición',
+        callback: () => {
+          context.expenseReport.invalidate();
+        },
+      })
+    );
   const { mutate: deleteById } =
     trpcClient.expenseReport.deleteById.useMutation(
       handleUseMutationAlerts({
@@ -45,6 +56,7 @@ const RowOptionsHomeExpenseReports = ({
       <Portal>
         <MenuList>
           <MenuItem
+            isDisabled={x.wasCancelled}
             onClick={() => {
               setEditExpenseReport(x);
               onEditOpen();
@@ -53,7 +65,15 @@ const RowOptionsHomeExpenseReports = ({
             Editar
           </MenuItem>
 
-          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+          <RowOptionCancelDialog
+            isDisabled={x.wasCancelled}
+            targetName="rendición"
+            onConfirm={() => cancelById({ id: x.id })}
+          />
+          <RowOptionDeleteDialog
+            targetName="rendición"
+            onConfirm={() => deleteById({ id: x.id })}
+          />
         </MenuList>
       </Portal>
     </Menu>

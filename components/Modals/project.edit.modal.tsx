@@ -14,7 +14,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import { projectMock } from '@/__tests__/mocks/Mocks';
 import ProjectForm from '../Forms/Project.form';

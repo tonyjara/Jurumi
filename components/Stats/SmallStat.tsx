@@ -19,7 +19,7 @@ const SmallStat = ({
   return (
     <Stat color={color}>
       <StatLabel color={labelColor}>{label}</StatLabel>
-      <StatNumber>{value}</StatNumber>
+      <StatNumber fontSize={{ base: 'lg', md: '2xl' }}>{value}</StatNumber>
     </Stat>
   );
 };

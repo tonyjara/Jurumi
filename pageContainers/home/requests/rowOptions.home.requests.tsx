@@ -10,9 +10,10 @@ import type { MoneyRequest } from '@prisma/client';
 
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { CompleteMoneyReqHome } from './HomeRequestsPage.home.requests';
+import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
 
 const RowOptionsHomeRequests = ({
   x,
@@ -53,7 +54,7 @@ const RowOptionsHomeRequests = ({
       <Portal>
         <MenuList>
           <MenuItem
-            isDisabled={!isAccepted}
+            isDisabled={!isAccepted || x.wasCancelled}
             onClick={() => {
               setReqForReport(x);
               onExpRepOpen();
@@ -63,7 +64,7 @@ const RowOptionsHomeRequests = ({
           </MenuItem>
 
           <MenuItem
-            isDisabled={isAccepted}
+            isDisabled={isAccepted || x.wasCancelled}
             onClick={() => {
               setEditMoneyRequest(x);
               onEditOpen();
@@ -72,7 +73,10 @@ const RowOptionsHomeRequests = ({
             Editar
           </MenuItem>
 
-          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+          <RowOptionDeleteDialog
+            targetName="solicitud"
+            onConfirm={() => deleteById({ id: x.id })}
+          />
         </MenuList>
       </Portal>
     </Menu>

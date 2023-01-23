@@ -4,13 +4,16 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { imbursementComplete } from './ImbursementsPage.mod.imbursements';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
+import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
+import { RowOptionCancelDialog } from '@/components/Toasts & Alerts/RowOptions.cancel.dialog';
 
 const RowOptionsImbursements = ({
   x,
@@ -52,26 +55,31 @@ const RowOptionsImbursements = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        {!!x.wasCancelled && <MenuItem>Este desembolso fue anulado.</MenuItem>}
-        <MenuItem
-          onClick={() => {
-            setEditImbursement(x);
-            onEditOpen();
-          }}
-          isDisabled={x.wasCancelled}
-        >
-          Editar
-        </MenuItem>
-        <MenuItem
-          isDisabled={x.wasCancelled}
-          onClick={() => cancelById({ id: x.id })}
-        >
-          Anular
-        </MenuItem>
-
-        <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
-      </MenuList>
+      <Portal>
+        <MenuList>
+          {!!x.wasCancelled && (
+            <MenuItem>Este desembolso fue anulado.</MenuItem>
+          )}
+          <MenuItem
+            onClick={() => {
+              setEditImbursement(x);
+              onEditOpen();
+            }}
+            isDisabled={x.wasCancelled}
+          >
+            Editar
+          </MenuItem>
+          <RowOptionCancelDialog
+            isDisabled={x.wasCancelled}
+            targetName="desembolso"
+            onConfirm={() => cancelById({ id: x.id })}
+          />
+          <RowOptionDeleteDialog
+            targetName="desembolso"
+            onConfirm={() => deleteById({ id: x.id })}
+          />
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

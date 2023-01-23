@@ -7,7 +7,7 @@ import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import EditProjectModal from '@/components/Modals/project.edit.modal';
 import { projectsColumn } from './columns.mod.projects';
-import { myToast } from '@/components/Toasts/MyToast';
+import { myToast } from '@/components/Toasts & Alerts/MyToast';
 import CreateProjectModal from '@/components/Modals/project.create.modal';
 
 export type ProjectForTable = Project & {

@@ -13,11 +13,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
-
 import { trpcClient } from '../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { imbursementMock } from '../../__tests__/mocks/Mocks';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 import ImbursementForm from '../Forms/Imbursement.form';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import {
@@ -82,13 +79,13 @@ const ImbursementEditModal = ({
           <ModalHeader>Editar un desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={imbursementMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ImbursementForm
               isEditForm={true}
               setValue={setValue}
               control={control}
               errors={errors}
+              reset={reset}
             />
           </ModalBody>
 

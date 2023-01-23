@@ -17,7 +17,7 @@ import {
 import React from 'react';
 import { MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import {
   translateBankNames,
   translateCurrency,

@@ -252,7 +252,14 @@ const DynamicTable = <T extends object>({
           {(!data || loading) && <SkeletonRows />}
         </Tbody>
       </Table>
-      <Flex w={'100%'} justifyContent="space-between" p={4} alignItems="center">
+      <Flex
+        w={'100%'}
+        maxW="750px"
+        justifyContent="space-between"
+        p={4}
+        alignItems="center"
+        alignSelf={'center'}
+      >
         <Flex>
           <IconButton
             onClick={() => gotoPage(0)}

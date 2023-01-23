@@ -10,7 +10,7 @@ import type { Transaction } from '@prisma/client';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { TransactionComplete } from './TransactionsPage.mod.transactions';
 
@@ -29,15 +29,6 @@ const RowOptionsModTransactions = ({
   const { mutate: deleteById } = trpcClient.transaction.deleteById.useMutation(
     handleUseMutationAlerts({
       successText: 'Se ha eliminado la transaccion!',
-      callback: () => {
-        context.transaction.invalidate();
-        context.moneyAcc.invalidate();
-      },
-    })
-  );
-  const { mutate: cancelById } = trpcClient.transaction.cancelById.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Se ha anulado la transaccion!',
       callback: () => {
         context.transaction.invalidate();
         context.moneyAcc.invalidate();
@@ -85,13 +76,9 @@ const RowOptionsModTransactions = ({
           >
             Editar
           </MenuItem>
-          {/* <MenuItem
-          isDisabled={!!x.cancellationId}
-          onClick={() => cancelById({ id: x.id })}
-        >
-          Anular
-        </MenuItem> */}
+
           <MenuItem
+            isDisabled={!!x.cancellationId}
             onClick={() =>
               deleteById({
                 id: x.id,

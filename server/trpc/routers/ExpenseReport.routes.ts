@@ -21,7 +21,7 @@ export const expenseReportsRouter = router({
     });
   }),
   count: protectedProcedure.query(async () => prisma?.expenseReport.count()),
-  getManyComplete: protectedProcedure
+  getMyOwnComplete: protectedProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -60,6 +60,52 @@ export const expenseReportsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy(),
         include: {
+          project: { select: { displayName: true, id: true } },
+          taxPayer: {
+            select: { fantasyName: true, razonSocial: true, ruc: true },
+          },
+          searchableImage: { select: { url: true, imageName: true } },
+        },
+      });
+    }),
+  getManyComplete: adminModProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ input }) => {
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+
+      //splits nested objects
+      const handleOrderBy = () => {
+        if (input.sorting && input.sorting[0]) {
+          const prop = input.sorting[0];
+          if (prop.id.includes('_')) {
+            const split = prop.id.split('_');
+            return {
+              [split[0] as string]: {
+                [split[1] as string]: prop.desc ? 'desc' : 'asc',
+              },
+            };
+          }
+          return { [prop.id]: prop.desc ? 'desc' : 'asc' };
+        }
+        return { createdAt: 'desc' } as any;
+      };
+
+      return await prisma?.expenseReport.findMany({
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy(),
+        include: {
+          account: { select: { displayName: true, id: true } },
           project: { select: { displayName: true, id: true } },
           taxPayer: {
             select: { fantasyName: true, razonSocial: true, ruc: true },
@@ -197,6 +243,19 @@ export const expenseReportsRouter = router({
       return x;
     }),
 
+  cancelById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const x = await prisma?.expenseReport.update({
+        where: { id: input.id },
+        data: { wasCancelled: true },
+      });
+      return x;
+    }),
   deleteById: adminProcedure
     .input(
       z.object({

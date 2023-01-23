@@ -31,8 +31,18 @@ const ProjectStats = ({
   const dynamicTableProps = useDynamicTable();
 
   const { pageIndex, globalFilter, pageSize, sorting } = dynamicTableProps;
-  const imbursed =
-    project?.transactions[0]?.currentBalance ?? new Prisma.Decimal(0);
+
+  //! Should have own trpc req
+
+  const { data: projectWithLastTx } =
+    trpcClient.project.getLastProjectTransaction.useQuery({
+      projectId: project?.id,
+    });
+
+  const imbursed = projectWithLastTx?.transactions[0]?.currentBalance
+    ? projectWithLastTx?.transactions[0]?.currentBalance
+    : new Prisma.Decimal(0);
+
   const executedInGs = project
     ? projectExecutedAmount({ costCats: project?.costCategories }).gs
     : new Prisma.Decimal(0);
@@ -46,19 +56,16 @@ const ProjectStats = ({
   const percentageExecuted =
     executedInGs.dividedBy(assignedAmount).toNumber() * 100;
 
-  const {
-    data: getProjectWTx,
-    isLoading,
-    isFetching,
-  } = trpcClient.project.getProjectTransactions.useQuery(
-    {
-      pageIndex,
-      pageSize,
-      sorting: globalFilter ? sorting : null,
-      projectId: project?.id,
-    },
-    { keepPreviousData: globalFilter ? true : false, enabled: !!project }
-  );
+  const { data: getProjectWTx, isFetching } =
+    trpcClient.project.getProjectTransactions.useQuery(
+      {
+        pageIndex,
+        pageSize,
+        sorting: globalFilter ? sorting : null,
+        projectId: project?.id,
+      },
+      { keepPreviousData: globalFilter ? true : false, enabled: !!project }
+    );
 
   return (
     <div>
@@ -86,7 +93,7 @@ const ProjectStats = ({
           label="Desembolsado"
           value={decimalFormat(
             imbursed,
-            project?.transactions[0]?.currency ?? 'PYG'
+            projectWithLastTx?.transactions[0]?.currency ?? 'PYG'
           )}
         />
         <SmallStat
@@ -110,9 +117,9 @@ const ProjectStats = ({
       <CostCategoryStats project={project} />
 
       <TransactionsTable
-        loading={isLoading || isFetching}
+        loading={isFetching}
         data={getProjectWTx?.transactions ?? ([] as any)}
-        count={getProjectWTx?._count.transactions}
+        count={getProjectWTx?._count?.transactions}
         dynamicTableProps={dynamicTableProps}
       />
     </div>

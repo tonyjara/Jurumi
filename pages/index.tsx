@@ -21,7 +21,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import type { GetServerSideProps } from 'next';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
-import { myToast } from '../components/Toasts/MyToast';
+import { myToast } from '../components/Toasts & Alerts/MyToast';
 
 export default function Signin({ onSubmit }: { onSubmit?: any }) {
   const router = useRouter();

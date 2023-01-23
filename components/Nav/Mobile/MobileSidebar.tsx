@@ -17,6 +17,7 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
   const { data } = useSession();
   const isAdminOrMod =
     data?.user.role === 'ADMIN' || data?.user.role === 'MODERATOR';
+  const isAdmin = data?.user.role === 'ADMIN';
 
   return (
     <Drawer
@@ -48,7 +49,7 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
             <CloseButton onClick={onClose} />
           </Flex>
 
-          {SidebarLinks(isAdminOrMod).map((link) => (
+          {SidebarLinks(isAdminOrMod, isAdmin).map((link) => (
             <div key={link.name}>
               {link.children?.length && (
                 <Accordion allowToggle>
@@ -56,7 +57,7 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
                     {/* the column fixes annoying margin leftrover when minimized */}
                     <Flex>
                       <NavItem
-                        onClick={onClose}
+                        onClose={onClose}
                         icon={link.icon}
                         dest={link.dest}
                       >
@@ -75,7 +76,7 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
                 </Accordion>
               )}
               {!link.children?.length && (
-                <NavItem onClick={onClose} icon={link.icon} dest={link.dest}>
+                <NavItem onClose={onClose} icon={link.icon} dest={link.dest}>
                   {link.name}
                 </NavItem>
               )}

@@ -1,7 +1,6 @@
 import { trpcClient } from '@/lib/utils/trpcClient';
 import {
   Card,
-  CardBody,
   CardHeader,
   Stack,
   Text,
@@ -89,19 +88,19 @@ const ProjectsPage = () => {
               </TabList>
             </Stack>
           </CardHeader>
-          <CardBody>
-            <TabPanels>
-              <TabPanel>
-                <ProjectStats project={project} />
-              </TabPanel>
-              <TabPanel>
-                <ProjectMembers project={project} />
-              </TabPanel>
-              <TabPanel>
-                <ProjectsTable />
-              </TabPanel>
-            </TabPanels>
-          </CardBody>
+          {/* <CardBody> */}
+          <TabPanels>
+            <TabPanel>
+              <ProjectStats project={project} />
+            </TabPanel>
+            <TabPanel>
+              <ProjectMembers project={project} />
+            </TabPanel>
+            <TabPanel>
+              <ProjectsTable />
+            </TabPanel>
+          </TabPanels>
+          {/* </CardBody> */}
         </Tabs>
       </Card>
     </>

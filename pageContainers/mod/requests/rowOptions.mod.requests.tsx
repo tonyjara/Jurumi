@@ -11,9 +11,11 @@ import { cloneDeep } from 'lodash';
 import router from 'next/router';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MoneyRequestComplete } from './MoneyRequestsPage.mod.requests';
+import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
+import { RowOptionCancelDialog } from '@/components/Toasts & Alerts/RowOptions.cancel.dialog';
 
 const RowOptionsModRequests = ({
   x,
@@ -36,7 +38,15 @@ const RowOptionsModRequests = ({
     handleUseMutationAlerts({
       successText: 'Se ha eliminado la solicitud!',
       callback: () => {
-        context.moneyRequest.getManyComplete.invalidate();
+        context.invalidate();
+      },
+    })
+  );
+  const { mutate: cancelById } = trpcClient.moneyRequest.cancelById.useMutation(
+    handleUseMutationAlerts({
+      successText: 'Se ha anulado la solicitud!',
+      callback: () => {
+        context.invalidate();
       },
     })
   );
@@ -95,8 +105,15 @@ const RowOptionsModRequests = ({
           </MenuItem>
           <MenuItem>Exportar como excel</MenuItem>
           <MenuItem>Imprimir</MenuItem>
-          <MenuItem>Anular</MenuItem>
-          <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
+          <RowOptionCancelDialog
+            isDisabled={x.wasCancelled}
+            targetName="solicitud"
+            onConfirm={() => cancelById({ id: x.id })}
+          />
+          <RowOptionDeleteDialog
+            targetName="solicitud"
+            onConfirm={() => deleteById({ id: x.id })}
+          />
         </MenuList>
       </Portal>
     </Menu>

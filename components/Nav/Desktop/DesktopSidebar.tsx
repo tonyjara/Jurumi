@@ -1,26 +1,24 @@
-import type { BoxProps } from '@chakra-ui/react';
 import { IconButton } from '@chakra-ui/react';
 import { AccordionIcon } from '@chakra-ui/react';
 import { AccordionPanel } from '@chakra-ui/react';
 import { Accordion, AccordionButton, AccordionItem } from '@chakra-ui/react';
-import { useColorModeValue, Flex, CloseButton, Box } from '@chakra-ui/react';
+import { useColorModeValue, Flex, Box } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { TbChevronsLeft, TbLayoutSidebarRightCollapse } from 'react-icons/tb';
 import NavItem from '../components/NavItem';
 import NavItemChild from '../components/NavItemChild';
 import OrganizationSelect from '../components/OrganizationSelect';
 import { SidebarLinks } from '../Data/SidebarLinks';
-interface SidebarProps extends BoxProps {
-  onClose: () => void;
+interface SidebarProps {
   minimized: boolean;
   setMinimized: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const DesktopSidebar = ({ onClose, minimized, setMinimized }: SidebarProps) => {
+const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
   const { data } = useSession();
   const isAdminOrMod =
     data?.user.role === 'ADMIN' || data?.user.role === 'MODERATOR';
-
+  const isAdmin = data?.user.role === 'ADMIN';
   return (
     <Box
       zIndex={2}
@@ -52,7 +50,7 @@ const DesktopSidebar = ({ onClose, minimized, setMinimized }: SidebarProps) => {
         />
       </Flex>
 
-      {SidebarLinks(isAdminOrMod).map((link) => (
+      {SidebarLinks(isAdminOrMod, isAdmin).map((link) => (
         <div key={link.name}>
           {link.children?.length && (
             <Accordion allowToggle>
@@ -61,7 +59,6 @@ const DesktopSidebar = ({ onClose, minimized, setMinimized }: SidebarProps) => {
                 <Flex flexDir={minimized ? 'column' : 'row'}>
                   <NavItem
                     minimized={minimized}
-                    onClick={onClose}
                     icon={link.icon}
                     dest={link.dest}
                   >
@@ -83,12 +80,7 @@ const DesktopSidebar = ({ onClose, minimized, setMinimized }: SidebarProps) => {
             </Accordion>
           )}
           {!link.children?.length && (
-            <NavItem
-              minimized={minimized}
-              onClick={onClose}
-              icon={link.icon}
-              dest={link.dest}
-            >
+            <NavItem minimized={minimized} icon={link.icon} dest={link.dest}>
               {link.name}
             </NavItem>
           )}

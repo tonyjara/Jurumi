@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 
 import { trpcClient } from '../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import { imbursementMock } from '../../__tests__/mocks/Mocks';
 import ImbursementForm from '../Forms/Imbursement.form';
@@ -69,12 +69,12 @@ const ImbursementCreateModal = ({
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear un desembolso</ModalHeader>
+          <ModalHeader>Crear un desembolso </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={imbursementMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ImbursementForm
+              reset={reset}
               setValue={setValue}
               control={control}
               errors={errors}

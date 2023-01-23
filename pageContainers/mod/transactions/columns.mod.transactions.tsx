@@ -82,7 +82,11 @@ export const modTransactionsColumns = ({
   columnHelper.accessor('transactionAmount', {
     header: 'Monto',
     cell: (x) => (
-      <MoneyCell amount={x.getValue()} currency={x.row.original.currency} />
+      <MoneyCell
+        negative={x.row.original.isCancellation}
+        amount={x.getValue()}
+        currency={x.row.original.currency}
+      />
     ),
   }),
   columnHelper.accessor('account.displayName', {

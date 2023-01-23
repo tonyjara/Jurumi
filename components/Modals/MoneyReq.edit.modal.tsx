@@ -15,7 +15,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
 import {
@@ -87,7 +87,7 @@ const EditMoneyRequestModal = ({
           <ModalHeader>Editar una solicitud desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={moneyRequestMock} />
+            <SeedButton reset={reset} mock={() => moneyRequestMock('')} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm control={control} errors={errors as any} />
           </ModalBody>

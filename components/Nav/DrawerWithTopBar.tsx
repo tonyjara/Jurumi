@@ -37,11 +37,7 @@ export default function DrawerWithTopBar({
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       {authenticated && (
         <div>
-          <DesktopSidebar
-            minimized={minimized}
-            setMinimized={setMinimized}
-            onClose={() => onClose}
-          />
+          <DesktopSidebar minimized={minimized} setMinimized={setMinimized} />
           <MobileSidebar isOpen={isOpen} onClose={onClose} />
         </div>
       )}
@@ -62,7 +58,7 @@ export default function DrawerWithTopBar({
         //DESKTOP
         display={{ base: 'none', md: 'block' }}
         transition="0.2s ease"
-        py={{ base: '100px', md: '100px' }}
+        py={{ base: '90px', md: '90px' }}
         px={{ base: '10px', md: '10px' }}
         ml={!authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }}
       >

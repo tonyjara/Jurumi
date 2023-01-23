@@ -2,7 +2,7 @@ import type { IconType } from 'react-icons';
 import type { LinkItemChild } from '../components/NavItemChild';
 import { FiHome, FiSettings, FiUsers, FiGlobe } from 'react-icons/fi';
 import { BsCash, BsCashStack } from 'react-icons/bs';
-import { TbReceiptTax } from 'react-icons/tb';
+import { TbReceiptTax, TbSeeding } from 'react-icons/tb';
 import { CgOrganisation } from 'react-icons/cg';
 import { MdApproval } from 'react-icons/md';
 import { AiFillBank, AiOutlineProject } from 'react-icons/ai';
@@ -15,6 +15,17 @@ export interface LinkItemProps {
   children?: LinkItemChild[];
 }
 
+const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
+  return isAdmin
+    ? [
+        {
+          name: 'Seed',
+          icon: TbSeeding,
+          dest: '/admin/seed',
+        },
+      ]
+    : [];
+};
 const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
   isAdminOrMod
 ) => {
@@ -57,20 +68,25 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
           dest: '/mod/transactions',
         },
         { name: 'Solicitudes', icon: BsCashStack, dest: '/mod/requests' },
+        {
+          name: 'Rendiciones',
+          icon: TbReportMoney,
+          dest: '/mod/expense-reports',
+        },
         { name: 'Contribuyentes', icon: TbReceiptTax, dest: '/mod/taxpayers' },
-
         { name: 'Aprobaciones', icon: MdApproval, dest: '/mod/approvals' },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },
       ]
     : [];
 };
 
-export const SidebarLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
-  isAdminOrMod
-) => {
+export const SidebarLinks: (
+  isAdminOrMod: boolean,
+  isAdmin: boolean
+) => Array<LinkItemProps> = (isAdminOrMod, isAdmin) => {
   return [
     { name: 'Inicio', icon: FiHome, dest: '/home' },
-
+    ...AdminLinks(isAdmin),
     ...AdminModLinks(isAdminOrMod),
     { name: 'Mis solicitudes', icon: BsCash, dest: '/home/requests' },
     {

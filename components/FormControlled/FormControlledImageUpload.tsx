@@ -24,7 +24,7 @@ import { useWatch } from 'react-hook-form';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import uploadFileToBlob from '../../lib/utils/azure-storage-blob';
 import { compressCoverPhoto } from '../../lib/utils/ImageCompressor';
-import { myToast } from '../Toasts/MyToast';
+import { myToast } from '../Toasts & Alerts/MyToast';
 import { v4 as uuidV4 } from 'uuid';
 import axios from 'axios';
 interface InputProps<T extends FieldValues> {

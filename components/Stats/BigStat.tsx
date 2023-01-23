@@ -16,10 +16,10 @@ const BigStat = ({
   const labelColor = useColorModeValue('gray.600', 'gray.300');
   return (
     <Stat>
-      <StatLabel color={labelColor} fontSize={'lg'}>
+      <StatLabel color={labelColor} fontSize={{ base: 'md', md: 'lg' }}>
         {label}
       </StatLabel>
-      <StatNumber fontSize={'3xl'}>{value}</StatNumber>
+      <StatNumber fontSize={{ base: 'xl', md: '3xl' }}>{value}</StatNumber>
     </Stat>
   );
 };

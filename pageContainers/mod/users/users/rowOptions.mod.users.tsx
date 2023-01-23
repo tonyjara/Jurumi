@@ -9,7 +9,7 @@ import {
 import type { Account } from '@prisma/client';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormAccount } from '@/lib/validations/account.validate';
 

@@ -91,12 +91,19 @@ const createProjectImbursementTx = async ({
     },
   });
 
-  // project is optinal on imbursements
-
-  // 2. Get latest transaction of the bank Account
+  // 2. Get latest project transaction
   const projectWithTxs = await txCtx.project.findUnique({
     where: { id: input.projectId },
-    include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+    include: {
+      transactions: {
+        where: {
+          projectId: input.projectId,
+          transactionType: 'PROJECT_IMBURSEMENT',
+        },
+        take: 1,
+        orderBy: { id: 'desc' },
+      },
+    },
   });
 
   // 3. Calculate balance based on transaction or initialbalance

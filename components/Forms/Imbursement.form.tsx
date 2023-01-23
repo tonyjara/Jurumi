@@ -3,11 +3,18 @@ import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
 import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
+import { imbursementMock } from '@/__tests__/mocks/Mocks';
 import { Button, Divider, Text, VStack } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import type { FieldValues, Control, UseFormSetValue } from 'react-hook-form';
+import type {
+  FieldValues,
+  Control,
+  UseFormSetValue,
+  UseFormReset,
+} from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
+import SeedButton from '../DevTools/SeedButton';
 import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 import FormControlledNumberInput from '../FormControlled/FormControlledNumberInput';
@@ -22,6 +29,7 @@ interface formProps<T extends FieldValues> {
   errors: any;
   setValue: UseFormSetValue<T>;
   isEditForm?: boolean;
+  reset: UseFormReset<T>;
 }
 
 const ImbursementForm = ({
@@ -29,6 +37,7 @@ const ImbursementForm = ({
   errors,
   setValue,
   isEditForm,
+  reset,
 }: formProps<FormImbursement>) => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -62,21 +71,23 @@ const ImbursementForm = ({
   // Options for select
 
   // If it was not converted to another currency, then only take account in the initial currency otherwhise take accounts in the final currency
-  const moneyAccOptions = () => {
-    return moneyAccs
-      ?.filter(
-        (x) =>
-          x.currency ===
-          (wasConvertedToOtherCurrency ? finalCurrency : otherCurrency)
-      )
-      .map((acc) => ({
-        value: acc.id,
-        label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
-      }));
-  };
+  const moneyAccOptions = moneyAccs
+    ?.filter(
+      (x) =>
+        x.currency ===
+        (wasConvertedToOtherCurrency ? finalCurrency : otherCurrency)
+    )
+    .map((acc) => ({
+      value: acc.id,
+      label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
+    }));
 
   return (
     <>
+      <SeedButton
+        reset={reset}
+        mock={() => imbursementMock(moneyAccOptions, projectOptions)}
+      />
       <VStack spacing={5}>
         {isEditForm && (
           <Text fontSize={'sm'} color={'red.500'}>
@@ -163,7 +174,7 @@ const ImbursementForm = ({
           errors={errors}
           name={'moneyAccountId'}
           label="Seleccione una cuenta para recibir el fondo."
-          options={moneyAccOptions() ?? []}
+          options={moneyAccOptions ?? []}
           isClearable={true}
           disable={isEditForm}
         />

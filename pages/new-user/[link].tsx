@@ -10,7 +10,10 @@ import {
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import FormControlledText from '@/components/FormControlled/FormControlledText';
-import { handleUseMutationAlerts, myToast } from '@/components/Toasts/MyToast';
+import {
+  handleUseMutationAlerts,
+  myToast,
+} from '@/components/Toasts & Alerts/MyToast';
 import type { GetServerSideProps } from 'next';
 import { verifyToken } from '@/lib/utils/asyncJWT';
 import { zodResolver } from '@hookform/resolvers/zod';

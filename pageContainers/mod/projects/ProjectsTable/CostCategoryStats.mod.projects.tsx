@@ -44,9 +44,13 @@ const CostCategoryStats = ({
         {isOpen && (
           <Box>
             {project?.costCategories.map((costCat) => {
-              const executedInGs = costCat.transactions[0]
+              const executedAmount = costCat.transactions[0]
                 ? costCat.transactions[0].currentBalance
                 : new Prisma.Decimal(0);
+              const executedCurrency = costCat.transactions[0]
+                ? costCat.transactions[0].currency
+                : 'PYG';
+
               const assignedAmount = costCat.assignedAmount;
 
               return (
@@ -59,23 +63,16 @@ const CostCategoryStats = ({
                       label="Asignado"
                       value={decimalFormat(assignedAmount, costCat.currency)}
                     />
-                    {costCat.currency === 'PYG' && (
-                      <SmallStat
-                        color="orange.300"
-                        label="Ejecutado."
-                        value={decimalFormat(executedInGs, 'PYG')}
-                      />
-                    )}
-                    {costCat.currency === 'USD' && (
-                      <SmallStat
-                        color="orange.300"
-                        label="Ejecutado."
-                        value={decimalFormat(executedInGs, 'USD')}
-                      />
-                    )}
+
+                    <SmallStat
+                      color="orange.300"
+                      label="Ejecutado."
+                      value={decimalFormat(executedAmount, executedCurrency)}
+                    />
+
                     <PercentageCell
                       total={assignedAmount}
-                      executed={executedInGs}
+                      executed={executedAmount}
                       currency={costCat.currency}
                     />
                   </StatGroup>
