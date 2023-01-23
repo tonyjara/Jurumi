@@ -5,6 +5,7 @@ import { adminProcedure, adminModProcedure, router } from '../initTrpc';
 import { handleOrderBy } from './utils/SortingUtils';
 import prisma from '@/server/db/client';
 import { imbursementCreateUtils } from './utils/Imbursement.create.utils';
+import { cancelTransactions } from './utils/Cancelations';
 
 const {
   createMoneyAccountTx,
@@ -42,7 +43,7 @@ export const imbursementsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         include: {
-          transaction: { select: { id: true } },
+          transactions: { select: { id: true } },
           taxPayer: { select: { razonSocial: true, ruc: true, id: true } },
           project: { select: { id: true, displayName: true } },
           imbursementProof: { select: { imageName: true, url: true } },
@@ -166,7 +167,7 @@ export const imbursementsRouter = router({
           invoiceFromOrgId: invoiceFromOrg?.id ?? null,
         },
         include: {
-          transaction: { select: { id: true } },
+          transactions: { select: { id: true } },
           imbursementProof: { select: { id: true } },
           invoiceFromOrg: { select: { id: true } },
         },
@@ -183,7 +184,7 @@ export const imbursementsRouter = router({
       }
       if (updatedImbursement.imbursementProofId) {
         await prisma.transaction.update({
-          where: { id: updatedImbursement.transaction[0]?.id },
+          where: { id: updatedImbursement.transactions[0]?.id },
           data: {
             searchableImage: {
               connect: { id: updatedImbursement.imbursementProofId },
@@ -192,7 +193,38 @@ export const imbursementsRouter = router({
         });
       }
     }),
-  //TODO substract from costcategory if it was accepted
+
+  cancelById: adminModProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await prisma.$transaction(async (txCtx) => {
+        // Create a transaction that reverses the previous one and reference the new and old one with each other.,
+        const imbursement = await txCtx.imbursement.update({
+          where: { id: input.id },
+          data: { wasCancelled: true },
+          include: { transactions: true },
+        });
+
+        const tx = imbursement.transactions[0];
+        if (!tx) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'transaction not found',
+          });
+        }
+
+        await cancelTransactions({
+          txCtx,
+          transactions: imbursement.transactions,
+        });
+
+        return;
+      });
+    }),
   deleteById: adminProcedure
     .input(
       z.object({
@@ -210,59 +242,5 @@ export const imbursementsRouter = router({
         where: { id: input.id },
       });
       return x;
-    }),
-  cancelById: adminModProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      return await prisma.$transaction(async (txCtx) => {
-        // Create a transaction that reverses the previous one and reference the new and old one with each other.,
-        const imbursement = await txCtx.imbursement.update({
-          where: { id: input.id },
-          data: { wasCancelled: true },
-          include: { transaction: true },
-        });
-
-        const tx = imbursement.transaction[0];
-        if (!tx) {
-          throw new TRPCError({
-            code: 'PRECONDITION_FAILED',
-            message: 'transaction not found',
-          });
-        }
-
-        const cancellation = await txCtx.transaction.create({
-          data: {
-            isCancellation: true,
-            transactionAmount: tx.transactionAmount,
-            accountId: tx.accountId,
-            currency: tx.currency,
-            openingBalance: tx.currentBalance,
-            currentBalance: tx.openingBalance,
-            moneyAccountId: tx.moneyAccountId,
-            moneyRequestId: tx.moneyRequestId,
-            imbursementId: tx.imbursementId,
-            expenseReturnId: tx.expenseReturnId,
-            cancellationId: tx.id,
-            searchableImage: imbursement.imbursementProofId
-              ? {
-                  connect: { id: imbursement.imbursementProofId },
-                }
-              : {},
-          },
-        });
-
-        await txCtx.transaction.update({
-          where: { id: tx.id },
-          data: {
-            cancellationId: cancellation.id,
-          },
-        });
-
-        return;
-      });
     }),
 });

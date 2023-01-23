@@ -19,7 +19,7 @@ import {
 import React from 'react';
 import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import type { CostCategory, Project } from '@prisma/client';
 import EditProjectModal from '@/components/Modals/project.edit.modal';
 import CreateMoneyRequestModal from '@/components/Modals/MoneyRequest.create.modal';

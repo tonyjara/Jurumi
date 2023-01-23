@@ -4,14 +4,16 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import type { MoneyRequest } from '@prisma/client';
 
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { CompleteMoneyReqHome } from './HomeRequestsPage.home.requests';
+import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
 
 const RowOptionsHomeRequests = ({
   x,
@@ -40,6 +42,7 @@ const RowOptionsHomeRequests = ({
       },
     })
   );
+  const isAccepted = x.status === 'ACCEPTED';
 
   return (
     <Menu>
@@ -48,28 +51,34 @@ const RowOptionsHomeRequests = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        <MenuItem
-          isDisabled={x.status !== 'ACCEPTED'}
-          onClick={() => {
-            setReqForReport(x);
-            onExpRepOpen();
-          }}
-        >
-          Crear rendición
-        </MenuItem>
+      <Portal>
+        <MenuList>
+          <MenuItem
+            isDisabled={!isAccepted || x.wasCancelled}
+            onClick={() => {
+              setReqForReport(x);
+              onExpRepOpen();
+            }}
+          >
+            Crear rendición
+          </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            setEditMoneyRequest(x);
-            onEditOpen();
-          }}
-        >
-          Editar
-        </MenuItem>
+          <MenuItem
+            isDisabled={isAccepted || x.wasCancelled}
+            onClick={() => {
+              setEditMoneyRequest(x);
+              onEditOpen();
+            }}
+          >
+            Editar
+          </MenuItem>
 
-        <MenuItem onClick={() => deleteById({ id: x.id })}>Eliminar</MenuItem>
-      </MenuList>
+          <RowOptionDeleteDialog
+            targetName="solicitud"
+            onConfirm={() => deleteById({ id: x.id })}
+          />
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

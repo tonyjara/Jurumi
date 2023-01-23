@@ -15,6 +15,7 @@ import {
   useColorMode,
   Button,
   Divider,
+  Portal,
 } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -86,30 +87,26 @@ const NavbarProfileSection = () => {
               </HStack>
             </MenuButton>
           )}
-          <MenuList
-            // bg={useColorModeValue('white', 'gray.900')}
-            // borderColor={useColorModeValue('gray.200', 'gray.700')}
-            zIndex={999999}
-          >
-            <VStack
-              display={{ base: 'flex', md: 'none' }}
-              alignItems="flex-start"
-              spacing="1px"
-              ml="2"
-            >
-              <Text fontSize="sm">{data?.user.displayName}</Text>
-              <Text fontSize="xs" color="gray.600">
-                {data?.user.role}
-              </Text>
-            </VStack>
-            <Divider mt={'10px'} />
-            <MenuItem>Mi cuenta</MenuItem>
-            {/* 
-            <MenuItem>Settings</MenuItem>
-            <MenuItem>Billing</MenuItem> */}
-            <MenuDivider />
-            <MenuItem onClick={() => signOut()}>Cerrar sesión</MenuItem>
-          </MenuList>
+          <Portal>
+            <MenuList>
+              <VStack
+                display={{ base: 'flex', md: 'none' }}
+                alignItems="flex-start"
+                spacing="1px"
+                ml="2"
+              >
+                <Text fontSize="sm">{data?.user.displayName}</Text>
+                <Text fontSize="xs" color="gray.600">
+                  {data?.user.role}
+                </Text>
+              </VStack>
+              <Divider mt={'10px'} />
+              <MenuItem>Mi cuenta</MenuItem>
+
+              <MenuDivider />
+              <MenuItem onClick={() => signOut()}>Cerrar sesión</MenuItem>
+            </MenuList>
+          </Portal>
         </Menu>
       </Flex>
     </HStack>

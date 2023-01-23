@@ -23,7 +23,7 @@ import {
 import { taxPayerMock } from '../../__tests__/mocks/Mocks';
 import SeedButton from '../DevTools/SeedButton';
 import FormControlledText from '../FormControlled/FormControlledText';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 
 const CreateTaxPayerModal = ({
   isOpen,

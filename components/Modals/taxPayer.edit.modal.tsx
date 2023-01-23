@@ -21,7 +21,7 @@ import {
   validateTaxPayer,
 } from '@/lib/validations/taxtPayer.validate';
 import FormControlledText from '../FormControlled/FormControlledText';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 
 const EditTaxPayerModal = ({
   isOpen,

@@ -7,12 +7,13 @@ import type { Decimal } from '@prisma/client/runtime';
 interface props {
   amount: Decimal;
   currency: Currency;
+  negative?: boolean;
 }
 
-const MoneyCell = (props: props) => {
-  const { amount, currency } = props;
+const MoneyCell = ({ amount, currency, negative }: props) => {
   return (
     <Text fontSize="sm" fontWeight="bold">
+      {negative && '-'}
       {decimalFormat(amount, currency)}
     </Text>
   );

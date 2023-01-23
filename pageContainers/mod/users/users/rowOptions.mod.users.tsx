@@ -4,11 +4,12 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import type { Account } from '@prisma/client';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormAccount } from '@/lib/validations/account.validate';
 
@@ -39,23 +40,25 @@ const RowOptionsModUsers = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        <MenuItem
-          onClick={() => {
-            mutate({ id: x.id, active: !x.active });
-          }}
-        >
-          {x.active ? 'Desactivar cuenta' : 'Activar cuenta'}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setEditAccount(x);
-            onEditOpen();
-          }}
-        >
-          Editar
-        </MenuItem>
-      </MenuList>
+      <Portal>
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              mutate({ id: x.id, active: !x.active });
+            }}
+          >
+            {x.active ? 'Desactivar cuenta' : 'Activar cuenta'}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setEditAccount(x);
+              onEditOpen();
+            }}
+          >
+            Editar
+          </MenuItem>
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

@@ -1,5 +1,5 @@
 import SkeletonRows from '@/components/DynamicTables/Utils/SkeletonRows';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import useDebounce from '@/lib/hooks/useDebounce';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { AddIcon, CloseIcon, DeleteIcon, Search2Icon } from '@chakra-ui/icons';

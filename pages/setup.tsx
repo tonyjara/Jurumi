@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import FormControlledText from '../components/FormControlled/FormControlledText';
-import { handleUseMutationAlerts } from '../components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '../components/Toasts & Alerts/MyToast';
 import { knownErrors } from '../lib/dictionaries/knownErrors';
 import { trpcClient } from '../lib/utils/trpcClient';
 

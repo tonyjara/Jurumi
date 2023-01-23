@@ -10,6 +10,12 @@ import {
 import { handleWhereImApprover } from './utils/MoneyRequestUtils';
 import { handleOrderBy } from './utils/SortingUtils';
 import prisma from '@/server/db/client';
+import {
+  cancelExpenseReports,
+  cancelExpenseReturns,
+  cancelMoneyReqApprovals,
+  cancelTransactions,
+} from './utils/Cancelations';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -42,7 +48,7 @@ export const moneyRequestRouter = router({
         include: {
           project: true,
           transactions: true,
-          expenseReports: true,
+          expenseReports: { where: { wasCancelled: false } },
         },
 
         where: { accountId: user.id, status: input.status },
@@ -92,8 +98,8 @@ export const moneyRequestRouter = router({
           transactions: {
             where: { cancellationId: null, costCategoryId: null },
           },
-          moneyRequestApprovals: true,
-          expenseReports: true,
+          moneyRequestApprovals: { where: { wasCancelled: false } },
+          expenseReports: { where: { wasCancelled: false } },
           organization: {
             select: {
               moneyRequestApprovers: {
@@ -163,15 +169,50 @@ export const moneyRequestRouter = router({
           description: input.description,
           moneyRequestType: input.moneyRequestType,
           projectId: input.projectId,
-          //if it was rejected and edited, it automaticly gets reseted to pending
-          status: input.status === 'REJECTED' ? 'PENDING' : input.status,
+          status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
         },
       });
       return x;
     }),
-  //TODO substract from costcategory if it was accepted
+  cancelById: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await prisma.$transaction(async (txCtx) => {
+        const moneyReq = await txCtx?.moneyRequest.update({
+          where: { id: input.id },
+          data: { wasCancelled: true },
+          include: {
+            expenseReports: true,
+            expenseReturns: { include: { transactions: true } },
+            transactions: true,
+            moneyRequestApprovals: true,
+          },
+        });
+
+        await cancelTransactions({
+          txCtx,
+          transactions: moneyReq.transactions,
+        });
+        await cancelExpenseReports({
+          txCtx,
+          expenseReports: moneyReq.expenseReports,
+        });
+        await cancelExpenseReturns({
+          txCtx,
+          expenseReturns: moneyReq.expenseReturns,
+        });
+        await cancelMoneyReqApprovals({
+          txCtx,
+          moneyRequestApprovals: moneyReq.moneyRequestApprovals,
+        });
+      });
+    }),
   deleteById: adminProcedure
     .input(
       z.object({
@@ -179,6 +220,10 @@ export const moneyRequestRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      await prisma.transaction.deleteMany({
+        where: { moneyRequestId: input.id },
+      });
+
       const x = await prisma?.moneyRequest.delete({
         where: { id: input.id },
       });

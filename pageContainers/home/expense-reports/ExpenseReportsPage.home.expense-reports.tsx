@@ -47,7 +47,7 @@ const MyExpenseReportsPage = () => {
   }, [editExpenseReport, isEditOpen]);
 
   const { data: expenseReports, isFetching } =
-    trpcClient.expenseReport.getManyComplete.useQuery(
+    trpcClient.expenseReport.getMyOwnComplete.useQuery(
       { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
       { keepPreviousData: globalFilter ? true : false }
     );
@@ -93,6 +93,7 @@ const MyExpenseReportsPage = () => {
         })}
         data={handleDataSource()}
         count={count ?? 0}
+        colorRedKey="wasCancelled"
         {...dynamicTableProps}
       />
       {editExpenseReport && (

@@ -6,7 +6,7 @@ import type { MoneyRequest, Transaction } from '@prisma/client';
 import { useRouter } from 'next/router';
 import FormContainer from '@/components/Containers/FormContainer';
 import TransactionForm from '@/components/Forms/Transaction.create.form';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
@@ -45,6 +45,7 @@ const CreateTransactionPage = ({
   useEffect(() => {
     if (moneyRequest) {
       setValue('moneyRequestId', moneyRequest.id);
+      setValue('projectId', moneyRequest.projectId);
     }
 
     return () => {};

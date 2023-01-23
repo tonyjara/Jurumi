@@ -1,8 +1,8 @@
 import React from 'react';
-import MySidebarWithHeader from '../components/Nav/MySidebarWithHeader';
+import DrawerWithTopBar from '../components/Nav/DrawerWithTopBar';
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  return <MySidebarWithHeader>{children}</MySidebarWithHeader>;
+  return <DrawerWithTopBar>{children}</DrawerWithTopBar>;
 };
 
 export default RootLayout;

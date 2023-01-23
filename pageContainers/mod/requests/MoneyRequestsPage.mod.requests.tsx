@@ -129,6 +129,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         options={tableOptions}
         data={handleDataSource() ?? []}
         count={count ?? 0}
+        colorRedKey="wasCancelled"
         {...dynamicTableProps}
       />
       {prefs?.selectedOrganization && (

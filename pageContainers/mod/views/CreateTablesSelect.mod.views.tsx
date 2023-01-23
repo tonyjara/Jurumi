@@ -45,9 +45,9 @@ const CreateTablesSelect = () => {
       p={'5px'}
       borderRadius="8px"
       backgroundColor={selectBackground}
-      zIndex={2}
+      zIndex={1}
       position={'absolute'}
-      right={0}
+      right={2}
     >
       <Box minW={'300px'}>
         <Select

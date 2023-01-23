@@ -1,19 +1,26 @@
-import type { FlexProps } from '@chakra-ui/react';
 import { Flex, Icon } from '@chakra-ui/react';
 import Link from 'next/link';
 import React from 'react';
 import type { IconType } from 'react-icons';
-interface NavItemProps extends FlexProps {
+interface NavItemProps {
   icon: IconType;
   children: React.ReactNode;
   dest: string; //destination
+  minimized?: boolean;
+  onClose?: () => void;
 }
-const NavItem = ({ icon, children, dest, ...rest }: NavItemProps) => {
+const NavItem = ({
+  icon,
+  onClose,
+  children,
+  dest,
+  minimized,
+}: NavItemProps) => {
   return (
     <Link
+      onClick={() => onClose && onClose()}
       href={dest}
       style={{ textDecoration: 'none' }}
-      // _focus={{ boxShadow: 'none' }}
     >
       <Flex
         align="center"
@@ -26,19 +33,19 @@ const NavItem = ({ icon, children, dest, ...rest }: NavItemProps) => {
           bg: 'cyan.400',
           color: 'white',
         }}
-        {...rest}
+        justifyContent={minimized ? 'center' : 'left'}
       >
         {icon && (
           <Icon
-            mr="4"
-            fontSize="16"
+            mr={minimized ? '0' : '4'}
+            fontSize="20px"
             _groupHover={{
               color: 'white',
             }}
             as={icon}
           />
         )}
-        {children}
+        {!minimized && children}
       </Flex>
     </Link>
   );

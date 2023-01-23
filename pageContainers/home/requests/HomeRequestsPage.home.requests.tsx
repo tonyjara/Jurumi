@@ -102,6 +102,7 @@ const MoneyRequestsPage = () => {
         })}
         data={handleDataSource()}
         count={count ?? 0}
+        colorRedKey="wasCancelled"
         {...dynamicTableProps}
       />
 

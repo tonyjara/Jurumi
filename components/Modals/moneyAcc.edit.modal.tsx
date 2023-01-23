@@ -20,7 +20,7 @@ import {
   defaultMoneyAccData,
   validateMoneyAccount,
 } from '@/lib/validations/moneyAcc.validate';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import { moneyAccMock } from '@/__tests__/mocks/Mocks';
 import EditMoneyAccForm from '../Forms/MoneyAcc.edit.form';

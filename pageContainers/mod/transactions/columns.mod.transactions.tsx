@@ -26,20 +26,6 @@ const handleTransactionConcept = (
 
   return '-';
 };
-const handleOperationType = (
-  ctx: CellContext<TransactionComplete, unknown>
-) => {
-  const x = ctx.row.original;
-  if (x.moneyRequest?.description) {
-    return 'Solicitud de Fondo';
-  }
-  if (x.imbursement?.concept) {
-    return 'Desembolso';
-  }
-  // if(x.im)
-
-  return '-';
-};
 
 export const modTransactionsColumns = ({
   onEditOpen,
@@ -75,14 +61,20 @@ export const modTransactionsColumns = ({
     ),
     header: 'Concepto',
   }),
-  columnHelper.display({
-    cell: (x) => <TextCell text={handleOperationType(x)} />,
-    header: 'T. Operación',
+  columnHelper.accessor('transactionType', {
+    header: 'T. Transacción',
+    cell: (x) => (
+      <EnumTextCell text={x.getValue()} enumFunc={translateTransactionType} />
+    ),
   }),
   columnHelper.accessor('transactionAmount', {
     header: 'Monto',
     cell: (x) => (
-      <MoneyCell amount={x.getValue()} currency={x.row.original.currency} />
+      <MoneyCell
+        negative={x.row.original.isCancellation}
+        amount={x.getValue()}
+        currency={x.row.original.currency}
+      />
     ),
   }),
   columnHelper.accessor('account.displayName', {
@@ -105,16 +97,7 @@ export const modTransactionsColumns = ({
       <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
     ),
   }),
-  columnHelper.accessor('transactionType', {
-    header: 'Tipo',
-    cell: (x) => (
-      <EnumTextCell
-        text={x.getValue()}
-        enumFunc={translateTransactionType}
-        hover={x.row.original.transactionType}
-      />
-    ),
-  }),
+
   columnHelper.display({
     cell: (x) => (
       <ImageModalCell

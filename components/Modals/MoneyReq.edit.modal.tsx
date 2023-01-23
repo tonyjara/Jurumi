@@ -15,7 +15,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
 import { trpcClient } from '../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
 import {
@@ -24,6 +24,7 @@ import {
 } from '../../lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
 import { moneyRequestMock } from '../../__tests__/mocks/Mocks';
+import { useRouter } from 'next/router';
 
 const EditMoneyRequestModal = ({
   isOpen,
@@ -34,6 +35,7 @@ const EditMoneyRequestModal = ({
   onClose: () => void;
   moneyRequest: MoneyRequest;
 }) => {
+  const router = useRouter();
   const context = trpcClient.useContext();
   const {
     handleSubmit,
@@ -68,6 +70,12 @@ const EditMoneyRequestModal = ({
   );
 
   const submitFunc = async (data: FormMoneyRequest) => {
+    //  if it was rejected and edited, it automaticly gets reseted to pending
+    const route = router.asPath;
+    if (moneyRequest.status === 'REJECTED' && route === '/home/requests') {
+      data.status = 'PENDING';
+    }
+
     mutate(data);
   };
 
@@ -79,7 +87,7 @@ const EditMoneyRequestModal = ({
           <ModalHeader>Editar una solicitud desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={moneyRequestMock} />
+            <SeedButton reset={reset} mock={() => moneyRequestMock('')} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm control={control} errors={errors as any} />
           </ModalBody>

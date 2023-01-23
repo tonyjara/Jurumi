@@ -10,21 +10,23 @@ datasource db {
 }
 
 model Account {
-  id                       String                     @id @default(cuid())
-  active                   Boolean                    @default(true)
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime?                  @updatedAt
-  email                    String                     @unique
-  displayName              String                     @unique
-  password                 String
-  role                     Role                       @default(USER)
-  isVerified               Boolean                    @default(false)
+  id          String       @id @default(cuid())
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+  email       String       @unique
+  displayName String       @unique
+  password    String
+  role        Role         @default(USER)
+  isVerified  Boolean      @default(false)
+  preferences Preferences?
+  profile     Profile?
+
+  organizationPosts        OrganizationPost[]
   accountVerificationLinks AccountVerificationLinks[]
   expenseReports           ExpenseReport[]
   moneyRequests            MoneyRequest[]
   moneyApprovals           MoneyRequestApproval[]
-  preferences              Preferences?
-  profile                  Profile?
   transactions             Transaction[]
   searchableImage          searchableImage[]
   allowedOnProjects        Project[]                  @relation("AccountToProject")
@@ -52,6 +54,18 @@ model Preferences {
   account              Account   @relation(fields: [accountId], references: [id])
 }
 
+model OrganizationPost {
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
+  title          String
+  message        String
+  createdById    String
+  recipients     Account[]
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
 model AccountVerificationLinks {
   id               String   @id @default(cuid())
   createdAt        DateTime @default(now())
@@ -64,20 +78,21 @@ model AccountVerificationLinks {
 }
 
 model Organization {
-  id                    String         @id @default(cuid())
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime?      @updatedAt
+  id                    String             @id @default(cuid())
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime?          @updatedAt
   createdById           String
   updatedById           String?
-  displayName           String         @unique
-  archived              Boolean        @default(false)
-  softDeleted           Boolean        @default(false)
+  displayName           String             @unique
+  archived              Boolean            @default(false)
+  softDeleted           Boolean            @default(false)
   moneyRequests         MoneyRequest[]
   projects              Project[]
-  moneyAccounts         MoneyAccount[] @relation("MoneyAccountToOrganization")
-  members               Account[]      @relation("members")
-  moneyAdministrators   Account[]      @relation("moneyAdministrators")
-  moneyRequestApprovers Account[]      @relation("moneyRequestApprovers")
+  moneyAccounts         MoneyAccount[]     @relation("MoneyAccountToOrganization")
+  members               Account[]          @relation("members")
+  moneyAdministrators   Account[]          @relation("moneyAdministrators")
+  moneyRequestApprovers Account[]          @relation("moneyRequestApprovers")
+  organizationPosts     OrganizationPost[]
 }
 
 model MoneyAccount {
@@ -132,7 +147,7 @@ model Project {
 
   costCategories CostCategory[]
   expenseReports ExpenseReport[]
-  imbursement    Imbursement[]
+  imbursements   Imbursement[]
   moneyRequest   MoneyRequest[]
 
   allowedUsers Account[]     @relation("AccountToProject")
@@ -183,9 +198,9 @@ model Imbursement {
   projectId      String?
   project        Project?      @relation(fields: [projectId], references: [id])
 
-  taxPayerId  String
-  taxPayer    TaxPayer      @relation(fields: [taxPayerId], references: [id])
-  transaction Transaction[]
+  taxPayerId   String
+  taxPayer     TaxPayer      @relation(fields: [taxPayerId], references: [id])
+  transactions Transaction[]
 }
 
 model TaxPayer {
@@ -212,8 +227,10 @@ model MoneyRequestApproval {
   rejectMessage  String
   accountId      String
   moneyRequestId String
-  account        Account                     @relation(fields: [accountId], references: [id])
-  moneyRequest   MoneyRequest                @relation(fields: [moneyRequestId], references: [id])
+  wasCancelled   Boolean                     @default(false)
+
+  account      Account      @relation(fields: [accountId], references: [id])
+  moneyRequest MoneyRequest @relation(fields: [moneyRequestId], references: [id])
 }
 
 model MoneyRequest {
@@ -228,6 +245,7 @@ model MoneyRequest {
   rejectionMessage String
   archived         Boolean            @default(false)
   softDeleted      Boolean            @default(false)
+  wasCancelled     Boolean            @default(false)
 
   accountId      String
   account        Account      @relation(fields: [accountId], references: [id])
@@ -250,6 +268,7 @@ model ExpenseReport {
   amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
   currency      Currency
   comments      String
+  wasCancelled  Boolean   @default(false)
 
   accountId       String
   account         Account          @relation(fields: [accountId], references: [id])
@@ -265,9 +284,11 @@ model ExpenseReport {
 }
 
 model ExpenseReturn {
-  id              String           @id @default(cuid())
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime?        @updatedAt
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+  wasCancelled Boolean   @default(false)
+
   amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
   moneyRequestId  String
   moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])

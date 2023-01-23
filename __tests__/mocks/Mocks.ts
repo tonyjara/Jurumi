@@ -2,7 +2,7 @@ import type { TaxPayer, Transaction } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-
+import { v4 as uuidV4 } from 'uuid';
 import { randEnumValue } from '@/lib/utils/TypescriptUtils';
 import type { FormProject } from '@/lib/validations/project.validate';
 import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
@@ -12,6 +12,7 @@ import type {
 } from '@/lib/validations/moneyAcc.validate';
 import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
+import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
@@ -57,6 +58,7 @@ export const moneyAccMock: () => FormMoneyAccount = () => {
     archived: false,
     softDeleted: false,
     bankInfo: bankInfo(),
+    organizationId: '',
   };
   return x;
 };
@@ -107,11 +109,10 @@ export const projectMock: () => FormProject = () => {
   };
   return x;
 };
-export const moneyRequestMock: () => Omit<
-  FormMoneyRequest,
-  'organizationId'
-> = () => {
-  const x: Omit<FormMoneyRequest, 'organizationId'> = {
+export const moneyRequestMock: (organizationId: string) => FormMoneyRequest = (
+  organizationId
+) => {
+  const x: FormMoneyRequest = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
@@ -125,6 +126,8 @@ export const moneyRequestMock: () => Omit<
     archived: false,
     softDeleted: false,
     rejectionMessage: '',
+    wasCancelled: false,
+    organizationId,
   };
   return x;
 };
@@ -153,7 +156,27 @@ export const transactionMock: () => Transaction = () => {
   };
   return x;
 };
-export const imbursementMock: () => FormImbursement = () => {
+export const imbursementMock: (
+  moneyAccOptions:
+    | {
+        value: string;
+        label: string;
+      }[]
+    | undefined,
+  projectOptions:
+    | {
+        value: string;
+        label: string;
+      }[]
+    | undefined
+) => FormImbursement = (moneyAccOptions, projectOptions) => {
+  const amountInOtherCurrency = new Prisma.Decimal(
+    faker.commerce.price(500, 2000)
+  );
+  const exchangeRate = 6500;
+  const imageName = uuidV4();
+
+  const finalAmount = amountInOtherCurrency.times(exchangeRate);
   const x: FormImbursement = {
     id: '',
     createdAt: new Date(),
@@ -161,37 +184,39 @@ export const imbursementMock: () => FormImbursement = () => {
     updatedById: null,
     concept: faker.commerce.productDescription().substring(0, 123),
     wasConvertedToOtherCurrency: true,
-    exchangeRate: 6500,
+    exchangeRate,
     otherCurrency: 'USD',
-    amountInOtherCurrency: new Prisma.Decimal(
-      faker.commerce.price(1000, 10000)
-    ),
+    amountInOtherCurrency,
     finalCurrency: 'PYG',
-    finalAmount: new Prisma.Decimal(0),
+    finalAmount: finalAmount,
     archived: false,
     softDeleted: false,
-    moneyAccountId: null,
-    projectId: null,
-    taxPayer: { razonSocial: '', ruc: '' },
+    moneyAccountId:
+      moneyAccOptions && moneyAccOptions[0]?.value
+        ? moneyAccOptions[0]?.value
+        : '',
+    projectId:
+      projectOptions && projectOptions[0]?.value
+        ? projectOptions[0]?.value
+        : '',
+    taxPayer: { razonSocial: 'Antonio Jara', ruc: '3655944' },
     invoiceFromOrg: { url: '', imageName: '' },
-    imbursementProof: { url: '', imageName: '' },
+    imbursementProof: {
+      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+      imageName,
+    },
     accountId: '',
     wasCancelled: false,
   };
   return x;
 };
 
-type mockExpenseReport = Omit<FormExpenseReport, 'projectId'>;
-
-export const expenseReportMock: ({
-  moneyReqId,
-}: {
-  moneyReqId: string;
-}) => mockExpenseReport = ({ moneyReqId }) => {
-  const x: mockExpenseReport = {
+export const expenseReportMock = ({ moneyReqId }: { moneyReqId: string }) => {
+  const imageName = uuidV4();
+  const x: FormExpenseReport = {
     searchableImage: {
       url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
-      imageName: '2c96c577-01a6-4a42-8681-907593b087aa',
+      imageName,
     },
     taxPayer: {
       razonSocial: faker.name.fullName(),
@@ -203,9 +228,42 @@ export const expenseReportMock: ({
     currency: 'PYG',
     moneyRequestId: moneyReqId,
     amountSpent: new Prisma.Decimal(faker.commerce.price(100000, 300000)),
-    facturaNumber: faker.random.numeric(11),
+    facturaNumber: faker.random.numeric(13).toString(),
     comments: faker.commerce.productDescription().substring(0, 123),
     accountId: '',
+    wasCancelled: false,
+    projectId: '',
   };
   return x;
+};
+
+export const TransactionCreateMock = () => {
+  const tx: FormTransactionCreate = {
+    id: 0,
+    createdAt: new Date(),
+    updatedAt: null,
+    accountId: '',
+    updatedById: null,
+    transactions: [
+      {
+        currency: 'PYG',
+        transactionAmount: new Prisma.Decimal(0),
+        moneyAccountId: '',
+        transactionProofUrl: '',
+
+        costCategoryId: null,
+      },
+    ],
+    transactionType: 'MONEY_ACCOUNT',
+    openingBalance: new Prisma.Decimal(0),
+    currentBalance: new Prisma.Decimal(0),
+    moneyRequestId: null,
+    imbursementId: null,
+    expenseReturnId: null,
+    cancellationId: null,
+    projectId: null,
+    isCancellation: false,
+    searchableImage: { url: '', imageName: '' },
+  };
+  return tx;
 };

@@ -4,12 +4,13 @@ import {
   IconButton,
   MenuList,
   MenuItem,
+  Portal,
 } from '@chakra-ui/react';
 import type { Transaction } from '@prisma/client';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { TransactionComplete } from './TransactionsPage.mod.transactions';
 
@@ -34,15 +35,6 @@ const RowOptionsModTransactions = ({
       },
     })
   );
-  const { mutate: cancelById } = trpcClient.transaction.cancelById.useMutation(
-    handleUseMutationAlerts({
-      successText: 'Se ha anulado la transaccion!',
-      callback: () => {
-        context.transaction.invalidate();
-        context.moneyAcc.invalidate();
-      },
-    })
-  );
 
   const handleQueryParams = () => {
     if (x.moneyRequestId) return { moneyRequestId: x.moneyRequestId };
@@ -59,48 +51,46 @@ const RowOptionsModTransactions = ({
         aria-label="options button"
         icon={<BsThreeDots />}
       />
-      <MenuList>
-        {!!x.cancellationId && (
-          <MenuItem>Esta transacción fue anulada.</MenuItem>
-        )}
-        <MenuItem
-          isDisabled={!!x.cancellationId}
-          onClick={() => {
-            router.push({
-              pathname: '/mod/requests',
-              query: handleQueryParams(),
-            });
-          }}
-        >
-          Ir a destino de concepto
-        </MenuItem>
-        <MenuItem
-          isDisabled={!!x.cancellationId}
-          onClick={() => {
-            setEditTransaction(x);
-            onEditOpen();
-          }}
-        >
-          Editar
-        </MenuItem>
-        {/* <MenuItem
-          isDisabled={!!x.cancellationId}
-          onClick={() => cancelById({ id: x.id })}
-        >
-          Anular
-        </MenuItem> */}
-        <MenuItem
-          onClick={() =>
-            deleteById({
-              id: x.id,
-              moneyAccountId: x.moneyAccountId,
-              costCategoryId: x.costCategoryId,
-            })
-          }
-        >
-          Eliminar
-        </MenuItem>
-      </MenuList>
+      <Portal>
+        <MenuList>
+          {!!x.cancellationId && (
+            <MenuItem>Esta transacción fue anulada.</MenuItem>
+          )}
+          <MenuItem
+            isDisabled={!!x.cancellationId}
+            onClick={() => {
+              router.push({
+                pathname: '/mod/requests',
+                query: handleQueryParams(),
+              });
+            }}
+          >
+            Ir a destino de concepto
+          </MenuItem>
+          <MenuItem
+            isDisabled={!!x.cancellationId}
+            onClick={() => {
+              setEditTransaction(x);
+              onEditOpen();
+            }}
+          >
+            Editar
+          </MenuItem>
+
+          <MenuItem
+            isDisabled={!!x.cancellationId}
+            onClick={() =>
+              deleteById({
+                id: x.id,
+                moneyAccountId: x.moneyAccountId,
+                costCategoryId: x.costCategoryId,
+              })
+            }
+          >
+            Eliminar
+          </MenuItem>
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };

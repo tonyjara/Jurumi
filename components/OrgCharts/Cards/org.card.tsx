@@ -22,7 +22,7 @@ import { MdOutlineAdd, MdOutlineDelete, MdOutlineEdit } from 'react-icons/md';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import CreateProjectModal from '@/components/Modals/project.create.modal';
 import EditOrgModal from '@/components/Modals/org.edit.modal';
-import { handleUseMutationAlerts } from '@/components/Toasts/MyToast';
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import type { FormOrganization } from '@/lib/validations/org.validate';
 
 const OrgCard = (org: FormOrganization) => {
@@ -42,8 +42,7 @@ const OrgCard = (org: FormOrganization) => {
     handleUseMutationAlerts({
       successText: 'La organización ha sido eliminada! 💩',
       callback: () => {
-        context.org.getMany.invalidate();
-        context.org.getMyOrgs.invalidate();
+        context.org.invalidate();
       },
     })
   );

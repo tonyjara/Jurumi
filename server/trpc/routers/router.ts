@@ -15,22 +15,23 @@ import { verificationLinksRouter } from './verificationLink.routes';
 import { taxPayerRouter } from './taxPayer.routes';
 import { expenseReportsRouter } from './ExpenseReport.routes';
 import { imbursementsRouter } from './imbursements.routes';
+import { seedRouter } from './seed.routes';
 
 export const appRouter = router({
   account: accountsRouter,
+  expenseReport: expenseReportsRouter,
   greeting: greetingRouter,
   healthcheck: publicProcedure.query(() => 'yay!'),
+  imbursement: imbursementsRouter,
   moneyAcc: moneyAccRouter,
   moneyApprovals: moneyApprovalRouter,
   moneyRequest: moneyRequestRouter,
   org: orgRouter,
   preferences: preferencesRouter,
   project: projectRouter,
+  seed: seedRouter,
+  taxPayer: taxPayerRouter,
   transaction: transactionsRouter,
   verificationLinks: verificationLinksRouter,
-  taxPayer: taxPayerRouter,
-  expenseReport: expenseReportsRouter,
-  imbursement: imbursementsRouter,
 });
-
 export type AppRouter = typeof appRouter;

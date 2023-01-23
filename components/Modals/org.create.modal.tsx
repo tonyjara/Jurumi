@@ -20,7 +20,7 @@ import {
   validateOrganization,
 } from '../../lib/validations/org.validate';
 import OrgForm from '../Forms/Org.form';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 
 const CreateOrgModal = ({
   isOpen,

@@ -25,7 +25,7 @@ import {
 
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
-import { handleUseMutationAlerts } from '../Toasts/MyToast';
+import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 
 const CreateAccountModal = ({
   isOpen,
