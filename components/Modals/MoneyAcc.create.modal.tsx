@@ -37,12 +37,17 @@ const CreateMoneyAccModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormMoneyAccount>({
     defaultValues: defaultMoneyAccData,
     resolver: zodResolver(validateMoneyAccount),
   });
 
+  const handleOnClose = () => {
+    reset(defaultMoneyAccData);
+    onClose();
+  };
   useEffect(() => {
     if (!isOpen) {
       reset(defaultMoneyAccData);
@@ -51,14 +56,17 @@ const CreateMoneyAccModal = ({
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
-
-  const handleOnClose = () => {
-    reset(defaultMoneyAccData);
-    onClose();
-  };
   const isCashAccount = useWatch({ control, name: 'isCashAccount' });
 
-  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
+  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery(
+    undefined,
+    {
+      onSuccess: (data) => {
+        data?.selectedOrganization &&
+          setValue('organizationId', data?.selectedOrganization);
+      },
+    }
+  );
   const { error, mutate, isLoading } = trpcClient.moneyAcc.create.useMutation(
     handleUseMutationAlerts({
       successText: 'Su cuenta bancaria ha sido creada! 🔥',
@@ -90,7 +98,14 @@ const CreateMoneyAccModal = ({
           )}
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={moneyAccMock} />
+            {prefs?.selectedOrganization && (
+              <SeedButton
+                reset={reset}
+                mock={() =>
+                  moneyAccMock({ organizationId: prefs?.selectedOrganization })
+                }
+              />
+            )}
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyAccForm control={control} errors={errors} />
           </ModalBody>

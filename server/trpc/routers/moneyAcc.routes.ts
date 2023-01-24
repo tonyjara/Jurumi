@@ -2,7 +2,12 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import type { FormBankInfo } from '@/lib/validations/moneyAcc.validate';
 import { validateMoneyAccount } from '@/lib/validations/moneyAcc.validate';
-import { adminProcedure, adminModProcedure, router } from '../initTrpc';
+import {
+  adminProcedure,
+  adminModProcedure,
+  router,
+  protectedProcedure,
+} from '../initTrpc';
 import prisma from '@/server/db/client';
 
 export const moneyAccRouter = router({
@@ -30,6 +35,16 @@ export const moneyAccRouter = router({
       },
       take: 20,
       orderBy: { id: 'desc' },
+    });
+  }),
+  getManyPublic: protectedProcedure.query(async () => {
+    return await prisma?.moneyAccount.findMany({
+      select: {
+        displayName: true,
+        id: true,
+        currency: true,
+        // bankInfo: true,
+      },
     });
   }),
 

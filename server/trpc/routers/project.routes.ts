@@ -56,6 +56,7 @@ export const projectRouter = router({
           costCategories: {
             include: {
               transactions: {
+                where: { transactionType: 'COST_CATEGORY' },
                 take: 1,
                 orderBy: { id: 'desc' },
                 select: {

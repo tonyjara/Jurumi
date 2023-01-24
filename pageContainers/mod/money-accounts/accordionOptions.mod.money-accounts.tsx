@@ -1,3 +1,5 @@
+import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
+import { trpcClient } from '@/lib/utils/trpcClient';
 import {
   Menu,
   MenuButton,
@@ -16,8 +18,20 @@ const AccordionOptionsMoneyAccountsPage = ({
   setEditData: React.Dispatch<React.SetStateAction<MoneyAccount | null>>;
   accountData: MoneyAccount;
 }) => {
+  const context = trpcClient.useContext();
+
+  const { mutate: deleteById } = trpcClient.moneyAcc.deleteById.useMutation(
+    handleUseMutationAlerts({
+      successText: 'Se ha eliminado la cuenta!',
+      callback: () => {
+        context.transaction.invalidate();
+        context.moneyAcc.invalidate();
+      },
+    })
+  );
+
   return (
-    <>
+    <div>
       <Menu>
         <MenuButton
           onClick={(e) => e.stopPropagation()}
@@ -34,9 +48,19 @@ const AccordionOptionsMoneyAccountsPage = ({
           >
             Editar
           </MenuItem>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteById({
+                id: accountData.id,
+              });
+            }}
+          >
+            Eliminar
+          </MenuItem>
         </MenuList>
       </Menu>
-    </>
+    </div>
   );
 };
 

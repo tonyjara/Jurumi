@@ -13,6 +13,7 @@ import type {
 import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
+import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
@@ -44,7 +45,11 @@ export const taxPayerMock: () => TaxPayer = () => {
   return x;
 };
 
-export const moneyAccMock: () => FormMoneyAccount = () => {
+export const moneyAccMock = ({
+  organizationId,
+}: {
+  organizationId: string;
+}) => {
   const x: FormMoneyAccount = {
     id: '',
     createdAt: new Date(),
@@ -58,7 +63,7 @@ export const moneyAccMock: () => FormMoneyAccount = () => {
     archived: false,
     softDeleted: false,
     bankInfo: bankInfo(),
-    organizationId: '',
+    organizationId,
   };
   return x;
 };
@@ -266,4 +271,32 @@ export const TransactionCreateMock = () => {
     searchableImage: { url: '', imageName: '' },
   };
   return tx;
+};
+
+export const expenseReturnMock = ({
+  moneyAccountId,
+  moneyRequestId,
+  amountReturned,
+}: {
+  moneyAccountId: string;
+  moneyRequestId: string;
+  amountReturned: Prisma.Decimal;
+}) => {
+  const imageName = uuidV4();
+  const x: FormExpenseReturn = {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    amountReturned,
+    moneyRequestId,
+    currency: 'PYG',
+    moneyAccountId,
+    accountId: '',
+    searchableImage: {
+      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+      imageName,
+    },
+    wasCancelled: false,
+  };
+  return x;
 };

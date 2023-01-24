@@ -43,6 +43,23 @@ const DeleteSeeds = () => {
         },
       })
     );
+  const { mutate: deleteALLExpenseReturns } =
+    trpcClient.seed.deleteALLExpenseReturns.useMutation(
+      handleUseMutationAlerts({
+        successText: `Se eliminaron los desembolsos.`,
+        callback: () => {
+          context.invalidate();
+        },
+      })
+    );
+
+  const deleteALL = () => {
+    deleteALLtransactions();
+    deleteAllExpenseReps();
+    deleteAllImbursements();
+    deleteALLExpenseReturns();
+    deleteAllMoneyReqs();
+  };
 
   return (
     <Stack>
@@ -70,6 +87,16 @@ const DeleteSeeds = () => {
           onConfirm={() => deleteAllImbursements()}
           buttonText="Eliminar TODOS los desembolsos"
           targetName="TODOS los desembolsos"
+        />
+        <ButtonDeleteDialog
+          onConfirm={() => deleteALLExpenseReturns()}
+          buttonText="Eliminar TODAS los devoluciones"
+          targetName="TODOS los devoluciones"
+        />
+        <ButtonDeleteDialog
+          onConfirm={deleteALL}
+          buttonText="Eliminar TODO"
+          targetName="TODO"
         />
       </ButtonGroup>
     </Stack>

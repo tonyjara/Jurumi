@@ -53,11 +53,12 @@ const RowOptionsModTransactions = ({
       />
       <Portal>
         <MenuList>
-          {!!x.cancellationId && (
-            <MenuItem>Esta transacción fue anulada.</MenuItem>
-          )}
+          {!!x.cancellationId ||
+            (x.isCancellation && (
+              <MenuItem>Esta transacción fue anulada.</MenuItem>
+            ))}
           <MenuItem
-            isDisabled={!!x.cancellationId}
+            isDisabled={!!x.cancellationId || x.isCancellation}
             onClick={() => {
               router.push({
                 pathname: '/mod/requests',
@@ -68,7 +69,7 @@ const RowOptionsModTransactions = ({
             Ir a destino de concepto
           </MenuItem>
           <MenuItem
-            isDisabled={!!x.cancellationId}
+            isDisabled={!!x.cancellationId || x.isCancellation}
             onClick={() => {
               setEditTransaction(x);
               onEditOpen();
@@ -78,7 +79,7 @@ const RowOptionsModTransactions = ({
           </MenuItem>
 
           <MenuItem
-            isDisabled={!!x.cancellationId}
+            isDisabled={!!x.cancellationId || x.isCancellation}
             onClick={() =>
               deleteById({
                 id: x.id,

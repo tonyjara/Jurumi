@@ -77,7 +77,7 @@ const TransactionsTable = ({
         data={data}
         count={count ?? 0}
         {...dynamicTableProps}
-        colorRedKey="cancellationId"
+        colorRedKey={['cancellationId', 'isCancellation']}
       />
       {editTransaction && (
         <EditTransactionModal

@@ -33,7 +33,8 @@ model Account {
   organizations            Organization[]             @relation("members")
   moneyAdminOrgs           Organization[]             @relation("moneyAdministrators")
   moneyApproverOrgs        Organization[]             @relation("moneyRequestApprovers")
-  Imbursement              Imbursement[]
+  imbursement              Imbursement[]
+  expenseReturn            ExpenseReturn[]
 }
 
 model Profile {
@@ -96,21 +97,22 @@ model Organization {
 }
 
 model MoneyAccount {
-  id             String         @id @default(cuid())
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime?      @updatedAt
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime?       @updatedAt
   createdById    String
   updatedById    String?
   displayName    String
   isCashAccount  Boolean
-  currency       Currency       @default(PYG)
-  initialBalance Decimal        @default(0) @db.Decimal(19, 4)
-  archived       Boolean        @default(false)
-  softDeleted    Boolean        @default(false)
+  currency       Currency        @default(PYG)
+  initialBalance Decimal         @default(0) @db.Decimal(19, 4)
+  archived       Boolean         @default(false)
+  softDeleted    Boolean         @default(false)
   bankInfo       BankInfo?
   imbursements   Imbursement[]
   transactions   Transaction[]
-  organization   Organization[] @relation("MoneyAccountToOrganization")
+  organization   Organization[]  @relation("MoneyAccountToOrganization")
+  expenseReturn  ExpenseReturn[]
 }
 
 model BankInfo {
@@ -284,16 +286,21 @@ model ExpenseReport {
 }
 
 model ExpenseReturn {
-  id           String    @id @default(cuid())
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime? @updatedAt
-  wasCancelled Boolean   @default(false)
-
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime?        @updatedAt
+  wasCancelled    Boolean          @default(false)
+  currency        Currency
   amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
-  moneyRequestId  String
-  moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
   transactions    Transaction[]
   searchableImage searchableImage?
+
+  moneyAccountId String
+  moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
+  moneyRequestId String
+  moneyRequest   MoneyRequest @relation(fields: [moneyRequestId], references: [id])
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
 }
 
 //A transaction can be linked to a moneyAccount or to a CostCategory, everytime a transaction history is required it needs specific transactions
@@ -418,6 +425,7 @@ enum MoneyResquestApprovalStatus {
 
 enum TransactionType {
   PROJECT_IMBURSEMENT
+  EXPENSE_RETURN
   COST_CATEGORY
   MONEY_ACCOUNT
 }

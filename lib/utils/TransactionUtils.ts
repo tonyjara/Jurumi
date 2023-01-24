@@ -1,6 +1,6 @@
 import type { BankAccsWithLastTx } from '@/components/OrgCharts/CardGroups/BankAcc.cardGroup';
 import type { CashAccsWithLastTx } from '@/components/OrgCharts/CardGroups/PettyCash.cardGroup';
-import type { ExpenseReport, Transaction } from '@prisma/client';
+import type { ExpenseReport, ExpenseReturn, Transaction } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
 import type { TransactionField } from '../validations/transaction.create.validate';
@@ -11,7 +11,10 @@ import { decimalFormat } from './DecimalHelpers';
 export const reduceTransactionAmounts = (x?: Transaction[]) => {
   if (!x) return new Prisma.Decimal(0);
   return x.reduce((acc, t) => {
-    return acc.add(t.transactionAmount);
+    if (t.transactionType === 'MONEY_ACCOUNT') {
+      return acc.add(t.transactionAmount);
+    }
+    return acc;
   }, new Prisma.Decimal(0));
 };
 
@@ -19,6 +22,12 @@ export const reduceExpenseReports = (x?: ExpenseReport[]) => {
   if (!x) return new Prisma.Decimal(0);
   return x.reduce((acc, t) => {
     return acc.add(t.amountSpent);
+  }, new Prisma.Decimal(0));
+};
+export const reduceExpenseReturns = (x?: ExpenseReturn[]) => {
+  if (!x) return new Prisma.Decimal(0);
+  return x.reduce((acc, t) => {
+    return acc.add(t.amountReturned);
   }, new Prisma.Decimal(0));
 };
 export const reduceTransactionFields = (x: TransactionField[]) => {

@@ -67,7 +67,7 @@ interface DynamicTableProps<T extends object> {
   sorting: SortingState;
   setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
   globalFilter?: boolean;
-  colorRedKey?: string;
+  colorRedKey?: string[];
 }
 
 const DynamicTable = <T extends object>({
@@ -229,7 +229,7 @@ const DynamicTable = <T extends object>({
               <Tr
                 color={
                   //@ts-ignore
-                  colorRedKey && !!row.original[colorRedKey]
+                  colorRedKey && colorRedKey.some((key) => !!row.original[key])
                     ? redRowColor
                     : undefined
                 }

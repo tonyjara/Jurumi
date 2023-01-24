@@ -14,6 +14,10 @@ import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { CompleteMoneyReqHome } from './HomeRequestsPage.home.requests';
 import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
+import {
+  reduceExpenseReports,
+  reduceExpenseReturns,
+} from '@/lib/utils/TransactionUtils';
 
 const RowOptionsHomeRequests = ({
   x,
@@ -21,6 +25,7 @@ const RowOptionsHomeRequests = ({
   onEditOpen,
   onExpRepOpen,
   setReqForReport,
+  onExpReturnOpen,
 }: {
   x: CompleteMoneyReqHome;
   setEditMoneyRequest: React.Dispatch<
@@ -31,6 +36,7 @@ const RowOptionsHomeRequests = ({
   >;
   onEditOpen: () => void;
   onExpRepOpen: () => void;
+  onExpReturnOpen: () => void;
 }) => {
   const context = trpcClient.useContext();
 
@@ -44,6 +50,10 @@ const RowOptionsHomeRequests = ({
   );
   const isAccepted = x.status === 'ACCEPTED';
 
+  const isFullyExecuted = reduceExpenseReports(x.expenseReports)
+    .add(reduceExpenseReturns(x.expenseReturns))
+    .equals(x.amountRequested);
+
   return (
     <Menu>
       <MenuButton
@@ -54,13 +64,22 @@ const RowOptionsHomeRequests = ({
       <Portal>
         <MenuList>
           <MenuItem
-            isDisabled={!isAccepted || x.wasCancelled}
+            isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
             onClick={() => {
               setReqForReport(x);
               onExpRepOpen();
             }}
           >
             Crear rendición
+          </MenuItem>
+          <MenuItem
+            isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
+            onClick={() => {
+              setReqForReport(x);
+              onExpReturnOpen();
+            }}
+          >
+            Generar devolución
           </MenuItem>
 
           <MenuItem

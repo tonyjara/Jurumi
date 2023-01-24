@@ -15,19 +15,17 @@ import { useForm } from 'react-hook-form';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { expenseReportMock } from '@/__tests__/mocks/Mocks';
-import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
-import {
-  defaultExpenseReportData,
-  validateExpenseReport,
-} from '@/lib/validations/expenseReport.validate';
-import ExpenseReportForm from '../Forms/ExpenseReport.form';
 import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
 import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
+import ExpenseReturnForm from '../Forms/ExpenseReturn.form';
+import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
+import {
+  defaultExpenseReturn,
+  validateExpenseReturn,
+} from '@/lib/validations/expenseReturn.validate';
 
-const CreateExpenseReportModal = ({
+const CreateExpenseReturnModal = ({
   isOpen,
   onClose,
   moneyRequest,
@@ -43,18 +41,17 @@ const CreateExpenseReportModal = ({
     reset,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<FormExpenseReport>({
-    defaultValues: defaultExpenseReportData,
-    resolver: zodResolver(validateExpenseReport),
+  } = useForm<FormExpenseReturn>({
+    defaultValues: defaultExpenseReturn,
+    resolver: zodResolver(validateExpenseReturn),
   });
   const handleOnClose = () => {
-    reset(defaultExpenseReportData);
+    reset(defaultExpenseReturn);
     onClose();
   };
 
   useEffect(() => {
     if (moneyRequest && isOpen) {
-      setValue('projectId', moneyRequest.projectId);
       setValue('moneyRequestId', moneyRequest.id);
     }
     return () => {};
@@ -62,9 +59,9 @@ const CreateExpenseReportModal = ({
   }, [moneyRequest, isOpen]);
 
   const { error, mutate, isLoading } =
-    trpcClient.expenseReport.create.useMutation(
+    trpcClient.expenseReturn.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su rendición ha sido creada!',
+        successText: 'Su devolución ha sido creada!',
         callback: () => {
           handleOnClose();
           context.moneyRequest.invalidate();
@@ -72,7 +69,7 @@ const CreateExpenseReportModal = ({
       })
     );
 
-  const submitFunc = async (data: FormExpenseReport) => {
+  const submitFunc = async (data: FormExpenseReturn) => {
     mutate(data);
   };
 
@@ -95,12 +92,9 @@ const CreateExpenseReportModal = ({
 
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton
-              reset={reset}
-              mock={() => expenseReportMock({ moneyReqId: moneyRequest.id })}
-            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <ExpenseReportForm
+            <ExpenseReturnForm
+              reset={reset}
               moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}
@@ -127,4 +121,4 @@ const CreateExpenseReportModal = ({
   );
 };
 
-export default CreateExpenseReportModal;
+export default CreateExpenseReturnModal;
