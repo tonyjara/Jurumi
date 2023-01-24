@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { validateTransactionEdit } from '@/lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../../initTrpc';
-import { handleOrderBy } from '../utils/SortingUtils';
-import { checkIfIsLastTransaction } from '../utils/TransactionRouteUtils';
+import { handleOrderBy } from '../utils/Sorting.routeUtils';
+import { checkIfIsLastTransaction } from '../utils/Transaction.routeUtils';
 import prisma from '@/server/db/client';
 import { createManyTransactions } from './createMany.transaction.routes';
 

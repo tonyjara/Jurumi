@@ -6,9 +6,9 @@ import { verifyToken } from '@/lib/utils/asyncJWT';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
-import { makeSignedToken } from './utils/VerificationLinkRouteUtils';
-import { getSelectedOrganizationId } from './utils/PreferencesRoutUtils';
-import { handleOrderBy } from './utils/SortingUtils';
+import { makeSignedToken } from './utils/VerificationLinks.routeUtils';
+import { getSelectedOrganizationId } from './utils/Preferences.routeUtils';
+import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 
 export const verificationLinksRouter = router({

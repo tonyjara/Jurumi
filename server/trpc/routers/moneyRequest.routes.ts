@@ -7,15 +7,15 @@ import {
   protectedProcedure,
   router,
 } from '../initTrpc';
-import { handleWhereImApprover } from './utils/MoneyRequestUtils';
-import { handleOrderBy } from './utils/SortingUtils';
+import { handleWhereImApprover } from './utils/MoneyRequest.routeUtils';
+import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 import {
   cancelExpenseReports,
   cancelExpenseReturns,
   cancelMoneyReqApprovals,
   cancelTransactions,
-} from './utils/Cancelations';
+} from './utils/Cancelations.routeUtils';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {

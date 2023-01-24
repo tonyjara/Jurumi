@@ -9,7 +9,7 @@ import {
   router,
 } from '../initTrpc';
 import prisma from '@/server/db/client';
-import { handleOrderBy } from './utils/SortingUtils';
+import { handleOrderBy } from './utils/Sorting.routeUtils';
 
 export const projectRouter = router({
   getMany: protectedProcedure.query(async ({ ctx }) => {

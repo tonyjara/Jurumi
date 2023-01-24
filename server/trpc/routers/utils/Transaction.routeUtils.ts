@@ -1,6 +1,6 @@
 import type { Account } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
-import { getSelectedOrganizationId } from './PreferencesRoutUtils';
+import { getSelectedOrganizationId } from './Preferences.routeUtils';
 
 export async function checkIfIsLastTransaction({
   moneyAccountId,

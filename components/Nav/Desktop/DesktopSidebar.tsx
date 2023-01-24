@@ -1,4 +1,5 @@
-import { IconButton } from '@chakra-ui/react';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import { IconButton, Image } from '@chakra-ui/react';
 import { AccordionIcon } from '@chakra-ui/react';
 import { AccordionPanel } from '@chakra-ui/react';
 import { Accordion, AccordionButton, AccordionItem } from '@chakra-ui/react';
@@ -19,6 +20,9 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
   const isAdminOrMod =
     data?.user.role === 'ADMIN' || data?.user.role === 'MODERATOR';
   const isAdmin = data?.user.role === 'ADMIN';
+
+  const { data: org } = trpcClient.org.getLogo.useQuery();
+
   return (
     <Box
       zIndex={2}
@@ -31,23 +35,44 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
       h="full"
       overflowY={'auto'}
       display={{ base: 'none', md: 'block' }}
+      justifyContent="center"
     >
-      <Flex h="20" alignItems="center" mx="24px" justifyContent="center">
-        {!minimized && <OrganizationSelect />}
-        <IconButton
-          aria-label="close drawer"
-          display={{ base: 'none', md: 'flex' }}
-          onClick={() => setMinimized(!minimized)}
-          colorScheme="teal"
-          icon={
-            minimized ? (
-              <TbLayoutSidebarRightCollapse style={{ fontSize: '25px' }} />
-            ) : (
-              <TbChevronsLeft style={{ fontSize: '25px' }} />
-            )
-          }
-          variant="ghost"
-        />
+      <Flex
+        h={'105px'}
+        // alignContent="center"
+        alignItems="center"
+        justifyContent={'center'}
+        flexDir={'column'}
+        pt="20px"
+        mb={'5px'}
+      >
+        {org?.imageLogo?.url && minimized && (
+          <Image
+            mb={'10px'}
+            boxSize={'30px'}
+            objectFit="cover"
+            src={org.imageLogo.url}
+            alt="organization logo"
+          />
+        )}
+        <Flex h="40px" alignItems="center" mx="24px" justifyContent="center">
+          {!minimized && <OrganizationSelect />}
+          <IconButton
+            aria-label="close drawer"
+            display={{ base: 'none', md: 'flex' }}
+            onClick={() => setMinimized(!minimized)}
+            colorScheme="teal"
+            // h={'30px'}
+            icon={
+              minimized ? (
+                <TbLayoutSidebarRightCollapse style={{ fontSize: '25px' }} />
+              ) : (
+                <TbChevronsLeft style={{ fontSize: '25px' }} />
+              )
+            }
+            variant="ghost"
+          />
+        </Flex>
       </Flex>
 
       {SidebarLinks(isAdminOrMod, isAdmin).map((link) => (

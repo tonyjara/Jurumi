@@ -37,6 +37,7 @@ const CreateOrgModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormOrganization>({
     defaultValues: defaultOrgData,
@@ -71,7 +72,11 @@ const CreateOrgModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
-            <OrgForm control={control} errors={errors as any} />
+            <OrgForm
+              setValue={setValue}
+              control={control}
+              errors={errors as any}
+            />
           </ModalBody>
 
           <ModalFooter>

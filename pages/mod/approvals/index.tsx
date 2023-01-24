@@ -2,7 +2,7 @@ import ApprovalsPage from '@/pageContainers/mod/approvals/PendingApprovalsPage.m
 import type { GetServerSideProps } from 'next';
 
 import { getServerAuthSession } from '@/server/common/get-server-auth-session';
-import { getSelectedOrganizationId } from '@/server/trpc/routers/utils/PreferencesRoutUtils';
+import { getSelectedOrganizationId } from '@/server/trpc/routers/utils/Preferences.routeUtils';
 
 export default ApprovalsPage;
 

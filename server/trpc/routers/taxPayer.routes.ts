@@ -6,7 +6,7 @@ import {
   router,
   protectedProcedure,
 } from '../initTrpc';
-import { handleOrderBy } from './utils/SortingUtils';
+import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 
 export const taxPayerRouter = router({

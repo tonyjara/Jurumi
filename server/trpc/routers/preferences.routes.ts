@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { protectedProcedure, router } from '../initTrpc';
-import { getSelectedOrganizationId } from './utils/PreferencesRoutUtils';
+import { getSelectedOrganizationId } from './utils/Preferences.routeUtils';
 import prisma from '@/server/db/client';
 
 export const preferencesRouter = router({

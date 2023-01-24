@@ -11,7 +11,7 @@ import prisma from '@/server/db/client';
 import {
   createCostCategoryTransactions,
   createExpenseReportProof,
-} from './utils/ExpenseReport.create.utils';
+} from './utils/ExpenseReport.routeUtils';
 
 export const expenseReportsRouter = router({
   getMany: protectedProcedure.query(async ({ ctx }) => {

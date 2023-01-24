@@ -9,7 +9,7 @@ import {
   TransactionCreateMock,
 } from '@/__tests__/mocks/Mocks';
 import { appRouter } from './router';
-import { createSeedTransaction } from './utils/SeedRouteUtils';
+import { createSeedTransaction } from './utils/Seed.routeUtils';
 import { TRPCError } from '@trpc/server';
 
 export const seedRouter = router({

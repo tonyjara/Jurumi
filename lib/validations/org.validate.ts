@@ -1,7 +1,7 @@
 import type { Organization } from '@prisma/client';
 import * as z from 'zod';
 
-export interface FormOrganization extends Organization {
+export type FormOrganization = Omit<Organization, 'searchableImageId'> & {
   moneyAdministrators: {
     id: string;
     displayName: string;
@@ -10,7 +10,8 @@ export interface FormOrganization extends Organization {
     id: string;
     displayName: string;
   }[];
-}
+  imageLogo: { imageName: string; url: string } | null;
+};
 
 export const validateOrganization: z.ZodType<FormOrganization> = z.lazy(() =>
   z.object({
@@ -31,6 +32,12 @@ export const validateOrganization: z.ZodType<FormOrganization> = z.lazy(() =>
     moneyAdministrators: z
       .object({ id: z.string(), displayName: z.string() })
       .array(),
+    imageLogo: z
+      .object({
+        imageName: z.string(),
+        url: z.string(),
+      })
+      .nullable(),
   })
 );
 
@@ -45,4 +52,5 @@ export const defaultOrgData: FormOrganization = {
   softDeleted: false,
   moneyAdministrators: [],
   moneyRequestApprovers: [],
+  imageLogo: { url: '', imageName: '' },
 };

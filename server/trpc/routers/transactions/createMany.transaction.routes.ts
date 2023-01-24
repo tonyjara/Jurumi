@@ -3,7 +3,7 @@ import type { FormTransactionCreate } from '@/lib/validations/transaction.create
 import { validateTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import { TRPCError } from '@trpc/server';
 import { adminModProcedure } from '../../initTrpc';
-import { checkIfUserIsMoneyAdmin } from '../utils/TransactionRouteUtils';
+import { checkIfUserIsMoneyAdmin } from '../utils/Transaction.routeUtils';
 
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)
