@@ -46,7 +46,13 @@ const NavbarProfileSection = () => {
         aria-label="change color theme"
         icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
       />
-      <Button variant="ghost" onClick={() => onToggleLanguageClick(changeTo)}>
+      <Button
+        w={'48px'}
+        h="48px"
+        variant="ghost"
+        fontSize={'2xl'}
+        onClick={() => onToggleLanguageClick(changeTo)}
+      >
         {flagIcon()}
       </Button>
       <IconButton

@@ -1,27 +1,25 @@
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
 import {
   Box,
   Flex,
+  Grid,
+  GridItem,
   Image,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
   Text,
-  Th,
-  Thead,
   Tr,
   useColorModeValue,
 } from '@chakra-ui/react';
-import type { MoneyRequest } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import React from 'react';
+import SignatureBox from './SignatureBox';
 
 const FundRequestPrintPage = ({
   moneyRequest,
@@ -46,7 +44,7 @@ const FundRequestPrintPage = ({
     archived: false,
     softDeleted: false,
     wasCancelled: false,
-    accountId: 'clcqw3zaq0006pf5svlfa1iwg',
+    accountId: user?.id ?? '',
     organizationId: 'clcqw4lz10008pf5s711y5uwx',
     projectId: 'cld1pg5wb0004pfe9w9bnpdn9',
     account: {
@@ -88,7 +86,7 @@ const FundRequestPrintPage = ({
         isCancellation: false,
         transactionType: 'MONEY_ACCOUNT',
         cancellationId: null,
-        accountId: 'clcqw3zaq0006pf5svlfa1iwg',
+        accountId: user?.id ?? '',
         expenseReturnId: null,
         imbursementId: null,
         moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
@@ -109,7 +107,7 @@ const FundRequestPrintPage = ({
         isCancellation: false,
         transactionType: 'EXPENSE_RETURN',
         cancellationId: null,
-        accountId: 'clcqw3zaq0006pf5svlfa1iwg',
+        accountId: user?.id ?? '',
         expenseReturnId: 'cldagi6870061pftttzyth6sn',
         imbursementId: null,
         moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
@@ -131,7 +129,7 @@ const FundRequestPrintPage = ({
         comments:
           'Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes & sandals',
         wasCancelled: false,
-        accountId: 'clcqw3zaq0006pf5svlfa1iwg',
+        accountId: user?.id ?? '',
         moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
         projectId: 'cld1pg5wb0004pfe9w9bnpdn9',
         taxPayerId: 'cldagi67u005spftt9pqkq3y6',
@@ -148,7 +146,7 @@ const FundRequestPrintPage = ({
         amountReturned: new Prisma.Decimal(840534),
         moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
         moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
-        accountId: 'clcqw3zaq0006pf5svlfa1iwg',
+        accountId: user?.id ?? '',
       },
     ],
     organization: {
@@ -159,60 +157,89 @@ const FundRequestPrintPage = ({
 
   const req = moneyRequest ?? fakeRequest;
   return (
-    <Box ml="40px" mt={'40px'}>
-      <Flex gap={5}>
-        {org?.imageLogo?.url && (
-          <Image
-            boxSize={'80px'}
-            src={org?.imageLogo.url}
-            alt="organization logo"
-          />
-        )}
-        <Text fontSize={'6xl'}>{org?.displayName}</Text>
-      </Flex>
-      <Text fontSize={'2xl'}>SOLICITUD DE ANTICIPO</Text>
-      <TableContainer
-        borderColor={borderColor}
-        borderWidth="1px"
-        borderStyle={'solid'}
-        borderRadius="8px"
-        maxW="800px"
-        mt={'20px'}
-      >
-        <Table colorScheme={borderColor}>
-          <Tbody>
-            <Tr>
-              <Td fontWeight={'bold'}>Responsable:</Td>
-              <Td>{req.account.displayName}</Td>
-            </Tr>
-            <Tr>
-              <Td fontWeight={'bold'}>Fecha:</Td>
-              <Td>{format(req.createdAt, 'dd/MM/yy hh:mm')}</Td>
-            </Tr>
-            <Tr>
-              <Td fontWeight={'bold'}>Motivo:</Td>
-              <Td whiteSpace={'break-spaces'}>{req.description}</Td>
-            </Tr>
-            <Tr>
-              <Td fontWeight={'bold'}>Proyecto:</Td>
-              <Td>{req.project?.displayName}</Td>
-            </Tr>
-            <Tr>
-              <Td fontWeight={'bold'}>Fuente de financiamiento:</Td>
-              <Td>{req.project?.financerName}</Td>
-            </Tr>
-            <Tr>
-              <Td fontWeight={'bold'}>Monto solicitado:</Td>
-              <Td>{decimalFormat(req.amountRequested, req.currency)}</Td>
-            </Tr>
-          </Tbody>
-        </Table>
-      </TableContainer>
-
-      <Box>
-        <Text>Presentado por:</Text>
-        <Text>Firma:</Text>
-        <Text>Fecha:</Text>
+    <Box
+      justifyContent={'center'}
+      alignContent="center"
+      justifyItems={'center'}
+      display={'flex'}
+      w="100%"
+      // h="150vh"
+    >
+      <Box mx="40px" mt={'40px'}>
+        <Flex gap={5}>
+          {org?.imageLogo?.url && (
+            <Image
+              boxSize={'80px'}
+              src={org?.imageLogo.url}
+              alt="organization logo"
+            />
+          )}
+          <Text fontSize={'6xl'}>{org?.displayName}</Text>
+        </Flex>
+        <Text fontSize={'2xl'}>SOLICITUD DE ANTICIPO</Text>
+        <TableContainer
+          borderColor={borderColor}
+          borderWidth="1px"
+          borderStyle={'solid'}
+          borderRadius="8px"
+          mt={'20px'}
+        >
+          <Table colorScheme={borderColor}>
+            <Tbody>
+              <Tr>
+                <Td fontWeight={'bold'}>Responsable:</Td>
+                <Td>{req.account.displayName}</Td>
+              </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Fecha:</Td>
+                <Td>{format(req.createdAt, 'dd/MM/yy hh:mm')}</Td>
+              </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Motivo:</Td>
+                <Td whiteSpace={'break-spaces'}>{req.description}</Td>
+              </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Proyecto:</Td>
+                <Td>{req.project?.displayName}</Td>
+              </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Fuente de financiamiento:</Td>
+                <Td>{req.project?.financerName}</Td>
+              </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Monto solicitado:</Td>
+                <Td>{decimalFormat(req.amountRequested, req.currency)}</Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
+        <Grid
+          // minW={'1000px'}
+          mt={'40px'}
+          h="200px"
+          templateRows="repeat(4, 1fr)"
+          templateColumns="repeat(4, 1fr)"
+          gap={4}
+        >
+          <GridItem colSpan={2}>
+            <SignatureBox title="Presentado por:" />
+          </GridItem>
+          <GridItem colSpan={2}>
+            <SignatureBox title="Recibí conforme:" />
+          </GridItem>
+          <GridItem colSpan={2}>
+            <SignatureBox
+              title="V° B° Director Ejecutivo:
+"
+            />
+          </GridItem>
+          <GridItem colSpan={2}>
+            <SignatureBox
+              title="V° B°  Administracion:
+"
+            />
+          </GridItem>
+        </Grid>
       </Box>
     </Box>
   );

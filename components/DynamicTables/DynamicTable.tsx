@@ -128,6 +128,8 @@ const DynamicTable = <T extends object>({
 
   return (
     <Card
+      // display={'flex'}
+      w="100%"
       css={customScrollbar}
       overflow={'auto'}
       backgroundColor={backgroundColor}
@@ -169,7 +171,6 @@ const DynamicTable = <T extends object>({
 
       <Table
         css={customScrollbar}
-        display={'block'}
         overflowX={'scroll'}
         size={['sm', 'md']}
         variant={'simple'}
