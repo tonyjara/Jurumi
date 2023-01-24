@@ -1,11 +1,12 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type {
   ExpenseReport,
+  ExpenseReturn,
   MoneyRequest,
   Project,
   Transaction,
 } from '@prisma/client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
 import DynamicTable from '@/components/DynamicTables/DynamicTable';
 import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
@@ -14,11 +15,13 @@ import EditMoneyRequestModal from '@/components/Modals/MoneyReq.edit.modal';
 import CreateMoneyRequestModal from '@/components/Modals/MoneyRequest.create.modal';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { homeRequestsColumns } from './columns.home.requests';
+import CreateExpenseReturnModal from '@/components/Modals/ExpenseReturn.create.modal';
 
 export type CompleteMoneyReqHome = MoneyRequest & {
   project: Project | null;
   expenseReports: ExpenseReport[];
   transactions: Transaction[];
+  expenseReturns: ExpenseReturn[];
 };
 
 const MoneyRequestsPage = () => {
@@ -39,23 +42,15 @@ const MoneyRequestsPage = () => {
     onClose: onExpRepClose,
   } = useDisclosure();
   const {
+    isOpen: isExpenseReturnOpen,
+    onOpen: onExpenseReturnOpen,
+    onClose: onExpenseReturnClose,
+  } = useDisclosure();
+  const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
     onClose: onEditClose,
   } = useDisclosure();
-
-  useEffect(() => {
-    if (!isEditOpen && editMoneyRequest) {
-      setEditMoneyRequest(null);
-    }
-    return () => {};
-  }, [editMoneyRequest, isEditOpen]);
-  useEffect(() => {
-    if (!isExpRepOpen && reqForReport) {
-      setReqForReport(null);
-    }
-    return () => {};
-  }, [reqForReport, isExpRepOpen]);
 
   const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
 
@@ -99,10 +94,11 @@ const MoneyRequestsPage = () => {
           pageSize,
           setReqForReport,
           onExpRepOpen,
+          onExpReturnOpen: onExpenseReturnOpen,
         })}
         data={handleDataSource()}
         count={count ?? 0}
-        colorRedKey="wasCancelled"
+        colorRedKey={['wasCancelled']}
         {...dynamicTableProps}
       />
 
@@ -118,6 +114,13 @@ const MoneyRequestsPage = () => {
           moneyRequest={reqForReport}
           isOpen={isExpRepOpen}
           onClose={onExpRepClose}
+        />
+      )}
+      {reqForReport && (
+        <CreateExpenseReturnModal
+          moneyRequest={reqForReport}
+          isOpen={isExpenseReturnOpen}
+          onClose={onExpenseReturnClose}
         />
       )}
       {editMoneyRequest && (

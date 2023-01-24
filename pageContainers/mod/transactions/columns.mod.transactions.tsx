@@ -19,6 +19,7 @@ const handleTransactionConcept = (
   if (x.moneyRequest?.description) {
     return x.moneyRequest.description;
   }
+
   if (x.imbursement?.concept) {
     return x.imbursement.concept;
   }
@@ -69,13 +70,25 @@ export const modTransactionsColumns = ({
   }),
   columnHelper.accessor('transactionAmount', {
     header: 'Monto',
-    cell: (x) => (
-      <MoneyCell
-        negative={x.row.original.isCancellation}
-        amount={x.getValue()}
-        currency={x.row.original.currency}
-      />
-    ),
+    cell: (x) => {
+      const arrowDir = () => {
+        const tx = x.row.original;
+        const txType = tx.transactionType;
+        if (txType === 'MONEY_ACCOUNT') {
+          return tx.isCancellation ? 'up' : 'down';
+        }
+
+        return tx.isCancellation ? 'down' : 'up';
+      };
+
+      return (
+        <MoneyCell
+          arrow={arrowDir()}
+          amount={x.getValue()}
+          currency={x.row.original.currency}
+        />
+      );
+    },
   }),
   columnHelper.accessor('account.displayName', {
     header: 'Creador',

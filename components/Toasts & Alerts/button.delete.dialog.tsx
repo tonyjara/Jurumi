@@ -36,10 +36,9 @@ export function ButtonDeleteDialog({
 
   return (
     <>
-      {/* <Button colorScheme="red" onClick={onOpen}>
-          Delete Customer
-        </Button> */}
-      <Button onClick={onOpen}>{buttonText}</Button>
+      <Button h="full" whiteSpace={'break-spaces'} onClick={onOpen}>
+        {buttonText}
+      </Button>
 
       <AlertDialog
         isOpen={isOpen}

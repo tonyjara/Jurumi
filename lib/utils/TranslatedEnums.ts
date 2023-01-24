@@ -31,6 +31,7 @@ export const translateTransactionType = (transactionType: TransactionType) => {
     COST_CATEGORY: 'L. Presupuestaria',
     MONEY_ACCOUNT: 'Cuenta',
     PROJECT_IMBURSEMENT: 'Desembolso',
+    EXPENSE_RETURN: 'Devolución',
   };
 
   return x[transactionType] ?? 'Error';

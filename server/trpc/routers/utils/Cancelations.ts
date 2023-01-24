@@ -2,9 +2,9 @@ import type {
   ExpenseReport,
   ExpenseReturn,
   MoneyRequestApproval,
-  Prisma,
   Transaction,
 } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 
 export const cancelTransactions = async ({
@@ -45,6 +45,15 @@ export const cancelTransactions = async ({
           orderBy: { id: 'desc' },
         });
       }
+      if (tx.transactionType === 'EXPENSE_RETURN') {
+        return await txCtx.transaction.findFirst({
+          where: {
+            moneyAccountId: tx.moneyAccountId,
+            transactionType: 'EXPENSE_RETURN',
+          },
+          orderBy: { id: 'desc' },
+        });
+      }
 
       return null;
     };
@@ -57,6 +66,23 @@ export const cancelTransactions = async ({
       });
     }
 
+    const currentBalance = () => {
+      if (
+        lastTx.transactionType === 'COST_CATEGORY' ||
+        lastTx.transactionType === 'PROJECT_IMBURSEMENT'
+      ) {
+        return lastTx.currentBalance.sub(tx.transactionAmount);
+      }
+      if (
+        lastTx.transactionType === 'MONEY_ACCOUNT' ||
+        lastTx.transactionType === 'EXPENSE_RETURN'
+      ) {
+        return lastTx.currentBalance.add(tx.transactionAmount);
+      }
+
+      return new Prisma.Decimal(0);
+    };
+
     //last tx is used for current opening balance, then the cancellation amount is substracted
     const cancellation = await txCtx.transaction.create({
       data: {
@@ -64,14 +90,14 @@ export const cancelTransactions = async ({
         accountId: tx.accountId,
         currency: tx.currency,
         //reversing amounts
+        cancellationId: tx.id,
         transactionAmount: tx.transactionAmount,
-        openingBalance: lastTx.currentBalance,
-        currentBalance: lastTx.currentBalance.sub(tx.transactionAmount),
+        openingBalance: tx.currentBalance,
+        currentBalance: currentBalance(),
         moneyAccountId: tx.moneyAccountId,
         moneyRequestId: tx.moneyRequestId,
         imbursementId: tx.imbursementId,
         expenseReturnId: tx.expenseReturnId,
-        cancellationId: tx.id,
         projectId: tx.projectId,
         transactionType: tx.transactionType,
         costCategoryId: tx.costCategoryId,
@@ -111,21 +137,17 @@ export const cancelExpenseReturns = async ({
   expenseReturns,
 }: {
   txCtx: Prisma.TransactionClient;
-  expenseReturns: (ExpenseReturn & {
-    transactions: Transaction[];
-  })[];
+  expenseReturns: ExpenseReturn[];
 }) => {
   if (!expenseReturns.length) return;
 
   for (const expRet of expenseReturns) {
-    await txCtx.expenseReport.update({
+    await txCtx.expenseReturn.update({
       where: { id: expRet.id },
       data: {
         wasCancelled: true,
       },
     });
-
-    await cancelTransactions({ txCtx, transactions: expRet.transactions });
   }
 };
 

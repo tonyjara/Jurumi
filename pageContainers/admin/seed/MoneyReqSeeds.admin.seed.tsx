@@ -25,9 +25,18 @@ const MoneyReqSeeds = ({ multiplier }: { multiplier: string }) => {
       })
     );
   const { mutate: createApprovedReqsWithTxsAndExpenseReports } =
-    trpcClient.seed.createApprovedMoneyReqWithTxAndWithExpenseReturn.useMutation(
+    trpcClient.seed.createApprovedMoneyReqWithTxAndWithExpenseReport.useMutation(
       handleUseMutationAlerts({
         successText: `Se crearon ${multiplier} solicitudes aprobadas con transacciones y rendiciones.`,
+        callback: () => {
+          context.invalidate();
+        },
+      })
+    );
+  const { mutate: createApprovedReqsWithTxsAndExpenseReportsAndReturns } =
+    trpcClient.seed.createApprovedMoneyReqWithTxAndExReportAndReturn.useMutation(
+      handleUseMutationAlerts({
+        successText: `Se crearon ${multiplier} solicitudes aprobadas con transacciones, rendiciones y devoluciones.`,
         callback: () => {
           context.invalidate();
         },
@@ -42,6 +51,10 @@ const MoneyReqSeeds = ({ multiplier }: { multiplier: string }) => {
     createApprovedReqsWithTxsAndExpenseReports({
       multiplier: parseInt(multiplier),
     });
+  const handleCreateApprovedReqsWithTxsAndExpenseReportsAndReturns = () =>
+    createApprovedReqsWithTxsAndExpenseReportsAndReturns({
+      multiplier: parseInt(multiplier),
+    });
 
   return (
     <Stack>
@@ -49,12 +62,33 @@ const MoneyReqSeeds = ({ multiplier }: { multiplier: string }) => {
         Solicitudes
       </Text>
       <ButtonGroup>
-        <Button onClick={handleCreateRequests}>Solas</Button>
-        <Button onClick={handleCreateApprovedReqsWithTxs}>
+        <Button
+          h="full"
+          whiteSpace={'break-spaces'}
+          onClick={handleCreateRequests}
+        >
+          Solas
+        </Button>
+        <Button
+          h="full"
+          whiteSpace={'break-spaces'}
+          onClick={handleCreateApprovedReqsWithTxs}
+        >
           Aprobadas con transacciones
         </Button>
-        <Button onClick={handleCreateApprovedReqsWithTxsAndExpenseReports}>
-          Aprobadas con transacciones y reportes
+        <Button
+          h="full"
+          whiteSpace={'break-spaces'}
+          onClick={handleCreateApprovedReqsWithTxsAndExpenseReports}
+        >
+          Aprobadas con transacciones y rendiciones
+        </Button>
+        <Button
+          h="full"
+          whiteSpace={'break-spaces'}
+          onClick={handleCreateApprovedReqsWithTxsAndExpenseReportsAndReturns}
+        >
+          Aprobadas con transacciones, rendiciones y devoluciones
         </Button>
       </ButtonGroup>
     </Stack>

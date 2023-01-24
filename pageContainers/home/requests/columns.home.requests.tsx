@@ -5,7 +5,10 @@ import EnumTextCell from '@/components/DynamicTables/DynamicCells/EnumTextCell';
 import MoneyCell from '@/components/DynamicTables/DynamicCells/MoneyCell';
 import PercentageCell from '@/components/DynamicTables/DynamicCells/PercentageCell';
 import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
-import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
+import {
+  reduceExpenseReports,
+  reduceExpenseReturns,
+} from '@/lib/utils/TransactionUtils';
 import {
   translatedMoneyReqStatus,
   translatedMoneyReqType,
@@ -22,6 +25,7 @@ export const homeRequestsColumns = ({
   pageSize,
   setReqForReport,
   onExpRepOpen,
+  onExpReturnOpen,
 }: {
   onEditOpen: () => void;
   setEditMoneyRequest: React.Dispatch<
@@ -33,6 +37,7 @@ export const homeRequestsColumns = ({
   pageSize: number;
   pageIndex: number;
   onExpRepOpen: () => void;
+  onExpReturnOpen: () => void;
 }) => [
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
@@ -53,15 +58,6 @@ export const homeRequestsColumns = ({
       />
     ),
   }),
-  //   columnHelper.display({
-  //     cell: (x) => (
-  //       <ImageModalCell
-  //         imageName={x.row.original.searchableImage?.imageName}
-  //         url={x.row.original.searchableImage?.url}
-  //       />
-  //     ),
-  //     header: 'Comprobante',
-  //   }),
   columnHelper.accessor('moneyRequestType', {
     header: 'Tipo',
     cell: (x) => (
@@ -85,7 +81,9 @@ export const homeRequestsColumns = ({
     cell: (x) => (
       <PercentageCell
         total={x.row.original.amountRequested}
-        executed={reduceExpenseReports(x.row.original.expenseReports)}
+        executed={reduceExpenseReports(x.row.original.expenseReports).add(
+          reduceExpenseReturns(x.row.original.expenseReturns)
+        )}
         currency={x.row.original.currency}
       />
     ),
@@ -100,6 +98,7 @@ export const homeRequestsColumns = ({
           setEditMoneyRequest={setEditMoneyRequest}
           setReqForReport={setReqForReport}
           onExpRepOpen={onExpRepOpen}
+          onExpReturnOpen={onExpReturnOpen}
         />
       );
     },

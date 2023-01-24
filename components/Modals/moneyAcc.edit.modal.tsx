@@ -21,8 +21,6 @@ import {
   validateMoneyAccount,
 } from '@/lib/validations/moneyAcc.validate';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { moneyAccMock } from '@/__tests__/mocks/Mocks';
 import EditMoneyAccForm from '../Forms/MoneyAcc.edit.form';
 import type { MoneyAccount } from '@prisma/client';
 
@@ -85,7 +83,6 @@ const EditMoneyAccModal = ({
           )}
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={moneyAccMock} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <EditMoneyAccForm control={control} errors={errors} />
           </ModalBody>

@@ -102,7 +102,7 @@ const ImbursementsPage = () => {
         })}
         data={handleDataSource()}
         count={count ?? 0}
-        colorRedKey={'wasCancelled'}
+        colorRedKey={['wasCancelled']}
         {...dynamicTableProps}
       />
 

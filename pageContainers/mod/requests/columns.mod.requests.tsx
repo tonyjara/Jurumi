@@ -9,6 +9,7 @@ import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
 import { ApprovalUtils } from '@/lib/utils/ApprovalUtilts';
 import {
   reduceExpenseReports,
+  reduceExpenseReturns,
   reduceTransactionAmounts,
 } from '@/lib/utils/TransactionUtils';
 import {
@@ -91,12 +92,6 @@ export const moneyRequestsColumns = ({
       <TextCell text={x.row.original?.project?.displayName ?? '-'} />
     ),
   }),
-  // columnHelper.display({
-  //   header: 'L. Presu.',
-  //   cell: (x) => (
-  //     <TextCell text={x.row.original?.costCategory?.displayName ?? '-'} />
-  //   ),
-  // }),
   columnHelper.accessor('description', {
     cell: (x) => (
       <TextCell text={x.getValue()} shortenString hover={x.getValue()} />
@@ -118,7 +113,9 @@ export const moneyRequestsColumns = ({
     cell: (x) => (
       <PercentageCell
         total={x.row.original.amountRequested}
-        executed={reduceExpenseReports(x.row.original.expenseReports)}
+        executed={reduceExpenseReports(x.row.original.expenseReports).add(
+          reduceExpenseReturns(x.row.original.expenseReturns)
+        )}
         currency={x.row.original.currency}
       />
     ),

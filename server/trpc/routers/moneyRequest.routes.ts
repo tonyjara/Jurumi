@@ -49,6 +49,7 @@ export const moneyRequestRouter = router({
           project: true,
           transactions: true,
           expenseReports: { where: { wasCancelled: false } },
+          expenseReturns: { where: { wasCancelled: false } },
         },
 
         where: { accountId: user.id, status: input.status },
@@ -96,10 +97,15 @@ export const moneyRequestRouter = router({
           account: true,
           project: true,
           transactions: {
-            where: { cancellationId: null, costCategoryId: null },
+            where: {
+              cancellationId: null,
+              costCategoryId: null,
+              isCancellation: false,
+            },
           },
           moneyRequestApprovals: { where: { wasCancelled: false } },
           expenseReports: { where: { wasCancelled: false } },
+          expenseReturns: { where: { wasCancelled: false } },
           organization: {
             select: {
               moneyRequestApprovers: {
@@ -124,7 +130,8 @@ export const moneyRequestRouter = router({
           project: true,
           transactions: true,
           moneyRequestApprovals: true,
-          expenseReports: true,
+          expenseReports: { where: { wasCancelled: false } },
+          expenseReturns: { where: { wasCancelled: false } },
           organization: {
             select: {
               moneyRequestApprovers: {
@@ -189,7 +196,7 @@ export const moneyRequestRouter = router({
           data: { wasCancelled: true },
           include: {
             expenseReports: true,
-            expenseReturns: { include: { transactions: true } },
+            expenseReturns: true,
             transactions: true,
             moneyRequestApprovals: true,
           },
@@ -221,6 +228,12 @@ export const moneyRequestRouter = router({
     )
     .mutation(async ({ input }) => {
       await prisma.transaction.deleteMany({
+        where: { moneyRequestId: input.id },
+      });
+      await prisma.expenseReport.deleteMany({
+        where: { moneyRequestId: input.id },
+      });
+      await prisma.expenseReturn.deleteMany({
         where: { moneyRequestId: input.id },
       });
 

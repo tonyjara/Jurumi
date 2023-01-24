@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       include: {
         transactions: {
           select: { transactionAmount: true },
-          where: { cancellationId: null },
+          where: { cancellationId: null, isCancellation: false },
         },
       },
     });

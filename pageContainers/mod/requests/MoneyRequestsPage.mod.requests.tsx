@@ -2,6 +2,7 @@ import { useDisclosure } from '@chakra-ui/react';
 import type {
   Account,
   ExpenseReport,
+  ExpenseReturn,
   MoneyRequest,
   MoneyRequestApproval,
   Project,
@@ -20,9 +21,12 @@ import type { MoneyRequestsPageProps } from 'pages/mod/requests';
 import { moneyRequestsColumns } from './columns.mod.requests';
 
 export type MoneyRequestComplete = MoneyRequest & {
-  expenseReports: ExpenseReport[];
+  project: Project | null;
   transactions: Transaction[];
+  expenseReports: ExpenseReport[];
+  expenseReturns: ExpenseReturn[];
   account: Account;
+  moneyRequestApprovals: MoneyRequestApproval[];
   organization: {
     moneyRequestApprovers: {
       id: string;
@@ -33,8 +37,6 @@ export type MoneyRequestComplete = MoneyRequest & {
       displayName: string;
     }[];
   };
-  project: Project | null;
-  moneyRequestApprovals: MoneyRequestApproval[];
 };
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
@@ -129,7 +131,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         options={tableOptions}
         data={handleDataSource() ?? []}
         count={count ?? 0}
-        colorRedKey="wasCancelled"
+        colorRedKey={['wasCancelled']}
         {...dynamicTableProps}
       />
       {prefs?.selectedOrganization && (
