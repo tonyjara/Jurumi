@@ -79,6 +79,7 @@ const EditExpenseReportModal = ({
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
             <ExpenseReportForm
+              reset={reset}
               setValue={setValue}
               control={control}
               errors={errors as any}

@@ -1,3 +1,4 @@
+import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import { validateTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import { TRPCError } from '@trpc/server';
@@ -21,10 +22,10 @@ export const createManyTransactions = adminModProcedure
       accountId: ctx.session.user.id,
       formTransaction: input,
     });
-    await createCostCategoryTransactions({
-      accountId: ctx.session.user.id,
-      formTransaction: input,
-    });
+    // await createCostCategoryTransactions({
+    //   accountId: ctx.session.user.id,
+    //   formTransaction: input,
+    // });
 
     //3. Change request status
     await prisma?.moneyRequest.update({
@@ -73,67 +74,6 @@ async function createManyMoneyAccountTransactions({
           currentBalance: currentBalance,
           transactionType: 'MONEY_ACCOUNT',
           moneyAccountId,
-          moneyRequestId: formTransaction.moneyRequestId,
-          imbursementId: formTransaction.imbursementId,
-          expenseReturnId: formTransaction.expenseReturnId,
-          searchableImage: formTransaction.searchableImage?.imageName.length
-            ? {
-                create: {
-                  url: formTransaction.searchableImage.url,
-                  imageName: formTransaction.searchableImage.imageName,
-                  text: '',
-                },
-              }
-            : {},
-        },
-      });
-    }
-  });
-}
-
-async function createCostCategoryTransactions({
-  accountId,
-  formTransaction,
-}: {
-  formTransaction: FormTransactionCreate;
-  accountId: string;
-}) {
-  if (
-    !formTransaction.projectId ||
-    !formTransaction.transactions.some((x) => x.costCategoryId)
-  )
-    return null;
-  return await prisma?.$transaction(async (txCtx) => {
-    for (const tx of formTransaction.transactions) {
-      const costCategoryId = tx.costCategoryId;
-      if (!costCategoryId) continue;
-
-      // 1. Get latest transaction of the money Account
-      const getLastestCostCatTx = await txCtx.costCategory.findUniqueOrThrow({
-        where: { id: costCategoryId },
-        include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
-      });
-
-      // 2. If it's the first transaction, opening balance is always 0
-
-      const lastTx = getLastestCostCatTx?.transactions[0];
-
-      const openingBalance = lastTx ? lastTx.currentBalance : 0;
-
-      const currentBalance = lastTx
-        ? lastTx.currentBalance.add(tx.transactionAmount)
-        : tx.transactionAmount;
-
-      await txCtx.transaction.create({
-        data: {
-          transactionAmount: tx.transactionAmount,
-          accountId,
-          currency: tx.currency,
-          openingBalance: openingBalance,
-          currentBalance: currentBalance,
-          costCategoryId,
-          projectId: formTransaction.projectId,
-          transactionType: 'COST_CATEGORY',
           moneyRequestId: formTransaction.moneyRequestId,
           imbursementId: formTransaction.imbursementId,
           expenseReturnId: formTransaction.expenseReturnId,

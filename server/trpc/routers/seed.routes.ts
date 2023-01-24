@@ -68,7 +68,6 @@ export const seedRouter = router({
           projectId: req.projectId,
           moneyReqId: req.id,
           userId: user.id,
-          costCatId: project.costCategories[0].id,
           amountRequested: req.amountRequested,
           caller,
         });
@@ -109,15 +108,17 @@ export const seedRouter = router({
           projectId: req.projectId,
           moneyReqId: req.id,
           userId: user.id,
-          costCatId: project.costCategories[0].id,
           amountRequested: req.amountRequested,
           caller,
         });
 
-        const expenseRepMock = expenseReportMock({ moneyReqId: req.id });
+        const expenseRepMock = expenseReportMock({
+          moneyReqId: req.id,
+          projectId: req.projectId,
+          costCategoryId: project.costCategories[0].id,
+        });
         expenseRepMock.amountSpent = req.amountRequested;
         expenseRepMock.accountId = user.id;
-        expenseRepMock.projectId = req.projectId;
 
         await caller.expenseReport.create(expenseRepMock);
       }
@@ -157,15 +158,17 @@ export const seedRouter = router({
           projectId: req.projectId,
           moneyReqId: req.id,
           userId: user.id,
-          costCatId: project.costCategories[0].id,
           amountRequested: req.amountRequested,
           caller,
         });
 
-        const expenseRepMock = expenseReportMock({ moneyReqId: req.id });
-        expenseRepMock.amountSpent = req.amountRequested.dividedBy(2);
-        expenseRepMock.accountId = user.id;
-        expenseRepMock.projectId = req.projectId;
+        const expenseRepMock = expenseReportMock({
+          moneyReqId: req.id,
+          projectId: req.projectId,
+          costCategoryId: project.costCategories[0].id,
+        });
+        (expenseRepMock.amountSpent = req.amountRequested.dividedBy(2)),
+          (expenseRepMock.accountId = user.id);
 
         await caller.expenseReport.create(expenseRepMock);
 

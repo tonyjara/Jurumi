@@ -95,12 +95,9 @@ const CreateExpenseReportModal = ({
 
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton
-              reset={reset}
-              mock={() => expenseReportMock({ moneyReqId: moneyRequest.id })}
-            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ExpenseReportForm
+              reset={reset}
               moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}

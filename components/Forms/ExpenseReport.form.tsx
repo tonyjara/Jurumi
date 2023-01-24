@@ -6,6 +6,7 @@ import type {
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
+  UseFormReset,
 } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
@@ -22,11 +23,14 @@ import FormControlledText from '../FormControlled/FormControlledText';
 import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
 import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
 import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
+import SeedButton from '../DevTools/SeedButton';
+import { expenseReportMock } from '@/__tests__/mocks/Mocks';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
   setValue: UseFormSetValue<T>;
   moneyRequest?: CompleteMoneyReqHome;
+  reset: UseFormReset<FormExpenseReport>;
 }
 
 const ExpenseReportForm = ({
@@ -34,6 +38,7 @@ const ExpenseReportForm = ({
   errors,
   moneyRequest,
   setValue,
+  reset,
 }: formProps<FormExpenseReport>) => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -41,14 +46,40 @@ const ExpenseReportForm = ({
   const { data: projects } = trpcClient.project.getMany.useQuery();
 
   const currency = useWatch({ control, name: 'currency' });
+  const projectId = useWatch({ control, name: 'projectId' });
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
     label: `${proj.displayName}`,
   }));
 
+  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
+    { projectId: projectId ?? '' },
+    { enabled: !!projectId?.length }
+  );
+
+  const costCatOptions = () =>
+    costCats?.map((cat) => ({
+      value: cat.id,
+      label: `${cat.displayName}`,
+    }));
+
+  const firstOption = costCats ? costCats[0] : null;
+
   return (
     <VStack spacing={5}>
+      {projectId && moneyRequest && firstOption && (
+        <SeedButton
+          reset={reset}
+          mock={() =>
+            expenseReportMock({
+              moneyReqId: moneyRequest.id,
+              projectId,
+              costCategoryId: firstOption.id,
+            })
+          }
+        />
+      )}
       <FormControlledRadioButtons
         control={control}
         errors={errors}
@@ -105,6 +136,16 @@ const ExpenseReportForm = ({
         options={projectOptions ?? []}
         isClearable
       />
+      {costCatOptions()?.length && (
+        <FormControlledSelect
+          control={control}
+          errors={errors}
+          name={'costCategoryId'}
+          label="Linea presupuestaria"
+          options={costCatOptions() ?? []}
+          isClearable
+        />
+      )}
 
       <FormControlledText
         control={control}

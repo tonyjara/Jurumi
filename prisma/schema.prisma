@@ -158,17 +158,18 @@ model Project {
 }
 
 model CostCategory {
-  id             String        @id @default(cuid())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime?     @updatedAt
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime?       @updatedAt
   createdById    String
   updatedById    String?
   displayName    String
   currency       Currency
   projectId      String?
-  assignedAmount Decimal       @default(0) @db.Decimal(19, 4) //this can keep being edit
-  project        Project?      @relation(fields: [projectId], references: [id])
+  assignedAmount Decimal         @default(0) @db.Decimal(19, 4) //this can keep being edit
+  project        Project?        @relation(fields: [projectId], references: [id])
   transactions   Transaction[]
+  ExpenseReport  ExpenseReport[]
 }
 
 model Imbursement {
@@ -282,6 +283,10 @@ model ExpenseReport {
   taxPayer        TaxPayer         @relation(fields: [taxPayerId], references: [id])
   searchableImage searchableImage?
 
+  costCategoryId String?
+  costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
+  transactions   Transaction[]
+
   @@unique([taxPayerId, facturaNumber])
 }
 
@@ -292,8 +297,9 @@ model ExpenseReturn {
   wasCancelled    Boolean          @default(false)
   currency        Currency
   amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
-  transactions    Transaction[]
   searchableImage searchableImage?
+
+  transactions Transaction[]
 
   moneyAccountId String
   moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
@@ -305,22 +311,24 @@ model ExpenseReturn {
 
 //A transaction can be linked to a moneyAccount or to a CostCategory, everytime a transaction history is required it needs specific transactions
 model Transaction {
-  id                Int             @id @default(autoincrement())
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime?       @updatedAt
+  id                Int              @id @default(autoincrement())
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime?        @updatedAt
   updatedById       String?
   currency          Currency
-  openingBalance    Decimal         @default(0) @db.Decimal(19, 4)
-  currentBalance    Decimal         @default(0) @db.Decimal(19, 4)
-  transactionAmount Decimal         @default(0) @db.Decimal(19, 4)
-  isCancellation    Boolean         @default(false)
-  transactionType   TransactionType @default(MONEY_ACCOUNT)
+  openingBalance    Decimal          @default(0) @db.Decimal(19, 4)
+  currentBalance    Decimal          @default(0) @db.Decimal(19, 4)
+  transactionAmount Decimal          @default(0) @db.Decimal(19, 4)
+  isCancellation    Boolean          @default(false)
+  transactionType   TransactionType  @default(MONEY_ACCOUNT)
+  searchableImage   searchableImage?
+
+  cancellationId Int?         @unique
+  cancellation   Transaction? @relation("cancellation", fields: [cancellationId], references: [id])
+  transactions   Transaction? @relation("cancellation")
 
   accountId       String
   account         Account        @relation(fields: [accountId], references: [id])
-  cancellationId  Int?           @unique
-  cancellation    Transaction?   @relation("cancellation", fields: [cancellationId], references: [id])
-  transactions    Transaction?   @relation("cancellation")
   expenseReturnId String?
   expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
   imbursementId   String?
@@ -333,8 +341,8 @@ model Transaction {
   project         Project?       @relation(fields: [projectId], references: [id])
   costCategoryId  String?
   costCategory    CostCategory?  @relation(fields: [costCategoryId], references: [id])
-
-  searchableImage searchableImage?
+  expenseReportId String?
+  expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
 }
 
 model searchableImage {

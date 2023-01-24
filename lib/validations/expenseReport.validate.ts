@@ -36,6 +36,7 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z.lazy(() =>
         url: z.string().min(1, 'Favor suba la imágen de su comprobante'),
       })
       .nullable(),
+    costCategoryId: z.string().nullable(),
     taxPayer: z.object({
       razonSocial: stringReqMinMax(
         'Favor ingrese la razon del contribuyente',
@@ -61,4 +62,5 @@ export const defaultExpenseReportData: FormExpenseReport = {
   taxPayer: { razonSocial: '', ruc: '' },
   searchableImage: { url: '', imageName: '' },
   wasCancelled: false,
+  costCategoryId: null,
 };

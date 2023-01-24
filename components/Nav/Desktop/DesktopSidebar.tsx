@@ -5,7 +5,7 @@ import { Accordion, AccordionButton, AccordionItem } from '@chakra-ui/react';
 import { useColorModeValue, Flex, Box } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { TbChevronsLeft, TbLayoutSidebarRightCollapse } from 'react-icons/tb';
-import NavItem from '../components/NavItem';
+import DesktopNavItem from '../components/DesktopNavItem';
 import NavItemChild from '../components/NavItemChild';
 import OrganizationSelect from '../components/OrganizationSelect';
 import { SidebarLinks } from '../Data/SidebarLinks';
@@ -57,13 +57,13 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
               <AccordionItem as={'div'}>
                 {/* the column fixes annoying margin leftrover when minimized */}
                 <Flex flexDir={minimized ? 'column' : 'row'}>
-                  <NavItem
+                  <DesktopNavItem
                     minimized={minimized}
                     icon={link.icon}
                     dest={link.dest}
-                  >
-                    {link.name}
-                  </NavItem>
+                    name={link.name}
+                  />
+
                   <AccordionButton
                     display={minimized ? 'none' : 'flex'}
                     justifyContent={minimized ? 'center' : 'left'}
@@ -80,9 +80,12 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
             </Accordion>
           )}
           {!link.children?.length && (
-            <NavItem minimized={minimized} icon={link.icon} dest={link.dest}>
-              {link.name}
-            </NavItem>
+            <DesktopNavItem
+              name={link.name}
+              minimized={minimized}
+              icon={link.icon}
+              dest={link.dest}
+            />
           )}
         </div>
       ))}

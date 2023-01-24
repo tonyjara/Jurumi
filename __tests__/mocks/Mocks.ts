@@ -157,6 +157,7 @@ export const transactionMock: () => Transaction = () => {
     cancellationId: null,
     projectId: null,
     costCategoryId: null,
+    expenseReportId: null,
     transactionType: 'MONEY_ACCOUNT',
   };
   return x;
@@ -216,7 +217,15 @@ export const imbursementMock: (
   return x;
 };
 
-export const expenseReportMock = ({ moneyReqId }: { moneyReqId: string }) => {
+export const expenseReportMock = ({
+  moneyReqId,
+  projectId,
+  costCategoryId,
+}: {
+  moneyReqId: string;
+  projectId: string;
+  costCategoryId: string;
+}) => {
   const imageName = uuidV4();
   const x: FormExpenseReport = {
     searchableImage: {
@@ -237,7 +246,8 @@ export const expenseReportMock = ({ moneyReqId }: { moneyReqId: string }) => {
     comments: faker.commerce.productDescription().substring(0, 123),
     accountId: '',
     wasCancelled: false,
-    projectId: '',
+    projectId,
+    costCategoryId,
   };
   return x;
 };
@@ -255,8 +265,6 @@ export const TransactionCreateMock = () => {
         transactionAmount: new Prisma.Decimal(0),
         moneyAccountId: '',
         transactionProofUrl: '',
-
-        costCategoryId: null,
       },
     ],
     transactionType: 'MONEY_ACCOUNT',
@@ -267,6 +275,7 @@ export const TransactionCreateMock = () => {
     expenseReturnId: null,
     cancellationId: null,
     projectId: null,
+    expenseReportId: null,
     isCancellation: false,
     searchableImage: { url: '', imageName: '' },
   };

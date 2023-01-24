@@ -58,24 +58,13 @@ const TransactionForm = ({
 
   const { data: moneyAccs } =
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
-  const projectId = useWatch({ control, name: 'projectId' });
 
-  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
-    { projectId: projectId ?? '' },
-    { enabled: !!projectId?.length }
-  );
   const { data: projects } = trpcClient.project.getMany.useQuery();
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
     label: `${proj.displayName}`,
   }));
-
-  const costCatOptions = () =>
-    costCats?.map((cat) => ({
-      value: cat.id,
-      label: `${cat.displayName}`,
-    }));
 
   const moneyAccOptions = (currency: Currency) =>
     moneyAccs
@@ -90,7 +79,6 @@ const TransactionForm = ({
     transactionAmount: new Prisma.Decimal(0),
     moneyAccountId: '',
     transactionProofUrl: '',
-    costCategoryId: null,
   };
 
   const containerBorder = useColorModeValue('gray.100', 'white');
@@ -132,7 +120,6 @@ const TransactionForm = ({
             currency,
             transactionProofUrl: '',
             transactionAmount: new Prisma.Decimal(0),
-            costCategoryId: null,
           });
         };
         return (
@@ -187,16 +174,6 @@ const TransactionForm = ({
               }
             />
 
-            {costCatOptions()?.length && (
-              <FormControlledSelect
-                control={control}
-                errors={errors}
-                name={`transactions.${index}.costCategoryId`}
-                label="Linea presupuestaria"
-                options={costCatOptions() ?? []}
-                isClearable
-              />
-            )}
             {user && (
               <FormControlledImageUpload
                 control={control}

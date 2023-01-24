@@ -7,7 +7,6 @@ export const createSeedTransaction = async ({
   projectId,
   moneyReqId,
   userId,
-  costCatId,
   amountRequested,
   caller,
 }: {
@@ -15,7 +14,6 @@ export const createSeedTransaction = async ({
   projectId: string;
   moneyReqId: string;
   userId: string;
-  costCatId: string;
   amountRequested: Prisma.Decimal;
   moneyAccId: string;
   caller: any;
@@ -26,7 +24,6 @@ export const createSeedTransaction = async ({
   if (txMock.transactions[0]) {
     txMock.transactions[0].transactionAmount = amountRequested;
     txMock.transactions[0].moneyAccountId = moneyAccId;
-    txMock.transactions[0].costCategoryId = costCatId;
     txMock.transactions[0].transactionProofUrl =
       'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa';
   }

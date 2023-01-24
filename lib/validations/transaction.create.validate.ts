@@ -24,7 +24,6 @@ export interface TransactionField {
   transactionAmount?: any;
   moneyAccountId: string;
   transactionProofUrl: string;
-  costCategoryId: string | null;
 }
 export interface FormTransactionCreate extends withMoney {
   transactions: TransactionField[];
@@ -40,8 +39,6 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
             transactionAmount: z
               .any()
               .transform((value) => new Prisma.Decimal(value)),
-
-            costCategoryId: z.string().nullable(),
             moneyAccountId: z
               .string({
                 required_error:
@@ -66,6 +63,7 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         cancellationId: z.number().nullable(),
         moneyRequestId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
+        expenseReportId: z.string().nullable(),
         transactionType: z.nativeEnum(TransactionType),
 
         imbursementId: z.string().nullable(),
@@ -100,8 +98,6 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
       transactionAmount: new Prisma.Decimal(0),
       moneyAccountId: '',
       transactionProofUrl: '',
-
-      costCategoryId: null,
     },
   ],
   transactionType: 'MONEY_ACCOUNT',
@@ -114,4 +110,5 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   projectId: null,
   isCancellation: false,
   searchableImage: { url: '', imageName: '' },
+  expenseReportId: null,
 };
