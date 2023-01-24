@@ -107,7 +107,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
                   direction={{ base: 'column' }}
                 >
                   <Button
-                    disabled={isSubmitting}
+                    isDisabled={isSubmitting}
                     type="submit"
                     bg={'blue.400'}
                     color={'white'}

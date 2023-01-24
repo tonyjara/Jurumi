@@ -107,7 +107,7 @@ const OrgCard = (org: FormOrganization) => {
                   aria-label={'Delete Org'}
                   size="sm"
                   onClick={deleteOrg}
-                  disabled={isLoading}
+                  isDisabled={isLoading}
                 />
               </HStack>
             </Box>

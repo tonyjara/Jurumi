@@ -73,7 +73,7 @@ const PettyCashCard = (pettyCash: CashAccsWithLastTx) => {
                 aria-label={'Delete pettyCash'}
                 size="sm"
                 onClick={deleteMutation}
-                disabled={isLoading}
+                isDisabled={isLoading}
               />
             </HStack>
           </Box>

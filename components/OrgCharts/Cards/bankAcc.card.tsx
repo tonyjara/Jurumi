@@ -79,7 +79,7 @@ const BankAccCard = (bankAcc: BankAccsWithLastTx) => {
                 aria-label={'Delete bankAcc'}
                 size="sm"
                 onClick={deleteBankAcc}
-                disabled={isLoading}
+                isDisabled={isLoading}
               />
             </HStack>
           </Box>

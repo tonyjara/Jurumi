@@ -98,7 +98,7 @@ const RejectPendingApprovalModal = ({
 
           <ModalFooter>
             <Button
-              disabled={isLoading || isSubmitting}
+              isDisabled={isLoading || isSubmitting}
               type="submit"
               colorScheme="blue"
               mr={3}

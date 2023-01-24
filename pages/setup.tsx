@@ -115,7 +115,7 @@ const Setup = () => {
                   direction={{ base: 'column' }}
                 >
                   <Button
-                    disabled={isSubmitting || isLoading}
+                    isDisabled={isSubmitting || isLoading}
                     type="submit"
                     bg={'blue.400'}
                     color={'white'}

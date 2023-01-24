@@ -129,7 +129,7 @@ const CreateAccountModal = ({
 
           <ModalFooter>
             <Button
-              disabled={isLoading || isSubmitting || !!value}
+              isDisabled={isLoading || isSubmitting || !!value}
               type="submit"
               colorScheme="blue"
               mr={3}

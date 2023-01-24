@@ -101,7 +101,7 @@ const ProjectCard = (
                 aria-label={'Delete project'}
                 size="sm"
                 onClick={handleDelete}
-                disabled={isLoading}
+                isDisabled={isLoading}
               />
             </HStack>
           </Box>

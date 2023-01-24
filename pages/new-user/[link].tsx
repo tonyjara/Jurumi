@@ -119,7 +119,7 @@ export default function NewUser(props?: {
                 direction={{ base: 'column' }}
               >
                 <Button
-                  disabled={isLoading || isSubmitting}
+                  isDisabled={isLoading || isSubmitting}
                   type="submit"
                   bg={'blue.400'}
                   color={'white'}

@@ -150,7 +150,7 @@ const TransactionForm = ({
                 Extracción {index + 1}
               </Text>
               <IconButton
-                disabled={transactions.length < 2}
+                isDisabled={transactions.length < 2}
                 onClick={() => remove(index)}
                 aria-label="remove"
                 icon={<DeleteIcon />}
