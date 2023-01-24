@@ -36,6 +36,10 @@ export const validateProject: z.ZodType<FormProject> = z.lazy(() =>
     endDate: z.date().nullable(),
     projectType: z.nativeEnum(ProjectType),
     updatedById: z.string().nullable(),
+    financerName: z
+      .string()
+      .min(2, 'Favor ingrese el nombre del donante')
+      .max(64, 'Has superado el límite de caractéres (64).'),
     displayName: stringReqMinMax(
       'Favor ingrese un nombre para el proyecto.',
       2,
@@ -81,4 +85,5 @@ export const defaultProjectData: FormProject = {
   costCategories: [defaultCostCategoryData],
   endDate: null,
   projectType: 'SUBSIDY',
+  financerName: '',
 };

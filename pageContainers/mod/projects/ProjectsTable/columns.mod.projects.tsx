@@ -38,6 +38,10 @@ export const projectsColumn = ({
     cell: (x) => <TextCell text={x.getValue()} />,
     header: 'Nombre',
   }),
+  columnHelper.accessor('financerName', {
+    cell: (x) => <TextCell text={x.getValue()} />,
+    header: 'Donante',
+  }),
   columnHelper.accessor('projectType', {
     header: 'Tipo',
     cell: (x) => (

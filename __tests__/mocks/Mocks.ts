@@ -76,6 +76,7 @@ export const projectMock: () => FormProject = () => {
     createdById: '',
     updatedById: null,
     endDate: null,
+    financerName: faker.name.fullName(),
     displayName:
       faker.commerce.productAdjective() + ' ' + faker.company.bsBuzz(),
     organizationId: '',

@@ -184,6 +184,7 @@ export const projectRouter = router({
       const project = await prisma?.project.create({
         data: {
           createdById: ctx.session.user.id,
+          financerName: input.financerName,
           displayName: input.displayName,
           description: input.description,
           organizationId: input.organizationId,
@@ -223,6 +224,7 @@ export const projectRouter = router({
         where: { id: input.id },
         data: {
           updatedById: ctx.session.user.id,
+          financerName: input.financerName,
           displayName: input.displayName,
           description: input.description,
           endDate: input.endDate,

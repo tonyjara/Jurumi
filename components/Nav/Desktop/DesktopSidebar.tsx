@@ -21,7 +21,8 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
     data?.user.role === 'ADMIN' || data?.user.role === 'MODERATOR';
   const isAdmin = data?.user.role === 'ADMIN';
 
-  const { data: org } = trpcClient.org.getLogo.useQuery();
+  const { data: org } = trpcClient.org.getCurrent.useQuery();
+  const showLogo = !!org?.imageLogo?.url && minimized;
 
   return (
     <Box
@@ -38,7 +39,7 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
       justifyContent="center"
     >
       <Flex
-        h={'105px'}
+        h={showLogo ? '105px' : undefined}
         // alignContent="center"
         alignItems="center"
         justifyContent={'center'}

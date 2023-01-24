@@ -12,14 +12,14 @@ import prisma from '@/server/db/client';
 import { createImageLogo } from './utils/Org.routeUtils';
 
 export const orgRouter = router({
-  getLogo: protectedProcedure.query(async ({ ctx }) => {
+  getCurrent: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     const prefs = await prisma.preferences.findUniqueOrThrow({
       where: { accountId: user.id },
     });
     return await prisma?.organization.findUnique({
       where: { id: prefs.selectedOrganization },
-      select: {
+      include: {
         imageLogo: { select: { id: true, imageName: true, url: true } },
       },
     });
