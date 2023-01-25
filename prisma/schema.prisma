@@ -274,6 +274,7 @@ model ExpenseReport {
   amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
   currency      Currency
   comments      String
+  concept       String    @default("")
   wasCancelled  Boolean   @default(false)
 
   accountId       String

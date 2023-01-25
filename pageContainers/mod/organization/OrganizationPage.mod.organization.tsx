@@ -4,6 +4,7 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormOrganization } from '@/lib/validations/org.validate';
 import { EditIcon } from '@chakra-ui/icons';
 import {
+  Box,
   Button,
   Card,
   CardBody,
@@ -97,22 +98,29 @@ const OrganizationPage = () => {
   const loading = prefsIsLoading || orgIsLoading;
 
   return (
-    <>
+    <Box display={'flex'} justifyContent="center" w="100%">
       {!loading &&
         (prefs && org ? (
-          <Card backgroundColor={backgroundColor}>
+          <Card
+            display={'flex'}
+            maxW="1200px"
+            w="100%"
+            backgroundColor={backgroundColor}
+          >
             <Tabs overflow={'auto'}>
               <CardHeader>
                 <Flex mb="10px" alignItems={'center'} gap={5}>
                   {org.imageLogo?.url && (
                     <Image
-                      width={10}
-                      height={10}
+                      boxSize={{ base: '25px', md: '30px' }}
                       src={org.imageLogo.url}
                       alt="organization logo"
                     />
                   )}
-                  <Text fontWeight={'bold'} fontSize={'3xl'}>
+                  <Text
+                    fontWeight={'bold'}
+                    fontSize={{ base: '2xl', md: '3xl' }}
+                  >
                     {org.displayName}
                   </Text>
                   <Button onClick={onEditOpen} leftIcon={<EditIcon />}>
@@ -138,7 +146,7 @@ const OrganizationPage = () => {
       {formOrg && (
         <EditOrgModal org={formOrg} isOpen={isEditOpen} onClose={onEditClose} />
       )}
-    </>
+    </Box>
   );
 };
 

@@ -47,7 +47,7 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
         pt="20px"
         mb={'5px'}
       >
-        {org?.imageLogo?.url && minimized && (
+        {org?.imageLogo?.url && (
           <Image
             mb={'10px'}
             boxSize={'30px'}

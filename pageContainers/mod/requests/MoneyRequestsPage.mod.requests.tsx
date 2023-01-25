@@ -19,13 +19,18 @@ import CreateMoneyRequestModal from '@/components/Modals/MoneyRequest.create.mod
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MoneyRequestsPageProps } from 'pages/mod/requests';
 import { moneyRequestsColumns } from './columns.mod.requests';
+import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.modal';
 
 export type MoneyRequestComplete = MoneyRequest & {
-  project: Project | null;
+  expenseReports: (ExpenseReport & {
+    taxPayer: {
+      id: string;
+      razonSocial: string;
+    };
+  })[];
   transactions: Transaction[];
-  expenseReports: ExpenseReport[];
-  expenseReturns: ExpenseReturn[];
   account: Account;
+  project: Project | null;
   moneyRequestApprovals: MoneyRequestApproval[];
   organization: {
     moneyRequestApprovers: {
@@ -37,12 +42,17 @@ export type MoneyRequestComplete = MoneyRequest & {
       displayName: string;
     }[];
   };
+  expenseReturns: ExpenseReturn[];
 };
+
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
   const user = session.data?.user;
   const [searchValue, setSearchValue] = useState('');
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
+    null
+  );
+  const [reqForReport, setReqForReport] = useState<MoneyRequestComplete | null>(
     null
   );
   const dynamicTableProps = useDynamicTable();
@@ -62,6 +72,11 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
     onClose: onEditClose,
+  } = useDisclosure();
+  const {
+    isOpen: isExpRepOpen,
+    onOpen: onExpRepOpen,
+    onClose: onExpRepClose,
   } = useDisclosure();
 
   useEffect(() => {
@@ -126,6 +141,8 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           setEditMoneyRequest,
           pageIndex,
           pageSize,
+          setReqForReport,
+          onExpRepOpen,
         })}
         loading={isFetching || isLoading}
         options={tableOptions}
@@ -139,6 +156,13 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           orgId={prefs.selectedOrganization}
           isOpen={isOpen}
           onClose={onClose}
+        />
+      )}
+      {reqForReport && (
+        <CreateExpenseReportModal
+          moneyRequest={reqForReport}
+          isOpen={isExpRepOpen}
+          onClose={onExpRepClose}
         />
       )}
       {editMoneyRequest && (

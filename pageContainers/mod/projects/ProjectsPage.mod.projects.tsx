@@ -64,46 +64,46 @@ const ProjectsPage = () => {
   const project = projects?.find((x) => x.id === selectedProject?.value);
 
   return (
-    <>
-      <Card backgroundColor={backgroundColor}>
-        <Tabs overflow={'auto'}>
-          <CardHeader>
-            <Stack
-              flexDir={{ base: 'column', md: 'row' }}
-              alignItems={{ base: 'start', md: 'center' }}
-              justifyContent="space-between"
-            >
-              <Text fontSize={'2xl'}>Proyectos</Text>
+    <Card w="100%" backgroundColor={backgroundColor}>
+      <Tabs overflow={'auto'}>
+        <CardHeader>
+          <Stack
+            flexDir={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'start', md: 'center' }}
+            justifyContent="space-between"
+          >
+            <Text fontWeight={'bold'} fontSize={{ base: '2xl', md: '3xl' }}>
+              Proyectos
+            </Text>
 
-              <ProjectSelect
-                loading={isLoading}
-                options={options}
-                setSelectedProject={setSelectedProject}
-              />
+            <ProjectSelect
+              loading={isLoading}
+              options={options}
+              setSelectedProject={setSelectedProject}
+            />
 
-              <TabList px={'10px'}>
-                <Tab>General</Tab>
-                <Tab>Miembros</Tab>
-                <Tab>Lista</Tab>
-              </TabList>
-            </Stack>
-          </CardHeader>
-          {/* <CardBody> */}
-          <TabPanels>
-            <TabPanel>
-              <ProjectStats project={project} />
-            </TabPanel>
-            <TabPanel>
-              <ProjectMembers project={project} />
-            </TabPanel>
-            <TabPanel>
-              <ProjectsTable />
-            </TabPanel>
-          </TabPanels>
-          {/* </CardBody> */}
-        </Tabs>
-      </Card>
-    </>
+            <TabList px={'10px'}>
+              <Tab>General</Tab>
+              <Tab>Miembros</Tab>
+              <Tab>Lista</Tab>
+            </TabList>
+          </Stack>
+        </CardHeader>
+        {/* <CardBody> */}
+        <TabPanels>
+          <TabPanel>
+            <ProjectStats project={project} />
+          </TabPanel>
+          <TabPanel>
+            <ProjectMembers project={project} />
+          </TabPanel>
+          <TabPanel>
+            <ProjectsTable />
+          </TabPanel>
+        </TabPanels>
+        {/* </CardBody> */}
+      </Tabs>
+    </Card>
   );
 };
 

@@ -104,7 +104,10 @@ export const moneyRequestRouter = router({
             },
           },
           moneyRequestApprovals: { where: { wasCancelled: false } },
-          expenseReports: { where: { wasCancelled: false } },
+          expenseReports: {
+            where: { wasCancelled: false },
+            include: { taxPayer: { select: { id: true, razonSocial: true } } },
+          },
           expenseReturns: { where: { wasCancelled: false } },
           organization: {
             select: {
@@ -130,7 +133,10 @@ export const moneyRequestRouter = router({
           project: true,
           transactions: true,
           moneyRequestApprovals: true,
-          expenseReports: { where: { wasCancelled: false } },
+          expenseReports: {
+            where: { wasCancelled: false },
+            include: { taxPayer: { select: { id: true, razonSocial: true } } },
+          },
           expenseReturns: { where: { wasCancelled: false } },
           organization: {
             select: {

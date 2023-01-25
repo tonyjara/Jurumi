@@ -20,6 +20,11 @@ import FundRequestPrintPage from '@/pageContainers/home/print/FundRequestPrintPa
 import { useReactToPrint } from 'react-to-print';
 import { translatedMoneyReqType } from '@/lib/utils/TranslatedEnums';
 import { format } from 'date-fns';
+import ExpenseRepAndRetPringPage from '@/pageContainers/home/print/ExpenseRepAndRetPrintPage.home.print.tsx';
+import {
+  reduceExpenseReports,
+  reduceExpenseReturns,
+} from '@/lib/utils/TransactionUtils';
 
 const RowOptionsModRequests = ({
   x,
@@ -27,6 +32,8 @@ const RowOptionsModRequests = ({
   onEditOpen,
   needsApproval,
   hasBeenApproved,
+  setReqForReport,
+  onExpRepOpen,
 }: {
   x: MoneyRequestComplete;
   setEditMoneyRequest: React.Dispatch<
@@ -35,6 +42,10 @@ const RowOptionsModRequests = ({
   onEditOpen: () => void;
   needsApproval: boolean;
   hasBeenApproved: boolean;
+  setReqForReport: React.Dispatch<
+    React.SetStateAction<MoneyRequestComplete | null>
+  >;
+  onExpRepOpen: () => void;
 }) => {
   const context = trpcClient.useContext();
   const [isPrinting, setIsPrinting] = useState(false);
@@ -56,8 +67,12 @@ const RowOptionsModRequests = ({
     })
   );
   const isAccepted = x.status === 'ACCEPTED';
+  const isFullyExecuted = reduceExpenseReports(x.expenseReports)
+    .add(reduceExpenseReturns(x.expenseReturns))
+    .equals(x.amountRequested);
 
-  const printRef = useRef(null);
+  const printFundReqRef = useRef(null);
+  const printExpRepsAndRetsRef = useRef(null);
   const promiseResolveRef = useRef<any>(null);
   // We watch for the state to change here, and for the Promise resolve to be available
   useEffect(() => {
@@ -67,11 +82,28 @@ const RowOptionsModRequests = ({
     }
   }, [isPrinting]);
 
-  const handlePrint = useReactToPrint({
+  const handlePrintFundRequest = useReactToPrint({
     documentTitle: `${translatedMoneyReqType(x.moneyRequestType)} - ${
       x.account.displayName
-    } - ${format(x.createdAt, 'dd/MM/yy')}`,
-    content: () => printRef.current,
+    } - ${format(new Date(), 'dd/MM/yy')}`,
+    content: () => printFundReqRef.current,
+    onBeforeGetContent: () => {
+      return new Promise((resolve) => {
+        promiseResolveRef.current = resolve;
+        setIsPrinting(true);
+      });
+    },
+    onAfterPrint: () => {
+      // Reset the Promise resolve so we can print again
+      promiseResolveRef.current = null;
+      setIsPrinting(false);
+    },
+  });
+  const handlePrintExpenseRepsAndRets = useReactToPrint({
+    documentTitle: `${translatedMoneyReqType(x.moneyRequestType)} - ${
+      x.account.displayName
+    } - ${format(new Date(), 'dd/MM/yy')}`,
+    content: () => printExpRepsAndRetsRef.current,
     onBeforeGetContent: () => {
       return new Promise((resolve) => {
         promiseResolveRef.current = resolve;
@@ -128,6 +160,15 @@ const RowOptionsModRequests = ({
               Editar
             </MenuItem>
             <MenuItem
+              isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
+              onClick={() => {
+                setReqForReport(x);
+                onExpRepOpen();
+              }}
+            >
+              Crear rendición
+            </MenuItem>
+            <MenuItem
               onClick={() => {
                 router.push({
                   pathname: '/mod/transactions',
@@ -138,7 +179,15 @@ const RowOptionsModRequests = ({
               Ver transacciones
             </MenuItem>
             <MenuItem>Exportar como excel</MenuItem>
-            <MenuItem onClick={handlePrint}>Imprimir</MenuItem>
+            <MenuItem onClick={handlePrintFundRequest}>
+              Imprimir solicitud
+            </MenuItem>
+            <MenuItem
+              isDisabled={!isFullyExecuted}
+              onClick={handlePrintExpenseRepsAndRets}
+            >
+              Imprimir rendición
+            </MenuItem>
             <RowOptionCancelDialog
               isDisabled={x.wasCancelled}
               targetName="solicitud"
@@ -151,8 +200,17 @@ const RowOptionsModRequests = ({
           </MenuList>
         </Portal>
       </Menu>
-      <div style={{ display: isPrinting ? 'block' : 'none' }} ref={printRef}>
+      <div
+        style={{ display: isPrinting ? 'block' : 'none' }}
+        ref={printFundReqRef}
+      >
         <FundRequestPrintPage moneyRequest={x} />
+      </div>
+      <div
+        style={{ display: isPrinting ? 'block' : 'none' }}
+        ref={printExpRepsAndRetsRef}
+      >
+        <ExpenseRepAndRetPringPage moneyRequest={x} />
       </div>
     </div>
   );

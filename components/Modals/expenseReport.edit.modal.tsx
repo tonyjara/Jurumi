@@ -83,6 +83,7 @@ const EditExpenseReportModal = ({
               setValue={setValue}
               control={control}
               errors={errors as any}
+              isEdit={true}
             />
           </ModalBody>
 

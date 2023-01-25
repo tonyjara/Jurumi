@@ -15,15 +15,16 @@ import { useForm } from 'react-hook-form';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { expenseReportMock } from '@/__tests__/mocks/Mocks';
 import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
 import {
   defaultExpenseReportData,
   validateExpenseReport,
 } from '@/lib/validations/expenseReport.validate';
 import ExpenseReportForm from '../Forms/ExpenseReport.form';
-import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
+import {
+  reduceExpenseReports,
+  reduceExpenseReturns,
+} from '@/lib/utils/TransactionUtils';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
 import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
 
@@ -78,9 +79,9 @@ const CreateExpenseReportModal = ({
 
   const pendingAmount = () =>
     decimalFormat(
-      moneyRequest.amountRequested.sub(
-        reduceExpenseReports(moneyRequest.expenseReports)
-      ),
+      moneyRequest.amountRequested
+        .sub(reduceExpenseReports(moneyRequest.expenseReports))
+        .sub(reduceExpenseReturns(moneyRequest.expenseReturns)),
       moneyRequest.currency
     );
 

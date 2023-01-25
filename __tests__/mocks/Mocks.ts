@@ -14,6 +14,7 @@ import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
+import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
@@ -229,6 +230,7 @@ export const expenseReportMock = ({
 }) => {
   const imageName = uuidV4();
   const x: FormExpenseReport = {
+    concept: faker.commerce.productDescription().substring(0, 32),
     searchableImage: {
       url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
       imageName,
@@ -307,6 +309,136 @@ export const expenseReturnMock = ({
       imageName,
     },
     wasCancelled: false,
+  };
+  return x;
+};
+
+export const moneyReqCompleteMock = (userId: string | undefined) => {
+  const x: MoneyRequestComplete = {
+    id: 'cldagi67k005qpftt2ssd67m9',
+    createdAt: new Date(),
+    updatedAt: null,
+    description:
+      'The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J',
+    status: 'ACCEPTED',
+    moneyRequestType: 'FUND_REQUEST',
+    currency: 'PYG',
+    amountRequested: new Prisma.Decimal(1681068),
+    rejectionMessage: '',
+    archived: false,
+    softDeleted: false,
+    wasCancelled: false,
+    accountId: userId ?? '',
+    organizationId: 'clcqw4lz10008pf5s711y5uwx',
+    projectId: 'cld1pg5wb0004pfe9w9bnpdn9',
+    account: {
+      id: 'clcqw3zaq0006pf5svlfa1iwg',
+      active: true,
+      createdAt: new Date(),
+      updatedAt: null,
+      email: 'tony@tony.com',
+      displayName: 'Tony local',
+      password: '$2a$10$kapySv/YYSdmo4xVMaKKqOu.yXj2LYdCpxPTaP58JevfN.lYRPfNm',
+      role: 'ADMIN',
+      isVerified: true,
+    },
+    project: {
+      id: 'cld1pg5wb0004pfe9w9bnpdn9',
+      createdAt: new Date(),
+      updatedAt: null,
+      createdById: 'clcqw3zaq0006pf5svlfa1iwg',
+      endDate: null,
+      updatedById: 'clcqw3zaq0006pf5svlfa1iwg',
+      displayName: 'Pavap',
+      description: 'Programa de apoyo a voluntarios',
+      financerName: 'Arturo',
+      archived: false,
+      softDeleted: false,
+      projectType: 'SUBSIDY',
+      organizationId: 'clcqw4lz10008pf5s711y5uwx',
+    },
+    transactions: [
+      {
+        id: 116,
+        createdAt: new Date(),
+        updatedAt: null,
+        updatedById: null,
+        currency: 'PYG',
+        openingBalance: new Prisma.Decimal(10000000),
+        currentBalance: new Prisma.Decimal(8318932),
+        transactionAmount: new Prisma.Decimal(1681068),
+        isCancellation: false,
+        transactionType: 'MONEY_ACCOUNT',
+        cancellationId: null,
+        accountId: userId ?? '',
+        expenseReturnId: null,
+        imbursementId: null,
+        moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        projectId: null,
+        costCategoryId: null,
+        expenseReportId: null,
+      },
+      {
+        id: 118,
+        createdAt: new Date(),
+        updatedAt: null,
+        updatedById: null,
+        currency: 'PYG',
+        openingBalance: new Prisma.Decimal(8318932),
+        currentBalance: new Prisma.Decimal(9159466),
+        transactionAmount: new Prisma.Decimal(840534),
+        isCancellation: false,
+        transactionType: 'EXPENSE_RETURN',
+        cancellationId: null,
+        accountId: userId ?? '',
+        expenseReturnId: 'cldagi6870061pftttzyth6sn',
+        imbursementId: null,
+        moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        projectId: null,
+        costCategoryId: null,
+        expenseReportId: null,
+      },
+    ],
+    moneyRequestApprovals: [],
+    expenseReports: [
+      {
+        id: 'cldagi67y005xpfttj4my35rs',
+        createdAt: new Date(),
+        updatedAt: null,
+        facturaNumber: '9720455630179',
+        amountSpent: new Prisma.Decimal(840534),
+        currency: 'PYG',
+        comments:
+          'Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes & sandals',
+        wasCancelled: false,
+        accountId: userId ?? '',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        projectId: 'cld1pg5wb0004pfe9w9bnpdn9',
+        taxPayerId: 'cldagi67u005spftt9pqkq3y6',
+        costCategoryId: 'cld1pg5wc0005pfe9qkxt5amm',
+        concept: 'asdfgdfgsdfgs',
+        taxPayer: { id: '234234234', razonSocial: 'Verduras del Paraguay SA' },
+      },
+    ],
+    expenseReturns: [
+      {
+        id: 'cldagi6870061pftttzyth6sn',
+        createdAt: new Date(),
+        updatedAt: null,
+        wasCancelled: false,
+        currency: 'PYG',
+        amountReturned: new Prisma.Decimal(840534),
+        moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        accountId: userId ?? '',
+      },
+    ],
+    organization: {
+      moneyRequestApprovers: [],
+      moneyAdministrators: [],
+    },
   };
   return x;
 };

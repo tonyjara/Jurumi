@@ -1,5 +1,6 @@
-import { Flex, Icon, Tooltip } from '@chakra-ui/react';
+import { Flex, Icon, Text, Tooltip } from '@chakra-ui/react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import type { IconType } from 'react-icons';
 interface NavItemProps {
@@ -16,6 +17,8 @@ const DesktopNavItem = ({
   minimized,
   name,
 }: NavItemProps) => {
+  const router = useRouter();
+  const isCurrentLocation = router.asPath === dest;
   return (
     <Link
       onClick={() => onClose && onClose()}
@@ -44,15 +47,16 @@ const DesktopNavItem = ({
         >
           {icon && (
             <Icon
+              color={isCurrentLocation ? 'teal.300' : undefined}
               mr={minimized ? '0' : '4'}
-              fontSize="20px"
               _groupHover={{
                 color: 'white',
               }}
               as={icon}
+              fontSize="20px"
             />
           )}
-          {!minimized && name}
+          <Text fontSize="12px">{!minimized && name}</Text>
         </Flex>
       </Tooltip>
     </Link>

@@ -27,14 +27,20 @@ export const moneyRequestsColumns = ({
   setEditMoneyRequest,
   pageIndex,
   pageSize,
+  setReqForReport,
+  onExpRepOpen,
 }: {
   user: Omit<Account, 'password'> | undefined;
   onEditOpen: () => void;
   setEditMoneyRequest: React.Dispatch<
     React.SetStateAction<MoneyRequest | null>
   >;
+  setReqForReport: React.Dispatch<
+    React.SetStateAction<MoneyRequestComplete | null>
+  >;
   pageSize: number;
   pageIndex: number;
+  onExpRepOpen: () => void;
 }) => [
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
@@ -134,6 +140,8 @@ export const moneyRequestsColumns = ({
           onEditOpen={onEditOpen}
           setEditMoneyRequest={setEditMoneyRequest}
           hasBeenApproved={hasBeenApproved()}
+          setReqForReport={setReqForReport}
+          onExpRepOpen={onExpRepOpen}
         />
       );
     },

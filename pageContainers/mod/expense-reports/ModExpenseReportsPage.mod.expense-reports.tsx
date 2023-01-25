@@ -10,17 +10,21 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import { modExpenseReportsColumns } from './columns.mod.expense-reports';
 
 export type ExpenseReportComplete = ExpenseReport & {
-  account: {
-    id: string;
-    displayName: string;
-  };
   project: {
     id: string;
     displayName: string;
   } | null;
+  account: {
+    id: string;
+    displayName: string;
+  };
   searchableImage: {
     url: string;
     imageName: string;
+  } | null;
+  costCategory: {
+    id: string;
+    displayName: string;
   } | null;
   taxPayer: {
     fantasyName: string | null;

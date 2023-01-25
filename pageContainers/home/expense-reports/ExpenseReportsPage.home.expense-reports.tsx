@@ -7,10 +7,14 @@ import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
 import TableSearchbar from '@/components/DynamicTables/Utils/TableSearchbar';
 import EditExpenseReportModal from '@/components/Modals/expenseReport.edit.modal';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import { expenseReportColums } from './columns.expense-reports';
+import { expenseReportColums } from './columns.home.expense-reports';
 
 export type MyExpenseReport = ExpenseReport & {
   project: {
+    id: string;
+    displayName: string;
+  } | null;
+  costCategory: {
     id: string;
     displayName: string;
   } | null;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, Tooltip } from '@chakra-ui/react';
+import { formatedFacturaNumber } from '@/lib/utils/FacturaUtils';
 
 const FacturaNumberCell = ({
   text,
@@ -26,7 +27,7 @@ const FacturaNumberCell = ({
         fontSize="sm"
         fontWeight="bold"
       >
-        {text.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}
+        {formatedFacturaNumber(text)}
       </Text>
     </Tooltip>
   );

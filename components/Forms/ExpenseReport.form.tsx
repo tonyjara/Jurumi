@@ -21,7 +21,10 @@ import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
 import FormControlledText from '../FormControlled/FormControlledText';
 import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
-import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
+import {
+  reduceExpenseReports,
+  reduceExpenseReturns,
+} from '@/lib/utils/TransactionUtils';
 import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
 import SeedButton from '../DevTools/SeedButton';
 import { expenseReportMock } from '@/__tests__/mocks/Mocks';
@@ -31,6 +34,7 @@ interface formProps<T extends FieldValues> {
   setValue: UseFormSetValue<T>;
   moneyRequest?: CompleteMoneyReqHome;
   reset: UseFormReset<FormExpenseReport>;
+  isEdit?: boolean;
 }
 
 const ExpenseReportForm = ({
@@ -39,6 +43,7 @@ const ExpenseReportForm = ({
   moneyRequest,
   setValue,
   reset,
+  isEdit,
 }: formProps<FormExpenseReport>) => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -80,14 +85,22 @@ const ExpenseReportForm = ({
           }
         />
       )}
+      <FormControlledText
+        control={control}
+        errors={errors}
+        name="concept"
+        label="Concepto"
+      />
       <FormControlledRadioButtons
         control={control}
         errors={errors}
         name="currency"
         label="Moneda"
         options={currencyOptions}
+        disable={isEdit}
       />
       <FormControlledMoneyInput
+        disable={isEdit}
         control={control}
         errors={errors}
         name={'amountSpent'}
@@ -96,9 +109,9 @@ const ExpenseReportForm = ({
         currency={currency}
         totalAmount={
           moneyRequest &&
-          moneyRequest.amountRequested.sub(
-            reduceExpenseReports(moneyRequest.expenseReports)
-          )
+          moneyRequest.amountRequested
+            .sub(reduceExpenseReports(moneyRequest.expenseReports))
+            .sub(reduceExpenseReturns(moneyRequest.expenseReturns))
         }
       />
 
@@ -135,6 +148,7 @@ const ExpenseReportForm = ({
         label="Seleccione un proyecto"
         options={projectOptions ?? []}
         isClearable
+        disable={isEdit}
       />
       {costCatOptions()?.length && (
         <FormControlledSelect
@@ -144,6 +158,7 @@ const ExpenseReportForm = ({
           label="Linea presupuestaria"
           options={costCatOptions() ?? []}
           isClearable
+          disable={isEdit}
         />
       )}
 

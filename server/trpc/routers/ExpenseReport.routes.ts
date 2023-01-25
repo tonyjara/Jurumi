@@ -65,6 +65,7 @@ export const expenseReportsRouter = router({
         orderBy: handleOrderBy(),
         include: {
           project: { select: { displayName: true, id: true } },
+          costCategory: { select: { id: true, displayName: true } },
           taxPayer: {
             select: { fantasyName: true, razonSocial: true, ruc: true },
           },
@@ -109,6 +110,7 @@ export const expenseReportsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy(),
         include: {
+          costCategory: { select: { id: true, displayName: true } },
           account: { select: { displayName: true, id: true } },
           project: { select: { displayName: true, id: true } },
           taxPayer: {
@@ -175,6 +177,7 @@ export const expenseReportsRouter = router({
         const expenseReport = await txCtx?.expenseReport.create({
           data: {
             accountId: user.id,
+            concept: input.concept,
             facturaNumber: input.facturaNumber,
             amountSpent: input.amountSpent,
             comments: input.comments,
