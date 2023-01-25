@@ -1,4 +1,5 @@
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
+import { translateBankNames } from '@/lib/utils/TranslatedEnums';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
 import { moneyReqCompleteMock } from '@/__tests__/mocks/Mocks';
@@ -16,13 +17,12 @@ import {
   Tr,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { Prisma } from '@prisma/client';
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import SignatureBox from './SignatureBox';
+import SignatureBox from '../../../../components/Print/SignatureBox';
 
-const FundRequestPrintPage = ({
+const ReimbursementOrderPrintPage = ({
   moneyRequest,
 }: {
   moneyRequest: MoneyRequestComplete | null;
@@ -52,7 +52,7 @@ const FundRequestPrintPage = ({
           )}
           <Text fontSize={'6xl'}>{org?.displayName}</Text>
         </Flex>
-        <Text fontSize={'2xl'}>SOLICITUD DE ANTICIPO</Text>
+        <Text fontSize={'2xl'}>SOLICITUD DE REEMBOLSO</Text>
         <TableContainer
           borderColor={borderColor}
           borderWidth="1px"
@@ -85,6 +85,19 @@ const FundRequestPrintPage = ({
               <Tr>
                 <Td fontWeight={'bold'}>Monto solicitado:</Td>
                 <Td>{decimalFormat(req.amountRequested, req.currency)}</Td>
+              </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Reembolsar a:</Td>
+                <Td>
+                  Denominación: {req.taxPayer?.bankInfo?.ownerName} <br />
+                  {req.taxPayer?.bankInfo?.ownerDocType}:{' '}
+                  {req.taxPayer?.bankInfo?.ownerDoc}
+                  <br />
+                  Cta: {req.taxPayer?.bankInfo?.accountNumber}
+                  <br />
+                  Banco: {translateBankNames(req.taxPayer?.bankInfo?.bankName)}
+                  <br />
+                </Td>
               </Tr>
             </Tbody>
           </Table>
@@ -121,4 +134,4 @@ const FundRequestPrintPage = ({
   );
 };
 
-export default FundRequestPrintPage;
+export default ReimbursementOrderPrintPage;

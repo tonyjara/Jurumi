@@ -16,6 +16,7 @@ import {
   cancelMoneyReqApprovals,
   cancelTransactions,
 } from './utils/Cancelations.routeUtils';
+import { upsertTaxPayter } from './utils/TaxPayer.routeUtils';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -94,8 +95,12 @@ export const moneyRequestRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         include: {
+          taxPayer: {
+            select: { bankInfo: true },
+          },
           account: true,
           project: true,
+          costCategory: true,
           transactions: {
             where: {
               cancellationId: null,
@@ -129,8 +134,12 @@ export const moneyRequestRouter = router({
       return await prisma?.moneyRequest.findUnique({
         where: { id: input.id },
         include: {
+          taxPayer: {
+            select: { bankInfo: true },
+          },
           account: true,
           project: true,
+          costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
           expenseReports: {
@@ -154,6 +163,11 @@ export const moneyRequestRouter = router({
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
 
+      const taxPayer = await upsertTaxPayter({
+        input: input.taxPayer,
+        userId: user.id,
+      });
+
       const MoneyReq = await prisma?.moneyRequest.create({
         data: {
           accountId: user.id,
@@ -165,6 +179,8 @@ export const moneyRequestRouter = router({
           status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
+          taxPayerId: taxPayer?.id,
+          costCategoryId: input.costCategoryId,
         },
       });
 

@@ -111,6 +111,7 @@ const CreateTransactionPage = ({
         )}
         <Divider my={'20px'} />
         <TransactionForm
+          moneyRequestType={moneyRequest?.moneyRequestType}
           totalAmount={moneyRequest?.amountRequested}
           amountExecuted={reduceTransactionAmounts(moneyRequest?.transactions)}
           control={control}

@@ -15,6 +15,7 @@ import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
 import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
@@ -42,6 +43,31 @@ export const taxPayerMock: () => TaxPayer = () => {
     fantasyName: faker.name.firstName(),
     archived: false,
     softDeleted: false,
+  };
+  return x;
+};
+
+export const FormTaxPayerMock = () => {
+  const x: FormTaxPayer = {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    createdById: '',
+    updatedById: '',
+    razonSocial: faker.name.fullName(),
+    ruc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
+    fantasyName: faker.name.fullName(),
+    archived: false,
+    softDeleted: false,
+    bankInfo: {
+      bankName: 'ITAU',
+      accountNumber: faker.finance.account(),
+      ownerName: faker.name.fullName(),
+      ownerDocType: 'CI',
+      ownerDoc: faker.finance.account(5),
+      taxPayerId: '',
+      type: 'CURRENT',
+    },
   };
   return x;
 };
@@ -129,12 +155,26 @@ export const moneyRequestMock: (organizationId: string) => FormMoneyRequest = (
     currency: 'PYG',
     amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
     accountId: '',
+    costCategoryId: '',
     projectId: null,
     archived: false,
     softDeleted: false,
     rejectionMessage: '',
     wasCancelled: false,
     organizationId,
+    taxPayer: {
+      razonSocial: '',
+      ruc: '',
+      bankInfo: {
+        bankName: 'BANCOP',
+        accountNumber: '',
+        ownerName: '',
+        ownerDocType: 'CI',
+        ownerDoc: '',
+        taxPayerId: '',
+        type: 'SAVINGS',
+      },
+    },
   };
   return x;
 };
@@ -277,6 +317,7 @@ export const TransactionCreateMock = () => {
     imbursementId: null,
     expenseReturnId: null,
     cancellationId: null,
+    costCategoryId: null,
     projectId: null,
     expenseReportId: null,
     isCancellation: false,
@@ -316,8 +357,22 @@ export const expenseReturnMock = ({
 export const moneyReqCompleteMock = (userId: string | undefined) => {
   const x: MoneyRequestComplete = {
     id: 'cldagi67k005qpftt2ssd67m9',
+    taxPayer: {
+      bankInfo: {
+        bankName: 'ITAU',
+        accountNumber: faker.finance.account(),
+        ownerName: faker.name.fullName(),
+        ownerDocType: 'CI',
+        ownerDoc: faker.finance.account(5),
+        taxPayerId: '',
+        type: 'CURRENT',
+      },
+    },
+    costCategory: null,
     createdAt: new Date(),
     updatedAt: null,
+    taxPayerId: null,
+    costCategoryId: '',
     description:
       'The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J',
     status: 'ACCEPTED',

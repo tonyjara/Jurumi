@@ -172,7 +172,8 @@ model CostCategory {
   assignedAmount Decimal         @default(0) @db.Decimal(19, 4) //this can keep being edit
   project        Project?        @relation(fields: [projectId], references: [id])
   transactions   Transaction[]
-  ExpenseReport  ExpenseReport[]
+  expenseReport  ExpenseReport[]
+  moneyRequest   MoneyRequest[]
 }
 
 model Imbursement {
@@ -210,19 +211,32 @@ model Imbursement {
 }
 
 model TaxPayer {
-  id            String          @id @default(cuid())
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime?       @updatedAt
+  id            String            @id @default(cuid())
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime?         @updatedAt
   createdById   String
   updatedById   String?
-  razonSocial   String          @unique
-  ruc           String          @unique
+  razonSocial   String            @unique
+  ruc           String            @unique
   fantasyName   String?
-  archived      Boolean         @default(false)
-  softDeleted   Boolean         @default(false)
+  archived      Boolean           @default(false)
+  softDeleted   Boolean           @default(false)
+  bankInfo      TaxPayerBankInfo?
   expenseReport ExpenseReport[]
   imbursements  Imbursement[]
-  project       Project[]       @relation("ProjectToTaxPayer")
+  project       Project[]         @relation("ProjectToTaxPayer")
+  moneyRequest  MoneyRequest[]
+}
+
+model TaxPayerBankInfo {
+  bankName      BankNamesPy
+  accountNumber String          @unique
+  ownerName     String
+  ownerDocType  BankDocType     @default(RUC)
+  ownerDoc      String
+  type          BankAccountType @default(SAVINGS)
+  taxPayerId    String          @unique
+  taxPayer      TaxPayer        @relation(fields: [taxPayerId], references: [id])
 }
 
 model MoneyRequestApproval {
@@ -254,11 +268,15 @@ model MoneyRequest {
   wasCancelled     Boolean            @default(false)
 
   accountId      String
-  account        Account      @relation(fields: [accountId], references: [id])
+  account        Account       @relation(fields: [accountId], references: [id])
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization  @relation(fields: [organizationId], references: [id])
   projectId      String?
-  project        Project?     @relation(fields: [projectId], references: [id])
+  project        Project?      @relation(fields: [projectId], references: [id])
+  costCategoryId String?
+  costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
+  taxPayerId     String?
+  taxPayer       TaxPayer?     @relation(fields: [taxPayerId], references: [id])
 
   expenseReports        ExpenseReport[]
   expenseReturns        ExpenseReturn[]

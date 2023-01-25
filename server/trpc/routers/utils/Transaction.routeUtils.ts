@@ -1,8 +1,9 @@
-import type { Account } from '@prisma/client';
+import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
+import type { Account, Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { getSelectedOrganizationId } from './Preferences.routeUtils';
 
-export async function checkIfIsLastTransaction({
+async function checkIfIsLastTransaction({
   moneyAccountId,
   transactionId,
   costCategoryId,
@@ -73,3 +74,59 @@ export async function checkIfUserIsMoneyAdmin(user: Omit<Account, 'password'>) {
     });
   }
 }
+
+async function createCostCategoryTransactions({
+  formTransaction,
+  txCtx,
+  accountId,
+}: {
+  accountId: string;
+  formTransaction: FormTransactionCreate;
+  txCtx: Prisma.TransactionClient;
+}) {
+  if (!formTransaction.projectId || !formTransaction.costCategoryId) return;
+  const costCategoryId = formTransaction.costCategoryId;
+  // 1. Get latest transaction of the money Account
+  const getLastestCostCatWithTx = await txCtx.costCategory.findUniqueOrThrow({
+    where: { id: costCategoryId },
+    include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+  });
+  // 2. If it's the first transaction, opening balance is always 0
+
+  const lastTx = getLastestCostCatWithTx?.transactions[0];
+  const openingBalance = lastTx ? lastTx.currentBalance : 0;
+
+  for (const tx of formTransaction.transactions) {
+    const currentBalance = lastTx
+      ? lastTx.currentBalance.add(tx.transactionAmount)
+      : tx.transactionAmount;
+
+    await txCtx.transaction.create({
+      data: {
+        transactionAmount: tx.transactionAmount,
+        accountId: accountId,
+        currency: tx.currency,
+        openingBalance: openingBalance,
+        currentBalance: currentBalance,
+        costCategoryId,
+        projectId: formTransaction.projectId,
+        transactionType: 'COST_CATEGORY',
+        moneyRequestId: formTransaction.moneyRequestId,
+        searchableImage: formTransaction.searchableImage?.imageName.length
+          ? {
+              create: {
+                url: formTransaction.searchableImage.url,
+                imageName: formTransaction.searchableImage.imageName,
+                text: '',
+              },
+            }
+          : {},
+      },
+    });
+  }
+}
+
+export const transactionRouteUtils = {
+  createCostCategoryTransactions,
+  checkIfIsLastTransaction,
+};

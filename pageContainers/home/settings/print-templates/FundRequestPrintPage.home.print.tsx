@@ -1,9 +1,4 @@
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import { formatedFacturaNumber } from '@/lib/utils/FacturaUtils';
-import {
-  reduceExpenseReports,
-  reduceExpenseReturns,
-} from '@/lib/utils/TransactionUtils';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
 import { moneyReqCompleteMock } from '@/__tests__/mocks/Mocks';
@@ -18,17 +13,15 @@ import {
   Tbody,
   Td,
   Text,
-  Th,
-  Thead,
   Tr,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import SignatureBox from './SignatureBox';
+import SignatureBox from '../../../../components/Print/SignatureBox';
 
-const ExpenseRepAndRetPringPage = ({
+const FundRequestPrintPage = ({
   moneyRequest,
 }: {
   moneyRequest: MoneyRequestComplete | null;
@@ -36,14 +29,8 @@ const ExpenseRepAndRetPringPage = ({
   const { data: org } = trpcClient.org.getCurrent.useQuery();
   const user = useSession().data?.user;
   const borderColor = useColorModeValue('gray.700', 'gray.300');
-  // React to print doesnt like theme changing
-  const headerColor = useColorModeValue(
-    'black',
-    moneyRequest ? 'black' : 'white'
-  );
 
   const req = moneyRequest ?? moneyReqCompleteMock(user?.id);
-
   return (
     <Box
       justifyContent={'center'}
@@ -64,7 +51,7 @@ const ExpenseRepAndRetPringPage = ({
           )}
           <Text fontSize={'6xl'}>{org?.displayName}</Text>
         </Flex>
-        <Text fontSize={'2xl'}>RENDICIÓN DE FONDOS</Text>
+        <Text fontSize={'2xl'}>SOLICITUD DE ANTICIPO</Text>
         <TableContainer
           borderColor={borderColor}
           borderWidth="1px"
@@ -80,7 +67,7 @@ const ExpenseRepAndRetPringPage = ({
               </Tr>
               <Tr>
                 <Td fontWeight={'bold'}>Fecha:</Td>
-                <Td>{format(req.createdAt, 'dd/MM/yy')}</Td>
+                <Td>{format(new Date(), 'dd/MM/yy hh:mm')}</Td>
               </Tr>
               <Tr>
                 <Td fontWeight={'bold'}>Motivo:</Td>
@@ -94,70 +81,9 @@ const ExpenseRepAndRetPringPage = ({
                 <Td fontWeight={'bold'}>Fuente de financiamiento:</Td>
                 <Td>{req.project?.financerName}</Td>
               </Tr>
-            </Tbody>
-          </Table>
-        </TableContainer>
-        <TableContainer
-          borderColor={borderColor}
-          borderWidth="1px"
-          borderStyle={'solid'}
-          borderRadius="8px"
-          mt={'20px'}
-        >
-          <Table colorScheme={borderColor}>
-            <Thead>
-              <Th color={headerColor}>Concepto</Th>
-              <Th color={headerColor}>Factura número</Th>
-              <Th color={headerColor}>Proveedor</Th>
-              <Th color={headerColor}>Monto</Th>
-              <Th color={headerColor}>Fecha</Th>
-            </Thead>
-            <Tbody>
-              {req.expenseReports.map((x) => (
-                <Tr key={x.id}>
-                  <Td>{x.concept}</Td>
-                  <Td>{formatedFacturaNumber(x.facturaNumber)}</Td>
-                  <Td>{x.taxPayer.razonSocial}</Td>
-                  <Td>{decimalFormat(x.amountSpent, x.currency)}</Td>
-                  <Td>{format(x.createdAt, 'dd/MM/yy hh:mm')}</Td>
-                </Tr>
-              ))}
               <Tr>
-                <Td></Td>
-                <Td></Td>
-                <Td></Td>
-                <Td>TOTAL EJECUTADO:</Td>
-                <Td>
-                  {decimalFormat(
-                    reduceExpenseReports(req?.expenseReports),
-                    req?.currency
-                  )}
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
-        </TableContainer>
-        <TableContainer
-          borderColor={borderColor}
-          borderWidth="1px"
-          borderStyle={'solid'}
-          borderRadius="8px"
-          mt={'20px'}
-        >
-          <Table colorScheme={borderColor}>
-            <Tbody>
-              <Tr>
-                <Td fontWeight={'bold'}>Total solicitado:</Td>
+                <Td fontWeight={'bold'}>Monto solicitado:</Td>
                 <Td>{decimalFormat(req.amountRequested, req.currency)}</Td>
-              </Tr>
-              <Tr>
-                <Td fontWeight={'bold'}>Total devuelto:</Td>
-                <Td>
-                  {decimalFormat(
-                    reduceExpenseReturns(req.expenseReturns),
-                    req.currency
-                  )}
-                </Td>
               </Tr>
             </Tbody>
           </Table>
@@ -194,4 +120,4 @@ const ExpenseRepAndRetPringPage = ({
   );
 };
 
-export default ExpenseRepAndRetPringPage;
+export default FundRequestPrintPage;

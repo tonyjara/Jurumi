@@ -83,7 +83,11 @@ const CreateMoneyRequestModal = ({
           <ModalBody>
             <SeedButton reset={reset} mock={() => moneyRequestMock('')} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <MoneyRequestForm control={control} errors={errors as any} />
+            <MoneyRequestForm
+              setValue={setValue}
+              control={control}
+              errors={errors as any}
+            />
           </ModalBody>
 
           <ModalFooter>

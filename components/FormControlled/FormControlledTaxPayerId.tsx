@@ -1,5 +1,9 @@
 // This component handles everythinf so that looking for a taxpayer from datospy or our own database is a smooth process.
 
+import {
+  bankNameOptions,
+  ownerDocTypeOptions,
+} from '@/lib/utils/SelectOptions';
 import { AddIcon, Search2Icon } from '@chakra-ui/icons';
 import {
   FormControl,
@@ -11,7 +15,9 @@ import {
   HStack,
   useDisclosure,
   FormHelperText,
+  Divider,
 } from '@chakra-ui/react';
+import type { TaxPayer, TaxPayerBankInfo } from '@prisma/client';
 import axios from 'axios';
 import type { DropdownIndicatorProps, GroupBase } from 'chakra-react-select';
 import { Select, components } from 'chakra-react-select';
@@ -29,6 +35,8 @@ import { Controller } from 'react-hook-form';
 import useDebounce from '../../lib/hooks/useDebounce';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import CreateTaxPayerModal from '../Modals/taxPayer.create.modal';
+import FormControlledSelect from './FormControlledSelect';
+import FormControlledText from './FormControlledText';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -38,6 +46,8 @@ interface InputProps<T extends FieldValues> {
   autoFocus?: boolean;
   setValue: SetFieldValue<T>;
   helperText?: string;
+  label?: string;
+  showBankInfo?: boolean;
 }
 export interface datosPyResponse {
   razonsocial: string;
@@ -45,7 +55,11 @@ export interface datosPyResponse {
   dv: string;
 }
 
-// This component takes in the names of inputs RUC and RAZONSOCIAL, then after user write more than 5 numbers it makes a search query first on the database and then on the datospy api to find the contribuyente. If both fail to locate user, then you can create the user manually and afterwards it gets autmoaticly added to the form in wich this component is present.
+// This component takes in the names of inputs RUC and RAZONSOCIAL, then after user write more than 5 numbers it makes a search query first on the database, if the show bankinfo flag is on, if the taxpayer is found on the database it sets all found taxpayers as a list so that its bank info can be set later. and then on the datospy api to find the contribuyente. If both fail to locate user, then you can create the user manually and afterwards it gets autmoaticly added to the form in wich this component is present.
+
+type FetctchedTaxPayers = (TaxPayer & {
+  bankInfo: TaxPayerBankInfo | null;
+})[];
 
 const FormControlledTaxPayerId = <T extends FieldValues>(
   props: InputProps<T>
@@ -58,6 +72,8 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     autoFocus,
     setValue,
     helperText,
+    label,
+    showBankInfo,
   } = props;
   const [loading, setLoading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -65,6 +81,9 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
   const [selectOptions, setSelectOptions] = useState<
     { value: string; label: string }[] | null
   >([]);
+  const [fetchedTaxPayers, setFetchedTaxPayers] = useState<FetctchedTaxPayers>(
+    []
+  );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const debouncedSearchValue = useDebounce(selectInput, 500);
   const controller = new AbortController();
@@ -86,7 +105,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             value: y.ruc,
             label: y.razonSocial,
           }));
-
+          showBankInfo && setFetchedTaxPayers(x);
           setSelectOptions(convertToSelect);
           setOpenDropdown(true);
         },
@@ -145,6 +164,14 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
   ) => {
     field.onChange(e?.value ?? '');
     setValue(razonSocialName, e?.label ?? '');
+    if (showBankInfo && fetchedTaxPayers.length && e?.value) {
+      const foundBankInfo = fetchedTaxPayers.find(
+        (x) => x.ruc === e.value
+      )?.bankInfo;
+
+      if (!foundBankInfo) return;
+      setValue('taxPayer.bankInfo', foundBankInfo);
+    }
   };
 
   const handleSetRucAndRazonSocial = ({
@@ -185,7 +212,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     <>
       <FormControl isInvalid={!!taxPayerError}>
         <FormLabel fontSize={'md'} color={'gray.500'}>
-          Contribuyente
+          {label ?? 'Contribuyente'}
         </FormLabel>
         <HStack>
           <Controller
@@ -239,6 +266,55 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
           <FormErrorMessage>{taxPayerError.message}</FormErrorMessage>
         )}
       </FormControl>
+      {showBankInfo && (
+        <>
+          <Divider />
+          <Text color="gray.500">Datos para transferencia</Text>
+          <FormControlledSelect
+            control={control}
+            errors={errors}
+            //@ts-ignore
+            name="taxPayer.bankInfo.bankName"
+            label="Seleccione el banco"
+            options={bankNameOptions}
+          />
+          <FormControlledText
+            control={control}
+            errors={errors}
+            //@ts-ignore
+            name="taxPayer.bankInfo.ownerName"
+            label="Denominación"
+            autoFocus={true}
+            //@ts-ignore
+            error={errors.bankInfo?.ownerName?.message}
+          />
+          <FormControlledText
+            control={control}
+            errors={errors}
+            //@ts-ignore
+            name="taxPayer.bankInfo.accountNumber"
+            label="Número de cuenta"
+            //@ts-ignore
+            error={errors.bankInfo?.accountNumber?.message}
+          />
+          <FormControlledSelect
+            control={control}
+            errors={errors}
+            //@ts-ignore
+            name="taxPayer.bankInfo.ownerDocType"
+            label="Tipo de documento"
+            options={ownerDocTypeOptions}
+          />
+          <FormControlledText
+            control={control}
+            errors={errors}
+            //@ts-ignore
+            name="taxPayer.bankInfo.ownerDoc"
+            label="Documento del titular"
+          />
+          <Divider />
+        </>
+      )}
       <CreateTaxPayerModal
         //sets ruc and razonsocial on success
         handleSetRucAndRazonSocial={handleSetRucAndRazonSocial}

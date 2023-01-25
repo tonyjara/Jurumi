@@ -9,17 +9,12 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import React from 'react';
-import type {
-  Control,
-  FieldErrorsImpl,
-  FieldValues,
-  Path,
-} from 'react-hook-form';
+import type { Control, FieldValues, Path } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<T>;
+  errors: any;
   name: Path<T>;
   label: string;
   helperText?: string;

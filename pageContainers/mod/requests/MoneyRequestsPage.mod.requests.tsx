@@ -1,11 +1,14 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type {
   Account,
+  CostCategory,
   ExpenseReport,
   ExpenseReturn,
   MoneyRequest,
   MoneyRequestApproval,
   Project,
+  TaxPayer,
+  TaxPayerBankInfo,
   Transaction,
 } from '@prisma/client';
 import { useSession } from 'next-auth/react';
@@ -22,16 +25,21 @@ import { moneyRequestsColumns } from './columns.mod.requests';
 import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.modal';
 
 export type MoneyRequestComplete = MoneyRequest & {
+  project: Project | null;
+  transactions: Transaction[];
   expenseReports: (ExpenseReport & {
     taxPayer: {
       id: string;
       razonSocial: string;
     };
   })[];
-  transactions: Transaction[];
+  expenseReturns: ExpenseReturn[];
   account: Account;
-  project: Project | null;
+  costCategory: CostCategory | null;
   moneyRequestApprovals: MoneyRequestApproval[];
+  taxPayer: {
+    bankInfo: TaxPayerBankInfo | null;
+  } | null;
   organization: {
     moneyRequestApprovers: {
       id: string;
@@ -42,7 +50,6 @@ export type MoneyRequestComplete = MoneyRequest & {
       displayName: string;
     }[];
   };
-  expenseReturns: ExpenseReturn[];
 };
 
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {

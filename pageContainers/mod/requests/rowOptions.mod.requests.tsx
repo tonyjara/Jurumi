@@ -16,15 +16,16 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MoneyRequestComplete } from './MoneyRequestsPage.mod.requests';
 import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
 import { RowOptionCancelDialog } from '@/components/Toasts & Alerts/RowOptions.cancel.dialog';
-import FundRequestPrintPage from '@/pageContainers/home/print/FundRequestPrintPage.home.print';
+import FundRequestPrintPage from '@/pageContainers/home/settings/print-templates/FundRequestPrintPage.home.print';
 import { useReactToPrint } from 'react-to-print';
 import { translatedMoneyReqType } from '@/lib/utils/TranslatedEnums';
 import { format } from 'date-fns';
-import ExpenseRepAndRetPringPage from '@/pageContainers/home/print/ExpenseRepAndRetPrintPage.home.print.tsx';
+import ExpenseRepAndRetPringPage from '@/pageContainers/home/settings/print-templates/ExpenseRepAndRetPrintPage.home.print.tsx';
 import {
   reduceExpenseReports,
   reduceExpenseReturns,
 } from '@/lib/utils/TransactionUtils';
+import ReimbursementOrderPrintPage from '@/pageContainers/home/settings/print-templates/ReimbursementOrderPrintPage.home.settings.print-templates';
 
 const RowOptionsModRequests = ({
   x,
@@ -159,15 +160,17 @@ const RowOptionsModRequests = ({
             >
               Editar
             </MenuItem>
-            <MenuItem
-              isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
-              onClick={() => {
-                setReqForReport(x);
-                onExpRepOpen();
-              }}
-            >
-              Crear rendición
-            </MenuItem>
+            {x.moneyRequestType === 'FUND_REQUEST' && (
+              <MenuItem
+                isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
+                onClick={() => {
+                  setReqForReport(x);
+                  onExpRepOpen();
+                }}
+              >
+                Crear rendición
+              </MenuItem>
+            )}
             <MenuItem
               onClick={() => {
                 router.push({
@@ -182,12 +185,14 @@ const RowOptionsModRequests = ({
             <MenuItem onClick={handlePrintFundRequest}>
               Imprimir solicitud
             </MenuItem>
-            <MenuItem
-              isDisabled={!isFullyExecuted}
-              onClick={handlePrintExpenseRepsAndRets}
-            >
-              Imprimir rendición
-            </MenuItem>
+            {x.moneyRequestType === 'FUND_REQUEST' && (
+              <MenuItem
+                isDisabled={!isFullyExecuted}
+                onClick={handlePrintExpenseRepsAndRets}
+              >
+                Imprimir rendición
+              </MenuItem>
+            )}
             <RowOptionCancelDialog
               isDisabled={x.wasCancelled}
               targetName="solicitud"
@@ -204,7 +209,13 @@ const RowOptionsModRequests = ({
         style={{ display: isPrinting ? 'block' : 'none' }}
         ref={printFundReqRef}
       >
-        <FundRequestPrintPage moneyRequest={x} />
+        {' '}
+        {x.moneyRequestType === 'FUND_REQUEST' && (
+          <FundRequestPrintPage moneyRequest={x} />
+        )}
+        {x.moneyRequestType === 'REIMBURSMENT_ORDER' && (
+          <ReimbursementOrderPrintPage moneyRequest={x} />
+        )}
       </div>
       <div
         style={{ display: isPrinting ? 'block' : 'none' }}

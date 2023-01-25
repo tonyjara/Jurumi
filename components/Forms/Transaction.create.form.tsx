@@ -10,7 +10,7 @@ import {
   CircularProgressLabel,
   Flex,
 } from '@chakra-ui/react';
-import type { Currency } from '@prisma/client';
+import type { Currency, MoneyRequestType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import type { Decimal } from '@prisma/client/runtime';
 import { useSession } from 'next-auth/react';
@@ -38,8 +38,9 @@ import FormControlledSelect from '../FormControlled/FormControlledSelect';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
-  totalAmount?: Decimal;
+  totalAmount: Decimal | undefined;
   amountExecuted: Decimal;
+  moneyRequestType: MoneyRequestType | undefined;
   setValue: UseFormSetValue<T>;
 }
 
@@ -49,6 +50,7 @@ const TransactionForm = ({
   totalAmount,
   amountExecuted,
   setValue,
+  moneyRequestType,
 }: formProps<FormTransactionCreate>) => {
   const user = useSession().data?.user;
   const { fields, prepend, remove, update } = useFieldArray({
@@ -60,6 +62,8 @@ const TransactionForm = ({
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
+  const projectId = useWatch({ control, name: 'projectId' });
+  const transactions = useWatch({ control, name: 'transactions' });
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
@@ -74,6 +78,17 @@ const TransactionForm = ({
         label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
       }));
 
+  const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
+    { projectId: projectId ?? '' },
+    { enabled: !!projectId?.length }
+  );
+
+  const costCatOptions = () =>
+    costCats?.map((cat) => ({
+      value: cat.id,
+      label: `${cat.displayName}`,
+    }));
+
   const defaultTransaction: TransactionField = {
     currency: 'PYG',
     transactionAmount: new Prisma.Decimal(0),
@@ -82,8 +97,6 @@ const TransactionForm = ({
   };
 
   const containerBorder = useColorModeValue('gray.100', 'white');
-
-  const transactions = useWatch({ control, name: 'transactions' });
 
   const formAmounts = reduceTransactionFields(transactions).add(amountExecuted);
   const percentage = totalAmount
@@ -100,6 +113,16 @@ const TransactionForm = ({
         options={projectOptions ?? []}
         isClearable
       />
+      {moneyRequestType !== 'FUND_REQUEST' && costCatOptions()?.length && (
+        <FormControlledSelect
+          control={control}
+          errors={errors}
+          name={'costCategoryId'}
+          label="Linea presupuestaria"
+          options={costCatOptions() ?? []}
+          isClearable
+        />
+      )}
       <HStack mt={'20px'} justifyContent={'space-between'}>
         <CircularProgress value={parseInt(percentage)} color="green.400">
           <CircularProgressLabel>{percentage}%</CircularProgressLabel>

@@ -12,7 +12,6 @@ type withMoney = Omit<
   | 'currency'
   | 'moneyAccountId'
   | 'transactionProofUrl'
-  | 'costCategoryId'
 > & {
   openingBalance?: any;
   currentBalance?: any;
@@ -62,6 +61,7 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         currentBalance: z.any().transform((value) => new Prisma.Decimal(value)),
         cancellationId: z.number().nullable(),
         moneyRequestId: z.string().nullable(),
+        costCategoryId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
         expenseReportId: z.string().nullable(),
         transactionType: z.nativeEnum(TransactionType),
@@ -107,6 +107,7 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   imbursementId: null,
   expenseReturnId: null,
   cancellationId: null,
+  costCategoryId: null,
   projectId: null,
   isCancellation: false,
   searchableImage: { url: '', imageName: '' },

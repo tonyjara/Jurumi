@@ -1,4 +1,5 @@
 import type {
+  BankAccountType,
   BankDocType,
   BankNamesPy,
   Currency,
@@ -13,6 +14,15 @@ export const translateProjectType = (type: ProjectType) => {
   const types: { [key in ProjectType]?: string } = {
     SUBSIDY: 'Subsidio',
     CONSULTING: 'Consultoria',
+  };
+
+  return types[type] ?? 'Error';
+};
+
+export const translatedBankAccountType = (type: BankAccountType) => {
+  const types: { [key in BankAccountType]?: string } = {
+    CURRENT: 'Cuenta corriente',
+    SAVINGS: 'Caja de ahorro',
   };
 
   return types[type] ?? 'Error';

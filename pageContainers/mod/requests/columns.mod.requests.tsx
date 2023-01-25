@@ -98,6 +98,12 @@ export const moneyRequestsColumns = ({
       <TextCell text={x.row.original?.project?.displayName ?? '-'} />
     ),
   }),
+  columnHelper.display({
+    cell: (x) => (
+      <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
+    ),
+    header: 'L. Presup.',
+  }),
   columnHelper.accessor('description', {
     cell: (x) => (
       <TextCell text={x.getValue()} shortenString hover={x.getValue()} />
@@ -117,13 +123,19 @@ export const moneyRequestsColumns = ({
   columnHelper.display({
     header: 'Rendido',
     cell: (x) => (
-      <PercentageCell
-        total={x.row.original.amountRequested}
-        executed={reduceExpenseReports(x.row.original.expenseReports).add(
-          reduceExpenseReturns(x.row.original.expenseReturns)
+      <>
+        {x.row.original.moneyRequestType === 'FUND_REQUEST' ? (
+          <PercentageCell
+            total={x.row.original.amountRequested}
+            executed={reduceExpenseReports(x.row.original.expenseReports).add(
+              reduceExpenseReturns(x.row.original.expenseReturns)
+            )}
+            currency={x.row.original.currency}
+          />
+        ) : (
+          '-'
         )}
-        currency={x.row.original.currency}
-      />
+      </>
     ),
   }),
   columnHelper.display({
