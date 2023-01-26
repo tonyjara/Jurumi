@@ -3,7 +3,7 @@ import type { GetServerSideProps } from 'next';
 
 import { getServerAuthSession } from '@/server/common/get-server-auth-session';
 import { getSelectedOrganizationId } from '@/server/trpc/routers/utils/Preferences.routeUtils';
-
+import prisma from '@/server/db/client';
 export default ApprovalsPage;
 
 export interface MoneyRequestsPageProps {
