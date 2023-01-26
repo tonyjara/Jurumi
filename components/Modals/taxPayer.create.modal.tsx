@@ -77,7 +77,7 @@ const CreateTaxPayerModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleOnClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>

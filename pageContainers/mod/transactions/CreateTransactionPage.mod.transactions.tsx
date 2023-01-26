@@ -46,6 +46,7 @@ const CreateTransactionPage = ({
     if (moneyRequest) {
       setValue('moneyRequestId', moneyRequest.id);
       setValue('projectId', moneyRequest.projectId);
+      setValue('costCategoryId', moneyRequest.costCategoryId);
     }
 
     return () => {};

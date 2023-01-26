@@ -74,7 +74,7 @@ const CreateMoneyRequestModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleOnClose}>
+    <Modal size="xl" size={'xl'} isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>

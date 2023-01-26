@@ -155,7 +155,7 @@ export const moneyRequestMock: (organizationId: string) => FormMoneyRequest = (
     currency: 'PYG',
     amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
     accountId: '',
-    costCategoryId: '',
+    costCategoryId: null,
     projectId: null,
     archived: false,
     softDeleted: false,

@@ -96,7 +96,7 @@ export const defaultMoneyRequestData: FormMoneyRequest = {
   moneyRequestType: 'FUND_REQUEST',
   currency: 'PYG',
   amountRequested: new Prisma.Decimal(0),
-  costCategoryId: '',
+  costCategoryId: null,
   accountId: '',
   projectId: null,
   archived: false,

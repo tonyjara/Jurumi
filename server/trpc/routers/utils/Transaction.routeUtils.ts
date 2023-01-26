@@ -1,4 +1,7 @@
-import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
+import type {
+  FormTransactionCreate,
+  TransactionField,
+} from '@/lib/validations/transaction.create.validate';
 import type { Account, Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { getSelectedOrganizationId } from './Preferences.routeUtils';
@@ -79,10 +82,12 @@ async function createCostCategoryTransactions({
   formTransaction,
   txCtx,
   accountId,
+  txField,
 }: {
   accountId: string;
   formTransaction: FormTransactionCreate;
   txCtx: Prisma.TransactionClient;
+  txField: TransactionField;
 }) {
   if (!formTransaction.projectId || !formTransaction.costCategoryId) return;
   const costCategoryId = formTransaction.costCategoryId;
@@ -96,34 +101,23 @@ async function createCostCategoryTransactions({
   const lastTx = getLastestCostCatWithTx?.transactions[0];
   const openingBalance = lastTx ? lastTx.currentBalance : 0;
 
-  for (const tx of formTransaction.transactions) {
-    const currentBalance = lastTx
-      ? lastTx.currentBalance.add(tx.transactionAmount)
-      : tx.transactionAmount;
+  const currentBalance = lastTx
+    ? lastTx.currentBalance.add(txField.transactionAmount)
+    : txField.transactionAmount;
 
-    await txCtx.transaction.create({
-      data: {
-        transactionAmount: tx.transactionAmount,
-        accountId: accountId,
-        currency: tx.currency,
-        openingBalance: openingBalance,
-        currentBalance: currentBalance,
-        costCategoryId,
-        projectId: formTransaction.projectId,
-        transactionType: 'COST_CATEGORY',
-        moneyRequestId: formTransaction.moneyRequestId,
-        searchableImage: formTransaction.searchableImage?.imageName.length
-          ? {
-              create: {
-                url: formTransaction.searchableImage.url,
-                imageName: formTransaction.searchableImage.imageName,
-                text: '',
-              },
-            }
-          : {},
-      },
-    });
-  }
+  await txCtx.transaction.create({
+    data: {
+      transactionAmount: txField.transactionAmount,
+      accountId: accountId,
+      currency: txField.currency,
+      openingBalance: openingBalance,
+      currentBalance: currentBalance,
+      costCategoryId,
+      projectId: formTransaction.projectId,
+      transactionType: 'COST_CATEGORY',
+      moneyRequestId: formTransaction.moneyRequestId,
+    },
+  });
 }
 
 export const transactionRouteUtils = {

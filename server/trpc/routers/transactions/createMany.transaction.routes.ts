@@ -11,38 +11,65 @@ import {
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)
   .mutation(async ({ input, ctx }) => {
-    if (!input.moneyRequestId) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'missing data',
-      });
-    }
-    const user = ctx.session.user;
-    //1. Check money admin permissions
-    await checkIfUserIsMoneyAdmin(user);
-
     await prisma?.$transaction(async (txCtx) => {
-      //2. Create transactions
-      await createManyMoneyAccountTransactions({
-        accountId: ctx.session.user.id,
-        formTransaction: input,
-        txCtx,
+      if (!input.moneyRequestId) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'missing data',
+        });
+      }
+      const user = ctx.session.user;
+      //1. Check money admin permissions
+      await checkIfUserIsMoneyAdmin(user);
+      for (const txField of input.transactions) {
+        //2. Create transactions
+        await createMoneyAccTransactions({
+          accountId: ctx.session.user.id,
+          formTransaction: input,
+          txCtx,
+        });
+        await transactionRouteUtils.createCostCategoryTransactions({
+          accountId: ctx.session.user.id,
+          formTransaction: input,
+          txCtx,
+          txField,
+        });
+      }
+      //3. Change request status
+      await prisma?.moneyRequest.update({
+        where: { id: input.moneyRequestId },
+        data: { status: 'ACCEPTED' },
       });
-      await transactionRouteUtils.createCostCategoryTransactions({
-        accountId: ctx.session.user.id,
-        formTransaction: input,
-        txCtx,
-      });
-    });
-
-    //3. Change request status
-    await prisma?.moneyRequest.update({
-      where: { id: input.moneyRequestId },
-      data: { status: 'ACCEPTED' },
     });
   });
 
-async function createManyMoneyAccountTransactions({
+//const createTxImage = async ({
+//  input,
+//}: {
+//  input:TransactionField
+//}) => {
+//  if (!input.imbursementProof) {
+//    throw new TRPCError({
+//      code: 'PRECONDITION_FAILED',
+//      message: 'no imbursement proof',
+//    });
+//  }
+//  const imbursementProof = await prisma?.searchableImage.upsert({
+//    where: {
+//      imageName: input.imbursementProof?.imageName,
+//    },
+//    create: {
+//      url: input.imbursementProof.url,
+//      imageName: input.imbursementProof.imageName,
+//      text: '',
+//    },
+//    update: {},
+//  });
+//
+//  return imbursementProof;
+//};
+
+async function createMoneyAccTransactions({
   accountId,
   formTransaction,
   txCtx,
