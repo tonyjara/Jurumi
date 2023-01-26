@@ -1,7 +1,13 @@
-import type { TaxPayer } from '@prisma/client';
+import type { TaxPayer, TaxPayerBankInfo } from '@prisma/client';
+import { BankAccountType } from '@prisma/client';
+import { BankDocType, BankNamesPy } from '@prisma/client';
 import * as z from 'zod';
 
-export const validateTaxPayer: z.ZodType<TaxPayer> = z.lazy(() =>
+export type FormTaxPayer = TaxPayer & {
+  bankInfo: TaxPayerBankInfo | null;
+};
+
+export const validateTaxPayer: z.ZodType<FormTaxPayer> = z.lazy(() =>
   z.object({
     id: z.string(),
     createdAt: z.date(),
@@ -16,13 +22,20 @@ export const validateTaxPayer: z.ZodType<TaxPayer> = z.lazy(() =>
       .string()
       .min(5, 'Favor ingrese el ruc.')
       .max(14, 'Has excedido el límite de caractéres (14).'),
-    fantasyName: z.string(),
+    fantasyName: z.string().nullable(),
     archived: z.boolean(),
     softDeleted: z.boolean(),
+    bankInfo: z.object({
+      bankName: z.nativeEnum(BankNamesPy),
+      accountNumber: z.string(),
+      ownerName: z.string(),
+      ownerDocType: z.nativeEnum(BankDocType),
+      ownerDoc: z.string(),
+      taxPayerId: z.string(),
+      type: z.nativeEnum(BankAccountType),
+    }),
   })
 );
-
-export type FormTaxPayer = z.infer<typeof validateTaxPayer>;
 
 export const defaultTaxPayer: FormTaxPayer = {
   id: '',
@@ -35,4 +48,13 @@ export const defaultTaxPayer: FormTaxPayer = {
   fantasyName: '',
   archived: false,
   softDeleted: false,
+  bankInfo: {
+    bankName: 'BANCOP',
+    accountNumber: '',
+    ownerName: '',
+    ownerDocType: 'CI',
+    ownerDoc: '',
+    taxPayerId: '',
+    type: 'CURRENT',
+  },
 };

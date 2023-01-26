@@ -6,16 +6,9 @@ interface NavItemProps {
   icon: IconType;
   children: React.ReactNode;
   dest: string; //destination
-  minimized?: boolean;
   onClose?: () => void;
 }
-const NavItem = ({
-  icon,
-  onClose,
-  children,
-  dest,
-  minimized,
-}: NavItemProps) => {
+const NavItem = ({ icon, onClose, children, dest }: NavItemProps) => {
   return (
     <Link
       onClick={() => onClose && onClose()}
@@ -33,11 +26,11 @@ const NavItem = ({
           bg: 'cyan.400',
           color: 'white',
         }}
-        justifyContent={minimized ? 'center' : 'left'}
+        justifyContent={'left'}
       >
         {icon && (
           <Icon
-            mr={minimized ? '0' : '4'}
+            mr={'4'}
             fontSize="20px"
             _groupHover={{
               color: 'white',
@@ -45,7 +38,7 @@ const NavItem = ({
             as={icon}
           />
         )}
-        {!minimized && children}
+        {children}
       </Flex>
     </Link>
   );

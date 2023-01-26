@@ -29,7 +29,6 @@ const MoneyAccForm = ({ control, errors }: formProps<FormMoneyAccount>) => {
         errors={errors}
         name="displayName"
         label="Nombre para diferenciar la cuenta"
-        autoFocus={true}
       />
 
       <FormControlledRadioButtons

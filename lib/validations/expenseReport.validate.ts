@@ -23,19 +23,26 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z.lazy(() =>
       13,
       13
     ),
+    concept: z
+      .string({ required_error: 'Favor ingrese un concepto' })
+      .min(3, 'Favor ingrese un concepto')
+      .max(64, 'Has excedido el límite de caractéres (64)'),
     currency: z.nativeEnum(Currency),
     comments: z.string().max(128, 'Has excedido el límite de caractéres (128)'),
     amountSpent: z.any().transform((value) => new Prisma.Decimal(value)),
     moneyRequestId: z.string().min(1),
     accountId: z.string(),
     wasCancelled: z.boolean(),
-    projectId: z.string({ invalid_type_error: 'Favor seleccione un proyecto' }),
+    projectId: z
+      .string({ invalid_type_error: 'Favor seleccione un proyecto' })
+      .min(2, 'Favor seleccione un proyecto'),
     searchableImage: z
       .object({
         imageName: z.string().min(1, 'Favor suba la imágen de su comprobante'),
         url: z.string().min(1, 'Favor suba la imágen de su comprobante'),
       })
       .nullable(),
+    costCategoryId: z.string().nullable(),
     taxPayer: z.object({
       razonSocial: stringReqMinMax(
         'Favor ingrese la razon del contribuyente',
@@ -49,6 +56,7 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z.lazy(() =>
 
 export const defaultExpenseReportData: FormExpenseReport = {
   id: '',
+  concept: '',
   createdAt: new Date(),
   updatedAt: null,
   facturaNumber: '',
@@ -61,4 +69,5 @@ export const defaultExpenseReportData: FormExpenseReport = {
   taxPayer: { razonSocial: '', ruc: '' },
   searchableImage: { url: '', imageName: '' },
   wasCancelled: false,
+  costCategoryId: null,
 };

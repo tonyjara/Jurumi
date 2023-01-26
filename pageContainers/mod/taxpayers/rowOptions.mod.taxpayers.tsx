@@ -5,19 +5,19 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import type { TaxPayer } from '@prisma/client';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 
 const RowOptionsHomeTaxPayers = ({
   x,
   setEditTaxPayer,
   onEditOpen,
 }: {
-  x: TaxPayer;
-  setEditTaxPayer: React.Dispatch<React.SetStateAction<TaxPayer | null>>;
+  x: FormTaxPayer;
+  setEditTaxPayer: React.Dispatch<React.SetStateAction<FormTaxPayer | null>>;
   onEditOpen: () => void;
 }) => {
   const context = trpcClient.useContext();

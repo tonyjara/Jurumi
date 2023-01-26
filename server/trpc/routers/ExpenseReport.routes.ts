@@ -8,6 +8,10 @@ import {
   router,
 } from '../initTrpc';
 import prisma from '@/server/db/client';
+import {
+  createCostCategoryTransactions,
+  createExpenseReportProof,
+} from './utils/ExpenseReport.routeUtils';
 
 export const expenseReportsRouter = router({
   getMany: protectedProcedure.query(async ({ ctx }) => {
@@ -61,6 +65,7 @@ export const expenseReportsRouter = router({
         orderBy: handleOrderBy(),
         include: {
           project: { select: { displayName: true, id: true } },
+          costCategory: { select: { id: true, displayName: true } },
           taxPayer: {
             select: { fantasyName: true, razonSocial: true, ruc: true },
           },
@@ -105,6 +110,7 @@ export const expenseReportsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy(),
         include: {
+          costCategory: { select: { id: true, displayName: true } },
           account: { select: { displayName: true, id: true } },
           project: { select: { displayName: true, id: true } },
           taxPayer: {
@@ -159,29 +165,47 @@ export const expenseReportsRouter = router({
           message: 'taxpayer failed',
         });
       }
+      const expenseReportProof = await createExpenseReportProof({ input });
 
-      const x = await prisma?.expenseReport.create({
-        data: {
-          accountId: user.id,
-          facturaNumber: input.facturaNumber,
-
-          amountSpent: input.amountSpent,
-          comments: input.comments,
-          currency: input.currency,
-          moneyRequestId: input.moneyRequestId,
-          taxPayerId: taxPayer.id,
-          projectId: input.projectId,
-          searchableImage: {
-            create: {
-              url: input.searchableImage.url,
-              imageName: input.searchableImage.imageName,
-              text: '',
-            },
+      if (!expenseReportProof) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: 'no proof',
+        });
+      }
+      await prisma.$transaction(async (txCtx) => {
+        const expenseReport = await txCtx?.expenseReport.create({
+          data: {
+            accountId: user.id,
+            concept: input.concept,
+            facturaNumber: input.facturaNumber,
+            amountSpent: input.amountSpent,
+            comments: input.comments,
+            currency: input.currency,
+            costCategoryId: input.costCategoryId,
+            moneyRequestId: input.moneyRequestId,
+            taxPayerId: taxPayer.id,
+            projectId: input.projectId,
+            searchableImage: { connect: { id: expenseReportProof.id } },
           },
-        },
-      });
+          include: {
+            account: { select: { id: true } },
+            searchableImage: true,
+            taxPayer: true,
+          },
+        });
+        if (!expenseReport) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'taxpayer failed',
+          });
+        }
 
-      return x;
+        await createCostCategoryTransactions({
+          expenseReport,
+          txCtx,
+        });
+      });
     }),
   edit: protectedProcedure
     .input(validateExpenseReport)
@@ -218,13 +242,6 @@ export const expenseReportsRouter = router({
           moneyRequestId: input.moneyRequestId,
           taxPayerId: taxPayer.id,
           projectId: input.projectId,
-          // searchableImage: {
-          //   create: {
-          //     url: input.facturaPictureUrl,
-          //     imageName: input.imageName,
-          //     text: '',
-          //   },
-          // },
           searchableImage: {
             upsert: {
               create: {

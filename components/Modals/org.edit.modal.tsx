@@ -35,6 +35,7 @@ const EditOrgModal = ({
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormOrganization>({
     defaultValues: defaultOrgData,
@@ -67,7 +68,7 @@ const EditOrgModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
@@ -76,12 +77,16 @@ const EditOrgModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
-            <OrgForm control={control} errors={errors as any} />
+            <OrgForm
+              setValue={setValue}
+              control={control}
+              errors={errors as any}
+            />
           </ModalBody>
 
           <ModalFooter>
             <Button
-              disabled={isLoading || isSubmitting}
+              isDisabled={isLoading || isSubmitting}
               type="submit"
               colorScheme="blue"
               mr={3}

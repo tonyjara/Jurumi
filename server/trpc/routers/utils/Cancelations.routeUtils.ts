@@ -101,6 +101,7 @@ export const cancelTransactions = async ({
         projectId: tx.projectId,
         transactionType: tx.transactionType,
         costCategoryId: tx.costCategoryId,
+        expenseReportId: tx.expenseReportId,
         // do not need searchable image in a cancellation.
       },
     });

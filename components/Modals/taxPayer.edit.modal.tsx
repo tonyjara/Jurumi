@@ -8,7 +8,6 @@ import {
   ModalFooter,
   Button,
   Text,
-  VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
@@ -20,8 +19,8 @@ import {
   defaultTaxPayer,
   validateTaxPayer,
 } from '@/lib/validations/taxtPayer.validate';
-import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
+import TaxPayerForm from '../Forms/TaxPayer.form';
 
 const EditTaxPayerModal = ({
   isOpen,
@@ -45,6 +44,9 @@ const EditTaxPayerModal = ({
 
   useEffect(() => {
     if (isOpen) {
+      if (!taxPayer.bankInfo) {
+        taxPayer.bankInfo = defaultTaxPayer.bankInfo;
+      }
       reset(taxPayer);
     }
 
@@ -68,7 +70,7 @@ const EditTaxPayerModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
@@ -77,31 +79,12 @@ const EditTaxPayerModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
-            <VStack spacing={5}>
-              <FormControlledText
-                control={control}
-                errors={errors}
-                name="razonSocial"
-                label="Razón social"
-              />
-              <FormControlledText
-                control={control}
-                errors={errors}
-                name="ruc"
-                label="R.U.C."
-              />
-              <FormControlledText
-                control={control}
-                errors={errors}
-                name="fantasyName"
-                label="Nombre de fantasía (opcional)"
-              />
-            </VStack>
+            <TaxPayerForm control={control} errors={errors} />
           </ModalBody>
 
           <ModalFooter>
             <Button
-              disabled={isLoading || isSubmitting}
+              isDisabled={isLoading || isSubmitting}
               type="submit"
               colorScheme="blue"
               mr={3}

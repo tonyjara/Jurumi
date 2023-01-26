@@ -27,14 +27,20 @@ export const moneyRequestsColumns = ({
   setEditMoneyRequest,
   pageIndex,
   pageSize,
+  setReqForReport,
+  onExpRepOpen,
 }: {
   user: Omit<Account, 'password'> | undefined;
   onEditOpen: () => void;
   setEditMoneyRequest: React.Dispatch<
     React.SetStateAction<MoneyRequest | null>
   >;
+  setReqForReport: React.Dispatch<
+    React.SetStateAction<MoneyRequestComplete | null>
+  >;
   pageSize: number;
   pageIndex: number;
+  onExpRepOpen: () => void;
 }) => [
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
@@ -92,6 +98,12 @@ export const moneyRequestsColumns = ({
       <TextCell text={x.row.original?.project?.displayName ?? '-'} />
     ),
   }),
+  columnHelper.display({
+    cell: (x) => (
+      <TextCell text={x.row.original.costCategory?.displayName ?? '-'} />
+    ),
+    header: 'L. Presup.',
+  }),
   columnHelper.accessor('description', {
     cell: (x) => (
       <TextCell text={x.getValue()} shortenString hover={x.getValue()} />
@@ -111,13 +123,19 @@ export const moneyRequestsColumns = ({
   columnHelper.display({
     header: 'Rendido',
     cell: (x) => (
-      <PercentageCell
-        total={x.row.original.amountRequested}
-        executed={reduceExpenseReports(x.row.original.expenseReports).add(
-          reduceExpenseReturns(x.row.original.expenseReturns)
+      <>
+        {x.row.original.moneyRequestType === 'FUND_REQUEST' ? (
+          <PercentageCell
+            total={x.row.original.amountRequested}
+            executed={reduceExpenseReports(x.row.original.expenseReports).add(
+              reduceExpenseReturns(x.row.original.expenseReturns)
+            )}
+            currency={x.row.original.currency}
+          />
+        ) : (
+          '-'
         )}
-        currency={x.row.original.currency}
-      />
+      </>
     ),
   }),
   columnHelper.display({
@@ -134,6 +152,8 @@ export const moneyRequestsColumns = ({
           onEditOpen={onEditOpen}
           setEditMoneyRequest={setEditMoneyRequest}
           hasBeenApproved={hasBeenApproved()}
+          setReqForReport={setReqForReport}
+          onExpRepOpen={onExpRepOpen}
         />
       );
     },

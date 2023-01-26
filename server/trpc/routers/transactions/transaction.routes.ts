@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { validateTransactionEdit } from '@/lib/validations/transaction.edit.validate';
 import { adminModProcedure, adminProcedure, router } from '../../initTrpc';
-import { handleOrderBy } from '../utils/SortingUtils';
-import { checkIfIsLastTransaction } from '../utils/TransactionRouteUtils';
+import { handleOrderBy } from '../utils/Sorting.routeUtils';
+import { transactionRouteUtils } from '../utils/Transaction.routeUtils';
 import prisma from '@/server/db/client';
 import { createManyTransactions } from './createMany.transaction.routes';
 
@@ -119,6 +119,7 @@ export const transactionsRouter = router({
 
       return false;
     }),
+
   deleteById: adminProcedure
     .input(
       z.object({
@@ -130,7 +131,7 @@ export const transactionsRouter = router({
     .mutation(async ({ input }) => {
       //for the moment being it will only allow delete if it's the last transaction.
 
-      await checkIfIsLastTransaction({
+      await transactionRouteUtils.checkIfIsLastTransaction({
         moneyAccountId: input.moneyAccountId,
         costCategoryId: input.costCategoryId,
         transactionId: input.id,

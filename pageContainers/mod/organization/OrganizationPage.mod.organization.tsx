@@ -1,12 +1,20 @@
+import EditOrgModal from '@/components/Modals/org.edit.modal';
 import LoadingPlantLottie from '@/components/Spinners-Loading/LoadiingPlantLottie';
 import { trpcClient } from '@/lib/utils/trpcClient';
+import type { FormOrganization } from '@/lib/validations/org.validate';
+import { EditIcon } from '@chakra-ui/icons';
 import {
+  Box,
+  Button,
   Card,
   CardBody,
   CardHeader,
+  Flex,
+  Image,
   Tabs,
   Text,
   useColorModeValue,
+  useDisclosure,
 } from '@chakra-ui/react';
 import type {
   Organization,
@@ -15,27 +23,44 @@ import type {
   Imbursement,
   Project,
   CostCategory,
+  Account,
 } from '@prisma/client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import OrganizationStats from './OrgStats.mod.organization';
 
-export type OrgForDashboard = Organization & {
-  moneyAccounts: (MoneyAccount & {
-    transactions: Transaction[];
-  })[];
-  projects: (Project & {
-    transactions: Transaction[];
-    costCategories: (CostCategory & {
-      transactions: Transaction[];
-    })[];
-    imbursements: (Imbursement & {
-      transactions: Transaction[];
-    })[];
-  })[];
-};
+export type OrgForDashboard =
+  | (Organization & {
+      moneyAdministrators: Account[];
+      moneyRequestApprovers: Account[];
+      moneyAccounts: (MoneyAccount & {
+        transactions: Transaction[];
+      })[];
+      imageLogo: {
+        id: string;
+        imageName: string;
+        url: string;
+      } | null;
+      projects: (Project & {
+        transactions: Transaction[];
+        costCategories: (CostCategory & {
+          transactions: Transaction[];
+        })[];
+        imbursements: (Imbursement & {
+          transactions: Transaction[];
+        })[];
+      })[];
+    })
+  | null
+  | undefined;
 
 const OrganizationPage = () => {
+  const [formOrg, setFormOrg] = useState<FormOrganization | null>(null);
   const backgroundColor = useColorModeValue('white', 'gray.800');
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+  } = useDisclosure();
 
   const { data: prefs, isLoading: prefsIsLoading } =
     trpcClient.preferences.getMyPreferences.useQuery();
@@ -46,17 +71,62 @@ const OrganizationPage = () => {
       },
       { enabled: !!prefs }
     );
+
+  useEffect(() => {
+    if (!org) return;
+    const formatedOrg: FormOrganization = {
+      id: org.id,
+      createdAt: new Date(),
+      updatedAt: null,
+      createdById: '',
+      updatedById: null,
+      displayName: org.displayName,
+      archived: org.archived,
+      softDeleted: org.softDeleted,
+      moneyAdministrators: org.moneyAdministrators,
+      moneyRequestApprovers: org.moneyRequestApprovers,
+      imageLogo: org.imageLogo
+        ? { url: org.imageLogo.url, imageName: org.imageLogo.imageName }
+        : null,
+    };
+    setFormOrg(formatedOrg);
+    return () => {
+      setFormOrg(null);
+    };
+  }, [org]);
+
   const loading = prefsIsLoading || orgIsLoading;
+
   return (
-    <>
+    <Box display={'flex'} justifyContent="center" w="100%">
       {!loading &&
         (prefs && org ? (
-          <Card backgroundColor={backgroundColor}>
+          <Card
+            display={'flex'}
+            maxW="1200px"
+            w="100%"
+            backgroundColor={backgroundColor}
+          >
             <Tabs overflow={'auto'}>
               <CardHeader>
-                <Text fontWeight={'bold'} fontSize={'3xl'}>
-                  {org.displayName}
-                </Text>
+                <Flex mb="10px" alignItems={'center'} gap={5}>
+                  {org.imageLogo?.url && (
+                    <Image
+                      boxSize={{ base: '25px', md: '30px' }}
+                      src={org.imageLogo.url}
+                      alt="organization logo"
+                    />
+                  )}
+                  <Text
+                    fontWeight={'bold'}
+                    fontSize={{ base: '2xl', md: '3xl' }}
+                  >
+                    {org.displayName}
+                  </Text>
+                  <Button onClick={onEditOpen} leftIcon={<EditIcon />}>
+                    Editar
+                  </Button>
+                </Flex>
                 <Text color={'gray.300'}>
                   Libre significa: total de las cuentas - (total asignadio a los
                   projectos - total ejecutado)
@@ -73,7 +143,10 @@ const OrganizationPage = () => {
           </div>
         ))}
       {loading && <LoadingPlantLottie />}
-    </>
+      {formOrg && (
+        <EditOrgModal org={formOrg} isOpen={isEditOpen} onClose={onEditClose} />
+      )}
+    </Box>
   );
 };
 

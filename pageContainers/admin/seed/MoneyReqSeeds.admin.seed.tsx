@@ -15,10 +15,19 @@ const MoneyReqSeeds = ({ multiplier }: { multiplier: string }) => {
         },
       })
     );
-  const { mutate: createApprovedReqsWithTxs } =
-    trpcClient.seed.createApprovedMoneyReqWithTx.useMutation(
+  const { mutate: createFundRequestsWithTx } =
+    trpcClient.seed.createFundRequestWithTx.useMutation(
       handleUseMutationAlerts({
         successText: `Se crearon ${multiplier} solicitudes aprobadas con transacciones.`,
+        callback: () => {
+          context.invalidate();
+        },
+      })
+    );
+  const { mutate: createReimbursementReqWithTx } =
+    trpcClient.seed.createReimbursementOrderWithTx.useMutation(
+      handleUseMutationAlerts({
+        successText: `Se crearon ${multiplier} solicitudes de reembolso aprobadas con transacciones.`,
         callback: () => {
           context.invalidate();
         },
@@ -45,12 +54,18 @@ const MoneyReqSeeds = ({ multiplier }: { multiplier: string }) => {
 
   const handleCreateRequests = () =>
     createRequests({ multiplier: parseInt(multiplier) });
+
   const handleCreateApprovedReqsWithTxs = () =>
-    createApprovedReqsWithTxs({ multiplier: parseInt(multiplier) });
+    createFundRequestsWithTx({ multiplier: parseInt(multiplier) });
+
+  const handleCreateReimbursementReqWithTx = () =>
+    createReimbursementReqWithTx({ multiplier: parseInt(multiplier) });
+
   const handleCreateApprovedReqsWithTxsAndExpenseReports = () =>
     createApprovedReqsWithTxsAndExpenseReports({
       multiplier: parseInt(multiplier),
     });
+
   const handleCreateApprovedReqsWithTxsAndExpenseReportsAndReturns = () =>
     createApprovedReqsWithTxsAndExpenseReportsAndReturns({
       multiplier: parseInt(multiplier),
@@ -75,6 +90,13 @@ const MoneyReqSeeds = ({ multiplier }: { multiplier: string }) => {
           onClick={handleCreateApprovedReqsWithTxs}
         >
           Aprobadas con transacciones
+        </Button>
+        <Button
+          h="full"
+          whiteSpace={'break-spaces'}
+          onClick={handleCreateReimbursementReqWithTx}
+        >
+          Reembolso Aprobadas con transacciones
         </Button>
         <Button
           h="full"

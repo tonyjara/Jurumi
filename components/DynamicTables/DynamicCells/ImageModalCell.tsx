@@ -43,7 +43,7 @@ const ImageModalCell = ({
         </Icon>
       </Flex>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal size="xl" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{imageName}</ModalHeader>

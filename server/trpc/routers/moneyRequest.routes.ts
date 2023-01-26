@@ -7,15 +7,16 @@ import {
   protectedProcedure,
   router,
 } from '../initTrpc';
-import { handleWhereImApprover } from './utils/MoneyRequestUtils';
-import { handleOrderBy } from './utils/SortingUtils';
+import { handleWhereImApprover } from './utils/MoneyRequest.routeUtils';
+import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 import {
   cancelExpenseReports,
   cancelExpenseReturns,
   cancelMoneyReqApprovals,
   cancelTransactions,
-} from './utils/Cancelations';
+} from './utils/Cancelations.routeUtils';
+import { upsertTaxPayter } from './utils/TaxPayer.routeUtils';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -94,8 +95,12 @@ export const moneyRequestRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         include: {
+          taxPayer: {
+            select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
+          },
           account: true,
           project: true,
+          costCategory: true,
           transactions: {
             where: {
               cancellationId: null,
@@ -104,7 +109,10 @@ export const moneyRequestRouter = router({
             },
           },
           moneyRequestApprovals: { where: { wasCancelled: false } },
-          expenseReports: { where: { wasCancelled: false } },
+          expenseReports: {
+            where: { wasCancelled: false },
+            include: { taxPayer: { select: { id: true, razonSocial: true } } },
+          },
           expenseReturns: { where: { wasCancelled: false } },
           organization: {
             select: {
@@ -126,11 +134,18 @@ export const moneyRequestRouter = router({
       return await prisma?.moneyRequest.findUnique({
         where: { id: input.id },
         include: {
+          taxPayer: {
+            select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
+          },
           account: true,
           project: true,
+          costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
-          expenseReports: { where: { wasCancelled: false } },
+          expenseReports: {
+            where: { wasCancelled: false },
+            include: { taxPayer: { select: { id: true, razonSocial: true } } },
+          },
           expenseReturns: { where: { wasCancelled: false } },
           organization: {
             select: {
@@ -148,6 +163,11 @@ export const moneyRequestRouter = router({
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
 
+      const taxPayer = await upsertTaxPayter({
+        input: input.taxPayer,
+        userId: user.id,
+      });
+
       const MoneyReq = await prisma?.moneyRequest.create({
         data: {
           accountId: user.id,
@@ -159,6 +179,8 @@ export const moneyRequestRouter = router({
           status: input.status,
           rejectionMessage: input.rejectionMessage,
           organizationId: input.organizationId,
+          taxPayerId: taxPayer?.id,
+          costCategoryId: input.costCategoryId,
         },
       });
 

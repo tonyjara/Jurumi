@@ -13,11 +13,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '../../lib/dictionaries/knownErrors';
-
 import { trpcClient } from '../../lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { imbursementMock } from '../../__tests__/mocks/Mocks';
 import ImbursementForm from '../Forms/Imbursement.form';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import {
@@ -65,7 +62,7 @@ const ImbursementCreateModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleOnClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
@@ -83,7 +80,7 @@ const ImbursementCreateModal = ({
 
           <ModalFooter>
             <Button
-              disabled={isLoading || isSubmitting}
+              isDisabled={isLoading || isSubmitting}
               type="submit"
               colorScheme="blue"
               mr={3}

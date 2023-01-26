@@ -11,8 +11,6 @@ type withMoney = Omit<
   | 'currentBalance'
   | 'currency'
   | 'moneyAccountId'
-  | 'transactionProofUrl'
-  | 'costCategoryId'
 > & {
   openingBalance?: any;
   currentBalance?: any;
@@ -23,8 +21,6 @@ export interface TransactionField {
   currency: Currency;
   transactionAmount?: any;
   moneyAccountId: string;
-  transactionProofUrl: string;
-  costCategoryId: string | null;
 }
 export interface FormTransactionCreate extends withMoney {
   transactions: TransactionField[];
@@ -40,8 +36,6 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
             transactionAmount: z
               .any()
               .transform((value) => new Prisma.Decimal(value)),
-
-            costCategoryId: z.string().nullable(),
             moneyAccountId: z
               .string({
                 required_error:
@@ -51,7 +45,6 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
                 2,
                 'Favor seleccione una cuenta de donde extraer el dinero.'
               ),
-            transactionProofUrl: z.string(),
           })
         ),
         id: z.number().int(),
@@ -65,7 +58,9 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         currentBalance: z.any().transform((value) => new Prisma.Decimal(value)),
         cancellationId: z.number().nullable(),
         moneyRequestId: z.string().nullable(),
+        costCategoryId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
+        expenseReportId: z.string().nullable(),
         transactionType: z.nativeEnum(TransactionType),
 
         imbursementId: z.string().nullable(),
@@ -99,9 +94,6 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
       currency: 'PYG',
       transactionAmount: new Prisma.Decimal(0),
       moneyAccountId: '',
-      transactionProofUrl: '',
-
-      costCategoryId: null,
     },
   ],
   transactionType: 'MONEY_ACCOUNT',
@@ -111,7 +103,9 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   imbursementId: null,
   expenseReturnId: null,
   cancellationId: null,
+  costCategoryId: null,
   projectId: null,
   isCancellation: false,
   searchableImage: { url: '', imageName: '' },
+  expenseReportId: null,
 };

@@ -28,6 +28,12 @@ const ProjectForm = ({ control, errors, setValue }: formProps<FormProject>) => {
           name="displayName"
           label="Nombre de su proyecto"
         />
+        <FormControlledText
+          control={control}
+          errors={errors}
+          name="financerName"
+          label="Nombre del donante"
+        />
         <FormControlledRadioButtons
           control={control}
           errors={errors}

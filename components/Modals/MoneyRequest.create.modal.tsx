@@ -23,6 +23,7 @@ import {
 } from '@/lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
 import { moneyRequestMock } from '@/__tests__/mocks/Mocks';
+import prisma from '@/server/db/client';
 
 const CreateMoneyRequestModal = ({
   isOpen,
@@ -74,21 +75,33 @@ const CreateMoneyRequestModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleOnClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Crear una solicitud de fondos</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={() => moneyRequestMock('')} />
+            <SeedButton
+              reset={reset}
+              mock={() =>
+                moneyRequestMock({
+                  organizationId: '',
+                  moneyRequestType: 'FUND_REQUEST',
+                })
+              }
+            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <MoneyRequestForm control={control} errors={errors as any} />
+            <MoneyRequestForm
+              setValue={setValue}
+              control={control}
+              errors={errors as any}
+            />
           </ModalBody>
 
           <ModalFooter>
             <Button
-              disabled={isLoading || isSubmitting}
+              isDisabled={isLoading || isSubmitting}
               type="submit"
               colorScheme="blue"
               mr={3}

@@ -31,12 +31,14 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
           .any()
           .transform((value) => new Prisma.Decimal(value)),
         moneyRequestId: z.string().nullable(),
-        costCategoryId: z.string().nullable(),
+        expenseReportId: z.string().nullable(),
         projectId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
+        costCategoryId: z.string().nullable(),
         imbursementId: z.string().nullable(),
         cancellationId: z.number().nullable(),
         transactionType: z.nativeEnum(TransactionType),
+
         moneyAccountId: z
           .string({
             required_error:
@@ -84,4 +86,5 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   cancellationId: null,
   transactionType: 'MONEY_ACCOUNT',
   searchableImage: { url: '', imageName: '' },
+  expenseReportId: null,
 };

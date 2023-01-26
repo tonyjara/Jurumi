@@ -1,5 +1,4 @@
 import { useDisclosure } from '@chakra-ui/react';
-import type { TaxPayer } from '@prisma/client';
 import React, { useState } from 'react';
 import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
 import DynamicTable from '@/components/DynamicTables/DynamicTable';
@@ -10,10 +9,11 @@ import EditTaxPayerModal from '@/components/Modals/taxPayer.edit.modal';
 import useDebounce from '@/lib/hooks/useDebounce';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { taxpayersColumns } from './columns.mod.taxpayers';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 
 const TaxPayersPage = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [editTaxPayer, setEditTaxPayer] = useState<TaxPayer | null>(null);
+  const [editTaxPayer, setEditTaxPayer] = useState<FormTaxPayer | null>(null);
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =

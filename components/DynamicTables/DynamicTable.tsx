@@ -128,6 +128,8 @@ const DynamicTable = <T extends object>({
 
   return (
     <Card
+      // display={'flex'}
+      w="100%"
       css={customScrollbar}
       overflow={'auto'}
       backgroundColor={backgroundColor}
@@ -137,7 +139,7 @@ const DynamicTable = <T extends object>({
           <Flex justifyContent={'space-between'}>
             {headerComp}
             <Flex flexDirection={'column'}>
-              <Text fontSize="xl" fontWeight="bold">
+              <Text fontWeight={'bold'} fontSize={{ base: '2xl', md: '3xl' }}>
                 {title}
               </Text>
               <Text fontSize="md">{subTitle}</Text>
@@ -169,7 +171,6 @@ const DynamicTable = <T extends object>({
 
       <Table
         css={customScrollbar}
-        display={'block'}
         overflowX={'scroll'}
         size={['sm', 'md']}
         variant={'simple'}

@@ -1,10 +1,10 @@
-import type { TaxPayer } from '@prisma/client';
 import { createColumnHelper } from '@tanstack/react-table';
 import DateCell from '@/components/DynamicTables/DynamicCells/DateCell';
 import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
 import RowOptionsHomeTaxPayers from './rowOptions.mod.taxpayers';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 
-const columnHelper = createColumnHelper<TaxPayer>();
+const columnHelper = createColumnHelper<FormTaxPayer>();
 
 export const taxpayersColumns = ({
   onEditOpen,
@@ -13,7 +13,7 @@ export const taxpayersColumns = ({
   pageSize,
 }: {
   onEditOpen: () => void;
-  setEditTaxPayer: React.Dispatch<React.SetStateAction<TaxPayer | null>>;
+  setEditTaxPayer: React.Dispatch<React.SetStateAction<FormTaxPayer | null>>;
   pageSize: number;
   pageIndex: number;
 }) => [

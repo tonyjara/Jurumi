@@ -46,6 +46,7 @@ const CreateTransactionPage = ({
     if (moneyRequest) {
       setValue('moneyRequestId', moneyRequest.id);
       setValue('projectId', moneyRequest.projectId);
+      setValue('costCategoryId', moneyRequest.costCategoryId);
     }
 
     return () => {};
@@ -111,6 +112,7 @@ const CreateTransactionPage = ({
         )}
         <Divider my={'20px'} />
         <TransactionForm
+          moneyRequestType={moneyRequest?.moneyRequestType}
           totalAmount={moneyRequest?.amountRequested}
           amountExecuted={reduceTransactionAmounts(moneyRequest?.transactions)}
           control={control}

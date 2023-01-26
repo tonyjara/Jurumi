@@ -15,15 +15,16 @@ import { useForm } from 'react-hook-form';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { expenseReportMock } from '@/__tests__/mocks/Mocks';
 import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
 import {
   defaultExpenseReportData,
   validateExpenseReport,
 } from '@/lib/validations/expenseReport.validate';
 import ExpenseReportForm from '../Forms/ExpenseReport.form';
-import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
+import {
+  reduceExpenseReports,
+  reduceExpenseReturns,
+} from '@/lib/utils/TransactionUtils';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
 import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
 
@@ -78,14 +79,14 @@ const CreateExpenseReportModal = ({
 
   const pendingAmount = () =>
     decimalFormat(
-      moneyRequest.amountRequested.sub(
-        reduceExpenseReports(moneyRequest.expenseReports)
-      ),
+      moneyRequest.amountRequested
+        .sub(reduceExpenseReports(moneyRequest.expenseReports))
+        .sub(reduceExpenseReturns(moneyRequest.expenseReturns)),
       moneyRequest.currency
     );
 
   return (
-    <Modal isOpen={isOpen} onClose={handleOnClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
@@ -95,12 +96,9 @@ const CreateExpenseReportModal = ({
 
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton
-              reset={reset}
-              mock={() => expenseReportMock({ moneyReqId: moneyRequest.id })}
-            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ExpenseReportForm
+              reset={reset}
               moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}
@@ -110,7 +108,7 @@ const CreateExpenseReportModal = ({
 
           <ModalFooter>
             <Button
-              disabled={isLoading || isSubmitting}
+              isDisabled={isLoading || isSubmitting}
               type="submit"
               colorScheme="blue"
               mr={3}

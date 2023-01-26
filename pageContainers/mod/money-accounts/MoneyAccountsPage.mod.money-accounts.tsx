@@ -27,6 +27,7 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import TransactionsTable from '../transactions/TransactionsTable';
 import AccordionOptionsMoneyAccountsPage from './accordionOptions.mod.money-accounts';
 import { customScrollbar } from 'styles/CssUtils';
+import LoadingPlantLottie from '@/components/Spinners-Loading/LoadiingPlantLottie';
 
 export type MoneyAccWithTransactions = MoneyAccount & {
   transactions: (Transaction & {
@@ -79,7 +80,7 @@ const MoneyAccountsPage = () => {
     return () => {};
   }, [editData, isEditOpen, onEditClose, onEditOpen]);
 
-  const { data, isFetching } =
+  const { data, isFetching, isLoading } =
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
   const bg = useColorModeValue('white', 'gray.700');
@@ -92,11 +93,11 @@ const MoneyAccountsPage = () => {
   ];
 
   return (
-    <Card backgroundColor={cardBg}>
+    <Card w="100%" backgroundColor={cardBg}>
       <CardHeader>
         <Flex justifyContent={'space-between'}>
           <Flex flexDirection={'column'}>
-            <Text fontSize="xl" fontWeight="bold">
+            <Text fontWeight={'bold'} fontSize={{ base: '2xl', md: '3xl' }}>
               Cuentas
             </Text>
           </Flex>
@@ -178,6 +179,7 @@ const MoneyAccountsPage = () => {
           isOpen={isMoneyAccOpen}
           onClose={onMoneyAccClose}
         />
+        {(isLoading || isFetching) && <LoadingPlantLottie />}
       </CardBody>
     </Card>
   );

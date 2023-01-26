@@ -2,6 +2,7 @@ import { VStack } from '@chakra-ui/react';
 import React from 'react';
 import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
 import {
+  bankAccTypeOptions,
   bankNameOptions,
   ownerDocTypeOptions,
 } from '../../lib/utils/SelectOptions';
@@ -23,6 +24,13 @@ const BankInfoForm = ({ control, errors }: formProps<FormMoneyAccount>) => {
       <FormControlledSelect
         control={control}
         errors={errors}
+        name="bankInfo.type"
+        label="Seleccione el tipo de cuenta"
+        options={bankAccTypeOptions}
+      />
+      <FormControlledSelect
+        control={control}
+        errors={errors}
         name="bankInfo.bankName"
         label="Seleccione el banco"
         options={bankNameOptions}
@@ -31,7 +39,7 @@ const BankInfoForm = ({ control, errors }: formProps<FormMoneyAccount>) => {
         control={control}
         errors={errors}
         name="bankInfo.ownerName"
-        label="Nombre y Apellido del titular"
+        label="Denominación"
         autoFocus={true}
         //@ts-ignore
         error={errors.bankInfo?.ownerName?.message}

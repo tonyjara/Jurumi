@@ -1,4 +1,4 @@
-import type { TaxPayer, Transaction } from '@prisma/client';
+import type { MoneyRequestType, TaxPayer, Transaction } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -14,6 +14,8 @@ import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
+import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
@@ -41,6 +43,31 @@ export const taxPayerMock: () => TaxPayer = () => {
     fantasyName: faker.name.firstName(),
     archived: false,
     softDeleted: false,
+  };
+  return x;
+};
+
+export const FormTaxPayerMock = () => {
+  const x: FormTaxPayer = {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    createdById: '',
+    updatedById: '',
+    razonSocial: faker.name.fullName(),
+    ruc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
+    fantasyName: faker.name.fullName(),
+    archived: false,
+    softDeleted: false,
+    bankInfo: {
+      bankName: 'ITAU',
+      accountNumber: faker.finance.account(),
+      ownerName: faker.name.fullName(),
+      ownerDocType: 'CI',
+      ownerDoc: faker.finance.account(5),
+      taxPayerId: '',
+      type: 'CURRENT',
+    },
   };
   return x;
 };
@@ -76,6 +103,7 @@ export const projectMock: () => FormProject = () => {
     createdById: '',
     updatedById: null,
     endDate: null,
+    financerName: faker.name.fullName(),
     displayName:
       faker.commerce.productAdjective() + ' ' + faker.company.bsBuzz(),
     organizationId: '',
@@ -114,25 +142,43 @@ export const projectMock: () => FormProject = () => {
   };
   return x;
 };
-export const moneyRequestMock: (organizationId: string) => FormMoneyRequest = (
-  organizationId
-) => {
+export const moneyRequestMock = ({
+  organizationId,
+  moneyRequestType,
+}: {
+  organizationId: string;
+  moneyRequestType: MoneyRequestType;
+}) => {
   const x: FormMoneyRequest = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
     description: faker.commerce.productDescription().substring(0, 123),
     status: 'PENDING',
-    moneyRequestType: 'FUND_REQUEST',
+    moneyRequestType,
     currency: 'PYG',
     amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
     accountId: '',
+    costCategoryId: null,
     projectId: null,
     archived: false,
     softDeleted: false,
     rejectionMessage: '',
     wasCancelled: false,
     organizationId,
+    taxPayer: {
+      razonSocial: faker.company.name(),
+      ruc: faker.random.numeric(6),
+      bankInfo: {
+        bankName: 'BANCOP',
+        accountNumber: faker.random.numeric(6),
+        ownerName: faker.name.fullName(),
+        ownerDocType: 'CI',
+        ownerDoc: faker.random.numeric(6),
+        taxPayerId: '',
+        type: 'SAVINGS',
+      },
+    },
   };
   return x;
 };
@@ -157,6 +203,7 @@ export const transactionMock: () => Transaction = () => {
     cancellationId: null,
     projectId: null,
     costCategoryId: null,
+    expenseReportId: null,
     transactionType: 'MONEY_ACCOUNT',
   };
   return x;
@@ -216,9 +263,18 @@ export const imbursementMock: (
   return x;
 };
 
-export const expenseReportMock = ({ moneyReqId }: { moneyReqId: string }) => {
+export const expenseReportMock = ({
+  moneyReqId,
+  projectId,
+  costCategoryId,
+}: {
+  moneyReqId: string;
+  projectId: string;
+  costCategoryId: string;
+}) => {
   const imageName = uuidV4();
   const x: FormExpenseReport = {
+    concept: faker.commerce.productDescription().substring(0, 32),
     searchableImage: {
       url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
       imageName,
@@ -237,7 +293,8 @@ export const expenseReportMock = ({ moneyReqId }: { moneyReqId: string }) => {
     comments: faker.commerce.productDescription().substring(0, 123),
     accountId: '',
     wasCancelled: false,
-    projectId: '',
+    projectId,
+    costCategoryId,
   };
   return x;
 };
@@ -254,9 +311,6 @@ export const TransactionCreateMock = () => {
         currency: 'PYG',
         transactionAmount: new Prisma.Decimal(0),
         moneyAccountId: '',
-        transactionProofUrl: '',
-
-        costCategoryId: null,
       },
     ],
     transactionType: 'MONEY_ACCOUNT',
@@ -266,7 +320,9 @@ export const TransactionCreateMock = () => {
     imbursementId: null,
     expenseReturnId: null,
     cancellationId: null,
+    costCategoryId: null,
     projectId: null,
+    expenseReportId: null,
     isCancellation: false,
     searchableImage: { url: '', imageName: '' },
   };
@@ -297,6 +353,153 @@ export const expenseReturnMock = ({
       imageName,
     },
     wasCancelled: false,
+  };
+  return x;
+};
+
+export const moneyReqCompleteMock = (userId: string | undefined) => {
+  const x: MoneyRequestComplete = {
+    id: 'cldagi67k005qpftt2ssd67m9',
+    taxPayer: {
+      id: '',
+      razonSocial: faker.name.fullName(),
+      ruc: faker.random.numeric(6),
+      bankInfo: {
+        bankName: 'ITAU',
+        accountNumber: faker.finance.account(),
+        ownerName: faker.name.fullName(),
+        ownerDocType: 'CI',
+        ownerDoc: faker.finance.account(5),
+        taxPayerId: '',
+        type: 'CURRENT',
+      },
+    },
+    costCategory: null,
+    createdAt: new Date(),
+    updatedAt: null,
+    taxPayerId: null,
+    costCategoryId: '',
+    description:
+      'The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J',
+    status: 'ACCEPTED',
+    moneyRequestType: 'FUND_REQUEST',
+    currency: 'PYG',
+    amountRequested: new Prisma.Decimal(1681068),
+    rejectionMessage: '',
+    archived: false,
+    softDeleted: false,
+    wasCancelled: false,
+    accountId: userId ?? '',
+    organizationId: 'clcqw4lz10008pf5s711y5uwx',
+    projectId: 'cld1pg5wb0004pfe9w9bnpdn9',
+    account: {
+      id: 'clcqw3zaq0006pf5svlfa1iwg',
+      active: true,
+      createdAt: new Date(),
+      updatedAt: null,
+      email: 'tony@tony.com',
+      displayName: 'Tony local',
+      password: '$2a$10$kapySv/YYSdmo4xVMaKKqOu.yXj2LYdCpxPTaP58JevfN.lYRPfNm',
+      role: 'ADMIN',
+      isVerified: true,
+    },
+    project: {
+      id: 'cld1pg5wb0004pfe9w9bnpdn9',
+      createdAt: new Date(),
+      updatedAt: null,
+      createdById: 'clcqw3zaq0006pf5svlfa1iwg',
+      endDate: null,
+      updatedById: 'clcqw3zaq0006pf5svlfa1iwg',
+      displayName: 'Pavap',
+      description: 'Programa de apoyo a voluntarios',
+      financerName: 'Arturo',
+      archived: false,
+      softDeleted: false,
+      projectType: 'SUBSIDY',
+      organizationId: 'clcqw4lz10008pf5s711y5uwx',
+    },
+    transactions: [
+      {
+        id: 116,
+        createdAt: new Date(),
+        updatedAt: null,
+        updatedById: null,
+        currency: 'PYG',
+        openingBalance: new Prisma.Decimal(10000000),
+        currentBalance: new Prisma.Decimal(8318932),
+        transactionAmount: new Prisma.Decimal(1681068),
+        isCancellation: false,
+        transactionType: 'MONEY_ACCOUNT',
+        cancellationId: null,
+        accountId: userId ?? '',
+        expenseReturnId: null,
+        imbursementId: null,
+        moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        projectId: null,
+        costCategoryId: null,
+        expenseReportId: null,
+      },
+      {
+        id: 118,
+        createdAt: new Date(),
+        updatedAt: null,
+        updatedById: null,
+        currency: 'PYG',
+        openingBalance: new Prisma.Decimal(8318932),
+        currentBalance: new Prisma.Decimal(9159466),
+        transactionAmount: new Prisma.Decimal(840534),
+        isCancellation: false,
+        transactionType: 'EXPENSE_RETURN',
+        cancellationId: null,
+        accountId: userId ?? '',
+        expenseReturnId: 'cldagi6870061pftttzyth6sn',
+        imbursementId: null,
+        moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        projectId: null,
+        costCategoryId: null,
+        expenseReportId: null,
+      },
+    ],
+    moneyRequestApprovals: [],
+    expenseReports: [
+      {
+        id: 'cldagi67y005xpfttj4my35rs',
+        createdAt: new Date(),
+        updatedAt: null,
+        facturaNumber: '9720455630179',
+        amountSpent: new Prisma.Decimal(840534),
+        currency: 'PYG',
+        comments:
+          'Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes & sandals',
+        wasCancelled: false,
+        accountId: userId ?? '',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        projectId: 'cld1pg5wb0004pfe9w9bnpdn9',
+        taxPayerId: 'cldagi67u005spftt9pqkq3y6',
+        costCategoryId: 'cld1pg5wc0005pfe9qkxt5amm',
+        concept: 'asdfgdfgsdfgs',
+        taxPayer: { id: '234234234', razonSocial: 'Verduras del Paraguay SA' },
+      },
+    ],
+    expenseReturns: [
+      {
+        id: 'cldagi6870061pftttzyth6sn',
+        createdAt: new Date(),
+        updatedAt: null,
+        wasCancelled: false,
+        currency: 'PYG',
+        amountReturned: new Prisma.Decimal(840534),
+        moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
+        moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        accountId: userId ?? '',
+      },
+    ],
+    organization: {
+      moneyRequestApprovers: [],
+      moneyAdministrators: [],
+    },
   };
   return x;
 };

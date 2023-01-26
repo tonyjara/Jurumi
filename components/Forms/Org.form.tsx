@@ -1,9 +1,16 @@
 import { VStack } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 import React from 'react';
-import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
+import type {
+  FieldValues,
+  Control,
+  FieldErrorsImpl,
+  UseFormSetValue,
+} from 'react-hook-form';
 
 import { trpcClient } from '../../lib/utils/trpcClient';
 import type { FormOrganization } from '../../lib/validations/org.validate';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledText from '../FormControlled/FormControlledText';
 
@@ -11,9 +18,16 @@ interface formProps<T extends FieldValues> {
   control: Control<T>;
   //TODO: solve why we cant use nested object in errors.
   errors: FieldErrorsImpl<any>;
+
+  setValue: UseFormSetValue<T>;
 }
 
-const OrgForm = ({ control, errors }: formProps<FormOrganization>) => {
+const OrgForm = ({
+  control,
+  errors,
+  setValue,
+}: formProps<FormOrganization>) => {
+  const user = useSession().data?.user;
   const { data: activeUsers } = trpcClient.account.getAllActive.useQuery();
   const usersAsOptions = activeUsers?.map((user) => ({
     displayName: `${user.displayName}`,
@@ -55,6 +69,18 @@ const OrgForm = ({ control, errors }: formProps<FormOrganization>) => {
         optionLabel={'displayName'}
         optionValue={'id'}
       />
+      {user && (
+        <FormControlledImageUpload
+          control={control}
+          errors={errors}
+          urlName="imageLogo.url"
+          idName="imageLogo.imageName"
+          label="Logo de la organización"
+          setValue={setValue}
+          helperText=""
+          userId={user.id}
+        />
+      )}
     </VStack>
   );
 };

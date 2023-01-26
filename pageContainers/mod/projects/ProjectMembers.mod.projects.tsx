@@ -4,6 +4,7 @@ import useDebounce from '@/lib/hooks/useDebounce';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { AddIcon, CloseIcon, DeleteIcon, Search2Icon } from '@chakra-ui/icons';
 import {
+  Box,
   IconButton,
   Input,
   InputGroup,
@@ -64,17 +65,17 @@ const ProjectMembers = ({ project }: props) => {
     );
 
   return (
-    <div>
-      {!project && <Text>Favor seleccione un proyecto.</Text>}
+    <Box justifyContent="center">
+      <Box>{!project && <Text>Favor seleccione un proyecto.</Text>}</Box>
 
       {project && (
-        <>
+        <Box>
           <InputGroup mb={'20px'} maxW={'250px'} flexDir={'column'}>
             <Input
               value={searchValue}
               onChange={(x) => setSearchValue(x.target.value)}
               variant={'flushed'}
-              placeholder={'Busque por correo electrónico.'}
+              placeholder={'Invite por correo electrónico.'}
             />
             <InputRightElement
               onClick={() => hasLength && setSearchValue('')}
@@ -82,9 +83,6 @@ const ProjectMembers = ({ project }: props) => {
             >
               {hasLength ? <CloseIcon /> : <Search2Icon />}
             </InputRightElement>
-            <Text color={'gray.500'}>
-              {'Busque entre los usuarios para invitar al proyecto.'}
-            </Text>
           </InputGroup>
           <TableContainer>
             <Table variant="simple">
@@ -143,9 +141,9 @@ const ProjectMembers = ({ project }: props) => {
               </Tbody>
             </Table>
           </TableContainer>
-        </>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
