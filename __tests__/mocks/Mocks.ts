@@ -1,4 +1,4 @@
-import type { TaxPayer, Transaction } from '@prisma/client';
+import type { MoneyRequestType, TaxPayer, Transaction } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -142,16 +142,20 @@ export const projectMock: () => FormProject = () => {
   };
   return x;
 };
-export const moneyRequestMock: (organizationId: string) => FormMoneyRequest = (
-  organizationId
-) => {
+export const moneyRequestMock = ({
+  organizationId,
+  moneyRequestType,
+}: {
+  organizationId: string;
+  moneyRequestType: MoneyRequestType;
+}) => {
   const x: FormMoneyRequest = {
     id: '',
     createdAt: new Date(),
     updatedAt: null,
     description: faker.commerce.productDescription().substring(0, 123),
     status: 'PENDING',
-    moneyRequestType: 'FUND_REQUEST',
+    moneyRequestType,
     currency: 'PYG',
     amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
     accountId: '',
@@ -163,14 +167,14 @@ export const moneyRequestMock: (organizationId: string) => FormMoneyRequest = (
     wasCancelled: false,
     organizationId,
     taxPayer: {
-      razonSocial: '',
-      ruc: '',
+      razonSocial: faker.company.name(),
+      ruc: faker.random.numeric(6),
       bankInfo: {
         bankName: 'BANCOP',
-        accountNumber: '',
-        ownerName: '',
+        accountNumber: faker.random.numeric(6),
+        ownerName: faker.name.fullName(),
         ownerDocType: 'CI',
-        ownerDoc: '',
+        ownerDoc: faker.random.numeric(6),
         taxPayerId: '',
         type: 'SAVINGS',
       },
@@ -307,7 +311,6 @@ export const TransactionCreateMock = () => {
         currency: 'PYG',
         transactionAmount: new Prisma.Decimal(0),
         moneyAccountId: '',
-        transactionProofUrl: '',
       },
     ],
     transactionType: 'MONEY_ACCOUNT',

@@ -74,14 +74,22 @@ const CreateMoneyRequestModal = ({
   };
 
   return (
-    <Modal size="xl" size={'xl'} isOpen={isOpen} onClose={handleOnClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Crear una solicitud de fondos</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={() => moneyRequestMock('')} />
+            <SeedButton
+              reset={reset}
+              mock={() =>
+                moneyRequestMock({
+                  organizationId: '',
+                  moneyRequestType: 'FUND_REQUEST',
+                })
+              }
+            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm
               setValue={setValue}
@@ -91,6 +99,7 @@ const CreateMoneyRequestModal = ({
           </ModalBody>
 
           <ModalFooter>
+            v
             <Button
               isDisabled={isLoading || isSubmitting}
               type="submit"

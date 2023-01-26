@@ -11,7 +11,6 @@ type withMoney = Omit<
   | 'currentBalance'
   | 'currency'
   | 'moneyAccountId'
-  | 'transactionProofUrl'
 > & {
   openingBalance?: any;
   currentBalance?: any;
@@ -22,7 +21,6 @@ export interface TransactionField {
   currency: Currency;
   transactionAmount?: any;
   moneyAccountId: string;
-  transactionProofUrl: string;
 }
 export interface FormTransactionCreate extends withMoney {
   transactions: TransactionField[];
@@ -47,7 +45,6 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
                 2,
                 'Favor seleccione una cuenta de donde extraer el dinero.'
               ),
-            transactionProofUrl: z.string(),
           })
         ),
         id: z.number().int(),
@@ -97,7 +94,6 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
       currency: 'PYG',
       transactionAmount: new Prisma.Decimal(0),
       moneyAccountId: '',
-      transactionProofUrl: '',
     },
   ],
   transactionType: 'MONEY_ACCOUNT',

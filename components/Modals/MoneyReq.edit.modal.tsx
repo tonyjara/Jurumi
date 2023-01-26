@@ -88,7 +88,15 @@ const EditMoneyRequestModal = ({
           <ModalHeader>Editar una solicitud desembolso</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton reset={reset} mock={() => moneyRequestMock('')} />
+            <SeedButton
+              reset={reset}
+              mock={() =>
+                moneyRequestMock({
+                  organizationId: '',
+                  moneyRequestType: 'FUND_REQUEST',
+                })
+              }
+            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm
               isEdit={true}

@@ -2,7 +2,7 @@ import type {
   FormTransactionCreate,
   TransactionField,
 } from '@/lib/validations/transaction.create.validate';
-import type { Account, Prisma } from '@prisma/client';
+import type { Account, Prisma, searchableImage } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { getSelectedOrganizationId } from './Preferences.routeUtils';
 
@@ -83,11 +83,13 @@ async function createCostCategoryTransactions({
   txCtx,
   accountId,
   txField,
+  searchableImage,
 }: {
   accountId: string;
   formTransaction: FormTransactionCreate;
   txCtx: Prisma.TransactionClient;
   txField: TransactionField;
+  searchableImage: searchableImage | null | undefined;
 }) {
   if (!formTransaction.projectId || !formTransaction.costCategoryId) return;
   const costCategoryId = formTransaction.costCategoryId;
@@ -116,6 +118,11 @@ async function createCostCategoryTransactions({
       projectId: formTransaction.projectId,
       transactionType: 'COST_CATEGORY',
       moneyRequestId: formTransaction.moneyRequestId,
+      searchableImage: searchableImage
+        ? {
+            connect: { id: searchableImage.id },
+          }
+        : {},
     },
   });
 }

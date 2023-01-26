@@ -93,7 +93,6 @@ const TransactionForm = ({
     currency: 'PYG',
     transactionAmount: new Prisma.Decimal(0),
     moneyAccountId: '',
-    transactionProofUrl: '',
   };
 
   const containerBorder = useColorModeValue('gray.100', 'white');
@@ -141,7 +140,6 @@ const TransactionForm = ({
           update(index, {
             moneyAccountId: '',
             currency,
-            transactionProofUrl: '',
             transactionAmount: new Prisma.Decimal(0),
           });
         };

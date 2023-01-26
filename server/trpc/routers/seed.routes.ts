@@ -28,12 +28,16 @@ export const seedRouter = router({
       if (!project) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const mock = moneyRequestMock(prefs.selectedOrganization);
+        const mock = moneyRequestMock({
+          organizationId: prefs.selectedOrganization,
+          moneyRequestType: 'FUND_REQUEST',
+        });
         mock.projectId = project.id;
         await caller.moneyRequest.create(mock);
       }
     }),
-  createApprovedMoneyReqWithTx: adminProcedure
+
+  createFundRequestWithTx: adminProcedure
     .input(z.object({ multiplier: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
@@ -53,8 +57,12 @@ export const seedRouter = router({
       if (!moneyAcc) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const requestMock = moneyRequestMock(prefs.selectedOrganization);
+        const requestMock = moneyRequestMock({
+          organizationId: prefs.selectedOrganization,
+          moneyRequestType: 'FUND_REQUEST',
+        });
         requestMock.projectId = project.id;
+
         requestMock.status = 'ACCEPTED';
 
         const req = await caller.moneyRequest.create(requestMock);
@@ -68,6 +76,51 @@ export const seedRouter = router({
           projectId: req.projectId,
           moneyReqId: req.id,
           userId: user.id,
+          amountRequested: req.amountRequested,
+          caller,
+        });
+      }
+    }),
+  createReimbursementOrderWithTx: adminProcedure
+    .input(z.object({ multiplier: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const user = ctx.session.user;
+      const caller = appRouter.createCaller({ session: ctx.session });
+
+      const prefs = await caller.preferences.getMyPreferences();
+      if (!prefs) return;
+
+      const project = await prisma.project.findFirst({
+        where: { organizationId: prefs.selectedOrganization },
+        select: { id: true, costCategories: { take: 1, select: { id: true } } },
+      });
+      if (!project || !project.costCategories[0]) return;
+      const moneyAcc = await prisma.moneyAccount.findFirst({
+        select: { id: true },
+      });
+      if (!moneyAcc) return;
+
+      for (let x = 1; x <= input.multiplier; x++) {
+        const requestMock = moneyRequestMock({
+          organizationId: prefs.selectedOrganization,
+          moneyRequestType: 'REIMBURSMENT_ORDER',
+        });
+        requestMock.projectId = project.id;
+        requestMock.costCategoryId = project.costCategories[0].id;
+        requestMock.status = 'ACCEPTED';
+
+        const req = await caller.moneyRequest.create(requestMock);
+        if (!req.projectId) return;
+
+        const txMock = TransactionCreateMock();
+
+        await createSeedTransaction({
+          txMock,
+          moneyAccId: moneyAcc.id,
+          projectId: req.projectId,
+          moneyReqId: req.id,
+          userId: user.id,
+          costCategoryId: req.costCategoryId ?? undefined,
           amountRequested: req.amountRequested,
           caller,
         });
@@ -93,7 +146,10 @@ export const seedRouter = router({
       if (!moneyAcc) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const requestMock = moneyRequestMock(prefs.selectedOrganization);
+        const requestMock = moneyRequestMock({
+          organizationId: prefs.selectedOrganization,
+          moneyRequestType: 'FUND_REQUEST',
+        });
         requestMock.projectId = project.id;
         requestMock.status = 'ACCEPTED';
 
@@ -143,7 +199,10 @@ export const seedRouter = router({
       if (!moneyAcc) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const requestMock = moneyRequestMock(prefs.selectedOrganization);
+        const requestMock = moneyRequestMock({
+          organizationId: prefs.selectedOrganization,
+          moneyRequestType: 'FUND_REQUEST',
+        });
         requestMock.projectId = project.id;
         requestMock.status = 'ACCEPTED';
 
