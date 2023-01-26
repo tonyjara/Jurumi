@@ -1,6 +1,8 @@
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import type { Prisma } from '@prisma/client';
 import { v4 as uuidV4 } from 'uuid';
+import prisma from '@/server/db/client';
+
 export const createSeedTransaction = async ({
   moneyAccId,
   txMock,

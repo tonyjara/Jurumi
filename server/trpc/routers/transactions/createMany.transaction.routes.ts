@@ -7,6 +7,7 @@ import {
   checkIfUserIsMoneyAdmin,
   transactionRouteUtils,
 } from '../utils/Transaction.routeUtils';
+import prisma from '@/server/db/client';
 
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)

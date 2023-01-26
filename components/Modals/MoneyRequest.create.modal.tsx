@@ -23,6 +23,7 @@ import {
 } from '@/lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
 import { moneyRequestMock } from '@/__tests__/mocks/Mocks';
+import prisma from '@/server/db/client';
 
 const CreateMoneyRequestModal = ({
   isOpen,

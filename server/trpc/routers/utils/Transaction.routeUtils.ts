@@ -5,6 +5,7 @@ import type {
 import type { Account, Prisma, searchableImage } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { getSelectedOrganizationId } from './Preferences.routeUtils';
+import prisma from '@/server/db/client';
 
 async function checkIfIsLastTransaction({
   moneyAccountId,
