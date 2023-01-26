@@ -1,6 +1,5 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import type { FormOrganization } from '@/lib/validations/org.validate';
 import { validateOrganization } from '@/lib/validations/org.validate';
 import {
   adminProcedure,
