@@ -6,6 +6,7 @@ import type {
   Prisma,
 } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import prisma from '@/server/db/client';
 
 export async function createCostCategoryTransactions({
   expenseReport,
