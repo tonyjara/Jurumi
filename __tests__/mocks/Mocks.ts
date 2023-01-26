@@ -361,6 +361,9 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
   const x: MoneyRequestComplete = {
     id: 'cldagi67k005qpftt2ssd67m9',
     taxPayer: {
+      id: '',
+      razonSocial: faker.name.fullName(),
+      ruc: faker.random.numeric(6),
       bankInfo: {
         bankName: 'ITAU',
         accountNumber: faker.finance.account(),

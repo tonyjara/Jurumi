@@ -6,7 +6,7 @@ const FormContainer = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Container
-      maxW={'500px'}
+      maxW={'700px'}
       p="15px"
       borderRadius={'8px'}
       backgroundColor={backgroundColor}

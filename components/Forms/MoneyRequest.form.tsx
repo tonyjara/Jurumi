@@ -67,8 +67,6 @@ const MoneyRequestForm = ({
       label: `${cat.displayName}`,
     }));
 
-  const firstOption = costCats ? costCats[0] : null;
-
   return (
     <VStack spacing={5}>
       <FormControlledSelect

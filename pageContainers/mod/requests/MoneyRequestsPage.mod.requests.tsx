@@ -25,21 +25,23 @@ import { moneyRequestsColumns } from './columns.mod.requests';
 import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.modal';
 
 export type MoneyRequestComplete = MoneyRequest & {
-  project: Project | null;
-  transactions: Transaction[];
   expenseReports: (ExpenseReport & {
     taxPayer: {
       id: string;
       razonSocial: string;
     };
   })[];
-  expenseReturns: ExpenseReturn[];
+  transactions: Transaction[];
   account: Account;
+  project: Project | null;
   costCategory: CostCategory | null;
-  moneyRequestApprovals: MoneyRequestApproval[];
   taxPayer: {
+    id: string;
+    razonSocial: string;
+    ruc: string;
     bankInfo: TaxPayerBankInfo | null;
   } | null;
+  moneyRequestApprovals: MoneyRequestApproval[];
   organization: {
     moneyRequestApprovers: {
       id: string;
@@ -50,6 +52,7 @@ export type MoneyRequestComplete = MoneyRequest & {
       displayName: string;
     }[];
   };
+  expenseReturns: ExpenseReturn[];
 };
 
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {

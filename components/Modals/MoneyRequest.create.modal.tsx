@@ -99,7 +99,6 @@ const CreateMoneyRequestModal = ({
           </ModalBody>
 
           <ModalFooter>
-            v
             <Button
               isDisabled={isLoading || isSubmitting}
               type="submit"

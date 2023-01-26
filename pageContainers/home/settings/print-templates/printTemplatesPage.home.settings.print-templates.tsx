@@ -14,6 +14,9 @@ const PrintTemplatesPage = () => {
       <Link href={'/home/settings/print-templates/reimbursement-order'}>
         <Button>Plantilla solicitud de reembolso</Button>
       </Link>
+      <Link href={'/home/settings/print-templates/money-order'}>
+        <Button>Plantilla de orden de pago</Button>
+      </Link>
     </Stack>
   );
 };

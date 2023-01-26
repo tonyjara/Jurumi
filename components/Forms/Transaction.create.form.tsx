@@ -9,6 +9,7 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Flex,
+  Box,
 } from '@chakra-ui/react';
 import type { Currency, MoneyRequestType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
@@ -112,6 +113,7 @@ const TransactionForm = ({
         options={projectOptions ?? []}
         isClearable
       />
+
       {moneyRequestType !== 'FUND_REQUEST' && costCatOptions()?.length && (
         <FormControlledSelect
           control={control}
@@ -122,6 +124,7 @@ const TransactionForm = ({
           isClearable
         />
       )}
+
       <HStack mt={'20px'} justifyContent={'space-between'}>
         <CircularProgress value={parseInt(percentage)} color="green.400">
           <CircularProgressLabel>{percentage}%</CircularProgressLabel>
@@ -134,6 +137,21 @@ const TransactionForm = ({
           Agregar otra extracción
         </Button>
       </HStack>
+
+      <Box my={'20px'}>
+        {user && (
+          <FormControlledImageUpload
+            control={control}
+            errors={errors}
+            urlName="searchableImage.url"
+            idName="searchableImage.imageName"
+            label="Comprobante del desembolso"
+            setValue={setValue}
+            helperText="Favor tener en cuenta la orientación y legibilidad del documento."
+            userId={user.id}
+          />
+        )}
+      </Box>
       {fields.map((x, index) => {
         const currency = x.currency;
         const resetAccountSelectValues = () => {
@@ -194,19 +212,6 @@ const TransactionForm = ({
                 ''
               }
             />
-
-            {user && (
-              <FormControlledImageUpload
-                control={control}
-                errors={errors}
-                urlName="searchableImage.url"
-                idName="searchableImage.imageName"
-                label="Comprobante del desembolso"
-                setValue={setValue}
-                helperText="Favor tener en cuenta la orientación y legibilidad del documento."
-                userId={user.id}
-              />
-            )}
           </VStack>
         );
       })}

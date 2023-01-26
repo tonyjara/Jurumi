@@ -26,6 +26,7 @@ import {
   reduceExpenseReturns,
 } from '@/lib/utils/TransactionUtils';
 import ReimbursementOrderPrintPage from '@/pageContainers/home/settings/print-templates/ReimbursementOrderPrintPage.home.settings.print-templates';
+import MoneyOrderPrintPage from '@/pageContainers/home/settings/print-templates/MoneyOrderPrintPage.home.setting.print-templates';
 
 const RowOptionsModRequests = ({
   x,
@@ -215,6 +216,9 @@ const RowOptionsModRequests = ({
         )}
         {x.moneyRequestType === 'REIMBURSMENT_ORDER' && (
           <ReimbursementOrderPrintPage moneyRequest={x} />
+        )}
+        {x.moneyRequestType === 'MONEY_ORDER' && (
+          <MoneyOrderPrintPage moneyRequest={x} />
         )}
       </div>
       <div

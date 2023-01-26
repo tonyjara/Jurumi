@@ -45,8 +45,12 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       organizationId: z.string().min(1, 'Favor seleccione una organización.'),
       wasCancelled: z.boolean(),
       taxPayer: z.object({
-        razonSocial: z.string(),
-        ruc: z.string(),
+        razonSocial: z.string({
+          required_error: 'Favor ingrese el documento del contribuyente.',
+        }),
+        ruc: z.string({
+          required_error: 'Favor ingrese el documento del contribuyente.',
+        }),
         bankInfo: z.object({
           bankName: z.nativeEnum(BankNamesPy),
           accountNumber: z.string(),

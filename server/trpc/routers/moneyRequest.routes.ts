@@ -96,7 +96,7 @@ export const moneyRequestRouter = router({
         orderBy: handleOrderBy({ input }),
         include: {
           taxPayer: {
-            select: { bankInfo: true },
+            select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
           },
           account: true,
           project: true,
@@ -135,7 +135,7 @@ export const moneyRequestRouter = router({
         where: { id: input.id },
         include: {
           taxPayer: {
-            select: { bankInfo: true },
+            select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
           },
           account: true,
           project: true,
