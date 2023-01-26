@@ -22,6 +22,6 @@ export const knownErrors = (error: string) => {
   if (error.includes('Only admins can create admins.')) {
     return 'Solo admins puededen crear admins.';
   }
-
+  console.log(error);
   return 'Hubo un error, favor intente nuevamente';
 };

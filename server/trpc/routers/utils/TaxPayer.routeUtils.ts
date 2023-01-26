@@ -7,6 +7,7 @@ export const upsertTaxPayter = async ({
   input: moneyReqTaxPayer;
   userId: string;
 }) => {
+  if (!input.razonSocial.length || !input.razonSocial) return;
   const taxPayer = await prisma?.taxPayer.upsert({
     where: {
       ruc: input.ruc,
