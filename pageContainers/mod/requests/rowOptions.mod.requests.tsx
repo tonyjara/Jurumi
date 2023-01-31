@@ -161,6 +161,7 @@ const RowOptionsModRequests = ({
             >
               Editar
             </MenuItem>
+
             {x.moneyRequestType === 'FUND_REQUEST' && (
               <MenuItem
                 isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
@@ -172,6 +173,7 @@ const RowOptionsModRequests = ({
                 Crear rendición
               </MenuItem>
             )}
+
             <MenuItem
               onClick={() => {
                 router.push({
@@ -186,6 +188,7 @@ const RowOptionsModRequests = ({
             <MenuItem onClick={handlePrintFundRequest}>
               Imprimir solicitud
             </MenuItem>
+
             {x.moneyRequestType === 'FUND_REQUEST' && (
               <MenuItem
                 isDisabled={!isFullyExecuted}
@@ -207,7 +210,7 @@ const RowOptionsModRequests = ({
         </Portal>
       </Menu>
       <div
-        style={{ display: isPrinting ? 'block' : 'none' }}
+        style={{ display: isPrinting ? 'flex' : 'none', width: '100%' }}
         ref={printFundReqRef}
       >
         {' '}

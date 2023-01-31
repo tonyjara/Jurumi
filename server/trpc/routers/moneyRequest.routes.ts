@@ -242,6 +242,16 @@ export const moneyRequestRouter = router({
         });
       });
     }),
+
+  rejectMyOwn: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      await prisma.moneyRequest.update({
+        where: { id: input.id },
+        data: { status: 'REJECTED' },
+      });
+    }),
+
   deleteById: adminProcedure
     .input(
       z.object({

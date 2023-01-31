@@ -11,6 +11,7 @@
     "migrate:prod:DANGER": "env-cmd -f .env.prod npx prisma migrate dev ",
     "build": "next build",
     "dev": "concurrently -n \"[lint,next]\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && next dev \"",
+    "dev:ssl": "concurrently -n \"[lint,next]\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && env-cmd -f .env.ssl  next dev -p 3001 & local-ssl-proxy --source 3000 --target 3001 \"",
     "dev:staging": "env-cmd -f .env.staging  next dev",
     "dev:prod": "env-cmd -f .env.prod  next dev",
     "start": "next start",
@@ -46,6 +47,7 @@
     "date-fns": "^2.29.3",
     "decimal-format": "^3.0.0",
     "env-cmd": "^10.1.0",
+    "firebase": "^9.16.0",
     "framer-motion": "^8.5.3",
     "i18next": "^22.4.9",
     "i18next-browser-languagedetector": "^7.0.1",
@@ -98,6 +100,7 @@
     "jest-environment-jsdom": "^29.4.1",
     "jest-mock-extended": "^3.0.1",
     "jsdom": "^21.0.0",
+    "ngrok": "^4.3.3",
     "prisma": "^4.9.0",
     "typescript": "^4.9.4"
   },

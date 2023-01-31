@@ -6,6 +6,7 @@ import type {
 } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import prisma from '@/server/db/client';
 
 export const cancelTransactions = async ({
   txCtx,
