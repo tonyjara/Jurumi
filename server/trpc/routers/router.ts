@@ -17,6 +17,7 @@ import { expenseReportsRouter } from './ExpenseReport.routes';
 import { imbursementsRouter } from './imbursements.routes';
 import { seedRouter } from './seed.routes';
 import { expenseReturnsRouter } from './ExpenseReturn.routes';
+import { notificationsRouter } from './notifications.routes';
 
 export const appRouter = router({
   account: accountsRouter,
@@ -35,5 +36,6 @@ export const appRouter = router({
   transaction: transactionsRouter,
   verificationLinks: verificationLinksRouter,
   expenseReturn: expenseReturnsRouter,
+  notifications: notificationsRouter,
 });
 export type AppRouter = typeof appRouter;

@@ -35,6 +35,16 @@ model Account {
   moneyApproverOrgs        Organization[]             @relation("moneyRequestApprovers")
   imbursement              Imbursement[]
   expenseReturn            ExpenseReturn[]
+  FcmNotificationTokens    FcmNotificationTokens[]
+}
+
+model FcmNotificationTokens {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  token     String    @unique
+  Account   Account   @relation(fields: [accountId], references: [id])
+  accountId String
 }
 
 model Profile {
