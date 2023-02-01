@@ -20,8 +20,9 @@ import {
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { FiBell, FiChevronDown } from 'react-icons/fi';
+import { FiChevronDown } from 'react-icons/fi';
 import { signOut } from 'next-auth/react';
+import NotificationIcon from './NotificationIcon';
 
 const NavbarProfileSection = () => {
   const router = useRouter();
@@ -55,13 +56,9 @@ const NavbarProfileSection = () => {
       >
         {flagIcon()}
       </Button>
-      <IconButton
-        size="lg"
-        variant="ghost"
-        aria-label="open menu"
-        icon={<FiBell />}
-      />
-      <Flex zIndex={99999} alignItems={'center'}>
+
+      <NotificationIcon />
+      <Flex pl={'10px'} zIndex={99999} alignItems={'center'}>
         <Menu>
           {data && (
             <MenuButton

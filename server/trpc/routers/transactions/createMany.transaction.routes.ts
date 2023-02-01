@@ -8,6 +8,7 @@ import {
   transactionRouteUtils,
 } from '../utils/Transaction.routeUtils';
 import prisma from '@/server/db/client';
+import { moneyRequestApprovedNotification } from '../notifications/moneyReqApprovedAndExecuted.notification';
 
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)
@@ -41,10 +42,13 @@ export const createManyTransactions = adminModProcedure
         });
       }
       //3. Change request status
-      await prisma?.moneyRequest.update({
+      const req = await prisma?.moneyRequest.update({
         where: { id: input.moneyRequestId },
         data: { status: 'ACCEPTED' },
+        include: { account: { select: { displayName: true } } },
       });
+
+      await moneyRequestApprovedNotification({ input: req });
     });
   });
 

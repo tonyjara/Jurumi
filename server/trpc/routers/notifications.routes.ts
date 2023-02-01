@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { router, protectedProcedure, adminModProcedure } from '../initTrpc';
 import prisma from '@/server/db/client';
-import { sub, subMonths } from 'date-fns';
+import { subMonths } from 'date-fns';
 import axios from 'axios';
 import { WebClient } from '@slack/web-api';
 import { validateOrgNotificationSettings } from '@/lib/validations/orgNotificationsSettings.validate';
@@ -26,11 +26,10 @@ export const notificationsRouter = router({
 
       const web = new WebClient(slackToken);
 
-      const result = await web.chat.postMessage({
+      await web.chat.postMessage({
         text: 'Hello world!',
         channel: input.channelId,
       });
-      console.log(result);
     }),
   getWorkSpace: adminModProcedure.query(async () => {
     const slackToken = process.env.SLACK_BOT_TOKEN;
@@ -40,6 +39,22 @@ export const notificationsRouter = router({
     const result = await web.auth.test();
 
     return result.team;
+  }),
+  getMyNotifications: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    return await prisma.notifications.findMany({
+      where: { accountId: user.id },
+      take: 10,
+    });
+  }),
+  markMyNotificationsSeen: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = ctx.session.user;
+    return await prisma.notifications.updateMany({
+      where: { accountId: user.id, seen: false },
+      data: {
+        seen: true,
+      },
+    });
   }),
   saveOrgNotificationSettings: adminModProcedure
     .input(validateOrgNotificationSettings)

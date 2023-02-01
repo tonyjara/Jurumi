@@ -17,6 +17,7 @@ import {
   cancelTransactions,
 } from './utils/Cancelations.routeUtils';
 import { upsertTaxPayter } from './utils/TaxPayer.routeUtils';
+import { createMoneyRequestNotification } from './notifications/moneyRequestCreate.notification';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -182,8 +183,10 @@ export const moneyRequestRouter = router({
           taxPayerId: taxPayer?.id,
           costCategoryId: input.costCategoryId,
         },
+        include: { account: { select: { displayName: true } } },
       });
 
+      await createMoneyRequestNotification({ input: MoneyReq });
       return MoneyReq;
     }),
   // edit executed amount when going from other than accepted

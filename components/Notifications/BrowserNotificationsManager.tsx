@@ -11,10 +11,11 @@ import { toast } from 'react-hot-toast';
 const BrowserNotificationsManager = () => {
   const user = useSession().data?.user;
   const cloudMessagingKeyPair = process.env.NEXT_PUBLIC_FB_MESSAGING_KEY;
-
   const [mounted, setMounted] = useState(false);
   const notificationsAreSupported = () => typeof window !== 'undefined';
   const router = useRouter();
+  const context = trpcClient.useContext();
+
   const notificationToast = ({
     title,
     message,
@@ -55,6 +56,7 @@ const BrowserNotificationsManager = () => {
         </Flex>
       </Card>
     ));
+
   const onFbMessage = async () => {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
@@ -63,6 +65,7 @@ const BrowserNotificationsManager = () => {
         message: payload.notification?.body,
         url: payload.data?.url,
       });
+      context.invalidate();
     });
   };
 

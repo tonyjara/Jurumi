@@ -139,7 +139,7 @@ const RowOptionsModRequests = ({
               }}
             >
               Aceptar y ejecutar{' '}
-              {needsApproval && !hasBeenApproved && '( Necesita aprovación )'}
+              {needsApproval && !hasBeenApproved && '( Necesita aprobación )'}
             </MenuItem>
             <MenuItem
               isDisabled={isAccepted}
