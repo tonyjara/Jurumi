@@ -6,13 +6,13 @@ importScripts(
 );
 
 firebase.initializeApp({
-  apiKey: process.env.NEXT_PUBLIC_FB_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FB_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FB_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FB_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FB_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FB_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FB_MEASUREMENT_ID,
+  apiKey: 'AIzaSyB2FdCJOSZteebC1hTssx5p0CSorpma_oQ',
+  authDomain: 'jurumi-sys.firebaseapp.com',
+  projectId: 'jurumi-sys',
+  storageBucket: 'jurumi-sys.appspot.com',
+  messagingSenderId: '925947066980',
+  appId: '1:925947066980:web:6c4429d62511fdc88efd71',
+  measurementId: 'G-FMNCT4DDQP',
 });
 
 const messaging = firebase.messaging();

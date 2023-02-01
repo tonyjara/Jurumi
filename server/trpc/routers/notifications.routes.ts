@@ -3,6 +3,8 @@ import { router, protectedProcedure, adminModProcedure } from '../initTrpc';
 import prisma from '@/server/db/client';
 import { sub, subMonths } from 'date-fns';
 import axios from 'axios';
+import { WebClient } from '@slack/web-api';
+import { validateOrgNotificationSettings } from '@/lib/validations/orgNotificationsSettings.validate';
 
 export const notificationsRouter = router({
   upsertFcm: protectedProcedure
@@ -14,6 +16,56 @@ export const notificationsRouter = router({
         where: { token: input.token },
         create: { token: input.token, accountId: user.id },
         update: { updatedAt: new Date() },
+      });
+    }),
+  sendSlackChannelMessage: adminModProcedure
+    .input(z.object({ channelId: z.string() }))
+    .mutation(async ({ input }) => {
+      if (!input.channelId.length) return;
+      const slackToken = process.env.SLACK_BOT_TOKEN;
+
+      const web = new WebClient(slackToken);
+
+      const result = await web.chat.postMessage({
+        text: 'Hello world!',
+        channel: input.channelId,
+      });
+      console.log(result);
+    }),
+  getWorkSpace: adminModProcedure.query(async () => {
+    const slackToken = process.env.SLACK_BOT_TOKEN;
+
+    const web = new WebClient(slackToken);
+
+    const result = await web.auth.test();
+
+    return result.team;
+  }),
+  saveOrgNotificationSettings: adminModProcedure
+    .input(validateOrgNotificationSettings)
+    .mutation(async ({ input }) => {
+      await prisma.orgNotificationSettings.upsert({
+        where: { orgId: input.orgId },
+        create: {
+          orgId: input.orgId,
+          allowNotifications: input.allowNotifications,
+          administratorsSlackChannelId: input.administratorsSlackChannelId,
+          approversSlackChannelId: input.approversSlackChannelId,
+        },
+        update: {
+          allowNotifications: input.allowNotifications,
+          administratorsSlackChannelId: input.administratorsSlackChannelId,
+          approversSlackChannelId: input.approversSlackChannelId,
+        },
+      });
+    }),
+
+  getOrgNotificationSettings: adminModProcedure
+    .input(z.object({ orgId: z.string().optional() }))
+    .query(async ({ input }) => {
+      if (!input.orgId) return null;
+      return await prisma.orgNotificationSettings.findUnique({
+        where: { orgId: input.orgId },
       });
     }),
   notifyAll: adminModProcedure.query(async () => {

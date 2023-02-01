@@ -10,17 +10,18 @@ datasource db {
 }
 
 model Account {
-  id          String       @id @default(cuid())
-  active      Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime?    @updatedAt
-  email       String       @unique
-  displayName String       @unique
-  password    String
-  role        Role         @default(USER)
-  isVerified  Boolean      @default(false)
-  preferences Preferences?
-  profile     Profile?
+  id                   String                @id @default(cuid())
+  active               Boolean               @default(true)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime?             @updatedAt
+  email                String                @unique
+  displayName          String                @unique
+  password             String
+  role                 Role                  @default(USER)
+  isVerified           Boolean               @default(false)
+  preferences          Preferences?
+  profile              Profile?
+  notificationSettings NotificationSettings?
 
   organizationPosts        OrganizationPost[]
   accountVerificationLinks AccountVerificationLinks[]
@@ -35,7 +36,19 @@ model Account {
   moneyApproverOrgs        Organization[]             @relation("moneyRequestApprovers")
   imbursement              Imbursement[]
   expenseReturn            ExpenseReturn[]
-  FcmNotificationTokens    FcmNotificationTokens[]
+  fcmNotificationTokens    FcmNotificationTokens[]
+  notifications            Notifications[]
+}
+
+model NotificationSettings {
+  id               String    @id @default(cuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt
+  notifyViaEmail   Boolean   @default(true)
+  notifyViaSlack   Boolean   @default(true)
+  notifyViaBrowser Boolean   @default(true)
+  accountId        String    @unique
+  account          Account   @relation(fields: [accountId], references: [id])
 }
 
 model FcmNotificationTokens {
@@ -44,6 +57,20 @@ model FcmNotificationTokens {
   updatedAt DateTime? @updatedAt
   token     String    @unique
   Account   Account   @relation(fields: [accountId], references: [id])
+  accountId String
+}
+
+model Notifications {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  title     String
+  message   String
+  url       String
+  seen      Boolean   @default(false)
+  clicked   Boolean   @default(false)
+
+  Account   Account @relation(fields: [accountId], references: [id])
   accountId String
 }
 
@@ -89,14 +116,16 @@ model AccountVerificationLinks {
 }
 
 model Organization {
-  id                    String             @id @default(cuid())
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime?          @updatedAt
-  createdById           String
-  updatedById           String?
-  displayName           String             @unique
-  archived              Boolean            @default(false)
-  softDeleted           Boolean            @default(false)
+  id                      String                   @id @default(cuid())
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime?                @updatedAt
+  createdById             String
+  updatedById             String?
+  displayName             String                   @unique
+  archived                Boolean                  @default(false)
+  softDeleted             Boolean                  @default(false)
+  orgNotificationSettings OrgNotificationSettings?
+
   moneyRequests         MoneyRequest[]
   projects              Project[]
   moneyAccounts         MoneyAccount[]     @relation("MoneyAccountToOrganization")
@@ -106,6 +135,17 @@ model Organization {
   organizationPosts     OrganizationPost[]
   searchableImageId     String?
   imageLogo             searchableImage?   @relation(fields: [searchableImageId], references: [id])
+}
+
+model OrgNotificationSettings {
+  id                           String       @id @default(cuid())
+  createdAt                    DateTime     @default(now())
+  updatedAt                    DateTime?    @updatedAt
+  allowNotifications           Boolean      @default(true)
+  approversSlackChannelId      String
+  administratorsSlackChannelId String
+  orgId                        String       @unique
+  org                          Organization @relation(fields: [orgId], references: [id])
 }
 
 model MoneyAccount {

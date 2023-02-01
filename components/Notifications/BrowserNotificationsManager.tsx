@@ -75,6 +75,7 @@ const BrowserNotificationsManager = () => {
   const saveToken = async () => {
     try {
       const messaging = getMessaging(firebaseApp);
+
       const token = await getToken(messaging, {
         vapidKey: cloudMessagingKeyPair,
       });

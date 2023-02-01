@@ -1,20 +1,29 @@
+import { trpcClient } from '@/lib/utils/trpcClient';
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
+  Flex,
   HStack,
+  Input,
   Radio,
   RadioGroup,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import { WebClient } from '@slack/web-api';
+import axios from 'axios';
+import React, { useRef, useState } from 'react';
 import DeleteSeeds from './DeleteSeeds.admin.seed';
 import ImbursementSeeds from './ImbursementSeeds.admin.seed';
 import MoneyReqSeeds from './MoneyReqSeeds.admin.seed';
 
 const SeedPage = () => {
   const [multiplier, setMultiplier] = useState('1');
+  const slackChannelIdRef = useRef(null);
+  const { mutate } =
+    trpcClient.notifications.sendSlackChannelMessage.useMutation();
 
   return (
     <Card>
@@ -35,6 +44,27 @@ const SeedPage = () => {
           <MoneyReqSeeds multiplier={multiplier} />
           <ImbursementSeeds multiplier={multiplier} />
           <DeleteSeeds />
+        </Stack>
+        <Stack mt={'20px'}>
+          <Text fontSize={'2xl'}>Slack</Text>
+          <Text>No olvidar invitar al bot</Text>
+          <Flex>
+            <Input
+              ref={slackChannelIdRef}
+              maxW="200px"
+              name="slackChannelId"
+              placeholder="Slack channel id"
+            />
+            <Button
+              onClick={() => {
+                const current = slackChannelIdRef?.current as any;
+                const value = current.value as string;
+                mutate({ channelId: value });
+              }}
+            >
+              Send text to slackChannelId
+            </Button>
+          </Flex>
         </Stack>
       </CardBody>
     </Card>
