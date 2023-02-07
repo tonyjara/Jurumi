@@ -2,12 +2,12 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import {
   Menu,
   MenuButton,
-  Portal,
   MenuList,
   MenuItem,
   useColorModeValue,
   Text,
   Flex,
+  Divider,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -61,18 +61,19 @@ const NotificationIcon = () => {
         <FiBell fontSize={'20px'} />
       </MenuButton>
 
-      <Portal>
-        <MenuList>
-          {notifications?.map((x) => (
-            <MenuItem onClick={() => router.push(x.url)} key={x.id}>
-              <Flex flexDir={'column'}>
-                <Text fontWeight={'bold'}>{x.title}</Text>
-                <Text>{x.message}</Text>
-              </Flex>
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Portal>
+      <MenuList maxW={{ base: '250px', md: '500px' }}>
+        {notifications?.map((x) => (
+          <MenuItem my={'10px'} onClick={() => router.push(x.url)} key={x.id}>
+            <Flex flexDir={'column'}>
+              <Text whiteSpace={'break-spaces'} fontWeight={'bold'}>
+                {x.title}
+              </Text>
+              <Text whiteSpace={'break-spaces'}>{x.message}</Text>
+              <Divider my={'10px'} />
+            </Flex>
+          </MenuItem>
+        ))}
+      </MenuList>
     </Menu>
   );
 };

@@ -17,7 +17,7 @@ import {
   cancelTransactions,
 } from './utils/Cancelations.routeUtils';
 import { upsertTaxPayter } from './utils/TaxPayer.routeUtils';
-import { createMoneyRequestNotification } from './notifications/moneyRequestCreate.notification';
+import { createMoneyRequestSlackNotification } from './notifications/slack/moneyRequestCreate.notification.slack';
 
 export const moneyRequestRouter = router({
   getMany: adminModProcedure.query(async () => {
@@ -186,7 +186,7 @@ export const moneyRequestRouter = router({
         include: { account: { select: { displayName: true } } },
       });
 
-      await createMoneyRequestNotification({ input: MoneyReq });
+      await createMoneyRequestSlackNotification({ input: MoneyReq });
       return MoneyReq;
     }),
   // edit executed amount when going from other than accepted

@@ -3,12 +3,16 @@ import type { MoneyRequest } from '@prisma/client';
 import axios from 'axios';
 import { subMonths } from 'date-fns';
 
-export const moneyRequestApprovedNotification = async ({
+export const moneyRequestApprovedBrowserNotification = async ({
   input,
 }: {
   input: MoneyRequest & {
     account: {
+      email: string;
       displayName: string;
+      preferences: {
+        receiveEmailNotifications: boolean;
+      } | null;
     };
   };
 }) => {
@@ -24,15 +28,6 @@ export const moneyRequestApprovedNotification = async ({
 
   const tokensWithNoDups = new Set<string>();
   getTokens.forEach((x) => tokensWithNoDups.add(x.token));
-
-  await prisma.notifications.create({
-    data: {
-      title: 'Se ha aprobado tu solicitud',
-      message: 'Ve a tus solicitudes para ver los detalles del desembolso.',
-      url: '/home/requests',
-      accountId: input.accountId,
-    },
-  });
 
   for (const token of tokensWithNoDups) {
     const config = {

@@ -2,7 +2,7 @@ import prisma from '@/server/db/client';
 import type { MoneyRequestApproval } from '@prisma/client';
 import { WebClient } from '@slack/web-api';
 
-export const reqApprovalApproved = async ({
+export const reqApprovalApprovedSlackNotification = async ({
   input,
 }: {
   input: MoneyRequestApproval & {
@@ -22,6 +22,7 @@ export const reqApprovalApproved = async ({
     },
   });
 
+  if (!org.orgNotificationSettings?.allowNotifications) return;
   if (!org?.moneyAdministrators.length) return;
   if (!org.orgNotificationSettings?.administratorsSlackChannelId) return;
 

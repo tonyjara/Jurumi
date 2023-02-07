@@ -12,8 +12,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { WebClient } from '@slack/web-api';
-import axios from 'axios';
+
 import React, { useRef, useState } from 'react';
 import DeleteSeeds from './DeleteSeeds.admin.seed';
 import ImbursementSeeds from './ImbursementSeeds.admin.seed';

@@ -32,7 +32,11 @@ export const authOptions: NextAuthOptions = {
       
       */
 
-      session.user = token.user as Account;
+      session.user = token.user as Omit<Account, 'password'> & {
+        profile: {
+          avatarUrl: string;
+        } | null;
+      };
       return session;
     },
   },
@@ -55,6 +59,7 @@ export const authOptions: NextAuthOptions = {
           where: {
             email: credentials.email,
           },
+          include: { profile: { select: { avatarUrl: true } } },
         });
         if (!prismaUser) return null;
 

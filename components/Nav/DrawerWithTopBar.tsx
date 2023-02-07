@@ -61,7 +61,6 @@ export default function DrawerWithTopBar({
         py={{ base: '90px', md: '90px' }}
         px={{ base: '10px', md: '10px' }}
         ml={!authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }}
-        // w="100%"
       >
         {children}
       </Box>

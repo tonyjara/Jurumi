@@ -39,7 +39,7 @@ const NavbarProfileSection = () => {
   const flagIcon = () => (router.locale === 'en' ? '🇺🇲' : '🇪🇸');
 
   return (
-    <HStack spacing={{ base: '0', md: '1' }}>
+    <Flex gap={{ base: '0', md: '1' }}>
       <IconButton
         size="lg"
         variant="ghost"
@@ -58,7 +58,7 @@ const NavbarProfileSection = () => {
       </Button>
 
       <NotificationIcon />
-      <Flex pl={'10px'} zIndex={99999} alignItems={'center'}>
+      <Flex pl={'10px'} alignItems={'center'}>
         <Menu>
           {data && (
             <MenuButton
@@ -69,9 +69,7 @@ const NavbarProfileSection = () => {
               <HStack>
                 <Avatar
                   size={'sm'}
-                  //   src={
-                  //     'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                  //   }
+                  src={data?.user.profile?.avatarUrl ?? undefined}
                 />
                 <VStack
                   display={{ base: 'none', md: 'flex' }}
@@ -104,7 +102,9 @@ const NavbarProfileSection = () => {
                 </Text>
               </VStack>
               <Divider mt={'10px'} />
-              <MenuItem>Mi cuenta</MenuItem>
+              <MenuItem onClick={() => router.push('home/settings')}>
+                Mi cuenta
+              </MenuItem>
 
               <MenuDivider />
               <MenuItem onClick={() => signOut()}>Cerrar sesión</MenuItem>
@@ -112,7 +112,7 @@ const NavbarProfileSection = () => {
           </Portal>
         </Menu>
       </Flex>
-    </HStack>
+    </Flex>
   );
 };
 

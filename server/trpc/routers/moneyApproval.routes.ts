@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { adminModProcedure, router } from '../initTrpc';
 import prisma from '@/server/db/client';
-import { reqApprovalApproved } from './notifications/reqApprovalApproved.notification';
-import { reqApprovalRejection } from './notifications/reqApprovalRejection.notification';
+import { reqApprovalApprovedSlackNotification } from './notifications/slack/reqApprovalApproved.notification.slack';
+import { reqApprovalRejectionSlackNotification } from './notifications/slack/reqApprovalRejection.notification.slack';
 
 export const moneyApprovalRouter = router({
   approve: adminModProcedure
@@ -27,7 +27,7 @@ export const moneyApprovalRouter = router({
             moneyRequest: { select: { organizationId: true } },
           },
         });
-        await reqApprovalApproved({ input: approval });
+        await reqApprovalApprovedSlackNotification({ input: approval });
         return approval;
       }
 
@@ -39,7 +39,7 @@ export const moneyApprovalRouter = router({
         },
         where: { id: prevApproval.id },
       });
-      await reqApprovalApproved({ input: approval });
+      await reqApprovalApprovedSlackNotification({ input: approval });
       return approval;
     }),
   reject: adminModProcedure
@@ -59,7 +59,7 @@ export const moneyApprovalRouter = router({
           },
           where: { id: prevApproval.id },
         });
-        await reqApprovalRejection({ input: approval });
+        await reqApprovalRejectionSlackNotification({ input: approval });
         return approval;
       }
       const approval = await prisma?.moneyRequestApproval.create({
@@ -74,7 +74,7 @@ export const moneyApprovalRouter = router({
           moneyRequest: { select: { organizationId: true } },
         },
       });
-      await reqApprovalRejection({ input: approval });
+      await reqApprovalRejectionSlackNotification({ input: approval });
       return approval;
     }),
 });

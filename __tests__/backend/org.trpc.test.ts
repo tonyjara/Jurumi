@@ -12,14 +12,13 @@ jest.mock('@prisma/client', () => ({
 }));
 //! BROKEN TESTS
 test.skip('unit test trpc routes', async () => {
-  const caller = appRouter.createCaller({
-    session: {
-      expires: '',
-      user: mockSessionWithRole('ADMIN').user,
-      status: 'authenticated',
-    },
-  });
-
+  // const caller = appRouter.createCaller({
+  //   session: {
+  //     expires: '',
+  //     user: mockSessionWithRole('ADMIN').user,
+  //     status: 'authenticated',
+  //   },
+  // });
   // const orgInput: inferProcedureInput<AppRouter['org']['create']> = {
   //   id: '1',
   //   createdAt: new Date(),
@@ -31,10 +30,8 @@ test.skip('unit test trpc routes', async () => {
   //   archived: false,
   //   softDeleted: false,
   // };
-
   // //   prismaMock.organization.create.mockResolvedValue(orgInput);
   // const orgCreate = await caller.org.create(orgInput);
   // //   const byId = await caller.post.byId({ id: post.id });
-
   // expect(orgCreate).toMatchObject(orgInput);
 });

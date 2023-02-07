@@ -8,7 +8,9 @@ import {
   transactionRouteUtils,
 } from '../utils/Transaction.routeUtils';
 import prisma from '@/server/db/client';
-import { moneyRequestApprovedNotification } from '../notifications/moneyReqApprovedAndExecuted.notification';
+import { moneyRequestApprovedBrowserNotification } from '../notifications/browser/moneyReqApprovedAndExecuted.notification.browser';
+import { moneyRequestApprovedSendgridNotification } from '../notifications/sendgrid/moneyReqApprovedAndExecuted.notification.sendgrid';
+import { moneyRequestApprovedDbNotification } from '../notifications/db/moneyReqApprovedAndExecuted.notification.db';
 
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)
@@ -45,10 +47,20 @@ export const createManyTransactions = adminModProcedure
       const req = await prisma?.moneyRequest.update({
         where: { id: input.moneyRequestId },
         data: { status: 'ACCEPTED' },
-        include: { account: { select: { displayName: true } } },
+        include: {
+          account: {
+            select: {
+              displayName: true,
+              email: true,
+              preferences: { select: { receiveEmailNotifications: true } },
+            },
+          },
+        },
       });
 
-      await moneyRequestApprovedNotification({ input: req });
+      await moneyRequestApprovedDbNotification({ input: req });
+      await moneyRequestApprovedBrowserNotification({ input: req });
+      await moneyRequestApprovedSendgridNotification({ input: req });
     });
   });
 

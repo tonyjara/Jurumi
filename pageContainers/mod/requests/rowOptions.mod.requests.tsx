@@ -7,7 +7,6 @@ import {
   Portal,
 } from '@chakra-ui/react';
 import type { MoneyRequest } from '@prisma/client';
-import { cloneDeep } from 'lodash';
 import router from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
@@ -25,6 +24,7 @@ import {
   reduceExpenseReports,
   reduceExpenseReturns,
 } from '@/lib/utils/TransactionUtils';
+import cloneDeep from 'lodash.clonedeep';
 import ReimbursementOrderPrintPage from '@/pageContainers/home/settings/print-templates/ReimbursementOrderPrintPage.home.settings.print-templates';
 import MoneyOrderPrintPage from '@/pageContainers/home/settings/print-templates/MoneyOrderPrintPage.home.setting.print-templates';
 
