@@ -21,11 +21,11 @@ const VerificationLinksPage = () => {
     dynamicTableProps;
 
   const { data, isFetching, isLoading } =
-    trpcClient.verificationLinks.getVerificationLinks.useQuery(
+    trpcClient.magicLinks.getVerificationLinks.useQuery(
       { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
       { keepPreviousData: globalFilter ? true : false }
     );
-  const { data: count } = trpcClient.verificationLinks.count.useQuery();
+  const { data: count } = trpcClient.magicLinks.count.useQuery();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 

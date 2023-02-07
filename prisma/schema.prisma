@@ -38,6 +38,7 @@ model Account {
   expenseReturn            ExpenseReturn[]
   fcmNotificationTokens    FcmNotificationTokens[]
   notifications            Notifications[]
+  passwordRecoveryLinks    PasswordRecoveryLinks[]
 }
 
 model NotificationSettings {
@@ -114,6 +115,16 @@ model AccountVerificationLinks {
   hasBeenUsed      Boolean  @default(false)
   accountId        String
   account          Account  @relation(fields: [accountId], references: [id])
+}
+
+model PasswordRecoveryLinks {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  recoveryLink String
+  email        String
+  hasBeenUsed  Boolean  @default(false)
+  accountId    String
+  account      Account  @relation(fields: [accountId], references: [id])
 }
 
 model Organization {

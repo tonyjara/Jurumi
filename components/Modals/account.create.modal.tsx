@@ -54,7 +54,7 @@ const CreateAccountModal = ({
     onClose();
   };
   const { error, mutate, isLoading } =
-    trpcClient.verificationLinks.createWithSigendLink.useMutation(
+    trpcClient.magicLinks.createWithSigendLink.useMutation(
       handleUseMutationAlerts({
         successText: 'El usuario ha sido creado!',
         callback: (returnedData: accountWithVerifyLink) => {
@@ -64,7 +64,7 @@ const CreateAccountModal = ({
           setValue(verifyLink);
           // handleOnClose();
           reset(defaultAccountData);
-          context.verificationLinks.invalidate();
+          context.magicLinks.invalidate();
           context.account.invalidate();
         },
       })

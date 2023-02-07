@@ -21,15 +21,14 @@ const RowOptionsVerificationLinks = ({
 }) => {
   const context = trpcClient.useContext();
 
-  const { mutate } =
-    trpcClient.verificationLinks.generateVerificationLink.useMutation(
-      handleUseMutationAlerts({
-        successText: 'Se ha generado otro link!',
-        callback: () => {
-          context.verificationLinks.getVerificationLinks.invalidate();
-        },
-      })
-    );
+  const { mutate } = trpcClient.magicLinks.generateVerificationLink.useMutation(
+    handleUseMutationAlerts({
+      successText: 'Se ha generado otro link!',
+      callback: () => {
+        context.magicLinks.getVerificationLinks.invalidate();
+      },
+    })
+  );
 
   return (
     <Menu>

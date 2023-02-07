@@ -41,9 +41,9 @@ export default function NewUser(props?: {
     defaultValues: defaultNewUserData,
   });
   const { error, mutate, isLoading } =
-    trpcClient.magicLinks.assignPasswordToNewAccount.useMutation(
+    trpcClient.magicLinks.assignPasswordFromRecovery.useMutation(
       handleUseMutationAlerts({
-        successText: 'Has creado tu cuenta!',
+        successText: 'Has cambiado tu contraseña!',
         callback: async () => {
           router.push('/home');
         },
@@ -64,23 +64,23 @@ export default function NewUser(props?: {
   };
 
   return (
-    <form onSubmit={handleSubmit(submitForm)} noValidate>
-      <Stack spacing={2} py={{ base: 5, md: 10 }}>
+    <form
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+      }}
+      onSubmit={handleSubmit(submitForm)}
+      noValidate
+    >
+      <Box display={'flex'} flexDir="column" py={{ base: 5, md: 10 }}>
         <Heading
           textAlign={'center'}
           py={{ base: 0, md: 5 }}
           fontSize={{ base: '2xl', md: '4xl' }}
+          whiteSpace="break-spaces"
         >
-          Confirmación de cuenta: {props?.data?.email}
-        </Heading>
-        <Heading
-          py={{ base: 0, md: 5 }}
-          alignSelf={'center'}
-          size={'sm'}
-          maxW="400px"
-        >
-          Hola {props?.data?.displayName}, has sido invitado/a a formar parte de
-          esta organización, favor ingrese una contraseña para su cuenta nueva.
+          Cambio de contraseña de cuenta: {props?.data?.email}
         </Heading>
 
         <Box
@@ -133,7 +133,7 @@ export default function NewUser(props?: {
             </Stack>
           </Stack>
         </Box>
-      </Stack>
+      </Box>
     </form>
   );
 }
@@ -152,7 +152,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   } | null;
 
   if (verify && 'data' in verify) {
-    const verifyLink = await prisma?.accountVerificationLinks.findUnique({
+    const verifyLink = await prisma?.passwordRecoveryLinks.findUnique({
       where: { id: verify.data.linkId },
     });
     if (verifyLink?.hasBeenUsed) {

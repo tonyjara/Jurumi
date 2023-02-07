@@ -21,7 +21,7 @@ specifiers:
   '@hookform/resolvers': 2.9.10
   '@lexical/react': 0.7.7
   '@playwright/test': 1.30.0
-  '@prisma/client': 4.9.0
+  '@prisma/client': 4.10.0
   '@pronestor/react-zoom-pan-pinch': 2.4.5
   '@sendgrid/mail': ^7.7.0
   '@slack/web-api': 6.8.1
@@ -65,8 +65,8 @@ specifiers:
   i18next: 22.4.9
   i18next-browser-languagedetector: 7.0.1
   i18next-hmr: 1.11.1
-  jest: 29.4.1
-  jest-environment-jsdom: 29.4.1
+  jest: 29.4.2
+  jest-environment-jsdom: 29.4.2
   jest-mock-extended: 3.0.1
   jsdom: 21.1.0
   jsonwebtoken: 9.0.0
@@ -75,7 +75,7 @@ specifiers:
   lodash.isequal: 4.5.0
   next: 13.1.6
   next-auth: 4.19.2
-  next-i18next: 13.1.4
+  next-i18next: 13.1.5
   next-superjson-plugin: 0.5.4
   nextjs-progressbar: 0.0.16
   ngrok: 4.3.3
@@ -86,7 +86,7 @@ specifiers:
   react-day-picker: 8.5.1
   react-dom: 18.2.0
   react-dropzone: 14.2.3
-  react-hook-form: 7.43.0
+  react-hook-form: 7.43.1
   react-hot-toast: 2.4.0
   react-i18next: 12.1.5
   react-icons: 4.7.1
@@ -116,9 +116,9 @@ dependencies:
   '@emotion/react': 11.10.5_yxdp3dl3eazy3vwpbmv4fq727a
   '@emotion/styled': 11.10.5_4erqsq3n444jecyuvaxwc5b3vi
   '@hookform/devtools': 4.3.0_57czaiyk6rdr5iy5tfs5pior4u
-  '@hookform/resolvers': 2.9.10_react-hook-form@7.43.0
+  '@hookform/resolvers': 2.9.10_react-hook-form@7.43.1
   '@lexical/react': 0.7.7_owjlnej6rwkcsis3vgoubwizb4
-  '@prisma/client': 4.9.0_prisma@4.10.0
+  '@prisma/client': 4.10.0_prisma@4.10.0
   '@pronestor/react-zoom-pan-pinch': 2.4.5_biqbaboplfbrettd7655fr4n2y
   '@sendgrid/mail': 7.7.0
   '@slack/web-api': 6.8.1
@@ -150,7 +150,7 @@ dependencies:
   lodash.isequal: 4.5.0
   next: 13.1.6_pjwopsidmaokadturxaafygjp4
   next-auth: 4.19.2_3vryta7zmbcsw4rrqf4axjqggm
-  next-i18next: 13.1.4_ofn3rluqlytmjlkhptt5cftfxy
+  next-i18next: 13.1.5_ofn3rluqlytmjlkhptt5cftfxy
   next-superjson-plugin: 0.5.4_6hb7bebdisxcpyppymkqpiq3a4
   nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
   react: 18.2.0
@@ -159,7 +159,7 @@ dependencies:
   react-day-picker: 8.5.1_r6j3756ioqf5pjc2u22wj25rla
   react-dom: 18.2.0_react@18.2.0
   react-dropzone: 14.2.3_react@18.2.0
-  react-hook-form: 7.43.0_react@18.2.0
+  react-hook-form: 7.43.1_react@18.2.0
   react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
   react-i18next: 12.1.5_iakk3dtjhjpukdoa4oua5khgci
   react-icons: 4.7.1_react@18.2.0
@@ -194,9 +194,9 @@ devDependencies:
   eslint: 8.33.0
   eslint-config-next: 13.1.6_4vsywjlpuriuw3tl5oq6zy5a64
   i18next-hmr: 1.11.1
-  jest: 29.4.1_@types+node@18.13.0
-  jest-environment-jsdom: 29.4.1
-  jest-mock-extended: 3.0.1_wrz2f4catxnbofknv5bs36jgqa
+  jest: 29.4.2_@types+node@18.13.0
+  jest-environment-jsdom: 29.4.2
+  jest-mock-extended: 3.0.1_gelezmms3va3pnkofxaadhcvma
   jsdom: 21.1.0
   ngrok: 4.3.3
   prisma: 4.10.0
@@ -2654,12 +2654,12 @@ packages:
       - '@types/react'
     dev: false
 
-  /@hookform/resolvers/2.9.10_react-hook-form@7.43.0:
+  /@hookform/resolvers/2.9.10_react-hook-form@7.43.1:
     resolution: {integrity: sha512-JIL1DgJIlH9yuxcNGtyhsWX/PgNltz+5Gr6+8SX9fhXc/hPbEIk6wPI82nhgvp3uUb6ZfAM5mqg/x7KR7NAb+A==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: 7.43.0_react@18.2.0
+      react-hook-form: 7.43.1_react@18.2.0
     dev: false
 
   /@humanwhocodes/config-array/0.11.8:
@@ -3395,8 +3395,8 @@ packages:
     resolution: {integrity: sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==}
     dev: false
 
-  /@prisma/client/4.9.0_prisma@4.10.0:
-    resolution: {integrity: sha512-bz6QARw54sWcbyR1lLnF2QHvRW5R/Jxnbbmwh3u+969vUKXtBkXgSgjDA85nji31ZBlf7+FrHDy5x+5ydGyQDg==}
+  /@prisma/client/4.10.0_prisma@4.10.0:
+    resolution: {integrity: sha512-sBmYb1S6SMKFIESaLMfKqWSalv3pH73cMCsFt9HslJvYjIIcKQCA6PDL2O4SZGWvc4JBef9cg5Gd7d9x3AtKjw==}
     engines: {node: '>=14.17'}
     requiresBuild: true
     peerDependencies:
@@ -3405,12 +3405,12 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.9.0-42.ceb5c99003b99c9ee2c1d2e618e359c14aef2ea5
+      '@prisma/engines-version': 4.10.0-84.ca7fcef713137fa11029d519a9780db130cca91d
       prisma: 4.10.0
     dev: false
 
-  /@prisma/engines-version/4.9.0-42.ceb5c99003b99c9ee2c1d2e618e359c14aef2ea5:
-    resolution: {integrity: sha512-M16aibbxi/FhW7z1sJCX8u+0DriyQYY5AyeTH7plQm9MLnURoiyn3CZBqAyIoQ+Z1pS77usCIibYJWSgleBMBA==}
+  /@prisma/engines-version/4.10.0-84.ca7fcef713137fa11029d519a9780db130cca91d:
+    resolution: {integrity: sha512-UVpmVlvSaGfY4ue+hh8CTkIesbuXCFUfrr8zk//+u85WwkKfWMtt6nLB2tNSzR1YO8eAA8+HqNf8LM7mnXIq5w==}
     dev: false
 
   /@prisma/engines/4.10.0:
@@ -6427,8 +6427,8 @@ packages:
       pretty-format: 29.4.2
     dev: true
 
-  /jest-environment-jsdom/29.4.1:
-    resolution: {integrity: sha512-+KfYmRTl5CBHQst9hIz77TiiriHYvuWoLjMT855gx2AMxhHxpk1vtKvag1DQfyWCPVTWV/AG7SIqVh5WI1O/uw==}
+  /jest-environment-jsdom/29.4.2:
+    resolution: {integrity: sha512-v1sH4Q0JGM+LPEGqHNM+m+uTMf3vpXpKiuDYqWUAh+0c9+nc7scGE+qTR5JuE+OOTDnwfzPgcv9sMq6zWAOaVg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     peerDependencies:
       canvas: ^2.5.0
@@ -6519,13 +6519,13 @@ packages:
       stack-utils: 2.0.6
     dev: true
 
-  /jest-mock-extended/3.0.1_wrz2f4catxnbofknv5bs36jgqa:
+  /jest-mock-extended/3.0.1_gelezmms3va3pnkofxaadhcvma:
     resolution: {integrity: sha512-RF4Ow8pXvbRuEcCTj56oYHmig5311BSFvbEGxPNYL51wGKGu93MvVQgx0UpFmjqyBXIcElkZo2Rke88kR1iSKQ==}
     peerDependencies:
       jest: ^24.0.0 || ^25.0.0 || ^26.0.0 || ^27.0.0 || ^28.0.0 || ^29.0.0
       typescript: ^3.0.0 || ^4.0.0
     dependencies:
-      jest: 29.4.1_@types+node@18.13.0
+      jest: 29.4.2_@types+node@18.13.0
       ts-essentials: 7.0.3_typescript@4.9.5
       typescript: 4.9.5
     dev: true
@@ -6721,8 +6721,8 @@ packages:
       supports-color: 8.1.1
     dev: true
 
-  /jest/29.4.1_@types+node@18.13.0:
-    resolution: {integrity: sha512-cknimw7gAXPDOmj0QqztlxVtBVCw2lYY9CeIE5N6kD+kET1H4H79HSNISJmijb1HF+qk+G+ploJgiDi5k/fRlg==}
+  /jest/29.4.2_@types+node@18.13.0:
+    resolution: {integrity: sha512-+5hLd260vNIHu+7ZgMIooSpKl7Jp5pHKb51e73AJU3owd5dEo/RfVwHbA/na3C/eozrt3hJOLGf96c7EWwIAzg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     hasBin: true
     peerDependencies:
@@ -7191,14 +7191,14 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /next-i18next/13.1.4_ofn3rluqlytmjlkhptt5cftfxy:
-    resolution: {integrity: sha512-//Ub7TCdbbNnI5rA6XEe+TLsiXaHR/7OjFBlXw5caPirHNCLvVs24NsmXl9z0ZIqqAT8T8I5hnPWIL75d84ubA==}
+  /next-i18next/13.1.5_ofn3rluqlytmjlkhptt5cftfxy:
+    resolution: {integrity: sha512-gULKQNQmFYIW6C45cb5ZOHa+sw8XUkibFHTqRqrcfbAa1fcBCh3TgX1KtzA0vzeh9R93BkkvFhm+FuhO3kR9jQ==}
     engines: {node: '>=14'}
     peerDependencies:
       i18next: ^22.0.6
       next: '>= 12.0.0'
       react: '>= 17.0.2'
-      react-i18next: ^12.1.1
+      react-i18next: ^12.1.5
     dependencies:
       '@babel/runtime': 7.20.13
       '@types/hoist-non-react-statics': 3.3.1
@@ -7870,8 +7870,8 @@ packages:
       use-sidecar: 1.1.2_3stiutgnnbnfnf3uowm5cip22i
     dev: false
 
-  /react-hook-form/7.43.0_react@18.2.0:
-    resolution: {integrity: sha512-/rVEz7T0gLdSFwPqutJ1kn2e0sQNyb9ci/hmwEYr2YG0KF/LSuRLvNrf9QWJM+gj88CjDpDW5Bh/1AD7B2+z9Q==}
+  /react-hook-form/7.43.1_react@18.2.0:
+    resolution: {integrity: sha512-+s3+s8LLytRMriwwuSqeLStVjRXFGxgjjx2jED7Z+wz1J/88vpxieRQGvJVvzrzVxshZ0BRuocFERb779m2kNg==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18

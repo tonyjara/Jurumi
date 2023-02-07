@@ -71,17 +71,19 @@ const NavbarProfileSection = () => {
                   size={'sm'}
                   src={data?.user.profile?.avatarUrl ?? undefined}
                 />
-                <VStack
+                <Box
                   display={{ base: 'none', md: 'flex' }}
-                  alignItems="flex-start"
-                  spacing="1px"
-                  ml="2"
+                  // alignItems="flex-start"
+                  // spacing="1px"
+                  flexDir="column"
+                  // ml="2"
+                  h="30px"
                 >
                   <Text fontSize="sm">{data.user.displayName}</Text>
                   <Text fontSize="xs" color="gray.600">
                     {data.user.role}
                   </Text>
-                </VStack>
+                </Box>
                 <Box display={{ base: 'none', md: 'flex' }}>
                   <FiChevronDown />
                 </Box>
