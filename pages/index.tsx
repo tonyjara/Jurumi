@@ -7,6 +7,8 @@ import {
   useColorModeValue,
   Container,
   Text,
+  Flex,
+  Image,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -63,7 +65,22 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
         <Stack
           spacing={2}
           // py={{ base: 5, md: 10 }}
+          alignContent="center"
         >
+          <Flex gap={5} alignSelf={'center'} alignItems={'center'}>
+            <Heading
+              py={{ base: 0, md: 5 }}
+              fontSize={{ base: '2xl', md: '6xl' }}
+            >
+              Jurumi
+            </Heading>
+            <Image
+              src={'/jurumi-logo.png'}
+              alt="logo"
+              width={'50px'}
+              height={'50px'}
+            />
+          </Flex>
           <Heading
             textAlign={'center'}
             py={{ base: 0, md: 5 }}
