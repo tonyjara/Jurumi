@@ -104,7 +104,7 @@ const NavbarProfileSection = () => {
                 </Text>
               </VStack>
               <Divider mt={'10px'} />
-              <MenuItem onClick={() => router.push('home/settings')}>
+              <MenuItem onClick={() => router.push('/home/settings')}>
                 Mi cuenta
               </MenuItem>
 
