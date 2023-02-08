@@ -5,7 +5,7 @@ import type {
   Transaction,
   MoneyRequestApproval,
 } from '@prisma/client';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash.isequal';
 import type { Account } from 'next-auth';
 
 type ApprovalTypes = MoneyRequest & {

@@ -7,6 +7,7 @@ import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
 import CreateAccountModal from '@/components/Modals/account.create.modal';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import { verificationLinksColumns } from './columns.mod.users.verification-links';
+import { useSession } from 'next-auth/react';
 
 export interface VerificationLinksWithAccountName
   extends AccountVerificationLinks {
@@ -16,16 +17,17 @@ export interface VerificationLinksWithAccountName
 }
 
 const VerificationLinksPage = () => {
+  const user = useSession().data?.user;
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
 
   const { data, isFetching, isLoading } =
-    trpcClient.verificationLinks.getVerificationLinks.useQuery(
+    trpcClient.magicLinks.getVerificationLinks.useQuery(
       { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
       { keepPreviousData: globalFilter ? true : false }
     );
-  const { data: count } = trpcClient.verificationLinks.count.useQuery();
+  const { data: count } = trpcClient.magicLinks.count.useQuery();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -52,6 +54,7 @@ const VerificationLinksPage = () => {
         columns={verificationLinksColumns({
           pageIndex,
           pageSize,
+          user,
         })}
         loading={isFetching || isLoading}
         options={tableOptions}

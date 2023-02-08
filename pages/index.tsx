@@ -6,6 +6,9 @@ import {
   Heading,
   useColorModeValue,
   Container,
+  Text,
+  Flex,
+  Image,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +25,7 @@ import { useTranslation } from 'next-i18next';
 import type { GetServerSideProps } from 'next';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { myToast } from '../components/Toasts & Alerts/MyToast';
+import Link from 'next/link';
 
 export default function Signin({ onSubmit }: { onSubmit?: any }) {
   const router = useRouter();
@@ -61,7 +65,22 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
         <Stack
           spacing={2}
           // py={{ base: 5, md: 10 }}
+          alignContent="center"
         >
+          <Flex gap={5} alignSelf={'center'} alignItems={'center'}>
+            <Heading
+              py={{ base: 0, md: 5 }}
+              fontSize={{ base: '2xl', md: '6xl' }}
+            >
+              Jurumi
+            </Heading>
+            <Image
+              src={'/jurumi-logo.png'}
+              alt="logo"
+              width={'50px'}
+              height={'50px'}
+            />
+          </Flex>
           <Heading
             textAlign={'center'}
             py={{ base: 0, md: 5 }}
@@ -100,25 +119,22 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
                 data-testid="forms:password"
               />
 
-              <Stack spacing={5}>
-                <Stack
-                  spacing={5}
-                  textAlign={'center'}
-                  direction={{ base: 'column' }}
-                >
-                  <Button
-                    isDisabled={isSubmitting}
-                    type="submit"
-                    bg={'blue.400'}
-                    color={'white'}
-                    _hover={{
-                      bg: 'blue.500',
-                    }}
-                  >
-                    {t('common:buttons.save')}
-                  </Button>
-                </Stack>
-              </Stack>
+              <Button
+                isDisabled={isSubmitting}
+                type="submit"
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                }}
+              >
+                {t('common:buttons.save')}
+              </Button>
+              <Link href={'forgot-my-password'}>
+                <Text color={'gray.500'} pt={'10px'}>
+                  Olvide mi contraseña
+                </Text>
+              </Link>
             </Stack>
           </Box>
         </Stack>

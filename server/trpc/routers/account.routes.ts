@@ -11,6 +11,7 @@ import { validateInitialSetup } from '@/lib/validations/setup.validate';
 import { handleOrderBy } from './utils/Sorting.routeUtils';
 import { validateAccount } from '@/lib/validations/account.validate';
 import prisma from '@/server/db/client';
+import { validateAccountProfile } from '@/lib/validations/profileSettings.validate';
 
 export const accountsRouter = router({
   toggleActivation: adminModProcedure
@@ -32,6 +33,55 @@ export const accountsRouter = router({
   count: protectedProcedure.query(async () => {
     return await prisma?.account.count();
   }),
+
+  getForProfileEdit: protectedProcedure.query(async ({ ctx }) => {
+    return await prisma?.account.findUnique({
+      where: {
+        email: ctx.session.user.email,
+      },
+      select: {
+        id: true,
+        displayName: true,
+        email: true,
+        profile: { select: { avatarUrl: true } },
+        preferences: { select: { receiveEmailNotifications: true } },
+      },
+    });
+  }),
+  updateMyPreferences: protectedProcedure
+    .input(validateAccountProfile)
+    .mutation(async ({ ctx, input }) => {
+      return await prisma?.preferences.update({
+        where: {
+          accountId: ctx.session.user.id,
+        },
+        data: {
+          receiveEmailNotifications:
+            input.preferences?.receiveEmailNotifications,
+        },
+      });
+    }),
+  updateMyProfile: protectedProcedure
+    .input(validateAccountProfile)
+    .mutation(async ({ input, ctx }) => {
+      const user = ctx.session.user;
+
+      return await prisma?.account.update({
+        where: { id: user.id },
+        data: {
+          displayName: input.displayName,
+          email: input.email,
+          profile: input.profile?.avatarUrl
+            ? {
+                upsert: {
+                  create: { avatarUrl: input.profile?.avatarUrl },
+                  update: { avatarUrl: input.profile?.avatarUrl },
+                },
+              }
+            : {},
+        },
+      });
+    }),
   getUnique: protectedProcedure.query(async ({ ctx }) => {
     return await prisma?.account.findUnique({
       where: {

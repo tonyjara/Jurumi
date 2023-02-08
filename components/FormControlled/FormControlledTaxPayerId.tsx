@@ -1,5 +1,6 @@
 // This component handles everythinf so that looking for a taxpayer from datospy or our own database is a smooth process.
 
+import { startCase } from '@/lib/utils/MyLodash';
 import {
   bankNameOptions,
   ownerDocTypeOptions,
@@ -21,7 +22,6 @@ import type { TaxPayer, TaxPayerBankInfo } from '@prisma/client';
 import axios from 'axios';
 import type { DropdownIndicatorProps, GroupBase } from 'chakra-react-select';
 import { Select, components } from 'chakra-react-select';
-import { startCase } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import type {
   Control,

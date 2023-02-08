@@ -44,10 +44,21 @@ const RowOptionsHomeRequests = ({
     handleUseMutationAlerts({
       successText: 'Se ha eliminado la solicitud!',
       callback: () => {
-        context.moneyRequest.getManyComplete.invalidate();
+        context.moneyRequest.invalidate();
       },
     })
   );
+
+  const { mutate: rejectMyOwn } =
+    trpcClient.moneyRequest.cancelById.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Se ha rechazado la solicitud!',
+        callback: () => {
+          context.moneyRequest.invalidate();
+        },
+      })
+    );
+
   const isAccepted = x.status === 'ACCEPTED';
 
   const isFullyExecuted = reduceExpenseReports(x.expenseReports)
@@ -90,6 +101,14 @@ const RowOptionsHomeRequests = ({
             }}
           >
             Editar
+          </MenuItem>
+          <MenuItem
+            isDisabled={isAccepted || x.wasCancelled}
+            onClick={() => {
+              rejectMyOwn({ id: x.id });
+            }}
+          >
+            Rechazar
           </MenuItem>
 
           <RowOptionDeleteDialog

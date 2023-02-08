@@ -41,7 +41,7 @@ export default function NewUser(props?: {
     defaultValues: defaultNewUserData,
   });
   const { error, mutate, isLoading } =
-    trpcClient.verificationLinks.assignPassword.useMutation(
+    trpcClient.magicLinks.assignPasswordToNewAccount.useMutation(
       handleUseMutationAlerts({
         successText: 'Has creado tu cuenta!',
         callback: async () => {

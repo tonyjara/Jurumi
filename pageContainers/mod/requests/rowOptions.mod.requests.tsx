@@ -7,7 +7,6 @@ import {
   Portal,
 } from '@chakra-ui/react';
 import type { MoneyRequest } from '@prisma/client';
-import { cloneDeep } from 'lodash';
 import router from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
@@ -25,6 +24,7 @@ import {
   reduceExpenseReports,
   reduceExpenseReturns,
 } from '@/lib/utils/TransactionUtils';
+import cloneDeep from 'lodash.clonedeep';
 import ReimbursementOrderPrintPage from '@/pageContainers/home/settings/print-templates/ReimbursementOrderPrintPage.home.settings.print-templates';
 import MoneyOrderPrintPage from '@/pageContainers/home/settings/print-templates/MoneyOrderPrintPage.home.setting.print-templates';
 
@@ -139,7 +139,7 @@ const RowOptionsModRequests = ({
               }}
             >
               Aceptar y ejecutar{' '}
-              {needsApproval && !hasBeenApproved && '( Necesita aprovación )'}
+              {needsApproval && !hasBeenApproved && '( Necesita aprobación )'}
             </MenuItem>
             <MenuItem
               isDisabled={isAccepted}
@@ -161,6 +161,7 @@ const RowOptionsModRequests = ({
             >
               Editar
             </MenuItem>
+
             {x.moneyRequestType === 'FUND_REQUEST' && (
               <MenuItem
                 isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
@@ -172,6 +173,7 @@ const RowOptionsModRequests = ({
                 Crear rendición
               </MenuItem>
             )}
+
             <MenuItem
               onClick={() => {
                 router.push({
@@ -186,6 +188,7 @@ const RowOptionsModRequests = ({
             <MenuItem onClick={handlePrintFundRequest}>
               Imprimir solicitud
             </MenuItem>
+
             {x.moneyRequestType === 'FUND_REQUEST' && (
               <MenuItem
                 isDisabled={!isFullyExecuted}
@@ -207,7 +210,7 @@ const RowOptionsModRequests = ({
         </Portal>
       </Menu>
       <div
-        style={{ display: isPrinting ? 'block' : 'none' }}
+        style={{ display: isPrinting ? 'flex' : 'none', width: '100%' }}
         ref={printFundReqRef}
       >
         {' '}

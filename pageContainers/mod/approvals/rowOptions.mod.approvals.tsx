@@ -28,7 +28,7 @@ export const RowOptionApprovals = ({
   const { mutate: mutateApprove } =
     trpcClient.moneyApprovals.approve.useMutation(
       handleUseMutationAlerts({
-        successText: 'La solicitud ha sido aprovada!',
+        successText: 'La solicitud ha sido aprobada!',
         callback: () => {
           context.moneyRequest.invalidate();
         },

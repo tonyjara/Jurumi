@@ -5,15 +5,24 @@ import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
 import CopyLinkCellButton from '@/components/DynamicTables/usersPage/CopyLink.cellButton';
 import RowOptionsVerificationLinks from './rowOptions.mod.users.verification-links';
 import type { VerificationLinksWithAccountName } from './VerifyLinksPage.mod.users';
+import type { Account } from '@prisma/client';
 
 const columnHelper = createColumnHelper<VerificationLinksWithAccountName>();
 
 export const verificationLinksColumns = ({
   pageIndex,
   pageSize,
+  user,
 }: {
   pageSize: number;
   pageIndex: number;
+  user:
+    | (Omit<Account, 'password'> & {
+        profile: {
+          avatarUrl: string;
+        } | null;
+      })
+    | undefined;
 }) => [
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
@@ -43,7 +52,10 @@ export const verificationLinksColumns = ({
         isBefore(new Date(), addHours(x.row.original.createdAt, 1)) &&
         !x.row.original.hasBeenUsed;
       return isActive ? (
-        <CopyLinkCellButton link={x.row.original.verificationLink} />
+        <CopyLinkCellButton
+          disabled={user?.role !== 'ADMIN'}
+          link={x.row.original.verificationLink}
+        />
       ) : (
         <></>
       );
@@ -52,7 +64,7 @@ export const verificationLinksColumns = ({
   columnHelper.display({
     header: 'Opciones',
     cell: (x) => {
-      return <RowOptionsVerificationLinks x={x.row.original} />;
+      return <RowOptionsVerificationLinks user={user} x={x.row.original} />;
     },
   }),
 ];

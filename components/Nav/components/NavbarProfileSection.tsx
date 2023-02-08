@@ -20,8 +20,9 @@ import {
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { FiBell, FiChevronDown } from 'react-icons/fi';
+import { FiChevronDown } from 'react-icons/fi';
 import { signOut } from 'next-auth/react';
+import NotificationIcon from './NotificationIcon';
 
 const NavbarProfileSection = () => {
   const router = useRouter();
@@ -38,7 +39,7 @@ const NavbarProfileSection = () => {
   const flagIcon = () => (router.locale === 'en' ? '🇺🇲' : '🇪🇸');
 
   return (
-    <HStack spacing={{ base: '0', md: '1' }}>
+    <Flex gap={{ base: '0', md: '1' }}>
       <IconButton
         size="lg"
         variant="ghost"
@@ -55,13 +56,9 @@ const NavbarProfileSection = () => {
       >
         {flagIcon()}
       </Button>
-      <IconButton
-        size="lg"
-        variant="ghost"
-        aria-label="open menu"
-        icon={<FiBell />}
-      />
-      <Flex zIndex={99999} alignItems={'center'}>
+
+      <NotificationIcon />
+      <Flex pl={'10px'} alignItems={'center'}>
         <Menu>
           {data && (
             <MenuButton
@@ -72,21 +69,21 @@ const NavbarProfileSection = () => {
               <HStack>
                 <Avatar
                   size={'sm'}
-                  //   src={
-                  //     'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                  //   }
+                  src={data?.user.profile?.avatarUrl ?? undefined}
                 />
-                <VStack
+                <Box
                   display={{ base: 'none', md: 'flex' }}
-                  alignItems="flex-start"
-                  spacing="1px"
-                  ml="2"
+                  // alignItems="flex-start"
+                  // spacing="1px"
+                  flexDir="column"
+                  // ml="2"
+                  h="30px"
                 >
                   <Text fontSize="sm">{data.user.displayName}</Text>
                   <Text fontSize="xs" color="gray.600">
                     {data.user.role}
                   </Text>
-                </VStack>
+                </Box>
                 <Box display={{ base: 'none', md: 'flex' }}>
                   <FiChevronDown />
                 </Box>
@@ -107,7 +104,9 @@ const NavbarProfileSection = () => {
                 </Text>
               </VStack>
               <Divider mt={'10px'} />
-              <MenuItem>Mi cuenta</MenuItem>
+              <MenuItem onClick={() => router.push('/home/settings')}>
+                Mi cuenta
+              </MenuItem>
 
               <MenuDivider />
               <MenuItem onClick={() => signOut()}>Cerrar sesión</MenuItem>
@@ -115,7 +114,7 @@ const NavbarProfileSection = () => {
           </Portal>
         </Menu>
       </Flex>
-    </HStack>
+    </Flex>
   );
 };
 

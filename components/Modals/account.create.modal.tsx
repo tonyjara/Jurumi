@@ -54,18 +54,22 @@ const CreateAccountModal = ({
     onClose();
   };
   const { error, mutate, isLoading } =
-    trpcClient.verificationLinks.createWithSigendLink.useMutation(
+    trpcClient.magicLinks.createWithSigendLink.useMutation(
       handleUseMutationAlerts({
         successText: 'El usuario ha sido creado!',
         callback: (returnedData: accountWithVerifyLink) => {
-          const verifyLink =
-            returnedData.accountVerificationLinks[0]?.verificationLink;
-          if (!verifyLink) return;
-          setValue(verifyLink);
-          // handleOnClose();
+          if (process.env.NODE_ENV === 'development') {
+            const verifyLink =
+              returnedData.accountVerificationLinks[0]?.verificationLink;
+            if (!verifyLink) return;
+            setValue(verifyLink);
+          }
           reset(defaultAccountData);
-          context.verificationLinks.invalidate();
+          context.magicLinks.invalidate();
           context.account.invalidate();
+          if (process.env.NODE_ENV === 'production') {
+            handleOnClose();
+          }
         },
       })
     );

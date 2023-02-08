@@ -11,12 +11,13 @@ import { accountsRouter } from './account.routes';
 import { transactionsRouter } from './transactions/transaction.routes';
 import { moneyApprovalRouter } from './moneyApproval.routes';
 import { preferencesRouter } from './preferences.routes';
-import { verificationLinksRouter } from './verificationLink.routes';
+import { magicLinksRouter } from './magicLinks.routes';
 import { taxPayerRouter } from './taxPayer.routes';
 import { expenseReportsRouter } from './ExpenseReport.routes';
 import { imbursementsRouter } from './imbursements.routes';
 import { seedRouter } from './seed.routes';
 import { expenseReturnsRouter } from './ExpenseReturn.routes';
+import { notificationsRouter } from './notifications.routes';
 
 export const appRouter = router({
   account: accountsRouter,
@@ -33,7 +34,8 @@ export const appRouter = router({
   seed: seedRouter,
   taxPayer: taxPayerRouter,
   transaction: transactionsRouter,
-  verificationLinks: verificationLinksRouter,
+  magicLinks: magicLinksRouter,
   expenseReturn: expenseReturnsRouter,
+  notifications: notificationsRouter,
 });
 export type AppRouter = typeof appRouter;

@@ -1,6 +1,6 @@
 import { VStack } from '@chakra-ui/react';
 import React from 'react';
-import type { FieldValues, Control, FieldErrorsImpl } from 'react-hook-form';
+import type { FieldValues, Control } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { currencyOptions } from '../../lib/utils/SelectOptions';
 import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
@@ -15,7 +15,7 @@ import BankInfoForm from './BankInfo.form';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   //TODO: solve why we cant use nested object in errors.
-  errors: FieldErrorsImpl<any>;
+  errors: any;
 }
 
 const MoneyAccForm = ({ control, errors }: formProps<FormMoneyAccount>) => {
