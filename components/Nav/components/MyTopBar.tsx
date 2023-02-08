@@ -1,4 +1,11 @@
-import { Flex, useColorModeValue, IconButton } from '@chakra-ui/react';
+import {
+  Image,
+  Flex,
+  useColorModeValue,
+  IconButton,
+  Box,
+} from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { FiMenu } from 'react-icons/fi';
 import NavbarProfileSection from './NavbarProfileSection';
 
@@ -7,6 +14,8 @@ interface MobileProps {
   authenticated: boolean;
 }
 const MyTopBar = ({ onOpen, authenticated }: MobileProps) => {
+  const router = useRouter();
+
   return (
     <Flex
       position={'fixed'}
@@ -18,10 +27,21 @@ const MyTopBar = ({ onOpen, authenticated }: MobileProps) => {
       bg={useColorModeValue('white', 'gray.900')}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={authenticated ? 'space-between' : 'flex-end'}
+      justifyContent={{
+        base: 'space-between',
+        md: 'space-between',
+      }}
     >
-      {/* This pushes NavbarProfileSection to the end in desktop */}
-      <Flex display={{ base: 'none', md: 'flex' }}></Flex>
+      <Image
+        onClick={() => router.push('/')}
+        ml={authenticated ? '80px' : undefined}
+        display={{ base: authenticated ? 'none' : 'flex', md: 'flex' }}
+        src={'/jurumi-logo.png'}
+        alt="logo"
+        width={'30px'}
+        height={'30px'}
+        cursor="pointer"
+      />
       {authenticated && (
         <IconButton
           display={{ base: 'flex', md: 'none' }}
@@ -31,8 +51,9 @@ const MyTopBar = ({ onOpen, authenticated }: MobileProps) => {
           icon={<FiMenu />}
         />
       )}
-
-      <NavbarProfileSection />
+      <Box>
+        <NavbarProfileSection />
+      </Box>
     </Flex>
   );
 };
