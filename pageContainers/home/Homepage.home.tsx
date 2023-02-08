@@ -9,7 +9,7 @@ const HomePage = () => {
 
   return (
     <div>
-      Homepage
+      Home
       {/* <Button onClick={() => refetch()}>Notifications</Button> */}
     </div>
   );
