@@ -12,6 +12,7 @@ import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 import { subMinutes } from 'date-fns';
 import { sendPasswordRecoveryLinkOnSengrid } from './notifications/sendgrid/passwordRecoverySend.notification.sengrid';
+import { sendMagicLinkToNewUserSendgridNotification } from './notifications/sendgrid/sendMagicLinkToNewUser.notification.sendgrid';
 
 export const magicLinksRouter = router({
   count: adminModProcedure.query(async () => {
@@ -191,7 +192,7 @@ export const magicLinksRouter = router({
 
       const link = `${baseUrl}/new-user/${signedToken}`;
 
-      return await prisma?.account.create({
+      const newUser = await prisma.account.create({
         data: {
           displayName: input.displayName,
           email: input.email,
@@ -212,8 +213,16 @@ export const magicLinksRouter = router({
             create: { selectedOrganization: prefs.selectedOrganization },
           },
         },
-        include: { accountVerificationLinks: true },
+        include: {
+          accountVerificationLinks: true,
+          organizations: { select: { displayName: true } },
+        },
       });
+
+      if (process.env.NODE_ENV === 'production') {
+        await sendMagicLinkToNewUserSendgridNotification({ link, newUser });
+      }
+      return newUser;
     }),
   createLinkForPasswordRecovery: publicProcedure
     .input(z.object({ email: z.string().email() }))

@@ -58,14 +58,18 @@ const CreateAccountModal = ({
       handleUseMutationAlerts({
         successText: 'El usuario ha sido creado!',
         callback: (returnedData: accountWithVerifyLink) => {
-          const verifyLink =
-            returnedData.accountVerificationLinks[0]?.verificationLink;
-          if (!verifyLink) return;
-          setValue(verifyLink);
-          // handleOnClose();
+          if (process.env.NODE_ENV === 'development') {
+            const verifyLink =
+              returnedData.accountVerificationLinks[0]?.verificationLink;
+            if (!verifyLink) return;
+            setValue(verifyLink);
+          }
           reset(defaultAccountData);
           context.magicLinks.invalidate();
           context.account.invalidate();
+          if (process.env.NODE_ENV === 'production') {
+            handleOnClose();
+          }
         },
       })
     );

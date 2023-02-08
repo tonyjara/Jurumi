@@ -13,11 +13,20 @@ import {
 } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { VerificationLinksWithAccountName } from './VerifyLinksPage.mod.users';
+import type { Account } from '@prisma/client';
 
 const RowOptionsVerificationLinks = ({
   x,
+  user,
 }: {
   x: VerificationLinksWithAccountName;
+  user:
+    | (Omit<Account, 'password'> & {
+        profile: {
+          avatarUrl: string;
+        } | null;
+      })
+    | undefined;
 }) => {
   const context = trpcClient.useContext();
 
@@ -39,6 +48,7 @@ const RowOptionsVerificationLinks = ({
       />
       <MenuList>
         <MenuItem
+          isDisabled={user?.role !== 'ADMIN'}
           onClick={() => {
             if (x.hasBeenUsed) {
               return myToast.error(
