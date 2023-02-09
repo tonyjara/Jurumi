@@ -14,17 +14,18 @@ import Link from 'next/link';
 
 const HomePage = () => {
   const { data } = trpcClient.moneyRequest.countMyPendingRequests.useQuery();
+
   const { data: slackAnnouncements } =
     trpcClient.notifications.getSlackAnnouncements.useQuery();
+
   const listItemBg = useColorModeValue('#EDF2F7', '#4A5568');
   return (
-    <Box display={'flex'} flexDir="column" w={'100%'}>
+    <Box alignItems={'center'} display={'flex'} flexDir="column" w={'100%'}>
       <Text fontSize={{ base: '3xl', md: '5xl' }}>Bienvenido a Jurumi</Text>
-      <Card mb={'20px'}>
+      <Card w={'100%'} maxW={'800px'} mb={'20px'}>
         <Text m={'10px'} fontWeight={'bold'} fontSize={'2xl'}>
           Anuncios
         </Text>
-        {/* <CardBody> */}
         <List overflow="auto" maxH={'250px'} spacing={3}>
           {slackAnnouncements?.map((x) => (
             <ListItem
@@ -40,10 +41,9 @@ const HomePage = () => {
             </ListItem>
           ))}
         </List>
-        {/* </CardBody> */}
       </Card>
 
-      <Card>
+      <Card w={'100%'} maxW={'800px'}>
         <Text m={'10px'} fontWeight={'bold'} fontSize={'2xl'}>
           Solicitudes pendientes
         </Text>
