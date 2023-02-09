@@ -74,7 +74,20 @@ export const notificationsRouter = router({
         },
       });
     }),
+  getSlackAnnouncements: adminModProcedure.query(async () => {
+    const slackToken = process.env.SLACK_BOT_TOKEN;
 
+    const web = new WebClient(slackToken);
+
+    const convs = await web.conversations.history({
+      token: slackToken,
+      channel: 'C04NTE7DTTN',
+    });
+    if (!convs.messages) return;
+
+    const filteredMessages = convs.messages.filter((x) => !('subtype' in x));
+    return filteredMessages;
+  }),
   getOrgNotificationSettings: adminModProcedure
     .input(z.object({ orgId: z.string().optional() }))
     .query(async ({ input }) => {

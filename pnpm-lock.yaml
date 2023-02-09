@@ -19,11 +19,10 @@ specifiers:
   '@faker-js/faker': 7.6.0
   '@hookform/devtools': 4.3.0
   '@hookform/resolvers': 2.9.10
-  '@lexical/react': 0.7.7
   '@playwright/test': 1.30.0
   '@prisma/client': 4.10.0
   '@pronestor/react-zoom-pan-pinch': 2.4.5
-  '@sendgrid/mail': ^7.7.0
+  '@sendgrid/mail': 7.7.0
   '@slack/web-api': 6.8.1
   '@tanstack/react-query': 4.24.4
   '@tanstack/react-table': 8.7.9
@@ -70,7 +69,6 @@ specifiers:
   jest-mock-extended: 3.0.1
   jsdom: 21.1.0
   jsonwebtoken: 9.0.0
-  lexical: 0.7.7
   lodash.clonedeep: 4.5.0
   lodash.isequal: 4.5.0
   next: 13.1.6
@@ -117,7 +115,6 @@ dependencies:
   '@emotion/styled': 11.10.5_4erqsq3n444jecyuvaxwc5b3vi
   '@hookform/devtools': 4.3.0_57czaiyk6rdr5iy5tfs5pior4u
   '@hookform/resolvers': 2.9.10_react-hook-form@7.43.1
-  '@lexical/react': 0.7.7_owjlnej6rwkcsis3vgoubwizb4
   '@prisma/client': 4.10.0_prisma@4.10.0
   '@pronestor/react-zoom-pan-pinch': 2.4.5_biqbaboplfbrettd7655fr4n2y
   '@sendgrid/mail': 7.7.0
@@ -145,7 +142,6 @@ dependencies:
   i18next: 22.4.9
   i18next-browser-languagedetector: 7.0.1
   jsonwebtoken: 9.0.0
-  lexical: 0.7.7
   lodash.clonedeep: 4.5.0
   lodash.isequal: 4.5.0
   next: 13.1.6_pjwopsidmaokadturxaafygjp4
@@ -2943,229 +2939,6 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
 
-  /@lexical/clipboard/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-4Ll9TASlQxUSHDDOMSyzSLjtaz/+SDdI4tjP2SYbUPuaH85ilkInr5AsLiGfnCBGgsuSQo5+GLAcbfcZnwY1IA==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/html': 0.7.7_lexical@0.7.7
-      '@lexical/list': 0.7.7_lexical@0.7.7
-      '@lexical/selection': 0.7.7_lexical@0.7.7
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/code/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-8kP8kz7XYknb6vvaXIis09IPEI58/zltmYZnK2PkL+ZqP6LaA3UVqw6JDzn0/I4NVboGLnLfui4Vl2q0ENboFQ==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-      prismjs: 1.29.0
-    dev: false
-
-  /@lexical/dragon/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-b8tSv6p9q667NbES/YYe8yl09KGIT4DXIPI3XxWh/5fBtCTN03EBJM98e+fWPJq07s0K/AOGEOC1PNM8bvumlA==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/hashtag/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-L5qtBuqddO/qV90RB3BAfT4nJU+7IwG9N1cMWrSjXbnKGL99PInoVkA0iAMICx/IGhhz0Yfq1FixvA13weQCnQ==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/history/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-MQj2mU9c+LwyP88ePY7nJuOoWRGzvcBcePI7mfza3jwdy29CHzvFX+dl9/HCZefRFRKo7NsodT+vk/wzygrEDw==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/html/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-+D7IIQUCL5C8593CKCBT1dhPG1WAqZEJZMvXgFEm6eiuEkDkagHGgY6CQ/+j1+NdA8jKY/cX/SYyjRdEOMz7BQ==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/selection': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/link/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-c2SO6GFd92RVjx8e1EPxSUskQB7p0mcuLcrGcsoAUx+p7xS0bC6KSdAup9CWXhasn5nRzoQbn/SK/iMSNhjHZw==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/list/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-N+R5G77dBAuxU2RwNqgQya32gtBy6p7M2k8EToAe9QZdLcssvdyVWLoMHsiGvuZzHF5MSCQ7AIo7ybS1vIUdtA==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/mark/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-2KZjARl9SRKJHP4SsOYg45oGicKuaSwaoxo1csyyJ0un3Tjt3z2SOlyWs+NJK2QzRaQ42nvgHoLx/MQ9H2Yw7g==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/markdown/0.7.7_s2zztdn6sebrtwefo3yj7asgka:
-    resolution: {integrity: sha512-SujxrXSqQn2VyK0KvlIdvyiVrOhYp0hS6+OSThN0X2eDFwJ46wyaGiWp7wHcnYP6VdLixXgDi05y5L0ESLCy5A==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/code': 0.7.7_lexical@0.7.7
-      '@lexical/link': 0.7.7_lexical@0.7.7
-      '@lexical/list': 0.7.7_lexical@0.7.7
-      '@lexical/rich-text': 0.7.7_2ytw4l27a7hfyphnd4euzeoeqm
-      '@lexical/text': 0.7.7_lexical@0.7.7
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    transitivePeerDependencies:
-      - '@lexical/clipboard'
-      - '@lexical/selection'
-    dev: false
-
-  /@lexical/offset/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-iP1Ce1YSRRVFj4kXtPeXxDsGl8Z5vmdAhpb784fyIoyBc29c3+1ztKBl4kdH31ieOIftYR+o+an0Mi0Xa+mYpg==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/overflow/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-eR1RYsidDkLFGBieJYUjM6y0PnWY/Yu118m8E5X3D/q74euUqrJ4X6W6XwfibUPwgMJuABZY+Yl9KqRZF+XNRQ==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/plain-text/0.7.7_2ytw4l27a7hfyphnd4euzeoeqm:
-    resolution: {integrity: sha512-4vabG7v3EoC/E/6pgpyWcHW8JEJj8woNQW4xZdLEcWYnIyqW+cyfzjcLoP+8lgl8GjI4Uyc4fjK1hiduRWH1/g==}
-    peerDependencies:
-      '@lexical/clipboard': 0.7.7
-      '@lexical/selection': 0.7.7
-      '@lexical/utils': 0.7.7
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/clipboard': 0.7.7_lexical@0.7.7
-      '@lexical/selection': 0.7.7_lexical@0.7.7
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/react/0.7.7_owjlnej6rwkcsis3vgoubwizb4:
-    resolution: {integrity: sha512-nRPZFWW7BrzIacM4LGe0u4TaIMJ126p3Ico2T3c1T1udE8GmKD2lRkqtmgqnDV9Jt6EOlB69UkrMtiEPVb4kUg==}
-    peerDependencies:
-      lexical: 0.7.7
-      react: '>=17.x'
-      react-dom: '>=17.x'
-    dependencies:
-      '@lexical/clipboard': 0.7.7_lexical@0.7.7
-      '@lexical/code': 0.7.7_lexical@0.7.7
-      '@lexical/dragon': 0.7.7_lexical@0.7.7
-      '@lexical/hashtag': 0.7.7_lexical@0.7.7
-      '@lexical/history': 0.7.7_lexical@0.7.7
-      '@lexical/link': 0.7.7_lexical@0.7.7
-      '@lexical/list': 0.7.7_lexical@0.7.7
-      '@lexical/mark': 0.7.7_lexical@0.7.7
-      '@lexical/markdown': 0.7.7_s2zztdn6sebrtwefo3yj7asgka
-      '@lexical/overflow': 0.7.7_lexical@0.7.7
-      '@lexical/plain-text': 0.7.7_2ytw4l27a7hfyphnd4euzeoeqm
-      '@lexical/rich-text': 0.7.7_2ytw4l27a7hfyphnd4euzeoeqm
-      '@lexical/selection': 0.7.7_lexical@0.7.7
-      '@lexical/table': 0.7.7_lexical@0.7.7
-      '@lexical/text': 0.7.7_lexical@0.7.7
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      '@lexical/yjs': 0.7.7_lexical@0.7.7+yjs@13.5.45
-      lexical: 0.7.7
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-error-boundary: 3.1.4_react@18.2.0
-    transitivePeerDependencies:
-      - yjs
-    dev: false
-
-  /@lexical/rich-text/0.7.7_2ytw4l27a7hfyphnd4euzeoeqm:
-    resolution: {integrity: sha512-Gyd4IpSuu658/nLvy+uPcWOQ/o9aU0m0mQkFwavTCixgue/lDxn1Lks9jzkFzoaDL68iqGjvP2TycCD8n9jjRw==}
-    peerDependencies:
-      '@lexical/clipboard': 0.7.7
-      '@lexical/selection': 0.7.7
-      '@lexical/utils': 0.7.7
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/clipboard': 0.7.7_lexical@0.7.7
-      '@lexical/selection': 0.7.7_lexical@0.7.7
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/selection/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-lvm0yLtqQRyaLwJKGP/zi/ugBL4xtnH/bSWWUMGP8w7+5frGfiQqMtAw21patSbzaOOm0wHI0uRfScdQNsz1TQ==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/table/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-nusY9p5rhkRFQ0JfxArnwu0pgXDBlBjriFvGdfWKIaUelk1dNSn0lvRml1sRwM3QasdQI4NF1D3hVtatCU4PTQ==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/utils': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/text/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-rzu62tojnIYe8tpftH9NdYALQxdpFhIfJoPQtYs1NLoIKbGXRCB3oZleX3Wu0FrOa8WscTlE7wIUBXdC5wiV3A==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/utils/0.7.7_lexical@0.7.7:
-    resolution: {integrity: sha512-RXJ1J9ABMmoTFlHSxm3PE0I7iIKF8tCbivgUIbR/rmofUpxlow2gnpYiqV/ofGn9VkutRJeIzvBfPkEbOjHl4A==}
-    peerDependencies:
-      lexical: 0.7.7
-    dependencies:
-      '@lexical/list': 0.7.7_lexical@0.7.7
-      '@lexical/table': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-    dev: false
-
-  /@lexical/yjs/0.7.7_lexical@0.7.7+yjs@13.5.45:
-    resolution: {integrity: sha512-Qqh5SvhRz5wIbc1xiJi/aZouUcSuC0gDkEGXc67FPQSRVT85fPgU3JqFAl0+24hgzdnezZF0G8TVBzoE+rCLtA==}
-    peerDependencies:
-      lexical: 0.7.7
-      yjs: '>=13.5.22'
-    dependencies:
-      '@lexical/offset': 0.7.7_lexical@0.7.7
-      lexical: 0.7.7
-      yjs: 13.5.45
-    dev: false
-
   /@motionone/animation/10.15.1:
     resolution: {integrity: sha512-mZcJxLjHor+bhcPuIFErMDNyrdb2vJur8lSfMCsuCB4UyV8ILZLvK+t+pg56erv8ud9xQGK/1OGPt10agPrCyQ==}
     dependencies:
@@ -3376,7 +3149,7 @@ packages:
     dependencies:
       cross-spawn: 7.0.3
       is-glob: 4.0.3
-      open: 8.4.0
+      open: 8.4.1
       picocolors: 1.0.0
       tiny-glob: 0.2.9
       tslib: 2.5.0
@@ -4474,8 +4247,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001450
-      electron-to-chromium: 1.4.288
+      caniuse-lite: 1.0.30001451
+      electron-to-chromium: 1.4.289
       node-releases: 2.0.10
       update-browserslist-db: 1.0.10_browserslist@4.21.5
 
@@ -4535,8 +4308,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001450:
-    resolution: {integrity: sha512-qMBmvmQmFXaSxexkjjfMvD5rnDL0+m+dUMZKoDYsGG8iZN29RuYh9eRoMvKsT6uMAWlyUUGDEQGJJYjzCIO9ew==}
+  /caniuse-lite/1.0.30001451:
+    resolution: {integrity: sha512-XY7UbUpGRatZzoRft//5xOa69/1iGJRBlrieH6QYrkKLIFn3m7OVEJ81dSrKoy2BnKsdbX5cLrOispZNYo9v2w==}
 
   /chakra-react-select/4.4.3_alpyulvd3cwjobv54jo7ctrw7u:
     resolution: {integrity: sha512-anDgJyYUpIapTmUbgXB+Iw5hJ90hOPvgoUPUaYdO5q9zY2VBFhQ1L0gBMqWAQxiKUmuHpwQypf8sPoVtd0b3KA==}
@@ -4951,8 +4724,8 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
-  /electron-to-chromium/1.4.288:
-    resolution: {integrity: sha512-8s9aJf3YiokIrR+HOQzNOGmEHFXVUQzXM/JaViVvKdCkNUjS+lEa/uT7xw3nDVG/IgfxiIwUGkwJ6AR1pTpYsQ==}
+  /electron-to-chromium/1.4.289:
+    resolution: {integrity: sha512-relLdMfPBxqGCxy7Gyfm1HcbRPcFUJdlgnCPVgQ23sr1TvUrRJz0/QPoGP0+x41wOVSTN/Wi3w6YDgHiHJGOzg==}
 
   /emittery/0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -6960,10 +6733,6 @@ packages:
       type-check: 0.4.0
     dev: true
 
-  /lexical/0.7.7:
-    resolution: {integrity: sha512-VyOvuuwnACPN3N2MfifOcOXQTL4tbv/sp14/VkmMHAdW/2dX6Gr9GX/SzKDf3AQmtQhMUpDNjzes11bdr/FtDw==}
-    dev: false
-
   /lib0/0.2.62:
     resolution: {integrity: sha512-DY0G8AaQloUvpiss7EpAo/t4R82b9m/AydbQRNAa9Khssn9oGDJnSN8Q1qQ8u82Wog4iaT1O8yM+DfhzGCrrpQ==}
     engines: {node: '>=14'}
@@ -7242,7 +7011,7 @@ packages:
     dependencies:
       '@next/env': 13.1.6
       '@swc/helpers': 0.4.14
-      caniuse-lite: 1.0.30001450
+      caniuse-lite: 1.0.30001451
       postcss: 8.4.14
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -7444,8 +7213,8 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-  /open/8.4.0:
-    resolution: {integrity: sha512-XgFPPM+B28FtCCgSb9I+s9szOC1vZRSwgWsRUA5ylIxRTgKozqjOCrVOqGsYABPYK5qnfqClxZTFBa8PKt2v6Q==}
+  /open/8.4.1:
+    resolution: {integrity: sha512-/4b7qZNhv6Uhd7jjnREh1NjnPxlTq+XNWPG88Ydkj5AILcA5m3ajvcg57pB24EQjKv0dK62XnDqk9c/hkIG5Kg==}
     engines: {node: '>=12'}
     dependencies:
       define-lazy-prop: 2.0.0
@@ -7684,11 +7453,6 @@ packages:
     dependencies:
       '@prisma/engines': 4.10.0
 
-  /prismjs/1.29.0:
-    resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
-    engines: {node: '>=6'}
-    dev: false
-
   /process/0.11.10:
     resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
     engines: {node: '>= 0.6.0'}
@@ -7834,16 +7598,6 @@ packages:
       attr-accept: 2.2.2
       file-selector: 0.6.0
       prop-types: 15.8.1
-      react: 18.2.0
-    dev: false
-
-  /react-error-boundary/3.1.4_react@18.2.0:
-    resolution: {integrity: sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==}
-    engines: {node: '>=10', npm: '>=6'}
-    peerDependencies:
-      react: '>=16.13.1'
-    dependencies:
-      '@babel/runtime': 7.20.13
       react: 18.2.0
     dev: false
 
