@@ -10,6 +10,7 @@ export const validateOrgNotificationSettings: z.ZodType<OrgNotificationSettings>
       allowNotifications: z.boolean(),
       approversSlackChannelId: z.string(),
       administratorsSlackChannelId: z.string(),
+      annoncementsSlackChannelId: z.string(),
       orgId: z.string(),
     })
   );
@@ -25,5 +26,6 @@ export const defaultOrgNotificationSettingsData: FormOrgNotificationSettings = {
   allowNotifications: true,
   approversSlackChannelId: '',
   administratorsSlackChannelId: '',
+  annoncementsSlackChannelId: '',
   orgId: '',
 };

@@ -5,6 +5,7 @@ import { subMonths } from 'date-fns';
 import axios from 'axios';
 import { WebClient } from '@slack/web-api';
 import { validateOrgNotificationSettings } from '@/lib/validations/orgNotificationsSettings.validate';
+import { TRPCError } from '@trpc/server';
 
 export const notificationsRouter = router({
   upsertFcm: protectedProcedure
@@ -66,22 +67,43 @@ export const notificationsRouter = router({
           allowNotifications: input.allowNotifications,
           administratorsSlackChannelId: input.administratorsSlackChannelId,
           approversSlackChannelId: input.approversSlackChannelId,
+          annoncementsSlackChannelId: input.annoncementsSlackChannelId,
         },
         update: {
           allowNotifications: input.allowNotifications,
           administratorsSlackChannelId: input.administratorsSlackChannelId,
           approversSlackChannelId: input.approversSlackChannelId,
+          annoncementsSlackChannelId: input.annoncementsSlackChannelId,
         },
       });
     }),
-  getSlackAnnouncements: adminModProcedure.query(async () => {
+  getSlackAnnouncements: adminModProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    const fetchedUserOrg = await prisma.account.findUniqueOrThrow({
+      where: { id: user.id },
+      select: { preferences: { select: { selectedOrganization: true } } },
+    });
+    if (!fetchedUserOrg) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'no org found',
+      });
+    }
+
+    const fetchedOrg = await prisma.orgNotificationSettings.findUnique({
+      where: { orgId: fetchedUserOrg.preferences?.selectedOrganization },
+      select: { annoncementsSlackChannelId: true },
+    });
+
+    if (!fetchedOrg?.annoncementsSlackChannelId.length) return;
+
     const slackToken = process.env.SLACK_BOT_TOKEN;
 
     const web = new WebClient(slackToken);
 
     const convs = await web.conversations.history({
       token: slackToken,
-      channel: 'C04NTE7DTTN',
+      channel: fetchedOrg.annoncementsSlackChannelId,
     });
     if (!convs.messages) return;
 

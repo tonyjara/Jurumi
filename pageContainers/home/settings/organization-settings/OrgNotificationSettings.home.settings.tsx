@@ -2,21 +2,12 @@ import FormControlledSwitch from '@/components/FormControlled/FormControlledSwit
 import FormControlledText from '@/components/FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormOrganization } from '@/lib/validations/org.validate';
 import type { FormOrgNotificationSettings } from '@/lib/validations/orgNotificationsSettings.validate';
 import {
   defaultOrgNotificationSettingsData,
   validateOrgNotificationSettings,
 } from '@/lib/validations/orgNotificationsSettings.validate';
-import {
-  Text,
-  Card,
-  CardHeader,
-  Stack,
-  Flex,
-  VStack,
-  Button,
-} from '@chakra-ui/react';
+import { Text, Stack, Flex, VStack, Button } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,7 +18,6 @@ const OrgNotificationSettingPage = () => {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormOrgNotificationSettings>({
     defaultValues: defaultOrgNotificationSettingsData,
@@ -52,7 +42,7 @@ const OrgNotificationSettingPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orgNotificationSettings]);
 
-  const { error, mutate, isLoading } =
+  const { mutate, isLoading } =
     trpcClient.notifications.saveOrgNotificationSettings.useMutation(
       handleUseMutationAlerts({
         successText: 'La configuración ha sido guardada',
@@ -102,6 +92,13 @@ const OrgNotificationSettingPage = () => {
             name="administratorsSlackChannelId"
             label="Id de canal de slack para administradores"
             helperText="Recibir notificaciones sobre solicitudes aprobadas"
+          />
+          <FormControlledText
+            control={control}
+            errors={errors}
+            name="annoncementsSlackChannelId"
+            label="Id de canal de slack para anuncios"
+            helperText="Recibir notificaciones anuncios"
           />
         </VStack>
       </Stack>
