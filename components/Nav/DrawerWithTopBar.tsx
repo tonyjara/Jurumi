@@ -48,7 +48,7 @@ export default function DrawerWithTopBar({
         //MOBILE
         display={{ base: 'block', md: 'none' }}
         transition="0.2s ease"
-        py={'100px'}
+        py={'75px'}
         px={'10px'}
       >
         {children}
@@ -58,8 +58,8 @@ export default function DrawerWithTopBar({
         //DESKTOP
         display={{ base: 'none', md: 'flex' }}
         transition="0.2s ease"
-        py={{ base: '90px', md: '90px' }}
-        px={{ base: '10px', md: '10px' }}
+        py={'75px'}
+        px={'10px'}
         ml={!authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }}
       >
         {children}

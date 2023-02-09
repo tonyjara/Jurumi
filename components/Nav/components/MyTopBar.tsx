@@ -22,7 +22,7 @@ const MyTopBar = ({ onOpen, authenticated }: MobileProps) => {
       width="100%"
       zIndex={1}
       px={{ base: 4, md: 4 }}
-      height="20"
+      height="65px"
       alignItems="center"
       bg={useColorModeValue('white', 'gray.900')}
       borderBottomWidth="1px"

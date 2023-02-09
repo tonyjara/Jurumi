@@ -23,7 +23,6 @@ model Account {
   profile              Profile?
   notificationSettings NotificationSettings?
 
-  organizationPosts        OrganizationPost[]
   accountVerificationLinks AccountVerificationLinks[]
   expenseReports           ExpenseReport[]
   moneyRequests            MoneyRequest[]
@@ -94,18 +93,6 @@ model Preferences {
   receiveEmailNotifications Boolean   @default(true)
 }
 
-model OrganizationPost {
-  id             String       @id @default(cuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime?    @updatedAt
-  title          String
-  message        String
-  createdById    String
-  recipients     Account[]
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-}
-
 model AccountVerificationLinks {
   id               String   @id @default(cuid())
   createdAt        DateTime @default(now())
@@ -140,13 +127,12 @@ model Organization {
 
   moneyRequests         MoneyRequest[]
   projects              Project[]
-  moneyAccounts         MoneyAccount[]     @relation("MoneyAccountToOrganization")
-  members               Account[]          @relation("members")
-  moneyAdministrators   Account[]          @relation("moneyAdministrators")
-  moneyRequestApprovers Account[]          @relation("moneyRequestApprovers")
-  organizationPosts     OrganizationPost[]
+  moneyAccounts         MoneyAccount[]   @relation("MoneyAccountToOrganization")
+  members               Account[]        @relation("members")
+  moneyAdministrators   Account[]        @relation("moneyAdministrators")
+  moneyRequestApprovers Account[]        @relation("moneyRequestApprovers")
   searchableImageId     String?
-  imageLogo             searchableImage?   @relation(fields: [searchableImageId], references: [id])
+  imageLogo             searchableImage? @relation(fields: [searchableImageId], references: [id])
 }
 
 model OrgNotificationSettings {
@@ -156,6 +142,7 @@ model OrgNotificationSettings {
   allowNotifications           Boolean      @default(true)
   approversSlackChannelId      String
   administratorsSlackChannelId String
+  annoncementsSlackChannelId   String       @default("")
   orgId                        String       @unique
   org                          Organization @relation(fields: [orgId], references: [id])
 }

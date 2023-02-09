@@ -26,6 +26,19 @@ export const moneyRequestRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
+  countMyPendingRequests: adminModProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    return await prisma?.moneyRequest.findMany({
+      where: { accountId: user.id, status: 'PENDING' },
+      select: {
+        createdAt: true,
+        id: true,
+        amountRequested: true,
+        currency: true,
+      },
+    });
+  }),
+
   getMyOwnComplete: protectedProcedure
     .input(
       z.object({
@@ -262,6 +275,9 @@ export const moneyRequestRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      await prisma.moneyRequestApproval.deleteMany({
+        where: { moneyRequestId: input.id },
+      });
       await prisma.transaction.deleteMany({
         where: { moneyRequestId: input.id },
       });

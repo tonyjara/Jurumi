@@ -119,6 +119,7 @@ const CreateAccountModal = ({
                   errors={errors}
                   name="email"
                   label="Correo electrónico"
+                  helperText="Favor utilizar un correo válido para recibir la invitación."
                 />
                 <FormControlledSelect
                   control={control}

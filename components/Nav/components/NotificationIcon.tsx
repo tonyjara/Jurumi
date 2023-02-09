@@ -9,19 +9,23 @@ import {
   Flex,
   Divider,
 } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { FiBell } from 'react-icons/fi';
 
 const NotificationIcon = () => {
   const router = useRouter();
+  const user = useSession().data?.user;
   const context = trpcClient.useContext();
   const backgroundColor = useColorModeValue(
     '#EDF2F7',
     'RGBA(255, 255, 255, 0.1)'
   );
   const { data: notifications } =
-    trpcClient.notifications.getMyNotifications.useQuery();
+    trpcClient.notifications.getMyNotifications.useQuery(undefined, {
+      enabled: !!user,
+    });
   const { mutate } =
     trpcClient.notifications.markMyNotificationsSeen.useMutation({
       onSuccess: () => {

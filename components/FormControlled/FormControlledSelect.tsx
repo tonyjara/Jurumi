@@ -3,7 +3,9 @@ import {
   FormLabel,
   FormHelperText,
   FormErrorMessage,
+  useColorModeValue,
 } from '@chakra-ui/react';
+import type { ChakraStylesConfig } from 'chakra-react-select';
 import { Select } from 'chakra-react-select';
 import React from 'react';
 import type {
@@ -69,6 +71,17 @@ const FormControlledSelect = <T extends FieldValues>({
     return field.value;
   };
 
+  const dropDownColor = useColorModeValue('#CBD5E0', '#4A5568');
+
+  const chakraStyles: ChakraStylesConfig = {
+    dropdownIndicator: (provided: any, state: any) => ({
+      ...provided,
+      background: dropDownColor,
+      p: 0,
+      w: '40px',
+    }),
+  };
+
   return (
     <FormControl isInvalid={!!errors[name] || !!error}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
@@ -86,6 +99,7 @@ const FormControlledSelect = <T extends FieldValues>({
               onChangeMw && onChangeMw();
               handleOnChange(e, field);
             }}
+            chakraStyles={chakraStyles}
             value={handleValue(field)}
             noOptionsMessage={() => 'No hay opciones.'}
             placeholder=""
@@ -93,6 +107,7 @@ const FormControlledSelect = <T extends FieldValues>({
             isMulti={isMulti}
             getOptionLabel={optionLabel ? (x) => x[optionLabel] : undefined}
             getOptionValue={optionValue ? (x) => x[optionValue] : undefined}
+            classNamePrefix="myDropDown"
           />
         )}
       />
