@@ -8,6 +8,7 @@ import { MdApproval } from 'react-icons/md';
 import { AiFillBank, AiOutlineProject } from 'react-icons/ai';
 import { FaExchangeAlt, FaDonate } from 'react-icons/fa';
 import { TbReportMoney } from 'react-icons/tb';
+import { IoIosPeople } from 'react-icons/io';
 export interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -41,6 +42,11 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               dest: '/mod/users/verification-links',
             },
           ],
+        },
+        {
+          name: 'Socios',
+          icon: IoIosPeople,
+          dest: '/mod/members',
         },
         {
           name: 'Organización',

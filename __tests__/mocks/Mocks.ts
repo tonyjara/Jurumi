@@ -15,7 +15,6 @@ import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
 import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
-import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
@@ -28,46 +27,6 @@ const bankInfo: () => FormBankInfo = () => {
     country: 'Asuncion',
     city: 'Paraguay',
     ownerContactNumber: '0981 999 111',
-  };
-  return x;
-};
-export const taxPayerMock: () => TaxPayer = () => {
-  const x: TaxPayer = {
-    id: '',
-    createdAt: new Date(),
-    updatedAt: null,
-    createdById: '',
-    updatedById: null,
-    razonSocial: faker.name.fullName(),
-    ruc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
-    fantasyName: faker.name.firstName(),
-    archived: false,
-    softDeleted: false,
-  };
-  return x;
-};
-
-export const FormTaxPayerMock = () => {
-  const x: FormTaxPayer = {
-    id: '',
-    createdAt: new Date(),
-    updatedAt: null,
-    createdById: '',
-    updatedById: '',
-    razonSocial: faker.name.fullName(),
-    ruc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
-    fantasyName: faker.name.fullName(),
-    archived: false,
-    softDeleted: false,
-    bankInfo: {
-      bankName: 'ITAU',
-      accountNumber: faker.finance.account(),
-      ownerName: faker.name.fullName(),
-      ownerDocType: 'CI',
-      ownerDoc: faker.finance.account(5),
-      taxPayerId: '',
-      type: 'CURRENT',
-    },
   };
   return x;
 };
@@ -182,32 +141,7 @@ export const moneyRequestMock = ({
   };
   return x;
 };
-export const transactionMock: () => Transaction = () => {
-  const x: Transaction = {
-    id: 0,
-    createdAt: new Date(),
-    updatedAt: null,
-    accountId: '',
-    updatedById: null,
-    currency: 'PYG',
-    openingBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
-    currentBalance: new Prisma.Decimal(0),
-    transactionAmount: new Prisma.Decimal(
-      faker.commerce.price(1000000, 3000000)
-    ),
-    isCancellation: false,
-    moneyAccountId: '',
-    moneyRequestId: null,
-    imbursementId: null,
-    expenseReturnId: null,
-    cancellationId: null,
-    projectId: null,
-    costCategoryId: null,
-    expenseReportId: null,
-    transactionType: 'MONEY_ACCOUNT',
-  };
-  return x;
-};
+
 export const imbursementMock: (
   moneyAccOptions:
     | {
@@ -319,6 +253,8 @@ export const TransactionCreateMock = () => {
     moneyRequestId: null,
     imbursementId: null,
     expenseReturnId: null,
+    membershipId: null,
+    membershipPaymentRequestId: null,
     cancellationId: null,
     costCategoryId: null,
     projectId: null,
@@ -436,6 +372,8 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
         imbursementId: null,
         moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
         moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        membershipId: null,
+        membershipPaymentRequestId: null,
         projectId: null,
         costCategoryId: null,
         expenseReportId: null,
@@ -457,6 +395,8 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
         imbursementId: null,
         moneyAccountId: 'cld1p0vwq0002pfe9r8ozfzs1',
         moneyRequestId: 'cldagi67k005qpftt2ssd67m9',
+        membershipId: null,
+        membershipPaymentRequestId: null,
         projectId: null,
         costCategoryId: null,
         expenseReportId: null,
