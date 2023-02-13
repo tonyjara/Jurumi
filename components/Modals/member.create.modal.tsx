@@ -12,20 +12,25 @@ import {
   Container,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Account, Role } from '@prisma/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { accountWithVerifyLink } from '../../lib/validations/account.validate';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { accountWithVerifyLink } from '@/lib/validations/account.validate';
 import {
   defaultAccountData,
   validateAccount,
 } from '../../lib/validations/account.validate';
 
-import FormControlledSelect from '../FormControlled/FormControlledSelect';
-import FormControlledText from '../FormControlled/FormControlledText';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
+import MemberForm from '../Forms/member.form';
+import type { FormMember } from '@/lib/validations/member.validate';
+import { mockFormMember } from '@/lib/validations/member.validate';
+import {
+  defaultMemberData,
+  validateMember,
+} from '@/lib/validations/member.validate';
+import SeedButton from '../DevTools/SeedButton';
 
 const CreateMemberModal = ({
   isOpen,
@@ -44,45 +49,29 @@ const CreateMemberModal = ({
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Account>({
-    defaultValues: defaultAccountData,
-    resolver: zodResolver(validateAccount),
+  } = useForm<FormMember>({
+    defaultValues: defaultMemberData,
+    resolver: zodResolver(validateMember),
   });
   const handleOnClose = () => {
     setValue('');
-    reset(defaultAccountData);
+    reset(defaultMemberData);
     onClose();
   };
-  const { error, mutate, isLoading } =
-    trpcClient.magicLinks.createWithSigendLink.useMutation(
-      handleUseMutationAlerts({
-        successText: 'El usuario ha sido creado!',
-        callback: (returnedData: accountWithVerifyLink) => {
-          if (process.env.NODE_ENV === 'development') {
-            const verifyLink =
-              returnedData.accountVerificationLinks[0]?.verificationLink;
-            if (!verifyLink) return;
-            setValue(verifyLink);
-          }
-          reset(defaultAccountData);
-          context.magicLinks.invalidate();
-          context.account.invalidate();
-          if (process.env.NODE_ENV === 'production') {
-            handleOnClose();
-          }
-        },
-      })
-    );
+  const { error, mutate, isLoading } = trpcClient.members.create.useMutation(
+    handleUseMutationAlerts({
+      successText: 'El asociado ha sido creado!',
+      callback: () => {
+        context.members.invalidate();
 
-  const submitFunc = async (data: Account) => {
+        handleOnClose();
+      },
+    })
+  );
+
+  const submitFunc = async (data: FormMember) => {
     mutate(data);
   };
-
-  const roleOptions: { value: Role; label: string }[] = [
-    { value: 'USER', label: 'Usuario' },
-    { value: 'MODERATOR', label: 'Moderador' },
-    { value: 'ADMIN', label: 'Admin' },
-  ];
 
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
@@ -92,7 +81,8 @@ const CreateMemberModal = ({
           <ModalHeader>Crear un socio</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>
+            <SeedButton reset={reset} mock={() => mockFormMember} />
+            <Text color={'gray.400'}>
               Si el email ya existe como usuario, los datos del usuario serán
               priorizados.
             </Text>
@@ -111,26 +101,10 @@ const CreateMemberModal = ({
                 {error && (
                   <Text color="red.300">{knownErrors(error.message)}</Text>
                 )}
-                <FormControlledText
+                <MemberForm
                   control={control}
                   errors={errors}
-                  name="displayName"
-                  label="Nombre del usuario"
-                  autoFocus={true}
-                />
-                <FormControlledText
-                  control={control}
-                  errors={errors}
-                  name="email"
-                  label="Correo electrónico"
-                  helperText="Favor utilizar un correo válido para recibir la invitación."
-                />
-                <FormControlledSelect
-                  control={control}
-                  errors={errors}
-                  name="role"
-                  label="Seleccione un rol"
-                  options={roleOptions ?? []}
+                  setValue={setValue}
                 />
               </>
             )}

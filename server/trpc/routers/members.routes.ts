@@ -1,19 +1,14 @@
-import {
-  adminModProcedure,
-  protectedProcedure,
-  publicProcedure,
-  router,
-} from '../initTrpc';
+import { adminModProcedure, router } from '../initTrpc';
 import { TRPCError } from '@trpc/server';
-import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { validateInitialSetup } from '@/lib/validations/setup.validate';
-import { handleOrderBy } from './utils/Sorting.routeUtils';
-import { validateAccount } from '@/lib/validations/account.validate';
 import prisma from '@/server/db/client';
-import { validateAccountProfile } from '@/lib/validations/profileSettings.validate';
+import { validateMember } from '@/lib/validations/member.validate';
+import { handleOrderBy } from './utils/Sorting.routeUtils';
 
 export const membersRouter = router({
+  count: adminModProcedure.query(async () => {
+    return await prisma?.membership.count();
+  }),
   getMany: adminModProcedure
     .input(
       z.object({
@@ -29,48 +24,76 @@ export const membersRouter = router({
       const pageSize = input.pageSize ?? 10;
       const pageIndex = input.pageIndex ?? 0;
 
-      return await prisma?.account.findMany({
+      return await prisma.membership.findMany({
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
+        include: { account: true },
       });
     }),
-
-  edit: adminModProcedure
-    .input(validateAccount)
-    .mutation(async ({ input, ctx }) => {
+  create: adminModProcedure
+    .input(validateMember)
+    .mutation(async ({ ctx, input }) => {
       const user = ctx.session.user;
-      if (input.role === 'ADMIN' && user.role !== 'ADMIN') {
+      const orgId = await (
+        await prisma.preferences.findUniqueOrThrow({
+          where: { accountId: user.id },
+        })
+      ).selectedOrganization;
+      const userWithSameEmail = await prisma.account.findUnique({
+        where: { email: input.email },
+        include: { membership: true },
+      });
+
+      if (userWithSameEmail?.membership) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
-          message: 'Only admins can create admins.',
+          message: 'Membership already exists',
         });
       }
-      return await prisma?.account.update({
-        where: { id: input.id },
-        data: {
-          displayName: input.displayName,
-          email: input.email,
-          role: input.role,
-        },
-      });
-    }),
 
-  findByEmail: adminModProcedure
-    .input(z.object({ email: z.string() }))
-    .query(async ({ input }) => {
-      return await prisma?.account.findMany({
-        take: 20,
-        orderBy: { email: 'asc' },
-        where: {
-          email: {
-            search: input.email,
+      if (userWithSameEmail) {
+        // append membership to existing account
+        await prisma.account.update({
+          where: { id: userWithSameEmail.id },
+          data: {
+            membership: {
+              create: {
+                active: true,
+                memberSince: input.memberSince,
+                expirationDate: input.expirationDate,
+                initialBalance: input.initialBalance,
+                currency: 'PYG',
+                memberType: input.memberType,
+              },
+            },
           },
-          role: 'USER',
-          isVerified: true,
-          active: true,
-        },
-        select: { displayName: true, email: true, id: true, role: true },
-      });
+        });
+      }
+
+      if (!userWithSameEmail) {
+        await prisma.account.create({
+          data: {
+            displayName: input.displayName,
+            role: 'MEMBER',
+            email: input.email,
+            isVerified: false,
+            active: true,
+            password: '',
+            preferences: { create: { selectedOrganization: orgId } },
+            membership: {
+              create: {
+                active: true,
+                memberSince: input.memberSince,
+                expirationDate: input.expirationDate,
+                initialBalance: input.initialBalance,
+                currency: 'PYG',
+                memberType: input.memberType,
+              },
+            },
+            organizations: { connect: { id: orgId } },
+          },
+        });
+      }
     }),
 });

@@ -1,23 +1,22 @@
-import type { Account } from '@prisma/client';
 import { createColumnHelper } from '@tanstack/react-table';
 import BooleanCell from '@/components/DynamicTables/DynamicCells/BooleanCell';
 import DateCell from '@/components/DynamicTables/DynamicCells/DateCell';
 import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
-import type { FormAccount } from '@/lib/validations/account.validate';
 import RowOptiosnMembersListPage from './rowOptions.membersListPage.mod.members';
+import type { CompleteMember } from './MembersListPage.mod.members';
 
-const columnHelper = createColumnHelper<Account>();
+const columnHelper = createColumnHelper<CompleteMember>();
 
 export const membersListPageColumns = ({
   pageIndex,
   pageSize,
   onEditOpen,
-  setEditAccount,
+  setEditMember,
 }: {
   pageSize: number;
   pageIndex: number;
   onEditOpen: () => void;
-  setEditAccount: React.Dispatch<React.SetStateAction<FormAccount | null>>;
+  setEditMember: React.Dispatch<React.SetStateAction<CompleteMember | null>>;
 }) => [
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
@@ -32,19 +31,19 @@ export const membersListPageColumns = ({
     header: 'Fecha de C.',
     sortingFn: 'datetime',
   }),
-  columnHelper.accessor('displayName', {
+  columnHelper.accessor('account.displayName', {
     header: 'Nombre',
     cell: (x) => <TextCell text={x.getValue()} />,
   }),
-  columnHelper.accessor('email', {
+  columnHelper.accessor('account.email', {
     header: 'Correo',
     cell: (x) => <TextCell text={x.getValue()} />,
   }),
-  columnHelper.accessor('role', {
+  columnHelper.accessor('account.role', {
     header: 'Rol',
     cell: (x) => <TextCell text={x.getValue()} />,
   }),
-  columnHelper.accessor('isVerified', {
+  columnHelper.accessor('account.isVerified', {
     header: 'Verificado',
     cell: (x) => <BooleanCell isActive={x.getValue()} />,
   }),
@@ -55,7 +54,7 @@ export const membersListPageColumns = ({
         <RowOptiosnMembersListPage
           x={x.row.original}
           onEditOpen={onEditOpen}
-          setEditAccount={setEditAccount}
+          setEditMember={setEditMember}
         />
       );
     },

@@ -6,21 +6,20 @@ import {
   MenuItem,
   Portal,
 } from '@chakra-ui/react';
-import type { Account } from '@prisma/client';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormAccount } from '@/lib/validations/account.validate';
+import type { CompleteMember } from './MembersListPage.mod.members';
 
 const RowOptiosnMembersListPage = ({
   x,
-  setEditAccount,
+  setEditMember,
   onEditOpen,
 }: {
   onEditOpen: () => void;
-  setEditAccount: React.Dispatch<React.SetStateAction<FormAccount | null>>;
-  x: Account;
+  setEditMember: React.Dispatch<React.SetStateAction<CompleteMember | null>>;
+  x: CompleteMember;
 }) => {
   const context = trpcClient.useContext();
 
@@ -51,7 +50,7 @@ const RowOptiosnMembersListPage = ({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              setEditAccount(x);
+              setEditMember(x);
               onEditOpen();
             }}
           >

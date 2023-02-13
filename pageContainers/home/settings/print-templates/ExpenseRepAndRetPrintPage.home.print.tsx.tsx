@@ -51,7 +51,6 @@ const ExpenseRepAndRetPringPage = ({
       justifyItems={'center'}
       display={'flex'}
       w="100%"
-      // h="150vh"
     >
       <Box mx="40px" mt={'40px'}>
         <Flex gap={5}>

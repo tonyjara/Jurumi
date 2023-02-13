@@ -3,24 +3,26 @@ import React, { useEffect, useState } from 'react';
 import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
 import DynamicTable from '@/components/DynamicTables/DynamicTable';
 import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
-import CreateAccountModal from '@/components/Modals/account.create.modal';
-import EditAccountModal from '@/components/Modals/account.edit.modal';
 import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormAccount } from '@/lib/validations/account.validate';
 import { membersListPageColumns } from './columns.membersList.mod.members';
 import CreateMemberModal from '@/components/Modals/member.create.modal';
+import type { Account, Membership } from '@prisma/client';
+
+export type CompleteMember = Membership & {
+  account: Account;
+};
 
 const MembersListPage = () => {
-  const [editAccount, setEditAccount] = useState<FormAccount | null>(null);
+  const [editMember, setEditMember] = useState<CompleteMember | null>(null);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
 
-  const { data, isFetching, isLoading } = trpcClient.account.getMany.useQuery(
+  const { data, isFetching, isLoading } = trpcClient.members.getMany.useQuery(
     { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
     { keepPreviousData: globalFilter ? true : false }
   );
-  const { data: count } = trpcClient.account.count.useQuery();
+  const { data: count } = trpcClient.members.count.useQuery();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -30,11 +32,11 @@ const MembersListPage = () => {
   } = useDisclosure();
 
   useEffect(() => {
-    if (!isEditOpen && editAccount) {
-      setEditAccount(null);
+    if (!isEditOpen && editMember) {
+      setEditMember(null);
     }
     return () => {};
-  }, [editAccount, isEditOpen]);
+  }, [editMember, isEditOpen]);
 
   const options: TableOptions[] = [
     {
@@ -60,7 +62,7 @@ const MembersListPage = () => {
           pageIndex,
           pageSize,
           onEditOpen,
-          setEditAccount,
+          setEditMember,
         })}
         loading={isFetching || isLoading}
         data={data ?? []}
@@ -68,13 +70,13 @@ const MembersListPage = () => {
         {...dynamicTableProps}
       />
       <CreateMemberModal isOpen={isOpen} onClose={onClose} />
-      {editAccount && (
+      {/* {editMember && (
         <EditAccountModal
-          account={editAccount}
+          account={editMember}
           isOpen={isEditOpen}
           onClose={onEditClose}
         />
-      )}
+      )} */}
     </>
   );
 };

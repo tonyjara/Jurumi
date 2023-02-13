@@ -102,9 +102,10 @@ const RowOptionsModRequests = ({
     },
   });
   const handlePrintExpenseRepsAndRets = useReactToPrint({
-    documentTitle: `${translatedMoneyReqType(x.moneyRequestType)} - ${
-      x.account.displayName
-    } - ${format(new Date(), 'dd/MM/yy')}`,
+    documentTitle: `Rendiciones - ${x.account.displayName} - ${format(
+      new Date(),
+      'dd/MM/yy'
+    )}`,
     content: () => printExpRepsAndRetsRef.current,
     onBeforeGetContent: () => {
       return new Promise((resolve) => {

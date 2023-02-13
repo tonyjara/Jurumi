@@ -70,7 +70,7 @@ export const accountsRouter = router({
         where: { id: user.id },
         data: {
           displayName: input.displayName,
-          email: input.email,
+          email: input.email.toLowerCase(),
           profile: input.profile?.avatarUrl
             ? {
                 upsert: {
@@ -136,7 +136,7 @@ export const accountsRouter = router({
       return await prisma?.account.create({
         data: {
           displayName: input.displayName,
-          email: input.email,
+          email: input.email.toLowerCase(),
           role: 'ADMIN',
           isVerified: true,
           active: true,
@@ -158,7 +158,7 @@ export const accountsRouter = router({
         where: { id: input.id },
         data: {
           displayName: input.displayName,
-          email: input.email,
+          email: input.email.toLowerCase(),
           role: input.role,
         },
       });

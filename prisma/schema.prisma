@@ -24,7 +24,9 @@ model Account {
   profile              Profile?
   notificationSettings NotificationSettings?
   taxPayerInfo         TaxPayer?
+  membership           Membership?
 
+  emails                   Emails[]
   accountVerificationLinks AccountVerificationLinks[]
   expenseReports           ExpenseReport[]
   moneyRequests            MoneyRequest[]
@@ -40,7 +42,6 @@ model Account {
   fcmNotificationTokens    FcmNotificationTokens[]
   notifications            Notifications[]
   passwordRecoveryLinks    PasswordRecoveryLinks[]
-  membership               Membership?
 }
 
 model Membership {
@@ -523,6 +524,19 @@ model searchableImage {
   organization                  Organization[]
   membershipPaymentRequestProof MembershipPaymentRequest? @relation("paymentProof")
   membershipPaymentInvoice      MembershipPaymentRequest? @relation("invoice")
+}
+
+model Emails {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  to        String
+  from      String
+  subject   String
+  html      String
+  tag       String
+  account   Account?  @relation(fields: [accountId], references: [id])
+  accountId String?
 }
 
 enum Role {
