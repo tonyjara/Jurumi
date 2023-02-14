@@ -15,53 +15,57 @@ import { moneyRequestApprovedDbNotification } from '../notifications/db/moneyReq
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)
   .mutation(async ({ input, ctx }) => {
-    await prisma?.$transaction(async (txCtx) => {
-      if (!input.moneyRequestId) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'missing data',
-        });
-      }
-      const user = ctx.session.user;
-      const searchableImage = await createTxImage({ input });
-      //1. Check money admin permissions
-      await checkIfUserIsMoneyAdmin(user);
-      for (const txField of input.transactions) {
-        //2. Create transactions
-        await createMoneyAccTransactions({
-          accountId: ctx.session.user.id,
-          formTransaction: input,
-          searchableImage,
-          txCtx,
-        });
-        //if the transaction has projectId and costCategoryId it automaticly creates the transaction for costCategoryId
-        await transactionRouteUtils.createCostCategoryTransactions({
-          accountId: ctx.session.user.id,
-          formTransaction: input,
-          searchableImage,
-          txCtx,
-          txField,
-        });
-      }
-      //3. Change request status
-      const req = await prisma?.moneyRequest.update({
-        where: { id: input.moneyRequestId },
-        data: { status: 'ACCEPTED' },
-        include: {
-          account: {
-            select: {
-              displayName: true,
-              email: true,
-              preferences: { select: { receiveEmailNotifications: true } },
+    await prisma?.$transaction(
+      async (txCtx) => {
+        if (!input.moneyRequestId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'missing data',
+          });
+        }
+        const user = ctx.session.user;
+        const searchableImage = await createTxImage({ input });
+        //1. Check money admin permissions
+        await checkIfUserIsMoneyAdmin(user);
+        for (const txField of input.transactions) {
+          //2. Create transactions
+          await createMoneyAccTransactions({
+            accountId: ctx.session.user.id,
+            formTransaction: input,
+            searchableImage,
+            txCtx,
+          });
+          //if the transaction has projectId and costCategoryId it automaticly creates the transaction for costCategoryId
+          await transactionRouteUtils.createCostCategoryTransactions({
+            accountId: ctx.session.user.id,
+            formTransaction: input,
+            searchableImage,
+            txCtx,
+            txField,
+          });
+        }
+
+        //3. Change request status
+        const req = await txCtx?.moneyRequest.update({
+          where: { id: input.moneyRequestId },
+          data: { status: 'ACCEPTED' },
+          include: {
+            account: {
+              select: {
+                displayName: true,
+                email: true,
+                preferences: { select: { receiveEmailNotifications: true } },
+              },
             },
           },
-        },
-      });
+        });
 
-      await moneyRequestApprovedDbNotification({ input: req });
-      await moneyRequestApprovedBrowserNotification({ input: req });
-      await moneyRequestApprovedSendgridNotification({ input: req });
-    });
+        await moneyRequestApprovedDbNotification({ input: req, txCtx });
+        await moneyRequestApprovedBrowserNotification({ input: req, txCtx });
+        await moneyRequestApprovedSendgridNotification({ input: req });
+      },
+      { timeout: 20000 }
+    );
   });
 
 const createTxImage = async ({ input }: { input: FormTransactionCreate }) => {

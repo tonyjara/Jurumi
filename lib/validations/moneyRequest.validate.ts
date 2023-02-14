@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import type { MoneyRequest, TaxPayerBankInfo } from '@prisma/client';
 import { BankAccountType } from '@prisma/client';
 import { BankDocType, BankNamesPy } from '@prisma/client';
@@ -6,6 +7,7 @@ import { Prisma } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { z } from 'zod';
 import { stringReqMinMax } from '../utils/ValidationHelpers';
+import { v4 as uuidV4 } from 'uuid';
 
 export type moneyReqTaxPayer = {
   razonSocial: string;
@@ -19,6 +21,7 @@ export type FormMoneyRequest = Omit<
 > & {
   amountRequested?: any;
   taxPayer: moneyReqTaxPayer;
+  searchableImage: { imageName: string; url: string } | null;
 };
 
 export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
@@ -61,6 +64,14 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           type: z.nativeEnum(BankAccountType),
         }),
       }),
+      // For reimbursement order creation.
+      facturaNumber: z.string().nullable(),
+      searchableImage: z
+        .object({
+          imageName: z.string(),
+          url: z.string(),
+        })
+        .nullable(),
     })
     .superRefine((val, ctx) => {
       if (val.status === 'REJECTED' && val.rejectionMessage.length < 6) {
@@ -79,6 +90,26 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           path: ['taxPayer.ruc'],
           code: z.ZodIssueCode.custom,
           message: 'Favor ingrese los datos del beneficiario.',
+        });
+      }
+      if (
+        val.moneyRequestType === 'REIMBURSMENT_ORDER' &&
+        !val.facturaNumber?.length
+      ) {
+        ctx.addIssue({
+          path: ['facturaNumber'],
+          code: z.ZodIssueCode.custom,
+          message: 'Favor ingrese el número de factura.',
+        });
+      }
+      if (
+        val.moneyRequestType === 'REIMBURSMENT_ORDER' &&
+        !val.searchableImage?.imageName?.length
+      ) {
+        ctx.addIssue({
+          path: ['searchableImage.imageName'],
+          code: z.ZodIssueCode.custom,
+          message: 'Favor suba una foto de su comprobante.',
         });
       }
       if (val.amountRequested.toNumber() <= 1) {
@@ -121,4 +152,53 @@ export const defaultMoneyRequestData: FormMoneyRequest = {
       type: 'SAVINGS',
     },
   },
+  facturaNumber: null,
+  searchableImage: { url: '', imageName: '' },
+};
+
+export const moneyRequestMock = ({
+  organizationId,
+  moneyRequestType,
+}: {
+  organizationId: string;
+  moneyRequestType: MoneyRequestType;
+}) => {
+  const imageName = uuidV4();
+  const x: FormMoneyRequest = {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    description: faker.commerce.productDescription().substring(0, 123),
+    status: 'PENDING',
+    moneyRequestType,
+    currency: 'PYG',
+    amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+    accountId: '',
+    costCategoryId: null,
+    projectId: null,
+    archived: false,
+    softDeleted: false,
+    rejectionMessage: '',
+    wasCancelled: false,
+    organizationId,
+    taxPayer: {
+      razonSocial: faker.company.name(),
+      ruc: faker.random.numeric(6),
+      bankInfo: {
+        bankName: 'BANCOP',
+        accountNumber: faker.random.numeric(6),
+        ownerName: faker.name.fullName(),
+        ownerDocType: 'CI',
+        ownerDoc: faker.random.numeric(6),
+        taxPayerId: '',
+        type: 'SAVINGS',
+      },
+    },
+    facturaNumber: faker.random.numeric(13).toString(),
+    searchableImage: {
+      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+      imageName,
+    },
+  };
+  return x;
 };

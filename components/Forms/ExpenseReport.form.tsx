@@ -15,7 +15,6 @@ import { trpcClient } from '../../lib/utils/trpcClient';
 import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
 import FormControlledFacturaNumber from '../FormControlled/FormControlledFacturaNumber';
-import prisma from '@/server/db/client';
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';

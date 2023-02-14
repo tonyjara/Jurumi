@@ -1,4 +1,3 @@
-import type { MoneyRequestType, TaxPayer, Transaction } from '@prisma/client';
 import { BankNamesPy } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -10,7 +9,6 @@ import type {
   FormBankInfo,
   FormMoneyAccount,
 } from '@/lib/validations/moneyAcc.validate';
-import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import type { FormImbursement } from '@/lib/validations/imbursement.validate';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
 import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
@@ -98,46 +96,6 @@ export const projectMock: () => FormProject = () => {
       },
     ],
     projectType: 'SUBSIDY',
-  };
-  return x;
-};
-export const moneyRequestMock = ({
-  organizationId,
-  moneyRequestType,
-}: {
-  organizationId: string;
-  moneyRequestType: MoneyRequestType;
-}) => {
-  const x: FormMoneyRequest = {
-    id: '',
-    createdAt: new Date(),
-    updatedAt: null,
-    description: faker.commerce.productDescription().substring(0, 123),
-    status: 'PENDING',
-    moneyRequestType,
-    currency: 'PYG',
-    amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
-    accountId: '',
-    costCategoryId: null,
-    projectId: null,
-    archived: false,
-    softDeleted: false,
-    rejectionMessage: '',
-    wasCancelled: false,
-    organizationId,
-    taxPayer: {
-      razonSocial: faker.company.name(),
-      ruc: faker.random.numeric(6),
-      bankInfo: {
-        bankName: 'BANCOP',
-        accountNumber: faker.random.numeric(6),
-        ownerName: faker.name.fullName(),
-        ownerDocType: 'CI',
-        ownerDoc: faker.random.numeric(6),
-        taxPayerId: '',
-        type: 'SAVINGS',
-      },
-    },
   };
   return x;
 };
@@ -310,6 +268,8 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
         type: 'CURRENT',
       },
     },
+    searchableImage: null,
+    facturaNumber: null,
     costCategory: null,
     createdAt: new Date(),
     updatedAt: null,

@@ -17,11 +17,12 @@ import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
-import prisma from '@/server/db/client';
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
 import FormControlledText from '../FormControlled/FormControlledText';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
+import FormControlledFacturaNumber from '../FormControlled/FormControlledFacturaNumber';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
@@ -78,16 +79,40 @@ const MoneyRequestForm = ({
       />
       {(moneyRequestType === 'MONEY_ORDER' ||
         moneyRequestType === 'REIMBURSMENT_ORDER') && (
-        <FormControlledTaxPayerId
-          label="A la orden de:"
-          control={control}
-          errors={errors}
-          razonSocialName="taxPayer.razonSocial"
-          rucName="taxPayer.ruc"
-          setValue={setValue}
-          helperText="Ingresar ruc o C.I."
-          showBankInfo={true}
-        />
+        <>
+          <FormControlledTaxPayerId
+            label="A la orden de:"
+            control={control}
+            errors={errors}
+            razonSocialName="taxPayer.razonSocial"
+            rucName="taxPayer.ruc"
+            setValue={setValue}
+            helperText="Ingresar ruc o C.I."
+            showBankInfo={true}
+          />
+          {moneyRequestType === 'REIMBURSMENT_ORDER' && (
+            <>
+              <FormControlledFacturaNumber
+                control={control}
+                errors={errors}
+                name="facturaNumber"
+                label="Número de factura."
+              />
+              {user && (
+                <FormControlledImageUpload
+                  control={control}
+                  errors={errors}
+                  urlName="searchableImage.url"
+                  idName="searchableImage.imageName"
+                  label="Foto de su comprobante"
+                  setValue={setValue}
+                  userId={user.id}
+                  helperText="Favor tener en cuenta la orientación y legibilidad del documento."
+                />
+              )}
+            </>
+          )}
+        </>
       )}
       <FormControlledText
         control={control}

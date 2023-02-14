@@ -1,10 +1,11 @@
-import prisma from '@/server/db/client';
 import type { MoneyRequest } from '@prisma/client';
 import axios from 'axios';
 import { subMonths } from 'date-fns';
+import type { TxCtx } from '../db/PrismaTypes';
 
 export const moneyRequestApprovedBrowserNotification = async ({
   input,
+  txCtx,
 }: {
   input: MoneyRequest & {
     account: {
@@ -15,8 +16,9 @@ export const moneyRequestApprovedBrowserNotification = async ({
       } | null;
     };
   };
+  txCtx: TxCtx;
 }) => {
-  const getTokens = await prisma.fcmNotificationTokens.findMany({
+  const getTokens = await txCtx.fcmNotificationTokens.findMany({
     select: { token: true },
     where: {
       accountId: input.accountId,

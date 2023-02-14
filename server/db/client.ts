@@ -1,25 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 
-// Routes NEED to import prisma to work on build.
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// declare global {
-//   // eslint-disable-next-line no-var
-//   var prisma: PrismaClient;
-// }
-
-let prisma: PrismaClient;
-const env = process.env;
-
-if (env.NODE_ENV === 'production') {
-  prisma = new PrismaClient({
+const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
     log: ['error', 'warn'],
   });
-} else {
-  // if (!global.prisma) {
-  //   global.prisma = new PrismaClient({ log: ['error'] });
-  // }
-  // prisma = global.prisma;
-  prisma = new PrismaClient({ log: ['error'] });
-}
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export default prisma;

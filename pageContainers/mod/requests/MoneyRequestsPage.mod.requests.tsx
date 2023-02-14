@@ -7,7 +7,7 @@ import type {
   MoneyRequest,
   MoneyRequestApproval,
   Project,
-  TaxPayer,
+  searchableImage,
   TaxPayerBankInfo,
   Transaction,
 } from '@prisma/client';
@@ -25,15 +25,17 @@ import { moneyRequestsColumns } from './columns.mod.requests';
 import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.modal';
 
 export type MoneyRequestComplete = MoneyRequest & {
+  project: Project | null;
+  transactions: Transaction[];
+  searchableImage: searchableImage | null;
   expenseReports: (ExpenseReport & {
     taxPayer: {
       id: string;
       razonSocial: string;
     };
   })[];
-  transactions: Transaction[];
+  expenseReturns: ExpenseReturn[];
   account: Account;
-  project: Project | null;
   costCategory: CostCategory | null;
   taxPayer: {
     id: string;
@@ -52,7 +54,6 @@ export type MoneyRequestComplete = MoneyRequest & {
       displayName: string;
     }[];
   };
-  expenseReturns: ExpenseReturn[];
 };
 
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {

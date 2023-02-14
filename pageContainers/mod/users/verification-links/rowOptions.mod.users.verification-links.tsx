@@ -32,7 +32,7 @@ const RowOptionsVerificationLinks = ({
 
   const { mutate } = trpcClient.magicLinks.generateVerificationLink.useMutation(
     handleUseMutationAlerts({
-      successText: 'Se ha generado otro link!',
+      successText: 'Se ha generado otro link y enviado al correo del usuario!',
       callback: () => {
         context.magicLinks.getVerificationLinks.invalidate();
       },

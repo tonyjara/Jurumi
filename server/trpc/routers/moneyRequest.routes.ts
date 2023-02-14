@@ -7,7 +7,10 @@ import {
   protectedProcedure,
   router,
 } from '../initTrpc';
-import { handleWhereImApprover } from './utils/MoneyRequest.routeUtils';
+import {
+  handleWhereImApprover,
+  reimbursementOrderImageGuard,
+} from './utils/MoneyRequest.routeUtils';
 import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 import {
@@ -26,7 +29,7 @@ export const moneyRequestRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
-  countMyPendingRequests: adminModProcedure.query(async ({ ctx }) => {
+  countMyPendingRequests: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     return await prisma?.moneyRequest.findMany({
       where: { accountId: user.id, status: 'PENDING' },
@@ -65,6 +68,7 @@ export const moneyRequestRouter = router({
           transactions: true,
           expenseReports: { where: { wasCancelled: false } },
           expenseReturns: { where: { wasCancelled: false } },
+          searchableImage: true,
         },
 
         where: { accountId: user.id, status: input.status },
@@ -122,6 +126,7 @@ export const moneyRequestRouter = router({
               isCancellation: false,
             },
           },
+          searchableImage: true,
           moneyRequestApprovals: { where: { wasCancelled: false } },
           expenseReports: {
             where: { wasCancelled: false },
@@ -156,6 +161,7 @@ export const moneyRequestRouter = router({
           costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
+          searchableImage: true,
           expenseReports: {
             where: { wasCancelled: false },
             include: { taxPayer: { select: { id: true, razonSocial: true } } },
@@ -181,7 +187,10 @@ export const moneyRequestRouter = router({
         input: input.taxPayer,
         userId: user.id,
       });
-
+      const { facturaNumber, searchableImage } =
+        await reimbursementOrderImageGuard({
+          input,
+        });
       const MoneyReq = await prisma?.moneyRequest.create({
         data: {
           accountId: user.id,
@@ -195,6 +204,10 @@ export const moneyRequestRouter = router({
           organizationId: input.organizationId,
           taxPayerId: taxPayer?.id,
           costCategoryId: input.costCategoryId,
+          facturaNumber,
+          searchableImage: searchableImage?.id
+            ? { connect: { id: searchableImage.id } }
+            : {},
         },
         include: { account: { select: { displayName: true } } },
       });
