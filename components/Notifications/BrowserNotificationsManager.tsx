@@ -12,7 +12,8 @@ const BrowserNotificationsManager = () => {
   const user = useSession().data?.user;
   const cloudMessagingKeyPair = process.env.NEXT_PUBLIC_FB_MESSAGING_KEY;
   const [mounted, setMounted] = useState(false);
-  const notificationsAreSupported = () => typeof window !== 'undefined';
+  const notificationsAreSupported = () =>
+    typeof window !== 'undefined' && Notification !== undefined;
   const router = useRouter();
   const context = trpcClient.useContext();
 
