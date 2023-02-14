@@ -17,13 +17,12 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
 import SeedButton from '../DevTools/SeedButton';
 import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
+import { moneyRequestMock } from '@/lib/validations/moneyRequest.validate';
 import {
   defaultMoneyRequestData,
   validateMoneyRequest,
 } from '@/lib/validations/moneyRequest.validate';
 import MoneyRequestForm from '../Forms/MoneyRequest.form';
-import { moneyRequestMock } from '@/__tests__/mocks/Mocks';
-import prisma from '@/server/db/client';
 
 const CreateMoneyRequestModal = ({
   isOpen,

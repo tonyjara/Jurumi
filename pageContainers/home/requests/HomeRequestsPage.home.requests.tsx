@@ -4,6 +4,7 @@ import type {
   ExpenseReturn,
   MoneyRequest,
   Project,
+  searchableImage,
   Transaction,
 } from '@prisma/client';
 import React, { useState } from 'react';
@@ -19,8 +20,9 @@ import CreateExpenseReturnModal from '@/components/Modals/ExpenseReturn.create.m
 
 export type CompleteMoneyReqHome = MoneyRequest & {
   project: Project | null;
-  expenseReports: ExpenseReport[];
   transactions: Transaction[];
+  searchableImage: searchableImage | null;
+  expenseReports: ExpenseReport[];
   expenseReturns: ExpenseReturn[];
 };
 

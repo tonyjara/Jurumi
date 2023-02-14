@@ -409,6 +409,10 @@ model MoneyRequest {
   taxPayerId     String?
   taxPayer       TaxPayer?     @relation(fields: [taxPayerId], references: [id])
 
+  //For reimbursement orders
+  facturaNumber   String?
+  searchableImage searchableImage?
+
   expenseReports        ExpenseReport[]
   expenseReturns        ExpenseReturn[]
   moneyRequestApprovals MoneyRequestApproval[]
@@ -503,24 +507,27 @@ model Transaction {
 }
 
 model searchableImage {
-  id              String         @id @default(cuid())
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime?      @updatedAt
-  url             String
-  text            String
-  imageName       String         @unique
-  accountId       String?
-  imbursementId   String?        @unique
-  expenseReportId String?        @unique
-  expenseReturnId String?        @unique
-  transactionId   Int?           @unique
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  url       String
+  text      String
+  imageName String    @unique
+
   accounts        Account?       @relation(fields: [accountId], references: [id])
+  accountId       String?
   expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
+  expenseReportId String?        @unique
+  moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
+  moneyRequestId  String?        @unique
   expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
+  expenseReturnId String?        @unique
   transaction     Transaction?   @relation(fields: [transactionId], references: [id])
+  transactionId   Int?           @unique
 
   invoicesFromOrgs              Imbursement?              @relation("invoiceFromOrg")
   imbursementProofs             Imbursement?              @relation("imbursementProof")
+  imbursementId                 String?                   @unique
   organization                  Organization[]
   membershipPaymentRequestProof MembershipPaymentRequest? @relation("paymentProof")
   membershipPaymentInvoice      MembershipPaymentRequest? @relation("invoice")

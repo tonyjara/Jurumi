@@ -77,7 +77,7 @@ export const notificationsRouter = router({
         },
       });
     }),
-  getSlackAnnouncements: adminModProcedure.query(async ({ ctx }) => {
+  getSlackAnnouncements: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     const fetchedUserOrg = await prisma.account.findUniqueOrThrow({
       where: { id: user.id },

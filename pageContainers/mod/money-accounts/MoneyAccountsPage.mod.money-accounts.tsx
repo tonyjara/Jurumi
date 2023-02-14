@@ -74,11 +74,10 @@ const MoneyAccountsPage = () => {
     if (editData && !isEditOpen) {
       onEditOpen();
     }
-    if (!isEditOpen && editData) {
-      setEditData(null);
-    }
+
     return () => {};
-  }, [editData, isEditOpen, onEditClose, onEditOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editData]);
 
   const { data, isFetching, isLoading } =
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
@@ -173,6 +172,7 @@ const MoneyAccountsPage = () => {
             accData={editData}
             isOpen={isEditOpen}
             onClose={onEditClose}
+            setEditData={setEditData}
           />
         )}
         <CreateMoneyAccModal

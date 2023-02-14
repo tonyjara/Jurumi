@@ -18,6 +18,8 @@ import {
 } from '@/lib/utils/TranslatedEnums';
 import type { MoneyRequestComplete } from './MoneyRequestsPage.mod.requests';
 import RowOptionsModRequests from './rowOptions.mod.requests';
+import ImageModalCell from '@/components/DynamicTables/DynamicCells/ImageModalCell';
+import { Center } from '@chakra-ui/react';
 
 const columnHelper = createColumnHelper<MoneyRequestComplete>();
 
@@ -123,8 +125,13 @@ export const moneyRequestsColumns = ({
   columnHelper.display({
     header: 'Rendido',
     cell: (x) => (
-      <>
-        {x.row.original.moneyRequestType === 'FUND_REQUEST' ? (
+      <Center>
+        {x.row.original.moneyRequestType === 'REIMBURSMENT_ORDER' ? (
+          <ImageModalCell
+            imageName={x.row.original.searchableImage?.imageName}
+            url={x.row.original.searchableImage?.url}
+          />
+        ) : (
           <PercentageCell
             total={x.row.original.amountRequested}
             executed={reduceExpenseReports(x.row.original.expenseReports).add(
@@ -132,10 +139,8 @@ export const moneyRequestsColumns = ({
             )}
             currency={x.row.original.currency}
           />
-        ) : (
-          '-'
         )}
-      </>
+      </Center>
     ),
   }),
   columnHelper.display({

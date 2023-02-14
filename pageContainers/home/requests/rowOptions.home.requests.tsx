@@ -75,7 +75,12 @@ const RowOptionsHomeRequests = ({
       <Portal>
         <MenuList>
           <MenuItem
-            isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
+            isDisabled={
+              !isAccepted ||
+              x.wasCancelled ||
+              isFullyExecuted ||
+              x.moneyRequestType === 'REIMBURSMENT_ORDER'
+            }
             onClick={() => {
               setReqForReport(x);
               onExpRepOpen();
@@ -84,7 +89,12 @@ const RowOptionsHomeRequests = ({
             Crear rendición
           </MenuItem>
           <MenuItem
-            isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
+            isDisabled={
+              !isAccepted ||
+              x.wasCancelled ||
+              isFullyExecuted ||
+              x.moneyRequestType === 'REIMBURSMENT_ORDER'
+            }
             onClick={() => {
               setReqForReport(x);
               onExpReturnOpen();

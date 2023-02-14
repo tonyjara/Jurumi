@@ -1,7 +1,8 @@
-import prisma from '@/server/db/client';
 import type { MoneyRequest } from '@prisma/client';
+import type { TxCtx } from './PrismaTypes';
 export const moneyRequestApprovedDbNotification = async ({
   input,
+  txCtx,
 }: {
   input: MoneyRequest & {
     account: {
@@ -12,8 +13,9 @@ export const moneyRequestApprovedDbNotification = async ({
       } | null;
     };
   };
+  txCtx: TxCtx;
 }) => {
-  await prisma.notifications.create({
+  await txCtx.notifications.create({
     data: {
       title: 'Se ha aprobado tu solicitud',
       message: 'Ve a tus solicitudes para ver los detalles del desembolso.',

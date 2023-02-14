@@ -74,7 +74,7 @@ const FormControlledSelect = <T extends FieldValues>({
   const dropDownColor = useColorModeValue('#CBD5E0', '#4A5568');
 
   const chakraStyles: ChakraStylesConfig = {
-    dropdownIndicator: (provided: any, state: any) => ({
+    dropdownIndicator: (provided: any) => ({
       ...provided,
       background: dropDownColor,
       p: 0,
@@ -108,6 +108,8 @@ const FormControlledSelect = <T extends FieldValues>({
             getOptionLabel={optionLabel ? (x) => x[optionLabel] : undefined}
             getOptionValue={optionValue ? (x) => x[optionValue] : undefined}
             classNamePrefix="myDropDown"
+            menuPortalTarget={document.body}
+            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
           />
         )}
       />

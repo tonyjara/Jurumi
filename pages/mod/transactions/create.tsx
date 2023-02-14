@@ -11,7 +11,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 
   if (query.moneyRequestId) {
-    const data = await prisma?.moneyRequest.findUnique({
+    const data = await prisma.moneyRequest.findUnique({
       where: { id: query.moneyRequestId },
       include: {
         transactions: {
@@ -20,6 +20,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         },
       },
     });
+
     if (!data) return { notFound: true };
 
     return {

@@ -28,10 +28,12 @@ const EditMoneyAccModal = ({
   isOpen,
   onClose,
   accData,
+  setEditData,
 }: {
   accData: FormMoneyAccount | MoneyAccount;
   isOpen: boolean;
   onClose: () => void;
+  setEditData?: React.Dispatch<React.SetStateAction<MoneyAccount | null>>;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -45,6 +47,7 @@ const EditMoneyAccModal = ({
   });
   const handleOnClose = () => {
     reset(defaultMoneyAccData);
+    setEditData && setEditData(null);
     onClose();
   };
   useEffect(() => {
@@ -96,7 +99,7 @@ const EditMoneyAccModal = ({
             >
               Editar
             </Button>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
+            <Button colorScheme="gray" mr={3} onClick={handleOnClose}>
               Cerrar
             </Button>
           </ModalFooter>

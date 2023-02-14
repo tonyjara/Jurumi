@@ -61,7 +61,7 @@ export const magicLinksRouter = router({
       const baseUrl = process.env.NEXT_PUBLIC_WEB_URL;
       const link = `${baseUrl}/new-user/${signedToken}`;
 
-      return await prisma?.account.update({
+      const verificationLink = await prisma?.account.update({
         where: { email: input.email },
         data: {
           accountVerificationLinks: {
@@ -73,7 +73,18 @@ export const magicLinksRouter = router({
             },
           },
         },
+        include: {
+          accountVerificationLinks: { take: 1, orderBy: { createdAt: 'desc' } },
+          organizations: { select: { displayName: true } },
+        },
       });
+      if (process.env.NODE_ENV === 'production') {
+        await sendMagicLinkToNewUserSendgridNotification({
+          link,
+          newUser: verificationLink,
+        });
+      }
+      return verificationLink;
     }),
   assignPasswordToNewAccount: publicProcedure
     .input(validateNewUser)

@@ -44,6 +44,8 @@ const ProjectSelect = ({ setSelectedProject, options, loading }: props) => {
         components={{
           DropdownIndicator: loading ? DropdownIndicator : undefined,
         }}
+        menuPortalTarget={document.body}
+        styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
       />
     </div>
   );
