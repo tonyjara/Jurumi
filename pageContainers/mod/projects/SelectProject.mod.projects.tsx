@@ -1,8 +1,9 @@
-import { Spinner } from '@chakra-ui/react';
+import { Spinner, useColorModeValue } from '@chakra-ui/react';
 import type {
   GroupBase,
   OptionsOrGroups,
   DropdownIndicatorProps,
+  ChakraStylesConfig,
 } from 'chakra-react-select';
 import { Select, components } from 'chakra-react-select';
 import React from 'react';
@@ -28,6 +29,19 @@ const ProjectSelect = ({ setSelectedProject, options, loading }: props) => {
       </components.DropdownIndicator>
     );
   };
+  const dropDownColor = useColorModeValue('#CBD5E0', '#4A5568');
+  const chakraStyles: ChakraStylesConfig = {
+    dropdownIndicator: (provided: any) => ({
+      ...provided,
+      background: dropDownColor,
+      p: 0,
+      w: '40px',
+    }),
+    menuList: (provided: any) => ({
+      ...provided,
+      zIndex: 9999,
+    }),
+  };
   return (
     <div style={{ maxWidth: '280px', width: '100%' }}>
       <Select
@@ -37,6 +51,7 @@ const ProjectSelect = ({ setSelectedProject, options, loading }: props) => {
           //@ts-ignore
           setSelectedProject(e ?? null);
         }}
+        chakraStyles={chakraStyles}
         noOptionsMessage={() => 'No hay proyectos.'}
         placeholder="Seleccione un proyecto."
         isClearable={true}
@@ -44,8 +59,6 @@ const ProjectSelect = ({ setSelectedProject, options, loading }: props) => {
         components={{
           DropdownIndicator: loading ? DropdownIndicator : undefined,
         }}
-        menuPortalTarget={document.body}
-        styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
       />
     </div>
   );
