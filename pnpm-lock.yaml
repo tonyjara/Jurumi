@@ -83,6 +83,7 @@ specifiers:
   react-apexcharts: 1.4.0
   react-currency-input-field: 3.6.10
   react-day-picker: 8.5.1
+  react-device-detect: ^2.2.3
   react-dom: 18.2.0
   react-dropzone: 14.2.3
   react-emoji-render: 2.0.1
@@ -156,6 +157,7 @@ dependencies:
   react-apexcharts: 1.4.0_biej67c4ah34dlf2pfz4joq77a
   react-currency-input-field: 3.6.10_react@18.2.0
   react-day-picker: 8.5.1_r6j3756ioqf5pjc2u22wj25rla
+  react-device-detect: 2.2.3_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
   react-dropzone: 14.2.3_react@18.2.0
   react-emoji-render: 2.0.1_biqbaboplfbrettd7655fr4n2y
@@ -7621,6 +7623,17 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-device-detect/2.2.3_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-buYY3qrCnQVlIFHrC5UcUoAj7iANs/+srdkwsnNjI7anr3Tt7UY6MqNxtMLlr0tMBied0O49UZVK8XKs3ZIiPw==}
+    peerDependencies:
+      react: '>= 0.14.0'
+      react-dom: '>= 0.14.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      ua-parser-js: 1.0.33
+    dev: false
+
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -8505,6 +8518,10 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
+
+  /ua-parser-js/1.0.33:
+    resolution: {integrity: sha512-RqshF7TPTE0XLYAqmjlu5cLLuGdKrNu9O1KLA/qp39QtbZwuzwv1dT46DZSopoUMsYgXpB3Cv8a03FI8b74oFQ==}
+    dev: false
 
   /unbox-primitive/1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
