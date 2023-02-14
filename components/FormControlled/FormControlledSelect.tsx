@@ -108,8 +108,6 @@ const FormControlledSelect = <T extends FieldValues>({
             getOptionLabel={optionLabel ? (x) => x[optionLabel] : undefined}
             getOptionValue={optionValue ? (x) => x[optionValue] : undefined}
             classNamePrefix="myDropDown"
-            menuPortalTarget={document.body}
-            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
           />
         )}
       />
