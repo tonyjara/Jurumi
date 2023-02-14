@@ -25,6 +25,9 @@ export const knownErrors = (error: string) => {
   if (error.includes('User needs to wait more before new email')) {
     return 'Debes esperar unos minutos antes de intentar de nuevo.';
   }
+  if (error.includes('Membership already exists')) {
+    return 'El usuario ya esta asociado';
+  }
   console.log(error);
   return 'Hubo un error, favor intente nuevamente';
 };

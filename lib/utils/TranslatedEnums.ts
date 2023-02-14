@@ -3,6 +3,7 @@ import type {
   BankDocType,
   BankNamesPy,
   Currency,
+  MemberType,
   MoneyRequestStatus,
   MoneyRequestType,
   MoneyResquestApprovalStatus,
@@ -55,6 +56,17 @@ export const translateCurrency = (currency: Currency) => {
 
   return prefixes[currency] ?? 'Guaranies ';
 };
+
+export const translateMemberTypes = (memberType: MemberType) => {
+  const prefixes: { [key in MemberType]?: string } = {
+    REGULAR: 'Regular',
+    VIP: 'Vip ',
+    FOUNDER: 'Fundador',
+  };
+
+  return prefixes[memberType] ?? 'Error';
+};
+
 export const translateCurrencyShort = (currency: Currency) => {
   const prefixes: { [key in Currency]?: string } = {
     PYG: 'Gs. ',

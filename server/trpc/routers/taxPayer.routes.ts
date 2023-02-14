@@ -1,19 +1,14 @@
 import { z } from 'zod';
 import { validateTaxPayer } from '@/lib/validations/taxtPayer.validate';
-import {
-  adminProcedure,
-  adminModProcedure,
-  router,
-  protectedProcedure,
-} from '../initTrpc';
+import { adminProcedure, router, protectedProcedure } from '../initTrpc';
 import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 
 export const taxPayerRouter = router({
-  count: adminModProcedure.query(async () => {
+  count: protectedProcedure.query(async () => {
     return await prisma?.taxPayer.count();
   }),
-  getMany: adminModProcedure
+  getMany: protectedProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -35,7 +30,7 @@ export const taxPayerRouter = router({
         include: { bankInfo: true },
       });
     }),
-  findFullTextSearch: adminModProcedure
+  findFullTextSearch: protectedProcedure
     .input(z.object({ ruc: z.string() }))
     .query(async ({ input }) => {
       return await prisma?.taxPayer.findMany({
@@ -95,7 +90,7 @@ export const taxPayerRouter = router({
       });
       return x;
     }),
-  edit: adminModProcedure
+  edit: protectedProcedure
     .input(validateTaxPayer)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;

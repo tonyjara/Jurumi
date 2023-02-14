@@ -1,6 +1,7 @@
 import type { TaxPayer, TaxPayerBankInfo } from '@prisma/client';
 import { BankAccountType } from '@prisma/client';
 import { BankDocType, BankNamesPy } from '@prisma/client';
+import { faker } from '@faker-js/faker';
 import * as z from 'zod';
 
 export type FormTaxPayer = TaxPayer & {
@@ -25,6 +26,7 @@ export const validateTaxPayer: z.ZodType<FormTaxPayer> = z.lazy(() =>
     fantasyName: z.string().nullable(),
     archived: z.boolean(),
     softDeleted: z.boolean(),
+    accountId: z.string().nullable(),
     bankInfo: z.object({
       bankName: z.nativeEnum(BankNamesPy),
       accountNumber: z.string(),
@@ -48,6 +50,7 @@ export const defaultTaxPayer: FormTaxPayer = {
   fantasyName: '',
   archived: false,
   softDeleted: false,
+  accountId: '',
   bankInfo: {
     bankName: 'BANCOP',
     accountNumber: '',
@@ -57,4 +60,30 @@ export const defaultTaxPayer: FormTaxPayer = {
     taxPayerId: '',
     type: 'CURRENT',
   },
+};
+
+export const FormTaxPayerMock = () => {
+  const x: FormTaxPayer = {
+    id: '',
+    createdAt: new Date(),
+    updatedAt: null,
+    createdById: '',
+    updatedById: '',
+    razonSocial: faker.name.fullName(),
+    ruc: faker.random.numeric(6) + '-' + faker.random.numeric(1),
+    fantasyName: faker.name.fullName(),
+    archived: false,
+    softDeleted: false,
+    accountId: '',
+    bankInfo: {
+      bankName: 'ITAU',
+      accountNumber: faker.finance.account(),
+      ownerName: faker.name.fullName(),
+      ownerDocType: 'CI',
+      ownerDoc: faker.finance.account(5),
+      taxPayerId: '',
+      type: 'CURRENT',
+    },
+  };
+  return x;
 };

@@ -30,4 +30,5 @@ export const sendPasswordRecoveryLinkOnSengrid = async ({
     </div>`,
   };
   await sgMail.send(msg);
+  return msg;
 };

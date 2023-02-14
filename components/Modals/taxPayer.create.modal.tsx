@@ -12,14 +12,14 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormTaxPayer } from '../../lib/validations/taxtPayer.validate';
+import { knownErrors } from '@/lib/dictionaries/knownErrors';
+import { trpcClient } from '@/lib/utils/trpcClient';
+import type { FormTaxPayer } from '@/lib/validations/taxtPayer.validate';
+import { FormTaxPayerMock } from '@/lib/validations/taxtPayer.validate';
 import {
   defaultTaxPayer,
   validateTaxPayer,
-} from '../../lib/validations/taxtPayer.validate';
-import { FormTaxPayerMock } from '../../__tests__/mocks/Mocks';
+} from '@/lib/validations/taxtPayer.validate';
 import SeedButton from '../DevTools/SeedButton';
 import TaxPayerForm from '../Forms/TaxPayer.form';
 import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';

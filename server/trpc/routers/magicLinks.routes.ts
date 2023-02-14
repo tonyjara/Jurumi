@@ -13,6 +13,7 @@ import prisma from '@/server/db/client';
 import { subMinutes } from 'date-fns';
 import { sendPasswordRecoveryLinkOnSengrid } from './notifications/sendgrid/passwordRecoverySend.notification.sengrid';
 import { sendMagicLinkToNewUserSendgridNotification } from './notifications/sendgrid/sendMagicLinkToNewUser.notification.sendgrid';
+import { saveEmailMsgToDb } from './notifications/db/saveEmailToDb';
 
 export const magicLinksRouter = router({
   count: adminModProcedure.query(async () => {
@@ -103,12 +104,12 @@ export const magicLinksRouter = router({
       if (handleToken && 'data' in handleToken) {
         // makes sure all links are invalidated
         await prisma?.accountVerificationLinks.updateMany({
-          where: { email: input.email },
+          where: { email: input.email.toLowerCase() },
           data: { hasBeenUsed: true },
         });
 
         return prisma?.account.update({
-          where: { email: input.email },
+          where: { email: input.email.toLowerCase() },
           data: { password: hashedPass, isVerified: true },
         });
       } else {
@@ -147,12 +148,12 @@ export const magicLinksRouter = router({
       if (handleToken && 'data' in handleToken) {
         // makes sure all links are invalidated
         await prisma?.passwordRecoveryLinks.updateMany({
-          where: { email: input.email },
+          where: { email: input.email.toLowerCase() },
           data: { hasBeenUsed: true },
         });
 
         return prisma?.account.update({
-          where: { email: input.email },
+          where: { email: input.email.toLowerCase() },
           data: { password: hashedPass },
         });
       } else {
@@ -183,7 +184,7 @@ export const magicLinksRouter = router({
         });
       }
       const signedToken = makeSignedToken(
-        input.email,
+        input.email.toLowerCase(),
         input.displayName,
         uuid,
         secret
@@ -195,7 +196,7 @@ export const magicLinksRouter = router({
       const newUser = await prisma.account.create({
         data: {
           displayName: input.displayName,
-          email: input.email,
+          email: input.email.toLowerCase(),
           role: input.role,
           isVerified: false,
           active: true,
@@ -205,7 +206,7 @@ export const magicLinksRouter = router({
             create: {
               id: uuid,
               verificationLink: link,
-              email: input.email,
+              email: input.email.toLowerCase(),
               createdById: ctx.session.user.id,
             },
           },
@@ -226,7 +227,8 @@ export const magicLinksRouter = router({
     }),
   createLinkForPasswordRecovery: publicProcedure
     .input(z.object({ email: z.string().email() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      const user = ctx.session?.user;
       const fetchedUser = await prisma.account.findUniqueOrThrow({
         where: { email: input.email },
       });
@@ -263,15 +265,22 @@ export const magicLinksRouter = router({
         data: {
           id: uuid,
           recoveryLink: link,
-          email: input.email,
+          email: input.email.toLowerCase(),
           accountId: fetchedUser.id,
         },
       });
 
-      await sendPasswordRecoveryLinkOnSengrid({
-        email: input.email,
+      const emailMsg = await sendPasswordRecoveryLinkOnSengrid({
+        email: input.email.toLowerCase(),
         displayName: fetchedUser.displayName,
         link,
+      });
+
+      if (!emailMsg) return;
+      await saveEmailMsgToDb({
+        msg: { ...emailMsg },
+        tag: 'passwordRecovery',
+        accountId: user?.id ?? null,
       });
     }),
 });

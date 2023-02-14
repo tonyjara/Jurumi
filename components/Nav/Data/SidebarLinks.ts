@@ -8,6 +8,8 @@ import { MdApproval } from 'react-icons/md';
 import { AiFillBank, AiOutlineProject } from 'react-icons/ai';
 import { FaExchangeAlt, FaDonate } from 'react-icons/fa';
 import { TbReportMoney } from 'react-icons/tb';
+import { IoIosPeople } from 'react-icons/io';
+import { VscOrganization } from 'react-icons/vsc';
 export interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -41,6 +43,11 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               dest: '/mod/users/verification-links',
             },
           ],
+        },
+        {
+          name: 'Socios',
+          icon: IoIosPeople,
+          dest: '/mod/members',
         },
         {
           name: 'Organización',
@@ -88,6 +95,7 @@ export const SidebarLinks: (
     { name: 'Inicio', icon: FiHome, dest: '/home' },
     ...AdminLinks(isAdmin),
     ...AdminModLinks(isAdminOrMod),
+    { name: 'Mi asociación', icon: VscOrganization, dest: '/home/membership' },
     { name: 'Mis solicitudes', icon: BsCash, dest: '/home/requests' },
     {
       name: 'Mis rendiciones',

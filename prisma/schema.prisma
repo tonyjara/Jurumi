@@ -10,19 +10,23 @@ datasource db {
 }
 
 model Account {
-  id                   String                @id @default(cuid())
-  active               Boolean               @default(true)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime?             @updatedAt
-  email                String                @unique
-  displayName          String                @unique
-  password             String
-  role                 Role                  @default(USER)
-  isVerified           Boolean               @default(false)
+  id          String    @id @default(cuid())
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  email       String    @unique
+  displayName String    @unique
+  password    String
+  role        Role      @default(USER)
+  isVerified  Boolean   @default(false)
+
   preferences          Preferences?
   profile              Profile?
   notificationSettings NotificationSettings?
+  taxPayerInfo         TaxPayer?
+  membership           Membership?
 
+  emails                   Emails[]
   accountVerificationLinks AccountVerificationLinks[]
   expenseReports           ExpenseReport[]
   moneyRequests            MoneyRequest[]
@@ -38,6 +42,73 @@ model Account {
   fcmNotificationTokens    FcmNotificationTokens[]
   notifications            Notifications[]
   passwordRecoveryLinks    PasswordRecoveryLinks[]
+}
+
+model Membership {
+  id                       String                     @id @default(cuid())
+  active                   Boolean                    @default(false)
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime?                  @updatedAt
+  memberSince              DateTime
+  memberType               MemberType
+  expirationDate           DateTime
+  currency                 Currency                   @default(PYG)
+  initialBalance           Decimal                    @default(0) @db.Decimal(19, 4)
+  accountId                String                     @unique
+  account                  Account                    @relation(fields: [accountId], references: [id])
+  transactions             Transaction[]
+  membershipPamentRequests MembershipPaymentRequest[]
+}
+
+model MembershipPaymentRequest {
+  id               String             @id @default(cuid())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+  description      String
+  status           MoneyRequestStatus
+  currency         Currency
+  amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
+  rejectionMessage String
+  archived         Boolean            @default(false)
+  softDeleted      Boolean            @default(false)
+  wasCancelled     Boolean            @default(false)
+
+  paymentProof   searchableImage? @relation("paymentProof", fields: [paymentProofId], references: [id])
+  paymentProofId String?          @unique
+  invoiceId      String?          @unique
+  invoice        searchableImage? @relation("invoice", fields: [invoiceId], references: [id])
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  moneyAccountId String?
+  moneyAccount   MoneyAccount?    @relation(fields: [moneyAccountId], references: [id])
+  membershipId   String?
+  membership     Membership?      @relation(fields: [membershipId], references: [id])
+
+  transactions Transaction[]
+}
+
+model BecomeMemberRequest {
+  id                    String                    @id @default(cuid())
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime?                 @updatedAt
+  fullName              String
+  cedula                String                    @unique
+  phoneNumber           String
+  email                 String                    @unique
+  birthDate             DateTime
+  nationality           String
+  address               String
+  occupation            String
+  areaOfWork            String
+  company               String
+  currentRole           String
+  workPhone             String
+  professionalReference String
+  requestReason         String
+  howCanYouContribute   String
+  referenceMemberName   String
+  agreesToOrgTerms      Boolean
+  status                BecomeMemberRequestStatus
 }
 
 model NotificationSettings {
@@ -125,14 +196,22 @@ model Organization {
   softDeleted             Boolean                  @default(false)
   orgNotificationSettings OrgNotificationSettings?
 
-  moneyRequests         MoneyRequest[]
-  projects              Project[]
-  moneyAccounts         MoneyAccount[]   @relation("MoneyAccountToOrganization")
-  members               Account[]        @relation("members")
-  moneyAdministrators   Account[]        @relation("moneyAdministrators")
-  moneyRequestApprovers Account[]        @relation("moneyRequestApprovers")
-  searchableImageId     String?
-  imageLogo             searchableImage? @relation(fields: [searchableImageId], references: [id])
+  moneyRequests            MoneyRequest[]
+  projects                 Project[]
+  moneyAccounts            MoneyAccount[]             @relation("MoneyAccountToOrganization")
+  members                  Account[]                  @relation("members")
+  moneyAdministrators      Account[]                  @relation("moneyAdministrators")
+  moneyRequestApprovers    Account[]                  @relation("moneyRequestApprovers")
+  searchableImageId        String?
+  imageLogo                searchableImage?           @relation(fields: [searchableImageId], references: [id])
+  membershipPaymentRequest MembershipPaymentRequest[]
+}
+
+model OrganizationMember {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  memberSince DateTime? @updatedAt
 }
 
 model OrgNotificationSettings {
@@ -148,22 +227,23 @@ model OrgNotificationSettings {
 }
 
 model MoneyAccount {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime?       @updatedAt
-  createdById    String
-  updatedById    String?
-  displayName    String
-  isCashAccount  Boolean
-  currency       Currency        @default(PYG)
-  initialBalance Decimal         @default(0) @db.Decimal(19, 4)
-  archived       Boolean         @default(false)
-  softDeleted    Boolean         @default(false)
-  bankInfo       BankInfo?
-  imbursements   Imbursement[]
-  transactions   Transaction[]
-  organization   Organization[]  @relation("MoneyAccountToOrganization")
-  expenseReturn  ExpenseReturn[]
+  id                       String                     @id @default(cuid())
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime?                  @updatedAt
+  createdById              String
+  updatedById              String?
+  displayName              String
+  isCashAccount            Boolean
+  currency                 Currency                   @default(PYG)
+  initialBalance           Decimal                    @default(0) @db.Decimal(19, 4)
+  archived                 Boolean                    @default(false)
+  softDeleted              Boolean                    @default(false)
+  bankInfo                 BankInfo?
+  imbursements             Imbursement[]
+  transactions             Transaction[]
+  organization             Organization[]             @relation("MoneyAccountToOrganization")
+  expenseReturn            ExpenseReturn[]
+  membershipPaymentRequest MembershipPaymentRequest[]
 }
 
 model BankInfo {
@@ -275,6 +355,8 @@ model TaxPayer {
   imbursements  Imbursement[]
   project       Project[]         @relation("ProjectToTaxPayer")
   moneyRequest  MoneyRequest[]
+  accountId     String?           @unique
+  account       Account?          @relation(fields: [accountId], references: [id])
 }
 
 model TaxPayerBankInfo {
@@ -398,22 +480,26 @@ model Transaction {
   cancellation   Transaction? @relation("cancellation", fields: [cancellationId], references: [id])
   transactions   Transaction? @relation("cancellation")
 
-  accountId       String
-  account         Account        @relation(fields: [accountId], references: [id])
-  expenseReturnId String?
-  expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
-  imbursementId   String?
-  imbursement     Imbursement?   @relation(fields: [imbursementId], references: [id])
-  moneyAccountId  String?
-  moneyAccount    MoneyAccount?  @relation(fields: [moneyAccountId], references: [id])
-  moneyRequestId  String?
-  moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
-  projectId       String?
-  project         Project?       @relation(fields: [projectId], references: [id])
-  costCategoryId  String?
-  costCategory    CostCategory?  @relation(fields: [costCategoryId], references: [id])
-  expenseReportId String?
-  expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
+  accountId                  String
+  account                    Account                   @relation(fields: [accountId], references: [id])
+  expenseReturnId            String?
+  expenseReturn              ExpenseReturn?            @relation(fields: [expenseReturnId], references: [id])
+  imbursementId              String?
+  imbursement                Imbursement?              @relation(fields: [imbursementId], references: [id])
+  moneyAccountId             String?
+  moneyAccount               MoneyAccount?             @relation(fields: [moneyAccountId], references: [id])
+  moneyRequestId             String?
+  moneyRequest               MoneyRequest?             @relation(fields: [moneyRequestId], references: [id])
+  projectId                  String?
+  project                    Project?                  @relation(fields: [projectId], references: [id])
+  costCategoryId             String?
+  costCategory               CostCategory?             @relation(fields: [costCategoryId], references: [id])
+  expenseReportId            String?
+  expenseReport              ExpenseReport?            @relation(fields: [expenseReportId], references: [id])
+  membershipId               String?
+  membership                 Membership?               @relation(fields: [membershipId], references: [id])
+  membershipPaymentRequest   MembershipPaymentRequest? @relation(fields: [membershipPaymentRequestId], references: [id])
+  membershipPaymentRequestId String?
 }
 
 model searchableImage {
@@ -433,15 +519,31 @@ model searchableImage {
   expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
   transaction     Transaction?   @relation(fields: [transactionId], references: [id])
 
-  invoicesFromOrgs  Imbursement?   @relation("invoiceFromOrg")
-  imbursementProofs Imbursement?   @relation("imbursementProof")
-  organization      Organization[]
+  invoicesFromOrgs              Imbursement?              @relation("invoiceFromOrg")
+  imbursementProofs             Imbursement?              @relation("imbursementProof")
+  organization                  Organization[]
+  membershipPaymentRequestProof MembershipPaymentRequest? @relation("paymentProof")
+  membershipPaymentInvoice      MembershipPaymentRequest? @relation("invoice")
+}
+
+model Emails {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  to        String
+  from      String
+  subject   String
+  html      String
+  tag       String
+  account   Account?  @relation(fields: [accountId], references: [id])
+  accountId String?
 }
 
 enum Role {
   ADMIN
   MODERATOR
   USER
+  MEMBER
 }
 
 enum BankAccountType {
@@ -480,12 +582,24 @@ enum ProjectType {
   CONSULTING
 }
 
+enum MemberType {
+  REGULAR
+  FOUNDER
+  VIP
+}
+
 enum Currency {
   USD
   PYG
 }
 
 enum MoneyRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum BecomeMemberRequestStatus {
   PENDING
   ACCEPTED
   REJECTED
@@ -504,6 +618,7 @@ enum MoneyResquestApprovalStatus {
 }
 
 enum TransactionType {
+  MEMBERSHIP_PAYMENT
   PROJECT_IMBURSEMENT
   EXPENSE_RETURN
   COST_CATEGORY

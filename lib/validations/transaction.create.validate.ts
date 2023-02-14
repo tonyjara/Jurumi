@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import type { Transaction } from '@prisma/client';
 import { TransactionType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
@@ -64,6 +65,8 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         transactionType: z.nativeEnum(TransactionType),
 
         imbursementId: z.string().nullable(),
+        membershipId: z.string().nullable(),
+        membershipPaymentRequestId: z.string().nullable(),
         searchableImage: z
           .object({
             imageName: z.string(),
@@ -101,6 +104,8 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   currentBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
   imbursementId: null,
+  membershipId: null,
+  membershipPaymentRequestId: null,
   expenseReturnId: null,
   cancellationId: null,
   costCategoryId: null,
@@ -108,4 +113,32 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   isCancellation: false,
   searchableImage: { url: '', imageName: '' },
   expenseReportId: null,
+};
+export const transactionMock: () => Transaction = () => {
+  const x: Transaction = {
+    id: 0,
+    createdAt: new Date(),
+    updatedAt: null,
+    accountId: '',
+    updatedById: null,
+    currency: 'PYG',
+    openingBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+    currentBalance: new Prisma.Decimal(0),
+    transactionAmount: new Prisma.Decimal(
+      faker.commerce.price(1000000, 3000000)
+    ),
+    isCancellation: false,
+    moneyAccountId: '',
+    moneyRequestId: null,
+    imbursementId: null,
+    expenseReturnId: null,
+    cancellationId: null,
+    projectId: null,
+    membershipId: null,
+    membershipPaymentRequestId: null,
+    costCategoryId: null,
+    expenseReportId: null,
+    transactionType: 'MONEY_ACCOUNT',
+  };
+  return x;
 };

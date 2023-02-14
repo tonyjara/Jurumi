@@ -1,4 +1,5 @@
 import type { MoneyRequestStatus, MoneyRequestType } from '@prisma/client';
+import { MemberType } from '@prisma/client';
 import { BankAccountType } from '@prisma/client';
 import { ProjectType } from '@prisma/client';
 import { BankDocType, BankNamesPy, Currency } from '@prisma/client';
@@ -8,11 +9,16 @@ import {
   translateCurrency,
   translateProjectType,
   translatedBankAccountType,
+  translateMemberTypes,
 } from './TranslatedEnums';
 
 export const projectTypeOptions = Object.values(ProjectType).map((type) => ({
   value: type,
   label: translateProjectType(type),
+}));
+export const memberTypeOptions = Object.values(MemberType).map((type) => ({
+  value: type,
+  label: translateMemberTypes(type),
 }));
 export const bankNameOptions = Object.values(BankNamesPy).map((bank) => ({
   value: bank,
