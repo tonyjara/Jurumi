@@ -7,12 +7,16 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-
+import { isIOS } from 'react-device-detect';
 const BrowserNotificationsManager = () => {
   const user = useSession().data?.user;
   const cloudMessagingKeyPair = process.env.NEXT_PUBLIC_FB_MESSAGING_KEY;
   const [mounted, setMounted] = useState(false);
-  const notificationsAreSupported = () => typeof window !== 'undefined';
+
+  //Mobile notifications DO NOT work on IOS, without this, the app crashes.
+
+  const notificationsAreSupported = () =>
+    typeof window !== 'undefined' && !isIOS;
   const router = useRouter();
   const context = trpcClient.useContext();
 
