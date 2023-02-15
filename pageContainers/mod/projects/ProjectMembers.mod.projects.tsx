@@ -65,7 +65,7 @@ const ProjectMembers = ({ project }: props) => {
     );
 
   return (
-    <Box justifyContent="center">
+    <Box minH={'100vh'} justifyContent="center">
       <Box>{!project && <Text>Favor seleccione un proyecto.</Text>}</Box>
 
       {project && (

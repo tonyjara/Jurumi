@@ -53,7 +53,7 @@ export const moneyRequestTypeOptions: {
   value: MoneyRequestType;
   label: string;
 }[] = [
-  { value: 'FUND_REQUEST', label: 'Solicitud de Adelanto' },
+  { value: 'FUND_REQUEST', label: 'Solicitud de anticipo' },
   { value: 'MONEY_ORDER', label: 'Orden de pago' },
   { value: 'REIMBURSMENT_ORDER', label: 'Solicitud de re-embolso' },
 ];

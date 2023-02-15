@@ -317,4 +317,14 @@ export const seedRouter = router({
 
     await prisma.expenseReturn.deleteMany();
   }),
+  deleteAllMoneyApprovals: adminProcedure.mutation(async () => {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Not allowed in prod.',
+      });
+    }
+
+    await prisma.moneyRequestApproval.deleteMany();
+  }),
 });

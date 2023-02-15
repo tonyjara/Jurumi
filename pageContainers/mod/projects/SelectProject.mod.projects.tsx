@@ -37,7 +37,7 @@ const ProjectSelect = ({ setSelectedProject, options, loading }: props) => {
       p: 0,
       w: '40px',
     }),
-    menuList: (provided: any) => ({
+    menu: (provided: any) => ({
       ...provided,
       zIndex: 9999,
     }),
@@ -47,8 +47,7 @@ const ProjectSelect = ({ setSelectedProject, options, loading }: props) => {
       <Select
         instanceId={'unique-id'}
         options={options}
-        onChange={(e) => {
-          //@ts-ignore
+        onChange={(e: any) => {
           setSelectedProject(e ?? null);
         }}
         chakraStyles={chakraStyles}

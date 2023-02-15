@@ -7,6 +7,15 @@ import React from 'react';
 const DeleteSeeds = () => {
   const context = trpcClient.useContext();
 
+  const { mutate: deleteALLMoneyApprovals } =
+    trpcClient.seed.deleteAllMoneyApprovals.useMutation(
+      handleUseMutationAlerts({
+        successText: `Se eliminaron las transacciones.`,
+        callback: () => {
+          context.invalidate();
+        },
+      })
+    );
   const { mutate: deleteALLtransactions } =
     trpcClient.seed.deleteALLTransactions.useMutation(
       handleUseMutationAlerts({
@@ -59,6 +68,7 @@ const DeleteSeeds = () => {
     deleteAllImbursements();
     deleteALLExpenseReturns();
     deleteAllMoneyReqs();
+    deleteALLMoneyApprovals();
   };
 
   return (
@@ -92,6 +102,11 @@ const DeleteSeeds = () => {
           onConfirm={() => deleteALLExpenseReturns()}
           buttonText="Eliminar TODAS los devoluciones"
           targetName="TODOS los devoluciones"
+        />
+        <ButtonDeleteDialog
+          onConfirm={() => deleteALLMoneyApprovals()}
+          buttonText="Eliminar todas las aprobaciones"
+          targetName="TODAS las aprobaciones"
         />
         <ButtonDeleteDialog
           onConfirm={deleteALL}
