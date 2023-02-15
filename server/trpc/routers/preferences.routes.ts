@@ -21,4 +21,18 @@ export const preferencesRouter = router({
     const user = ctx.session.user;
     return await getSelectedOrganizationId(user);
   }),
+  getHomePreferences: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    return await prisma.preferences.findUnique({
+      where: { accountId: user.id },
+      select: { selectedOrganization: true, hasSeenWelcomeScreen: true },
+    });
+  }),
+  acceptWelcomeScreen: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = ctx.session.user;
+    return await prisma.preferences.update({
+      where: { accountId: user.id },
+      data: { hasSeenWelcomeScreen: true },
+    });
+  }),
 });

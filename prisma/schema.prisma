@@ -162,6 +162,7 @@ model Preferences {
   selectedOrganization      String
   account                   Account   @relation(fields: [accountId], references: [id])
   receiveEmailNotifications Boolean   @default(true)
+  hasSeenWelcomeScreen      Boolean   @default(false)
 }
 
 model AccountVerificationLinks {

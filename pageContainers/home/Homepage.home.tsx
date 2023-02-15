@@ -8,15 +8,36 @@ import {
   ListItem,
   Text,
   useColorModeValue,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import WelcomeScreenModal from '@/components/Modals/welcomeScreen.modal';
+import { useEffect } from 'react';
 
 const HomePage = () => {
-  const { data } = trpcClient.moneyRequest.countMyPendingRequests.useQuery();
+  const {
+    isOpen: isWelcomeModalOpen,
+    onOpen: onWelcomeModalOpen,
+    onClose: onWelcomeModalClose,
+  } = useDisclosure();
 
+  const { data } = trpcClient.moneyRequest.countMyPendingRequests.useQuery();
   const { data: slackAnnouncements } =
     trpcClient.notifications.getSlackAnnouncements.useQuery();
+  const { data: prefs } = trpcClient.preferences.getHomePreferences.useQuery();
+
+  useEffect(() => {
+    if (!prefs) return;
+    if (prefs.hasSeenWelcomeScreen && isWelcomeModalOpen) {
+      onWelcomeModalClose();
+    }
+    if (!isWelcomeModalOpen && !prefs.hasSeenWelcomeScreen) {
+      onWelcomeModalOpen();
+    }
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefs]);
 
   const listItemBg = useColorModeValue('#EDF2F7', '#4A5568');
   return (
@@ -73,6 +94,10 @@ const HomePage = () => {
           </List>
         </Link>
       </Card>
+      <WelcomeScreenModal
+        isOpen={isWelcomeModalOpen}
+        onClose={onWelcomeModalClose}
+      />
     </Box>
   );
 };
