@@ -23,6 +23,7 @@ import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MoneyRequestsPageProps } from 'pages/mod/requests';
 import { moneyRequestsColumns } from './columns.mod.requests';
 import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.modal';
+import CreateExpenseReturnModal from '@/components/Modals/ExpenseReturn.create.modal';
 
 export type MoneyRequestComplete = MoneyRequest & {
   project: Project | null;
@@ -89,6 +90,11 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     onOpen: onExpRepOpen,
     onClose: onExpRepClose,
   } = useDisclosure();
+  const {
+    isOpen: isExpenseReturnOpen,
+    onOpen: onExpenseReturnOpen,
+    onClose: onExpenseReturnClose,
+  } = useDisclosure();
 
   useEffect(() => {
     if (!isEditOpen && editMoneyRequest) {
@@ -154,6 +160,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           pageSize,
           setReqForReport,
           onExpRepOpen,
+          onExpReturnOpen: onExpenseReturnOpen,
         })}
         loading={isFetching || isLoading}
         options={tableOptions}
@@ -174,6 +181,13 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           moneyRequest={reqForReport}
           isOpen={isExpRepOpen}
           onClose={onExpRepClose}
+        />
+      )}
+      {reqForReport && (
+        <CreateExpenseReturnModal
+          moneyRequest={reqForReport}
+          isOpen={isExpenseReturnOpen}
+          onClose={onExpenseReturnClose}
         />
       )}
       {editMoneyRequest && (

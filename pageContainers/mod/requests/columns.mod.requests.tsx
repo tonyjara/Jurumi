@@ -31,6 +31,7 @@ export const moneyRequestsColumns = ({
   pageSize,
   setReqForReport,
   onExpRepOpen,
+  onExpReturnOpen,
 }: {
   user: Omit<Account, 'password'> | undefined;
   onEditOpen: () => void;
@@ -43,6 +44,7 @@ export const moneyRequestsColumns = ({
   pageSize: number;
   pageIndex: number;
   onExpRepOpen: () => void;
+  onExpReturnOpen: () => void;
 }) => [
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
@@ -159,6 +161,7 @@ export const moneyRequestsColumns = ({
           hasBeenApproved={hasBeenApproved()}
           setReqForReport={setReqForReport}
           onExpRepOpen={onExpRepOpen}
+          onExpReturnOpen={onExpReturnOpen}
         />
       );
     },

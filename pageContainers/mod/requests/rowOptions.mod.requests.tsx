@@ -31,6 +31,7 @@ const RowOptionsModRequests = ({
   hasBeenApproved,
   setReqForReport,
   onExpRepOpen,
+  onExpReturnOpen,
 }: {
   x: MoneyRequestComplete;
   setEditMoneyRequest: React.Dispatch<
@@ -43,6 +44,7 @@ const RowOptionsModRequests = ({
     React.SetStateAction<MoneyRequestComplete | null>
   >;
   onExpRepOpen: () => void;
+  onExpReturnOpen: () => void;
 }) => {
   const context = trpcClient.useContext();
   // const [isPrinting, setIsPrinting] = useState(false);
@@ -130,7 +132,20 @@ const RowOptionsModRequests = ({
                 Crear rendición
               </MenuItem>
             )}
-
+            <MenuItem
+              isDisabled={
+                !isAccepted ||
+                x.wasCancelled ||
+                isFullyExecuted ||
+                x.moneyRequestType === 'REIMBURSMENT_ORDER'
+              }
+              onClick={() => {
+                setReqForReport(x);
+                onExpReturnOpen();
+              }}
+            >
+              Generar devolución
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 router.push({
