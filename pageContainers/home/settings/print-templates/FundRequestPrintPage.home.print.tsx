@@ -19,12 +19,13 @@ import {
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import SignatureBox from '../../../../components/Print/SignatureBox';
+import SignatureBox from '@/components/Print/SignatureBox';
+import type { CompleteMoneyReqHome } from '../../requests/HomeRequestsPage.home.requests';
 
 const FundRequestPrintPage = ({
   moneyRequest,
 }: {
-  moneyRequest: MoneyRequestComplete | null;
+  moneyRequest: MoneyRequestComplete | CompleteMoneyReqHome | null;
 }) => {
   const { data: org } = trpcClient.org.getCurrent.useQuery();
   const user = useSession().data?.user;

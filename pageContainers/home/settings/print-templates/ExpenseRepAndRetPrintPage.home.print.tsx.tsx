@@ -27,11 +27,12 @@ import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import SignatureBox from '../../../../components/Print/SignatureBox';
+import type { CompleteMoneyReqHome } from '../../requests/HomeRequestsPage.home.requests';
 
 const ExpenseRepAndRetPringPage = ({
   moneyRequest,
 }: {
-  moneyRequest: MoneyRequestComplete | null;
+  moneyRequest: MoneyRequestComplete | CompleteMoneyReqHome | null;
 }) => {
   const { data: org } = trpcClient.org.getCurrent.useQuery();
   const user = useSession().data?.user;
@@ -96,6 +97,7 @@ const ExpenseRepAndRetPringPage = ({
             </Tbody>
           </Table>
         </TableContainer>
+        {/* THIS ONE HAS ISSUES  */}
         <TableContainer
           borderColor={borderColor}
           borderWidth="1px"
@@ -116,11 +118,17 @@ const ExpenseRepAndRetPringPage = ({
             <Tbody>
               {req.expenseReports.map((x) => (
                 <Tr key={x.id}>
-                  <Td>{x.concept}</Td>
-                  <Td>{formatedFacturaNumber(x.facturaNumber)}</Td>
-                  <Td>{x.taxPayer.razonSocial}</Td>
-                  <Td>{decimalFormat(x.amountSpent, x.currency)}</Td>
-                  <Td>{format(x.createdAt, 'dd/MM/yy hh:mm')}</Td>
+                  <Td whiteSpace={'break-spaces'}>{x.concept}</Td>
+                  <Td whiteSpace={'break-spaces'}>
+                    {formatedFacturaNumber(x.facturaNumber)}
+                  </Td>
+                  <Td whiteSpace={'break-spaces'}>{x.taxPayer.razonSocial}</Td>
+                  <Td whiteSpace={'break-spaces'}>
+                    {decimalFormat(x.amountSpent, x.currency)}
+                  </Td>
+                  <Td whiteSpace={'break-spaces'}>
+                    {format(x.createdAt, 'dd/MM/yy hh:mm')}
+                  </Td>
                 </Tr>
               ))}
               <Tr>
