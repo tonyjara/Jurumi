@@ -107,7 +107,14 @@ export const notificationsRouter = router({
     });
     if (!convs.messages) return;
 
-    const filteredMessages = convs.messages.filter((x) => !('subtype' in x));
+    const filteredMessages = convs.messages.filter(
+      (x) => !('subtype' in x) && !x.text?.includes('<@')
+    );
+
+    // const textMessages = filteredMessages.map((x) =>
+    //   x.text?.replace(/<@[\s\S]*?>/, 'asdf')
+    // );
+
     return filteredMessages;
   }),
   getOrgNotificationSettings: adminModProcedure
