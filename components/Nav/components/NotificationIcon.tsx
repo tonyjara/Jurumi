@@ -67,7 +67,11 @@ const NotificationIcon = () => {
 
       <MenuList maxW={{ base: '250px', md: '500px' }}>
         {notifications?.map((x) => (
-          <MenuItem my={'10px'} onClick={() => router.push(x.url)} key={x.id}>
+          <MenuItem
+            my={'10px'}
+            onClick={() => x.url.length && router.push(x.url)}
+            key={x.id}
+          >
             <Flex flexDir={'column'}>
               <Text whiteSpace={'break-spaces'} fontWeight={'bold'}>
                 {x.title}

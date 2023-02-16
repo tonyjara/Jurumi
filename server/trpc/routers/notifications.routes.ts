@@ -46,6 +46,7 @@ export const notificationsRouter = router({
     return await prisma.notifications.findMany({
       where: { accountId: user.id },
       take: 10,
+      orderBy: { createdAt: 'desc' },
     });
   }),
   markMyNotificationsSeen: protectedProcedure.mutation(async ({ ctx }) => {

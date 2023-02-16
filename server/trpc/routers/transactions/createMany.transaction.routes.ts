@@ -11,6 +11,7 @@ import prisma from '@/server/db/client';
 import { moneyRequestApprovedBrowserNotification } from '../notifications/browser/moneyReqApprovedAndExecuted.notification.browser';
 import { moneyRequestApprovedSendgridNotification } from '../notifications/sendgrid/moneyReqApprovedAndExecuted.notification.sendgrid';
 import { moneyRequestApprovedDbNotification } from '../notifications/db/moneyReqApprovedAndExecuted.notification.db';
+import { saveEmailMsgToDb } from '../notifications/db/saveEmailToDb';
 
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)
@@ -62,7 +63,16 @@ export const createManyTransactions = adminModProcedure
 
         await moneyRequestApprovedDbNotification({ input: req, txCtx });
         await moneyRequestApprovedBrowserNotification({ input: req, txCtx });
-        await moneyRequestApprovedSendgridNotification({ input: req });
+        const msg = await moneyRequestApprovedSendgridNotification({
+          input: req,
+        });
+
+        if (!msg) return;
+        await saveEmailMsgToDb({
+          accountId: user.id,
+          msg,
+          tag: 'moneyReqApproved',
+        });
       },
       { timeout: 20000 }
     );

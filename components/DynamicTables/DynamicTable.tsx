@@ -129,7 +129,10 @@ const DynamicTable = <T extends object>({
               {searchBar}
             </Flex>
             <HStack>
-              <Tooltip label="Cuando el filtro global esta activado, al presionar sobre la cabecera de las columnas los datos serán filtrados en toda la base de datos. De lo contrario serán ordenados solamente en la lista cargada actualmente.">
+              <Tooltip
+                placement="left"
+                label="Cuando el filtro global esta activado, al presionar sobre la cabecera de las columnas los datos serán filtrados en toda la base de datos. De lo contrario serán ordenados solamente en la lista cargada actualmente."
+              >
                 {globalFilter ? (
                   <IconButton
                     colorScheme={'green'}

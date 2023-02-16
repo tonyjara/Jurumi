@@ -30,4 +30,5 @@ export const sendMagicLinkToNewUserSendgridNotification = async ({
   };
 
   await sgMail.send(msg);
+  return msg;
 };
