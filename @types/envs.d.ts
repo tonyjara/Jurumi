@@ -31,6 +31,11 @@ declare global {
 
       SENDGRID_API_KEY: string;
       SENDGRID_FROM: string;
+
+      // OCR SERVER
+
+      OCR_API_KEY: string;
+      OCR_API_URLL: string;
     }
   }
 }
