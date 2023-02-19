@@ -66,7 +66,24 @@ export const moneyRequestRouter = router({
         include: {
           project: true,
           transactions: true,
-          expenseReports: { where: { wasCancelled: false } },
+          account: { select: { displayName: true } },
+          taxPayer: {
+            select: {
+              bankInfo: {
+                select: {
+                  ownerName: true,
+                  accountNumber: true,
+                  bankName: true,
+                  ownerDocType: true,
+                  ownerDoc: true,
+                },
+              },
+            },
+          },
+          expenseReports: {
+            where: { wasCancelled: false },
+            include: { taxPayer: { select: { razonSocial: true } } },
+          },
           expenseReturns: { where: { wasCancelled: false } },
           searchableImage: true,
         },

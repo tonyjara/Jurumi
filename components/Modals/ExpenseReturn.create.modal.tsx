@@ -87,7 +87,7 @@ const CreateExpenseReturnModal = ({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            Crear una rendición. <br /> Pendiente: {pendingAmount()}
+            Crear una devolución. <br /> Pendiente: {pendingAmount()}
           </ModalHeader>
 
           <ModalCloseButton />

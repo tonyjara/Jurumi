@@ -46,6 +46,7 @@ export const notificationsRouter = router({
     return await prisma.notifications.findMany({
       where: { accountId: user.id },
       take: 10,
+      orderBy: { createdAt: 'desc' },
     });
   }),
   markMyNotificationsSeen: protectedProcedure.mutation(async ({ ctx }) => {
@@ -107,7 +108,14 @@ export const notificationsRouter = router({
     });
     if (!convs.messages) return;
 
-    const filteredMessages = convs.messages.filter((x) => !('subtype' in x));
+    const filteredMessages = convs.messages.filter(
+      (x) => !('subtype' in x) && !x.text?.includes('<@')
+    );
+
+    // const textMessages = filteredMessages.map((x) =>
+    //   x.text?.replace(/<@[\s\S]*?>/, 'asdf')
+    // );
+
     return filteredMessages;
   }),
   getOrgNotificationSettings: adminModProcedure

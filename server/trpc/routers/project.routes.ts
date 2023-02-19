@@ -10,6 +10,8 @@ import {
 } from '../initTrpc';
 import prisma from '@/server/db/client';
 import { handleOrderBy } from './utils/Sorting.routeUtils';
+import { accountIsPartOfProjectBrowserNotifications } from './notifications/browser/accountIsPartOfProject.notifications.browser';
+import { accountIsPartOfProjectDbNotification } from './notifications/db/accountIsPartOfProject.notifications.db';
 
 export const projectRouter = router({
   getMany: protectedProcedure.query(async ({ ctx }) => {
@@ -241,14 +243,29 @@ export const projectRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // Throw if user doesn't exist, is not verified or not active
-      await prisma.account.findFirstOrThrow({
-        where: { id: input.accountId, isVerified: true, active: true },
-      });
+      await prisma.$transaction(async (txCtx) => {
+        // Throw if user doesn't exist, is not verified or not active
+        await txCtx.account.findFirstOrThrow({
+          where: { id: input.accountId, isVerified: true, active: true },
+        });
 
-      return await prisma.project.update({
-        where: { id: input.projectId },
-        data: { allowedUsers: { connect: { id: input.accountId } } },
+        const project = await txCtx.project.update({
+          where: { id: input.projectId },
+          data: { allowedUsers: { connect: { id: input.accountId } } },
+        });
+
+        await accountIsPartOfProjectDbNotification({
+          accountId: input.accountId,
+          project,
+          txCtx,
+        });
+        await accountIsPartOfProjectBrowserNotifications({
+          accountId: input.accountId,
+          project,
+          txCtx,
+        });
+
+        return project;
       });
     }),
   removeAccountFromProject: adminModProcedure

@@ -1,5 +1,7 @@
 import { useDisclosure } from '@chakra-ui/react';
 import type {
+  BankDocType,
+  BankNamesPy,
   ExpenseReport,
   ExpenseReturn,
   MoneyRequest,
@@ -19,10 +21,26 @@ import { homeRequestsColumns } from './columns.home.requests';
 import CreateExpenseReturnModal from '@/components/Modals/ExpenseReturn.create.modal';
 
 export type CompleteMoneyReqHome = MoneyRequest & {
+  account: {
+    displayName: string;
+  };
   project: Project | null;
-  transactions: Transaction[];
+  taxPayer: {
+    bankInfo: {
+      bankName: BankNamesPy;
+      accountNumber: string;
+      ownerName: string;
+      ownerDocType: BankDocType;
+      ownerDoc: string;
+    } | null;
+  } | null;
   searchableImage: searchableImage | null;
-  expenseReports: ExpenseReport[];
+  transactions: Transaction[];
+  expenseReports: (ExpenseReport & {
+    taxPayer: {
+      razonSocial: string;
+    };
+  })[];
   expenseReturns: ExpenseReturn[];
 };
 
@@ -61,6 +79,7 @@ const MoneyRequestsPage = () => {
       { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
       { keepPreviousData: globalFilter ? true : false }
     );
+
   const { data: count } = trpcClient.moneyRequest.countMyOwn.useQuery();
 
   const handleDataSource = () => {

@@ -8,25 +8,20 @@ import {
 } from '@chakra-ui/react';
 import type { MoneyRequest } from '@prisma/client';
 import router from 'next/router';
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { MoneyRequestComplete } from './MoneyRequestsPage.mod.requests';
 import { RowOptionDeleteDialog } from '@/components/Toasts & Alerts/RowOption.delete.dialog';
 import { RowOptionCancelDialog } from '@/components/Toasts & Alerts/RowOptions.cancel.dialog';
-import FundRequestPrintPage from '@/pageContainers/home/settings/print-templates/FundRequestPrintPage.home.print';
-import { useReactToPrint } from 'react-to-print';
-import { translatedMoneyReqType } from '@/lib/utils/TranslatedEnums';
-import { format } from 'date-fns';
-import ExpenseRepAndRetPringPage from '@/pageContainers/home/settings/print-templates/ExpenseRepAndRetPrintPage.home.print.tsx';
 import {
   reduceExpenseReports,
   reduceExpenseReturns,
 } from '@/lib/utils/TransactionUtils';
 import cloneDeep from 'lodash.clonedeep';
-import ReimbursementOrderPrintPage from '@/pageContainers/home/settings/print-templates/ReimbursementOrderPrintPage.home.settings.print-templates';
-import MoneyOrderPrintPage from '@/pageContainers/home/settings/print-templates/MoneyOrderPrintPage.home.setting.print-templates';
+import UsePrintComponent from '@/components/Print/UsePrintComponent';
+import MoneyRequestPrintComponents from '@/components/Print/MoneyRequest.print.components';
 
 const RowOptionsModRequests = ({
   x,
@@ -36,6 +31,7 @@ const RowOptionsModRequests = ({
   hasBeenApproved,
   setReqForReport,
   onExpRepOpen,
+  onExpReturnOpen,
 }: {
   x: MoneyRequestComplete;
   setEditMoneyRequest: React.Dispatch<
@@ -48,9 +44,10 @@ const RowOptionsModRequests = ({
     React.SetStateAction<MoneyRequestComplete | null>
   >;
   onExpRepOpen: () => void;
+  onExpReturnOpen: () => void;
 }) => {
   const context = trpcClient.useContext();
-  const [isPrinting, setIsPrinting] = useState(false);
+  // const [isPrinting, setIsPrinting] = useState(false);
 
   const { mutate: deleteById } = trpcClient.moneyRequest.deleteById.useMutation(
     handleUseMutationAlerts({
@@ -73,52 +70,13 @@ const RowOptionsModRequests = ({
     .add(reduceExpenseReturns(x.expenseReturns))
     .equals(x.amountRequested);
 
-  const printFundReqRef = useRef(null);
-  const printExpRepsAndRetsRef = useRef(null);
-  const promiseResolveRef = useRef<any>(null);
-  // We watch for the state to change here, and for the Promise resolve to be available
-  useEffect(() => {
-    if (isPrinting && promiseResolveRef.current) {
-      // Resolves the Promise, letting `react-to-print` know that the DOM updates are completed
-      promiseResolveRef.current();
-    }
-  }, [isPrinting]);
-
-  const handlePrintFundRequest = useReactToPrint({
-    documentTitle: `${translatedMoneyReqType(x.moneyRequestType)} - ${
-      x.account.displayName
-    } - ${format(new Date(), 'dd/MM/yy')}`,
-    content: () => printFundReqRef.current,
-    onBeforeGetContent: () => {
-      return new Promise((resolve) => {
-        promiseResolveRef.current = resolve;
-        setIsPrinting(true);
-      });
-    },
-    onAfterPrint: () => {
-      // Reset the Promise resolve so we can print again
-      promiseResolveRef.current = null;
-      setIsPrinting(false);
-    },
-  });
-  const handlePrintExpenseRepsAndRets = useReactToPrint({
-    documentTitle: `Rendiciones - ${x.account.displayName} - ${format(
-      new Date(),
-      'dd/MM/yy'
-    )}`,
-    content: () => printExpRepsAndRetsRef.current,
-    onBeforeGetContent: () => {
-      return new Promise((resolve) => {
-        promiseResolveRef.current = resolve;
-        setIsPrinting(true);
-      });
-    },
-    onAfterPrint: () => {
-      // Reset the Promise resolve so we can print again
-      promiseResolveRef.current = null;
-      setIsPrinting(false);
-    },
-  });
+  const {
+    isPrinting,
+    handlePrintExpenseRepsAndRets,
+    handlePrintFundRequest,
+    printFundReqRef,
+    printExpRepsAndRetsRef,
+  } = UsePrintComponent({ x });
 
   return (
     <div>
@@ -174,7 +132,20 @@ const RowOptionsModRequests = ({
                 Crear rendición
               </MenuItem>
             )}
-
+            <MenuItem
+              isDisabled={
+                !isAccepted ||
+                x.wasCancelled ||
+                isFullyExecuted ||
+                x.moneyRequestType === 'REIMBURSMENT_ORDER'
+              }
+              onClick={() => {
+                setReqForReport(x);
+                onExpReturnOpen();
+              }}
+            >
+              Generar devolución
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 router.push({
@@ -210,27 +181,12 @@ const RowOptionsModRequests = ({
           </MenuList>
         </Portal>
       </Menu>
-      <div
-        style={{ display: isPrinting ? 'flex' : 'none', width: '100%' }}
-        ref={printFundReqRef}
-      >
-        {' '}
-        {x.moneyRequestType === 'FUND_REQUEST' && (
-          <FundRequestPrintPage moneyRequest={x} />
-        )}
-        {x.moneyRequestType === 'REIMBURSMENT_ORDER' && (
-          <ReimbursementOrderPrintPage moneyRequest={x} />
-        )}
-        {x.moneyRequestType === 'MONEY_ORDER' && (
-          <MoneyOrderPrintPage moneyRequest={x} />
-        )}
-      </div>
-      <div
-        style={{ display: isPrinting ? 'block' : 'none' }}
-        ref={printExpRepsAndRetsRef}
-      >
-        <ExpenseRepAndRetPringPage moneyRequest={x} />
-      </div>
+      <MoneyRequestPrintComponents
+        x={x}
+        isPrinting={isPrinting}
+        printExpRepsAndRetsRef={printExpRepsAndRetsRef}
+        printFundReqRef={printFundReqRef}
+      />
     </div>
   );
 };

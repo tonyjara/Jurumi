@@ -18,6 +18,8 @@ import {
   reduceExpenseReports,
   reduceExpenseReturns,
 } from '@/lib/utils/TransactionUtils';
+import MoneyRequestPrintComponents from '@/components/Print/MoneyRequest.print.components';
+import UsePrintComponent from '@/components/Print/UsePrintComponent';
 
 const RowOptionsHomeRequests = ({
   x,
@@ -65,69 +67,97 @@ const RowOptionsHomeRequests = ({
     .add(reduceExpenseReturns(x.expenseReturns))
     .equals(x.amountRequested);
 
+  const {
+    isPrinting,
+    handlePrintExpenseRepsAndRets,
+    handlePrintFundRequest,
+    printFundReqRef,
+    printExpRepsAndRetsRef,
+  } = UsePrintComponent({ x });
+
   return (
-    <Menu>
-      <MenuButton
-        as={IconButton}
-        aria-label="options button"
-        icon={<BsThreeDots />}
+    <div>
+      <Menu>
+        <MenuButton
+          as={IconButton}
+          aria-label="options button"
+          icon={<BsThreeDots />}
+        />
+        <Portal>
+          <MenuList>
+            <MenuItem
+              isDisabled={
+                !isAccepted ||
+                x.wasCancelled ||
+                isFullyExecuted ||
+                x.moneyRequestType === 'REIMBURSMENT_ORDER'
+              }
+              onClick={() => {
+                setReqForReport(x);
+                onExpRepOpen();
+              }}
+            >
+              Crear rendición
+            </MenuItem>
+            <MenuItem
+              isDisabled={
+                !isAccepted ||
+                x.wasCancelled ||
+                isFullyExecuted ||
+                x.moneyRequestType === 'REIMBURSMENT_ORDER'
+              }
+              onClick={() => {
+                setReqForReport(x);
+                onExpReturnOpen();
+              }}
+            >
+              Generar devolución
+            </MenuItem>
+            <MenuItem onClick={handlePrintFundRequest}>
+              Imprimir solicitud
+            </MenuItem>
+
+            {x.moneyRequestType === 'FUND_REQUEST' && (
+              <MenuItem
+                isDisabled={!isFullyExecuted}
+                onClick={handlePrintExpenseRepsAndRets}
+              >
+                Imprimir rendición
+              </MenuItem>
+            )}
+
+            <MenuItem
+              isDisabled={isAccepted || x.wasCancelled}
+              onClick={() => {
+                setEditMoneyRequest(x);
+                onEditOpen();
+              }}
+            >
+              Editar
+            </MenuItem>
+            <MenuItem
+              isDisabled={isAccepted || x.wasCancelled}
+              onClick={() => {
+                rejectMyOwn({ id: x.id });
+              }}
+            >
+              Rechazar
+            </MenuItem>
+
+            <RowOptionDeleteDialog
+              targetName="solicitud"
+              onConfirm={() => deleteById({ id: x.id })}
+            />
+          </MenuList>
+        </Portal>
+      </Menu>
+      <MoneyRequestPrintComponents
+        x={x}
+        isPrinting={isPrinting}
+        printExpRepsAndRetsRef={printExpRepsAndRetsRef}
+        printFundReqRef={printFundReqRef}
       />
-      <Portal>
-        <MenuList>
-          <MenuItem
-            isDisabled={
-              !isAccepted ||
-              x.wasCancelled ||
-              isFullyExecuted ||
-              x.moneyRequestType === 'REIMBURSMENT_ORDER'
-            }
-            onClick={() => {
-              setReqForReport(x);
-              onExpRepOpen();
-            }}
-          >
-            Crear rendición
-          </MenuItem>
-          <MenuItem
-            isDisabled={
-              !isAccepted ||
-              x.wasCancelled ||
-              isFullyExecuted ||
-              x.moneyRequestType === 'REIMBURSMENT_ORDER'
-            }
-            onClick={() => {
-              setReqForReport(x);
-              onExpReturnOpen();
-            }}
-          >
-            Generar devolución
-          </MenuItem>
-
-          <MenuItem
-            isDisabled={isAccepted || x.wasCancelled}
-            onClick={() => {
-              setEditMoneyRequest(x);
-              onEditOpen();
-            }}
-          >
-            Editar
-          </MenuItem>
-          <MenuItem
-            isDisabled={isAccepted || x.wasCancelled}
-            onClick={() => {
-              rejectMyOwn({ id: x.id });
-            }}
-          >
-            Rechazar
-          </MenuItem>
-
-          <RowOptionDeleteDialog
-            targetName="solicitud"
-            onConfirm={() => deleteById({ id: x.id })}
-          />
-        </MenuList>
-      </Portal>
-    </Menu>
+    </div>
   );
 };
 

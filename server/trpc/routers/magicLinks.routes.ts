@@ -79,9 +79,15 @@ export const magicLinksRouter = router({
         },
       });
       if (process.env.NODE_ENV === 'production') {
-        await sendMagicLinkToNewUserSendgridNotification({
+        const msg = await sendMagicLinkToNewUserSendgridNotification({
           link,
           newUser: verificationLink,
+        });
+        if (!msg) return;
+        await saveEmailMsgToDb({
+          accountId: ctx.session.user.id,
+          msg,
+          tag: 'generateVerificationLink',
         });
       }
       return verificationLink;
@@ -232,7 +238,16 @@ export const magicLinksRouter = router({
       });
 
       if (process.env.NODE_ENV === 'production') {
-        await sendMagicLinkToNewUserSendgridNotification({ link, newUser });
+        const msg = await sendMagicLinkToNewUserSendgridNotification({
+          link,
+          newUser,
+        });
+        if (!msg) return;
+        await saveEmailMsgToDb({
+          accountId: ctx.session.user.id,
+          msg,
+          tag: 'createAccWithSignedLink',
+        });
       }
       return newUser;
     }),
@@ -281,15 +296,15 @@ export const magicLinksRouter = router({
         },
       });
 
-      const emailMsg = await sendPasswordRecoveryLinkOnSengrid({
+      const msg = await sendPasswordRecoveryLinkOnSengrid({
         email: input.email.toLowerCase(),
         displayName: fetchedUser.displayName,
         link,
       });
 
-      if (!emailMsg) return;
+      if (!msg) return;
       await saveEmailMsgToDb({
-        msg: { ...emailMsg },
+        msg,
         tag: 'passwordRecovery',
         accountId: user?.id ?? null,
       });

@@ -6,12 +6,6 @@ import {
   Flex,
   HStack,
   IconButton,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Select,
   Table,
   Tbody,
   Td,
@@ -22,17 +16,10 @@ import {
   Tr,
   useColorModeValue,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useRef } from 'react';
 import SkeletonRows from './Utils/SkeletonRows';
 import ThreeDotTableButton from './Utils/ThreeDotTableButton';
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  TriangleDownIcon,
-  TriangleUpIcon,
-} from '@chakra-ui/icons';
+import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import type { ColumnDef, Header, SortingState } from '@tanstack/react-table';
 import {
   useReactTable,
@@ -42,6 +29,7 @@ import {
 } from '@tanstack/react-table';
 import { TbWorld } from 'react-icons/tb';
 import { customScrollbar } from 'styles/CssUtils';
+import TablePagination from './TablePagination';
 
 export interface TableOptions {
   onClick: () => void;
@@ -92,12 +80,6 @@ const DynamicTable = <T extends object>({
   colorRedKey,
 }: DynamicTableProps<T>) => {
   const backgroundColor = useColorModeValue('white', 'gray.800');
-  const nextPage = () => setPageIndex(pageIndex + 1);
-  const previousPage = () => setPageIndex(pageIndex - 1);
-  const canNextPage = data?.length === pageSize;
-  const canPreviousPage = pageIndex > 0;
-  const gotoPage = (x: number) => setPageIndex(x);
-  const lastPage = Math.ceil(count / pageSize);
 
   const table = useReactTable({
     columns: columns ?? [],
@@ -126,6 +108,7 @@ const DynamicTable = <T extends object>({
 
   const redRowColor = useColorModeValue('red.700', 'red.300');
 
+  const cellRef = useRef(null);
   return (
     <Card
       // display={'flex'}
@@ -146,7 +129,10 @@ const DynamicTable = <T extends object>({
               {searchBar}
             </Flex>
             <HStack>
-              <Tooltip label="Cuando el filtro global esta activado, al presionar sobre la cabecera de las columnas los datos serán filtrados en toda la base de datos. De lo contrario serán ordenados solamente en la lista cargada actualmente.">
+              <Tooltip
+                placement="left"
+                label="Cuando el filtro global esta activado, al presionar sobre la cabecera de las columnas los datos serán filtrados en toda la base de datos. De lo contrario serán ordenados solamente en la lista cargada actualmente."
+              >
                 {globalFilter ? (
                   <IconButton
                     colorScheme={'green'}
@@ -239,8 +225,9 @@ const DynamicTable = <T extends object>({
                 {row.getVisibleCells().map((cell) => {
                   // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
                   const meta: any = cell.column.columnDef.meta;
+
                   return (
-                    <Td key={cell.id} isNumeric={meta?.isNumeric}>
+                    <Td ref={cellRef} key={cell.id} isNumeric={meta?.isNumeric}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -253,96 +240,14 @@ const DynamicTable = <T extends object>({
           {(!data || loading) && <SkeletonRows />}
         </Tbody>
       </Table>
-      <Flex
-        w={'100%'}
-        maxW="750px"
-        justifyContent="space-between"
-        p={4}
-        alignItems="center"
-        alignSelf={'center'}
-      >
-        <Flex>
-          <IconButton
-            onClick={() => gotoPage(0)}
-            isDisabled={!canPreviousPage}
-            icon={<ArrowLeftIcon h={3} w={3} />}
-            mr={4}
-            aria-label={''}
-          />
-
-          <IconButton
-            onClick={previousPage}
-            isDisabled={!canPreviousPage}
-            icon={<ChevronLeftIcon h={6} w={6} />}
-            aria-label={''}
-          />
-        </Flex>
-
-        <Flex alignItems="center">
-          <Text whiteSpace={'nowrap'} mr={8}>
-            Pag.{' '}
-            <Text fontWeight="bold" as="span">
-              {pageIndex + 1}
-            </Text>{' '}
-            de{' '}
-            <Text fontWeight="bold" as="span">
-              {lastPage}
-            </Text>
-          </Text>
-          <Text whiteSpace={'nowrap'}>Ir a pag.:</Text>{' '}
-          <NumberInput
-            ml={2}
-            mr={8}
-            w={28}
-            min={1}
-            max={lastPage}
-            onChange={(value) => {
-              const page = value ? parseInt(value) - 1 : 0;
-              gotoPage(page);
-            }}
-            defaultValue={pageIndex + 1}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <Select
-            w={32}
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-            }}
-            // minW="130px"
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Mostrar {pageSize}
-              </option>
-            ))}
-          </Select>
-        </Flex>
-
-        <Flex>
-          <IconButton
-            onClick={nextPage}
-            isDisabled={!canNextPage}
-            icon={<ChevronRightIcon h={6} w={6} />}
-            aria-label={''}
-          />
-
-          <IconButton
-            onClick={() => {
-              gotoPage(lastPage - 1);
-            }}
-            isDisabled={!canNextPage}
-            icon={<ArrowRightIcon h={3} w={3} />}
-            ml={4}
-            aria-label={''}
-          />
-        </Flex>
-      </Flex>
+      <TablePagination
+        pageIndex={pageIndex}
+        setPageIndex={setPageIndex}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        count={count}
+        data={data}
+      />
     </Card>
   );
 };

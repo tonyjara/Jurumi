@@ -29,4 +29,5 @@ export const moneyRequestApprovedSendgridNotification = async ({
     </div>`,
   };
   await sgMail.send(msg);
+  return msg;
 };
