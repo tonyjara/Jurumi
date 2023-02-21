@@ -34,8 +34,8 @@ declare global {
 
       // OCR SERVER
 
-      OCR_API_KEY: string;
-      OCR_API_URLL: string;
+      MS_API_KEY: string;
+      MS_OCR_URL: string;
     }
   }
 }

@@ -6,6 +6,7 @@ import {
 } from '../initTrpc';
 import prisma from '@/server/db/client';
 import { z } from 'zod';
+import axios from 'axios';
 
 export const galleryRouter = router({
   getManyImages: adminModProcedure
@@ -28,4 +29,11 @@ export const galleryRouter = router({
   count: adminModProcedure.query(async () => {
     return await prisma.searchableImage.count();
   }),
+  scanImage: adminModProcedure
+    .input(z.object({ imageName: z.string() }))
+    .mutation(async ({ input }) => {
+      await axios.post(`${process.env.MS_OCR_URL}/api/process-image`, input, {
+        headers: { 'x-api-key': process.env.MS_API_KEY },
+      });
+    }),
 });

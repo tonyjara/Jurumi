@@ -28,16 +28,18 @@ export const createMoneyRequestSlackNotification = async ({
 
     const web = new WebClient(slackToken);
 
-    await web.chat.postMessage({
-      text: `${
-        input.account.displayName
-      } ha creado una nueva solicitud del tipo ${translatedMoneyReqType(
-        input.moneyRequestType
-      )}. Vistiar este link: ${
-        process.env.NEXT_PUBLIC_WEB_URL + '/mod/approvals'
-      }`,
-      channel: org.orgNotificationSettings.approversSlackChannelId,
-      icon_emoji: '🔔',
-    });
+    await web.chat
+      .postMessage({
+        text: `${
+          input.account.displayName
+        } ha creado una nueva solicitud del tipo ${translatedMoneyReqType(
+          input.moneyRequestType
+        )}. Vistiar este link: ${
+          process.env.NEXT_PUBLIC_WEB_URL + '/mod/approvals'
+        }`,
+        channel: org.orgNotificationSettings.approversSlackChannelId,
+        icon_emoji: '🔔',
+      })
+      .catch((err) => console.log(err));
   }
 };

@@ -11,7 +11,6 @@
     "migrate:prod:DANGER": "env-cmd -f .env.prod npx prisma migrate dev ",
     "build": "next build",
     "dev": "concurrently -n \"[lint,next]\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && next dev \"",
-    "dev:ssl": "concurrently -n \"[lint,next]\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && env-cmd -f .env.ssl  next dev -p 3001 & local-ssl-proxy --source 3000 --target 3001 \"",
     "dev:staging": "env-cmd -f .env.staging  next dev",
     "prod": "env-cmd -f .env.prod  next dev",
     "start": "next start",
