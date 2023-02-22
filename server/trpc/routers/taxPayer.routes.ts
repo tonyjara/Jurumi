@@ -57,16 +57,18 @@ export const taxPayerRouter = router({
           ruc: input.ruc,
           fantasyName: input.fantasyName,
           bankInfo: {
-            create: input.bankInfo
-              ? {
-                  bankName: input.bankInfo?.bankName,
-                  accountNumber: input.bankInfo?.accountNumber,
-                  ownerName: input.bankInfo?.ownerName,
-                  ownerDocType: input.bankInfo?.ownerDocType,
-                  ownerDoc: input.bankInfo?.ownerDoc,
-                  type: input.bankInfo?.type,
-                }
-              : undefined,
+            create:
+              //PATCH FOR UNIQUE CONSTRAINT
+              input.bankInfo && input.bankInfo.accountNumber
+                ? {
+                    bankName: input.bankInfo?.bankName,
+                    accountNumber: input.bankInfo?.accountNumber,
+                    ownerName: input.bankInfo?.ownerName,
+                    ownerDocType: input.bankInfo?.ownerDocType,
+                    ownerDoc: input.bankInfo?.ownerDoc,
+                    type: input.bankInfo?.type,
+                  }
+                : undefined,
           },
         },
       });

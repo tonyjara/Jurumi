@@ -10,6 +10,7 @@ import { FaExchangeAlt, FaDonate } from 'react-icons/fa';
 import { TbReportMoney } from 'react-icons/tb';
 import { IoIosPeople } from 'react-icons/io';
 import { VscOrganization } from 'react-icons/vsc';
+import { TfiGallery } from 'react-icons/tfi';
 export interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -83,6 +84,7 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
         { name: 'Contribuyentes', icon: TbReceiptTax, dest: '/mod/taxpayers' },
         { name: 'Aprobaciones', icon: MdApproval, dest: '/mod/approvals' },
         { name: 'Vistas', icon: FiGlobe, dest: '/mod/views' },
+        { name: 'Galería', icon: TfiGallery, dest: '/mod/gallery' },
       ]
     : [];
 };

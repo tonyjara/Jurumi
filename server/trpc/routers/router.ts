@@ -19,6 +19,7 @@ import { seedRouter } from './seed.routes';
 import { expenseReturnsRouter } from './ExpenseReturn.routes';
 import { notificationsRouter } from './notifications.routes';
 import { membersRouter } from './members.routes';
+import { galleryRouter } from './gallery.routes';
 
 export const appRouter = router({
   account: accountsRouter,
@@ -39,5 +40,6 @@ export const appRouter = router({
   expenseReturn: expenseReturnsRouter,
   notifications: notificationsRouter,
   members: membersRouter,
+  gallery: galleryRouter,
 });
 export type AppRouter = typeof appRouter;
