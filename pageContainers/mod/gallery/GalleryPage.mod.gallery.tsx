@@ -7,6 +7,8 @@ import {
     Card,
     CardBody,
     Image,
+    Input,
+    InputGroup,
     SimpleGrid,
     useDisclosure,
 } from "@chakra-ui/react";
@@ -32,6 +34,9 @@ const GalleryPage = () => {
     return (
         <Card overflow={"auto"}>
             <CardBody>
+                <InputGroup>
+                    <Input maxW={"300px"} placeholder="Buscar por texto" />
+                </InputGroup>
                 <SimpleGrid w="80vw" columns={8} minChildWidth={"180px"} spacing={6}>
                     {data?.map((x) => (
                         <Box
@@ -67,14 +72,16 @@ const GalleryPage = () => {
                     data={data}
                 />
             </CardBody>
-            {clickedImage && (
-                <ImageEnlargeModal
-                    isOpen={isOpen}
-                    onClose={onClose}
-                    {...clickedImage}
-                />
-            )}
-        </Card>
+            {
+                clickedImage && (
+                    <ImageEnlargeModal
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        {...clickedImage}
+                    />
+                )
+            }
+        </Card >
     );
 };
 
