@@ -235,10 +235,19 @@ export const moneyRequestRouter = router({
   // edit executed amount when going from other than accepted
   edit: protectedProcedure
     .input(validateMoneyRequest)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const user = ctx.session.user;
+
+      const taxPayer = await upsertTaxPayter({
+        input: input.taxPayer,
+        userId: user.id,
+      });
+      console.log(input);
+
       const x = await prisma?.moneyRequest.update({
         where: { id: input.id },
         data: {
+          taxPayerId: taxPayer.id,
           amountRequested: new Prisma.Decimal(input.amountRequested),
           currency: input.currency,
           description: input.description,
@@ -288,7 +297,49 @@ export const moneyRequestRouter = router({
         });
       });
     }),
+  cancelMyOwnById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await prisma.$transaction(async (txCtx) => {
+        const user = ctx.session.user;
+        //verifies that the current user owns the request canceling
+        await txCtx.moneyRequest.findFirstOrThrow({
+          where: { id: input.id, accountId: user.id },
+        });
 
+        const moneyReq = await txCtx.moneyRequest.update({
+          where: { id: input.id },
+          data: { wasCancelled: true },
+          include: {
+            expenseReports: true,
+            expenseReturns: true,
+            transactions: true,
+            moneyRequestApprovals: true,
+          },
+        });
+
+        await cancelTransactions({
+          txCtx,
+          transactions: moneyReq.transactions,
+        });
+        await cancelExpenseReports({
+          txCtx,
+          expenseReports: moneyReq.expenseReports,
+        });
+        await cancelExpenseReturns({
+          txCtx,
+          expenseReturns: moneyReq.expenseReturns,
+        });
+        await cancelMoneyReqApprovals({
+          txCtx,
+          moneyRequestApprovals: moneyReq.moneyRequestApprovals,
+        });
+      });
+    }),
   rejectMyOwn: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {

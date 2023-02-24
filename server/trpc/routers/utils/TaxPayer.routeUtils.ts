@@ -1,5 +1,7 @@
 import type { moneyReqTaxPayer } from '@/lib/validations/moneyRequest.validate';
 import prisma from '@/server/db/client';
+import type { TaxPayer } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
 
 export const upsertTaxPayter = async ({
   input,
@@ -7,8 +9,12 @@ export const upsertTaxPayter = async ({
 }: {
   input: moneyReqTaxPayer;
   userId: string;
-}) => {
-  if (!input.razonSocial.length || !input.razonSocial) return;
+}): Promise<TaxPayer> => {
+  if (!input.razonSocial.length || !input.razonSocial)
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Taxpayer not created',
+    });
   const taxPayer = await prisma?.taxPayer.upsert({
     where: {
       ruc: input.ruc,
@@ -54,5 +60,11 @@ export const upsertTaxPayter = async ({
       },
     },
   });
+  if (!taxPayer) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Taxpayer not created',
+    });
+  }
   return taxPayer;
 };
