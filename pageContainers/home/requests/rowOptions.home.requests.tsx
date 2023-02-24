@@ -20,6 +20,7 @@ import {
 } from '@/lib/utils/TransactionUtils';
 import MoneyRequestPrintComponents from '@/components/Print/MoneyRequest.print.components';
 import UsePrintComponent from '@/components/Print/UsePrintComponent';
+import { RowOptionCancelDialog } from '@/components/Toasts & Alerts/RowOptions.cancel.dialog';
 
 const RowOptionsHomeRequests = ({
   x,
@@ -57,6 +58,15 @@ const RowOptionsHomeRequests = ({
         successText: 'Se ha rechazado la solicitud!',
         callback: () => {
           context.moneyRequest.invalidate();
+        },
+      })
+    );
+  const { mutate: cancelById } =
+    trpcClient.moneyRequest.cancelMyOwnById.useMutation(
+      handleUseMutationAlerts({
+        successText: 'Se ha anulado su solicitud!',
+        callback: () => {
+          context.invalidate();
         },
       })
     );
@@ -143,7 +153,11 @@ const RowOptionsHomeRequests = ({
             >
               Rechazar
             </MenuItem>
-
+            <RowOptionCancelDialog
+              isDisabled={x.wasCancelled}
+              targetName="solicitud"
+              onConfirm={() => cancelById({ id: x.id })}
+            />
             <RowOptionDeleteDialog
               targetName="solicitud"
               onConfirm={() => deleteById({ id: x.id })}
