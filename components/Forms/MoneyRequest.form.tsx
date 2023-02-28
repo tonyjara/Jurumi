@@ -75,6 +75,7 @@ const MoneyRequestForm = ({
         errors={errors}
         name="moneyRequestType"
         label="Tipo de solicitud"
+        disable={isEdit}
         options={moneyRequestTypeOptions ?? []}
       />
       {(moneyRequestType === 'MONEY_ORDER' ||
