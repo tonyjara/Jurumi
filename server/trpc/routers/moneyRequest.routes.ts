@@ -232,6 +232,7 @@ export const moneyRequestRouter = router({
       await createMoneyRequestSlackNotification({ input: MoneyReq });
       return MoneyReq;
     }),
+
   // edit executed amount when going from other than accepted
   edit: protectedProcedure
     .input(validateMoneyRequest)
@@ -242,12 +243,11 @@ export const moneyRequestRouter = router({
         input: input.taxPayer,
         userId: user.id,
       });
-      console.log(input);
 
       const x = await prisma?.moneyRequest.update({
         where: { id: input.id },
         data: {
-          taxPayerId: taxPayer.id,
+          taxPayerId: taxPayer?.id,
           amountRequested: new Prisma.Decimal(input.amountRequested),
           currency: input.currency,
           description: input.description,

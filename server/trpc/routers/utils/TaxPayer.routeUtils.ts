@@ -7,14 +7,10 @@ export const upsertTaxPayter = async ({
   input,
   userId,
 }: {
-  input: moneyReqTaxPayer;
+  input: moneyReqTaxPayer | null;
   userId: string;
-}): Promise<TaxPayer> => {
-  if (!input.razonSocial.length || !input.razonSocial)
-    throw new TRPCError({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Taxpayer not created',
-    });
+}): Promise<TaxPayer | null> => {
+  if (!input || !input.razonSocial.length || !input.razonSocial) return null;
   const taxPayer = await prisma?.taxPayer.upsert({
     where: {
       ruc: input.ruc,

@@ -286,7 +286,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             label="Denominación"
             autoFocus={true}
             //@ts-ignore
-            error={errors.bankInfo?.ownerName?.message}
+            error={errors.taxPayer?.bankInfo?.ownerName?.message}
           />
           <FormControlledText
             control={control}
@@ -295,7 +295,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             name="taxPayer.bankInfo.accountNumber"
             label="Número de cuenta"
             //@ts-ignore
-            error={errors.bankInfo?.accountNumber?.message}
+            error={errors.taxPayer?.bankInfo?.accountNumber?.message}
           />
           <FormControlledSelect
             control={control}
@@ -311,6 +311,8 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             //@ts-ignore
             name="taxPayer.bankInfo.ownerDoc"
             label="Documento del titular"
+            //@ts-ignore
+            error={errors.taxPayer?.bankInfo?.ownerDoc?.message}
           />
           <Divider />
         </>
