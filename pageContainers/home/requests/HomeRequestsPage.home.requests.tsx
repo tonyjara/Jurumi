@@ -26,6 +26,7 @@ export type CompleteMoneyReqHome = MoneyRequest & {
   };
   project: Project | null;
   taxPayer: {
+    razonSocial: string;
     bankInfo: {
       bankName: BankNamesPy;
       accountNumber: string;

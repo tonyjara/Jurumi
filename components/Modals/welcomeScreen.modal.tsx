@@ -38,7 +38,7 @@ const WelcomeScreenModal = ({
 
         <ModalBody>
           <Text>
-            Estamos super conentos de que te sumes a la plataforma. Puedes
+            Estamos super contentos de que te sumes a la plataforma. Puedes
             encontrar ayuda y tutoriales en{' '}
             <Link target={'_blank'} href="http://docs.opades.org.py">
               <span

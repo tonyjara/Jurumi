@@ -52,15 +52,6 @@ const RowOptionsHomeRequests = ({
     })
   );
 
-  const { mutate: rejectMyOwn } =
-    trpcClient.moneyRequest.cancelById.useMutation(
-      handleUseMutationAlerts({
-        successText: 'Se ha rechazado la solicitud!',
-        callback: () => {
-          context.moneyRequest.invalidate();
-        },
-      })
-    );
   const { mutate: cancelById } =
     trpcClient.moneyRequest.cancelMyOwnById.useMutation(
       handleUseMutationAlerts({
@@ -145,14 +136,7 @@ const RowOptionsHomeRequests = ({
             >
               Editar
             </MenuItem>
-            <MenuItem
-              isDisabled={isAccepted || x.wasCancelled}
-              onClick={() => {
-                rejectMyOwn({ id: x.id });
-              }}
-            >
-              Rechazar
-            </MenuItem>
+
             <RowOptionCancelDialog
               isDisabled={x.wasCancelled}
               targetName="solicitud"

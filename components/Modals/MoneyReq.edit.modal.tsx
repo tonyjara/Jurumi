@@ -47,6 +47,7 @@ const EditMoneyRequestModal = ({
     defaultValues: defaultMoneyRequestData,
     resolver: zodResolver(validateMoneyRequest),
   });
+
   useEffect(() => {
     if (isOpen) {
       reset(moneyRequest);

@@ -40,7 +40,8 @@
     "**/*.tsx",
     "**/*.cjs",
     "next.config.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "jest.config.js"
   ],
   "exclude": ["node_modules", "prisma/zod", "jest.config.js", "jest.setup.js"]
 }

@@ -50,10 +50,10 @@ const FormControlledSelect = <T extends FieldValues>({
   const handleOnChange = (e: any, field: ControllerRenderProps<T, Path<T>>) => {
     if (!isMulti) {
       if (!optionValue) {
-        return field.onChange(e?.value ?? '');
+        return field.onChange(e?.value ?? null);
       }
 
-      return field.onChange(e ? e[optionValue] : '');
+      return field.onChange(e ? e[optionValue] : null);
     }
 
     if (isMulti) {
