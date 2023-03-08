@@ -7,6 +7,30 @@ import superjson from 'superjson';
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export
 import type { AppRouter } from '@/server/trpc/routers/router';
 import { Decimal } from 'decimal.js';
+import type { PrismaClient } from '@prisma/client';
+import type { Session } from 'next-auth';
+
+type CreateContextOptions = {
+  session: Session | null;
+  prisma?: PrismaClient;
+};
+
+/**
+ * This helper generates the "internals" for a tRPC context. If you need to use
+ * it, you can export it from here
+ *
+ * Examples of things you may need it for:
+ * - testing, so we dont have to mock Next.js' req/res
+ * - trpc's `createSSGHelpers` where we don't have req/res
+ * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
+ */
+export const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  return {
+    session: opts.session,
+    prisma: opts.prisma,
+    // prisma: opts.prisma || prisma,
+  };
+};
 
 //this solves the problem when serializing  superjson
 superjson.registerCustom<Decimal, string>(

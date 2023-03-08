@@ -69,6 +69,7 @@ export const moneyRequestRouter = router({
           account: { select: { displayName: true } },
           taxPayer: {
             select: {
+              razonSocial: true,
               bankInfo: {
                 select: {
                   ownerName: true,

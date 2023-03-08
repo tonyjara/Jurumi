@@ -85,7 +85,7 @@ const CreateMoneyRequestModal = ({
               reset={reset}
               mock={() =>
                 moneyRequestMock({
-                  organizationId: '',
+                  organizationId: orgId ?? '',
                   moneyRequestType: 'FUND_REQUEST',
                 })
               }

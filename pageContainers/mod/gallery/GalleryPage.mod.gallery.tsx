@@ -34,7 +34,7 @@ const GalleryPage = () => {
   return (
     <Card overflow={'auto'}>
       <CardBody>
-        <InputGroup>
+        <InputGroup mb={'10px'}>
           <Input maxW={'300px'} placeholder="Buscar por texto" />
         </InputGroup>
         <SimpleGrid w="80vw" columns={8} minChildWidth={'180px'} spacing={6}>

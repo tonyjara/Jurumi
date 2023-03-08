@@ -43,6 +43,12 @@ interface formProps<T extends FieldValues> {
   amountExecuted: Decimal;
   moneyRequestType: MoneyRequestType | undefined;
   setValue: UseFormSetValue<T>;
+  moneyAccOptions: (currency: Currency) =>
+    | {
+        value: string;
+        label: string;
+      }[]
+    | undefined;
 }
 
 const TransactionForm = ({
@@ -52,15 +58,13 @@ const TransactionForm = ({
   amountExecuted,
   setValue,
   moneyRequestType,
+  moneyAccOptions,
 }: formProps<FormTransactionCreate>) => {
   const user = useSession().data?.user;
   const { fields, prepend, remove, update } = useFieldArray({
     control,
     name: 'transactions',
   });
-
-  const { data: moneyAccs } =
-    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
   const projectId = useWatch({ control, name: 'projectId' });
@@ -70,14 +74,6 @@ const TransactionForm = ({
     value: proj.id,
     label: `${proj.displayName}`,
   }));
-
-  const moneyAccOptions = (currency: Currency) =>
-    moneyAccs
-      ?.filter((x) => x.currency === currency)
-      .map((acc) => ({
-        value: acc.id,
-        label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
-      }));
 
   const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
     { projectId: projectId ?? '' },

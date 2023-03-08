@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { Transaction } from '@prisma/client';
+import type { MoneyRequest, Transaction } from '@prisma/client';
 import { TransactionType } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { Currency } from '@prisma/client';
 import { z } from 'zod';
+import { v4 as uuidV4 } from 'uuid';
 
 type withMoney = Omit<
   Transaction,
@@ -114,31 +115,52 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   searchableImage: { url: '', imageName: '' },
   expenseReportId: null,
 };
-export const transactionMock: () => Transaction = () => {
-  const x: Transaction = {
+export const transactionMock: (
+  moneyReq: MoneyRequest & {
+    transactions: Transaction[]; // only transactionAmount is selected
+  },
+  moneyAccOptions: (currency: Currency) =>
+    | {
+        value: string;
+        label: string;
+      }[]
+    | undefined
+) => FormTransactionCreate = (
+  { projectId, accountId, currency, id, costCategoryId, amountRequested },
+  moneyAccOptions
+) => {
+  const imageName = uuidV4();
+  const x: FormTransactionCreate = {
+    transactions: [
+      {
+        transactionAmount: amountRequested,
+        //@ts-ignore
+        moneyAccountId: moneyAccOptions(currency)[0]?.value ?? '',
+        currency,
+      },
+    ],
     id: 0,
     createdAt: new Date(),
     updatedAt: null,
-    accountId: '',
+    accountId,
     updatedById: null,
-    currency: 'PYG',
     openingBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
     currentBalance: new Prisma.Decimal(0),
-    transactionAmount: new Prisma.Decimal(
-      faker.commerce.price(1000000, 3000000)
-    ),
     isCancellation: false,
-    moneyAccountId: '',
-    moneyRequestId: null,
+    moneyRequestId: id,
     imbursementId: null,
     expenseReturnId: null,
     cancellationId: null,
-    projectId: null,
+    projectId,
     membershipId: null,
     membershipPaymentRequestId: null,
-    costCategoryId: null,
+    costCategoryId,
     expenseReportId: null,
     transactionType: 'MONEY_ACCOUNT',
+    searchableImage: {
+      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+      imageName,
+    },
   };
   return x;
 };

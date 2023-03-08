@@ -2,7 +2,7 @@ import { Button, Text, Heading, HStack, Flex, Divider } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import type { MoneyRequest, Transaction } from '@prisma/client';
+import type { Currency, MoneyRequest, Transaction } from '@prisma/client';
 import { useRouter } from 'next/router';
 import FormContainer from '@/components/Containers/FormContainer';
 import TransactionForm from '@/components/Forms/Transaction.create.form';
@@ -10,13 +10,18 @@ import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';
 import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
+import { transactionMock } from '@/lib/validations/transaction.create.validate';
 import {
   defaultTransactionCreateData,
   validateTransactionCreate,
 } from '@/lib/validations/transaction.create.validate';
 import { translatedMoneyReqType } from '@/lib/utils/TranslatedEnums';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import { reduceTransactionAmounts } from '@/lib/utils/TransactionUtils';
+import {
+  formatedAccountBalance,
+  reduceTransactionAmounts,
+} from '@/lib/utils/TransactionUtils';
+import SeedButton from '@/components/DevTools/SeedButton';
 
 const CreateTransactionPage = ({
   moneyRequest,
@@ -27,6 +32,17 @@ const CreateTransactionPage = ({
 }) => {
   const context = trpcClient.useContext();
   const router = useRouter();
+
+  const { data: moneyAccs } =
+    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
+
+  const moneyAccOptions = (currency: Currency) =>
+    moneyAccs
+      ?.filter((x) => x.currency === currency)
+      .map((acc) => ({
+        value: acc.id,
+        label: `${acc.displayName} ${formatedAccountBalance(acc)}`,
+      }));
 
   const handleGoBack = () => {
     router.back();
@@ -80,7 +96,12 @@ const CreateTransactionPage = ({
         <Heading fontSize={'2xl'}>Crear transacciones</Heading>
 
         {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-
+        {moneyRequest && (
+          <SeedButton
+            reset={reset}
+            mock={() => transactionMock(moneyRequest, moneyAccOptions)}
+          />
+        )}
         {moneyRequest && (
           <Flex flexDirection="column">
             <Text fontSize={'xl'}>
@@ -118,6 +139,7 @@ const CreateTransactionPage = ({
           control={control}
           errors={errors}
           setValue={setValue}
+          moneyAccOptions={moneyAccOptions}
         />
 
         <Text mt={'10px'} color={'red.400'}>
