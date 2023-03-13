@@ -40,6 +40,9 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       currency: z.nativeEnum(Currency),
       amountRequested: z.any().transform((value) => new Prisma.Decimal(value)),
       accountId: z.string(),
+      comments: z
+        .string()
+        .max(256, 'Has excedido el límite de caractéres (256)'),
       projectId: z.string().nullable(),
       costCategoryId: z.string().nullable(),
       archived: z.boolean(),
@@ -160,6 +163,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
 
 export const defaultMoneyRequestData: FormMoneyRequest = {
   id: '',
+  comments: '',
   createdAt: new Date(),
   updatedAt: null,
   description: '',
@@ -202,6 +206,7 @@ export const moneyRequestMock = ({
   const imageName = uuidV4();
   const x: FormMoneyRequest = {
     id: '',
+    comments: faker.commerce.productDescription().substring(0, 200),
     createdAt: new Date(),
     updatedAt: null,
     description: faker.commerce.productDescription().substring(0, 123),

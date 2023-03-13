@@ -114,6 +114,16 @@ export const moneyRequestsColumns = ({
     ),
     header: 'Concepto',
   }),
+  columnHelper.accessor('comments', {
+    cell: (x) => (
+      <TextCell
+        text={x.getValue().length ? x.getValue() : '-'}
+        shortenString
+        hover={x.getValue()}
+      />
+    ),
+    header: 'Comentarios',
+  }),
   columnHelper.display({
     header: 'Ejecutado',
     cell: (x) => (

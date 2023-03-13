@@ -2,7 +2,7 @@
 // import { moneyRequestMock } from '@/lib/validations/moneyRequest.validate';
 // import type { AppRouter } from '@/server/trpc/routers/router';
 // import { appRouter } from '@/server/trpc/routers/router';
-import { test, expect } from '@jest/globals';
+// import { test, expect } from '@jest/globals';
 // import type { MoneyRequest, PrismaClient } from '@prisma/client';
 // import { Prisma } from '@prisma/client';
 // import type { inferProcedureInput } from '@trpc/server';
@@ -37,6 +37,7 @@ import { test, expect } from '@jest/globals';
 // const adminCaller = appRouter.createCaller(
 //   createInnerTRPCContext({ session: adminSessionMock, prisma: prismaMock })
 // );
+export {};
 
 test('create moneyRequest test', async () => {
   // prismaMock.moneyRequest.create.mockResolvedValue(mockOutPut);

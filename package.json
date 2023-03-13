@@ -17,6 +17,7 @@
     "lint": "next lint",
     "test:watch": "jest --watch",
     "test": "jest",
+    "vitest": "vitest",
     "ts-lint": "tsc --noEmit --incremental --watch",
     "docker-staging": "docker compose -f compose-staging.yml up --build --force-recreate",
     "postinstall": "prisma generate && prisma migrate deploy"
@@ -114,6 +115,7 @@
     "@types/uuid": "9.0.0",
     "@typescript-eslint/eslint-plugin": "5.51.0",
     "@typescript-eslint/parser": "5.51.0",
+    "@vitejs/plugin-react": "^3.1.0",
     "babel-jest": "^29.5.0",
     "concurrently": "7.6.0",
     "dotenv": "^16.0.3",
@@ -129,7 +131,11 @@
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "tsconfig-paths-jest": "^0.0.1",
-    "typescript": "4.9.5"
+    "typescript": "4.9.5",
+    "vite": "^4.1.4",
+    "vite-plugin-svgr": "^2.4.0",
+    "vite-tsconfig-paths": "^4.0.5",
+    "vitest": "^0.29.2"
   },
   "ct3aMetadata": {
     "initVersion": "6.10.0"

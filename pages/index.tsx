@@ -105,6 +105,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
                 label={t('forms:email')}
                 errors={errors}
                 control={control}
+                autoFocus={true}
                 name="email"
                 type="email"
                 helperText={t('forms:emailHelper')}

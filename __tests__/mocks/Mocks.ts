@@ -254,6 +254,7 @@ export const expenseReturnMock = ({
 export const moneyReqCompleteMock = (userId: string | undefined) => {
   const x: MoneyRequestComplete = {
     id: 'cldagi67k005qpftt2ssd67m9',
+    comments: '',
     taxPayer: {
       id: '',
       razonSocial: faker.name.fullName(),
