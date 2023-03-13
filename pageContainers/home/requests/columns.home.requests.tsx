@@ -66,6 +66,22 @@ export const homeRequestsColumns = ({
       <EnumTextCell text={x.getValue()} enumFunc={translatedMoneyReqType} />
     ),
   }),
+  columnHelper.accessor('description', {
+    cell: (x) => (
+      <TextCell text={x.getValue()} shortenString hover={x.getValue()} />
+    ),
+    header: 'Concepto',
+  }),
+  columnHelper.accessor('comments', {
+    cell: (x) => (
+      <TextCell
+        text={x.getValue().length ? x.getValue() : '-'}
+        shortenString
+        hover={x.getValue()}
+      />
+    ),
+    header: 'Comentarios',
+  }),
   columnHelper.accessor('amountRequested', {
     header: 'Monto',
     cell: (x) => (

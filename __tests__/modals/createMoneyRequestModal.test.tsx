@@ -6,16 +6,16 @@ import '@testing-library/jest-dom';
 import CreateMoneyRequestModal from '../../components/Modals/MoneyRequest.create.modal';
 
 it.only('create moneyRequest test', async () => {
-  render(
-    <CreateMoneyRequestModal
-      isOpen={true}
-      onClose={() => {}}
-      orgId="asdfasdf"
-    />
-  );
+  // render(
+  //   <CreateMoneyRequestModal
+  //     isOpen={true}
+  //     onClose={() => {}}
+  //     orgId="asdfasdf"
+  //   />
+  // );
 
-  // render(<Signin />);
-  // expect(screen.getByTestId('forms:email')).tobeInTheDocument();
+  render(<Signin />);
+  expect(screen.getByTestId('forms:email')).tobeInTheDocument();
 
   // userEvent.type(screen.getByTestId('forms:email'), 'conceptooooo');
 });

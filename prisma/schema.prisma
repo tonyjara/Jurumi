@@ -390,6 +390,7 @@ model MoneyRequest {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime?          @updatedAt
   description      String
+  comments         String             @default("")
   status           MoneyRequestStatus
   moneyRequestType MoneyRequestType
   currency         Currency

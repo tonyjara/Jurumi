@@ -103,13 +103,13 @@ const CreateTransactionPage = ({
           />
         )}
         {moneyRequest && (
-          <Flex flexDirection="column">
+          <Flex gap={2} flexDirection="column">
             <Text fontSize={'xl'}>
-              Tipo de desembolso:{' '}
+              <span style={{ fontWeight: 'bold' }}>Tipo de desembolso: </span>
               {translatedMoneyReqType(moneyRequest.moneyRequestType)}
             </Text>
             <Text fontSize={'xl'}>
-              Monto solicitado:{' '}
+              <span style={{ fontWeight: 'bold' }}>Monto solicitado: </span>
               <span style={{ fontWeight: 'bold' }}>
                 {decimalFormat(
                   moneyRequest.amountRequested,
@@ -117,7 +117,14 @@ const CreateTransactionPage = ({
                 )}
               </span>
             </Text>
-            <Text fontSize={'xl'}>Concepto: {moneyRequest.description}</Text>
+            <Text fontSize={'xl'}>
+              <span style={{ fontWeight: 'bold' }}>Concepto:</span>
+              {moneyRequest.description}
+            </Text>
+            <Text fontSize={'xl'}>
+              <span style={{ fontWeight: 'bold' }}>Comentarios: </span>
+              {moneyRequest.comments.length ? moneyRequest.comments : '-'}
+            </Text>
             {amountExecuted > 0 && (
               <Text fontSize={'xl'}>
                 Monto ejecutado:{' '}

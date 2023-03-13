@@ -159,6 +159,13 @@ const MoneyRequestForm = ({
           disable={isEdit}
         />
       )}
+      <FormControlledText
+        control={control}
+        errors={errors}
+        name="comments"
+        isTextArea={true}
+        label="Comentarios sobre la solicitud (opcional)"
+      />
 
       {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
       {isAdminOrMod && (
