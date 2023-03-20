@@ -27,17 +27,19 @@ interface InputProps<T extends FieldValues> {
   helperText?: string;
   hidden?: boolean;
   autoFocus?: boolean;
+  error?: string; // escape hatch for nested objects
 }
 
 const FormControlledFacturaNumber = <T extends FieldValues>(
   props: InputProps<T>
 ) => {
-  const { control, name, errors, label, helperText, hidden, autoFocus } = props;
+  const { control, name, errors, label, helperText, hidden, autoFocus, error } =
+    props;
   const watchValue = useWatch({ control, name });
 
   const [inputValue, setInputValue] = useState<string>(watchValue);
   return (
-    <FormControl hidden={hidden} isInvalid={!!errors[name]}>
+    <FormControl hidden={hidden} isInvalid={!!errors[name] || !!error}>
       <FormLabel fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -66,6 +68,7 @@ const FormControlledFacturaNumber = <T extends FieldValues>(
           </InputGroup>
         )}
       />
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!errors[name] ? (
         <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
       ) : (

@@ -21,8 +21,7 @@ import FormControlledRadioButtons from '../FormControlled/FormControlledRadioBut
 import FormControlledSelect from '../FormControlled/FormControlledSelect';
 import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
 import FormControlledText from '../FormControlled/FormControlledText';
-import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
-import FormControlledFacturaNumber from '../FormControlled/FormControlledFacturaNumber';
+import ReimbursementOrderImagesForm from './ReimbursementOrderImages.form';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
@@ -92,26 +91,11 @@ const MoneyRequestForm = ({
             showBankInfo={true}
           />
           {moneyRequestType === 'REIMBURSMENT_ORDER' && (
-            <>
-              <FormControlledFacturaNumber
-                control={control}
-                errors={errors}
-                name="facturaNumber"
-                label="Número de factura."
-              />
-              {user && (
-                <FormControlledImageUpload
-                  control={control}
-                  errors={errors}
-                  urlName="searchableImage.url"
-                  idName="searchableImage.imageName"
-                  label="Foto de su comprobante"
-                  setValue={setValue}
-                  userId={user.id}
-                  helperText="Favor tener en cuenta la orientación y legibilidad del documento."
-                />
-              )}
-            </>
+            <ReimbursementOrderImagesForm
+              control={control}
+              errors={errors}
+              setValue={setValue}
+            />
           )}
         </>
       )}

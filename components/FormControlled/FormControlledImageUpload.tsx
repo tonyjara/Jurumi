@@ -37,6 +37,8 @@ interface InputProps<T extends FieldValues> {
   setValue: SetFieldValue<T>;
   helperText?: string;
   userId: string;
+  error?: string; // escape hatch for nested objects
+  setImageIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FormControlledImageUpload = <T extends FieldValues>(
@@ -52,6 +54,8 @@ const FormControlledImageUpload = <T extends FieldValues>(
     setValue,
     helperText,
     userId,
+    error,
+    setImageIsLoading,
   } = props;
   const [uploading, setUploading] = useState(false);
   const pictureUrl = useWatch({ control, name: urlName }) as string;
@@ -67,6 +71,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
     try {
       if (!files[0]) return;
       setUploading(true);
+      setImageIsLoading && setImageIsLoading(true);
 
       const getFile: File = files[0];
       const file = new File([getFile], imageUuid, {
@@ -83,10 +88,12 @@ const FormControlledImageUpload = <T extends FieldValues>(
       setValue(urlName, url);
       setValue(idName, imageUuid);
       setUploading(false);
+      setImageIsLoading && setImageIsLoading(false);
     } catch (err) {
       myToast.error();
       console.error(err);
       setUploading(false);
+      setImageIsLoading && setImageIsLoading(false);
     }
   };
 
@@ -159,6 +166,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
         />
       </HStack>
 
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!imageError.message ? (
         <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
       ) : (

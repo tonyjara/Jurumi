@@ -10,7 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';
@@ -45,6 +45,7 @@ const CreateMoneyRequestModal = ({
     defaultValues: defaultMoneyRequestData,
     resolver: zodResolver(validateMoneyRequest),
   });
+
   const handleOnClose = () => {
     reset(defaultMoneyRequestData);
     onClose();
@@ -107,7 +108,7 @@ const CreateMoneyRequestModal = ({
             >
               Guardar
             </Button>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
+            <Button colorScheme="gray" mr={3} onClick={handleOnClose}>
               Cerrar
             </Button>
           </ModalFooter>

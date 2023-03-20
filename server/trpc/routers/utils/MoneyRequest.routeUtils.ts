@@ -29,41 +29,36 @@ export const handleWhereImApprover = (
 };
 
 /**
- This function throws if the request is of type reimbursement and there is no image or factura number present
+ This function throws if the request is of type reimbursement and there is no image or factura number present, it also creates the searchable image
  */
 export const reimbursementOrderImageGuard = async ({
   input,
 }: {
   input: FormMoneyRequest;
 }) => {
-  if (input.moneyRequestType !== 'REIMBURSMENT_ORDER')
-    return { facturaNumber: null, searchableImage: null };
-  if (!input.searchableImage?.imageName || !input.searchableImage.url) {
+  if (input.moneyRequestType !== 'REIMBURSMENT_ORDER') return null;
+
+  if (!input.searchableImages.length) {
     throw new TRPCError({
       code: 'PRECONDITION_FAILED',
       message: 'no reimbursement proof',
     });
   }
 
-  const reimbursementProof = await prisma?.searchableImage.upsert({
-    where: {
-      imageName: input.searchableImage?.imageName,
-    },
-    create: {
-      url: input.searchableImage.url,
-      imageName: input.searchableImage.imageName,
-      text: '',
-    },
-    update: {},
-  });
-  if (!input.facturaNumber) {
-    throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message: 'no facturanumber',
+  for (const searchableImage of input.searchableImages) {
+    await prisma?.searchableImage.upsert({
+      where: {
+        imageName: searchableImage?.imageName,
+      },
+      create: {
+        url: searchableImage.url,
+        imageName: searchableImage.imageName,
+        text: '',
+        facturaNumber: searchableImage.facturaNumber ?? '',
+      },
+      update: {},
     });
   }
-  return {
-    facturaNumber: input.facturaNumber,
-    searchableImage: { id: reimbursementProof.id },
-  };
+
+  return input.searchableImages;
 };

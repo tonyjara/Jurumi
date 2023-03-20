@@ -17,6 +17,8 @@ import {
   useDisclosure,
   FormHelperText,
   Divider,
+  Box,
+  Flex,
 } from '@chakra-ui/react';
 import type { TaxPayer, TaxPayerBankInfo } from '@prisma/client';
 import axios from 'axios';
@@ -32,6 +34,7 @@ import type {
 } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
+import { AiOutlineMinusSquare } from 'react-icons/ai';
 import useDebounce from '../../lib/hooks/useDebounce';
 import { trpcClient } from '../../lib/utils/trpcClient';
 import CreateTaxPayerModal from '../Modals/taxPayer.create.modal';
@@ -85,6 +88,9 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     []
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isFadeOpen, onToggle: onFadeToggle } = useDisclosure({
+    defaultIsOpen: true,
+  });
   const debouncedSearchValue = useDebounce(selectInput, 500);
   const controller = new AbortController();
 
@@ -269,52 +275,65 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
       {showBankInfo && (
         <>
           <Divider />
-          <Text color="gray.500">Datos para transferencia</Text>
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            //@ts-ignore
-            name="taxPayer.bankInfo.bankName"
-            label="Seleccione el banco"
-            options={bankNameOptions}
-          />
-          <FormControlledText
-            control={control}
-            errors={errors}
-            //@ts-ignore
-            name="taxPayer.bankInfo.ownerName"
-            label="Denominación"
-            autoFocus={true}
-            //@ts-ignore
-            error={errors.taxPayer?.bankInfo?.ownerName?.message}
-          />
-          <FormControlledText
-            control={control}
-            errors={errors}
-            //@ts-ignore
-            name="taxPayer.bankInfo.accountNumber"
-            label="Número de cuenta"
-            //@ts-ignore
-            error={errors.taxPayer?.bankInfo?.accountNumber?.message}
-          />
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            //@ts-ignore
-            name="taxPayer.bankInfo.ownerDocType"
-            label="Tipo de documento"
-            options={ownerDocTypeOptions}
-          />
-          <FormControlledText
-            control={control}
-            errors={errors}
-            //@ts-ignore
-            name="taxPayer.bankInfo.ownerDoc"
-            label="Documento del titular"
-            //@ts-ignore
-            error={errors.taxPayer?.bankInfo?.ownerDoc?.message}
-          />
-          <Divider />
+          <Flex alignItems={'center'} gap="10px" alignSelf={'start'}>
+            <IconButton
+              size={'sm'}
+              icon={<AiOutlineMinusSquare />}
+              aria-label="bank info toggle"
+              onClick={onFadeToggle}
+            />
+
+            <Text color="gray.500">Datos para transferencia</Text>
+          </Flex>
+          <Box
+            style={{ width: '100%', display: isFadeOpen ? 'block' : 'none' }}
+          >
+            <FormControlledSelect
+              control={control}
+              errors={errors}
+              //@ts-ignore
+              name="taxPayer.bankInfo.bankName"
+              label="Seleccione el banco"
+              options={bankNameOptions}
+            />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              //@ts-ignore
+              name="taxPayer.bankInfo.ownerName"
+              label="Denominación"
+              autoFocus={true}
+              //@ts-ignore
+              error={errors.taxPayer?.bankInfo?.ownerName?.message}
+            />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              //@ts-ignore
+              name="taxPayer.bankInfo.accountNumber"
+              label="Número de cuenta"
+              //@ts-ignore
+              error={errors.taxPayer?.bankInfo?.accountNumber?.message}
+            />
+            <FormControlledSelect
+              control={control}
+              errors={errors}
+              //@ts-ignore
+              name="taxPayer.bankInfo.ownerDocType"
+              label="Tipo de documento"
+              options={ownerDocTypeOptions}
+            />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              //@ts-ignore
+              name="taxPayer.bankInfo.ownerDoc"
+              label="Documento del titular"
+              //@ts-ignore
+              error={errors.taxPayer?.bankInfo?.ownerDoc?.message}
+            />
+            <Divider />
+          </Box>
         </>
       )}
       <CreateTaxPayerModal

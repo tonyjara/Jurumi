@@ -26,37 +26,36 @@ import CreateExpenseReportModal from '@/components/Modals/ExpenseReport.create.m
 import CreateExpenseReturnModal from '@/components/Modals/ExpenseReturn.create.modal';
 
 export type MoneyRequestComplete = MoneyRequest & {
+  account: Account;
+  organization: {
+    moneyAdministrators: {
+      id: string;
+      displayName: string;
+    }[];
+    moneyRequestApprovers: {
+      id: string;
+      displayName: string;
+    }[];
+  };
   project: Project | null;
+  costCategory: CostCategory | null;
+  taxPayer: {
+    id: string;
+    bankInfo: TaxPayerBankInfo | null;
+    razonSocial: string;
+    ruc: string;
+  } | null;
   transactions: Transaction[];
-  searchableImage: searchableImage | null;
   expenseReports: (ExpenseReport & {
     taxPayer: {
       id: string;
       razonSocial: string;
     };
   })[];
+  searchableImages: searchableImage[];
   expenseReturns: ExpenseReturn[];
-  account: Account;
-  costCategory: CostCategory | null;
-  taxPayer: {
-    id: string;
-    razonSocial: string;
-    ruc: string;
-    bankInfo: TaxPayerBankInfo | null;
-  } | null;
   moneyRequestApprovals: MoneyRequestApproval[];
-  organization: {
-    moneyRequestApprovers: {
-      id: string;
-      displayName: string;
-    }[];
-    moneyAdministrators: {
-      id: string;
-      displayName: string;
-    }[];
-  };
 };
-
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
   const user = session.data?.user;

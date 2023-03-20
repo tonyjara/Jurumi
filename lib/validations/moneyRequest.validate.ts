@@ -21,7 +21,7 @@ export type FormMoneyRequest = Omit<
 > & {
   amountRequested?: any;
   taxPayer: moneyReqTaxPayer | null;
-  searchableImage: { imageName: string; url: string } | null;
+  searchableImages: { imageName: string; url: string; facturaNumber: string }[];
 };
 
 export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
@@ -71,12 +71,13 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
         .nullable(),
       // For reimbursement order creation.
       facturaNumber: z.string().nullable(),
-      searchableImage: z
+      searchableImages: z
         .object({
           imageName: z.string(),
           url: z.string(),
+          facturaNumber: z.string(),
         })
-        .nullable(),
+        .array(),
     })
     .superRefine((val, ctx) => {
       if (val.status === 'REJECTED' && val.rejectionMessage.length < 6) {
@@ -130,27 +131,28 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
             message: 'Favor ingrese el documento del titular.',
           });
         }
+
+        if (val.moneyRequestType === 'REIMBURSMENT_ORDER') {
+          val.searchableImages.forEach((image, index) => {
+            if (image.facturaNumber.length < 13) {
+              ctx.addIssue({
+                path: [`searchableImages.${index}.facturaNumber`],
+                code: z.ZodIssueCode.custom,
+                message: 'Favor ingrese el número de factura.',
+              });
+            }
+
+            if (!image.imageName.length) {
+              ctx.addIssue({
+                path: [`searchableImages.${index}.imageName`],
+                code: z.ZodIssueCode.custom,
+                message: 'Favor suba un comprobante.',
+              });
+            }
+          });
+        }
       }
-      if (
-        val.moneyRequestType === 'REIMBURSMENT_ORDER' &&
-        !val.facturaNumber?.length
-      ) {
-        ctx.addIssue({
-          path: ['facturaNumber'],
-          code: z.ZodIssueCode.custom,
-          message: 'Favor ingrese el número de factura.',
-        });
-      }
-      if (
-        val.moneyRequestType === 'REIMBURSMENT_ORDER' &&
-        !val.searchableImage?.imageName?.length
-      ) {
-        ctx.addIssue({
-          path: ['searchableImage.imageName'],
-          code: z.ZodIssueCode.custom,
-          message: 'Favor suba una foto de su comprobante.',
-        });
-      }
+
       if (val.amountRequested.toNumber() <= 1) {
         ctx.addIssue({
           path: ['amountRequested'],
@@ -161,6 +163,11 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
     })
 );
 
+export const defaultReimbursementOrderSearchableImage = {
+  url: '',
+  imageName: '',
+  facturaNumber: '',
+};
 export const defaultMoneyRequestData: FormMoneyRequest = {
   id: '',
   comments: '',
@@ -193,7 +200,7 @@ export const defaultMoneyRequestData: FormMoneyRequest = {
     },
   },
   facturaNumber: null,
-  searchableImage: { url: '', imageName: '' },
+  searchableImages: [defaultReimbursementOrderSearchableImage],
 };
 
 export const moneyRequestMock = ({
@@ -204,6 +211,7 @@ export const moneyRequestMock = ({
   moneyRequestType: MoneyRequestType;
 }) => {
   const imageName = uuidV4();
+  const imageName2 = uuidV4();
   const x: FormMoneyRequest = {
     id: '',
     comments: faker.commerce.productDescription().substring(0, 200),
@@ -236,10 +244,20 @@ export const moneyRequestMock = ({
       },
     },
     facturaNumber: faker.random.numeric(13).toString(),
-    searchableImage: {
-      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
-      imageName,
-    },
+    searchableImages: [
+      {
+        url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+        imageName,
+
+        facturaNumber: faker.random.numeric(13).toString(),
+      },
+      {
+        url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+        imageName: imageName2,
+
+        facturaNumber: faker.random.numeric(13).toString(),
+      },
+    ],
   };
   return x;
 };
