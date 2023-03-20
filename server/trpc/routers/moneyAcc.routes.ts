@@ -79,6 +79,7 @@ export const moneyAccRouter = router({
             ownerContactNumber: i.bankInfo.ownerContactNumber,
           }
         : undefined;
+
       const x = await prisma?.moneyAccount.create({
         data: {
           createdById: ctx.session.user.id,

@@ -26,7 +26,6 @@ export type CompleteMoneyReqHome = MoneyRequest & {
   };
   project: Project | null;
   taxPayer: {
-    razonSocial: string;
     bankInfo: {
       bankName: BankNamesPy;
       accountNumber: string;
@@ -34,17 +33,17 @@ export type CompleteMoneyReqHome = MoneyRequest & {
       ownerDocType: BankDocType;
       ownerDoc: string;
     } | null;
+    razonSocial: string;
   } | null;
-  searchableImage: searchableImage | null;
   transactions: Transaction[];
   expenseReports: (ExpenseReport & {
     taxPayer: {
       razonSocial: string;
     };
   })[];
+  searchableImages: searchableImage[];
   expenseReturns: ExpenseReturn[];
 };
-
 const MoneyRequestsPage = () => {
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null

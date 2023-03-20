@@ -17,6 +17,7 @@ import type { CompleteMoneyReqHome } from './HomeRequestsPage.home.requests';
 import RowOptionsHomeRequests from './rowOptions.home.requests';
 import ImageModalCell from '@/components/DynamicTables/DynamicCells/ImageModalCell';
 import { Center } from '@chakra-ui/react';
+import SearchableImageModalCell from '@/components/DynamicTables/DynamicCells/SearchableImagesModalCell';
 
 const columnHelper = createColumnHelper<CompleteMoneyReqHome>();
 
@@ -99,9 +100,8 @@ export const homeRequestsColumns = ({
     cell: (x) => (
       <Center>
         {x.row.original.moneyRequestType === 'REIMBURSMENT_ORDER' ? (
-          <ImageModalCell
-            imageName={x.row.original.searchableImage?.imageName}
-            url={x.row.original.searchableImage?.url}
+          <SearchableImageModalCell
+            searchableImages={x.row.original.searchableImages}
           />
         ) : (
           <PercentageCell

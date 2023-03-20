@@ -40,6 +40,6 @@ export const createMoneyRequestSlackNotification = async ({
         channel: org.orgNotificationSettings.approversSlackChannelId,
         icon_emoji: '🔔',
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   }
 };

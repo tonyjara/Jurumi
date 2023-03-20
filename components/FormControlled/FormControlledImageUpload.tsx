@@ -37,6 +37,7 @@ interface InputProps<T extends FieldValues> {
   setValue: SetFieldValue<T>;
   helperText?: string;
   userId: string;
+  error?: string; // escape hatch for nested objects
 }
 
 const FormControlledImageUpload = <T extends FieldValues>(
@@ -52,6 +53,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
     setValue,
     helperText,
     userId,
+    error,
   } = props;
   const [uploading, setUploading] = useState(false);
   const pictureUrl = useWatch({ control, name: urlName }) as string;
@@ -159,6 +161,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
         />
       </HStack>
 
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!imageError.message ? (
         <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
       ) : (

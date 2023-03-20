@@ -412,8 +412,8 @@ model MoneyRequest {
   taxPayer       TaxPayer?     @relation(fields: [taxPayerId], references: [id])
 
   //For reimbursement orders
-  facturaNumber   String?
-  searchableImage searchableImage?
+  facturaNumber    String?
+  searchableImages searchableImage[]
 
   expenseReports        ExpenseReport[]
   expenseReturns        ExpenseReturn[]
@@ -522,7 +522,7 @@ model searchableImage {
   expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
   expenseReportId String?        @unique
   moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
-  moneyRequestId  String?        @unique
+  moneyRequestId  String?
   expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
   expenseReturnId String?        @unique
   transaction     Transaction?   @relation(fields: [transactionId], references: [id])

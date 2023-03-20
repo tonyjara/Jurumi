@@ -86,7 +86,7 @@ export const moneyRequestRouter = router({
             include: { taxPayer: { select: { razonSocial: true } } },
           },
           expenseReturns: { where: { wasCancelled: false } },
-          searchableImage: true,
+          searchableImages: true,
         },
 
         where: { accountId: user.id, status: input.status },
@@ -144,7 +144,7 @@ export const moneyRequestRouter = router({
               isCancellation: false,
             },
           },
-          searchableImage: true,
+          searchableImages: true,
           moneyRequestApprovals: { where: { wasCancelled: false } },
           expenseReports: {
             where: { wasCancelled: false },
@@ -179,7 +179,7 @@ export const moneyRequestRouter = router({
           costCategory: true,
           transactions: true,
           moneyRequestApprovals: true,
-          searchableImage: true,
+          searchableImages: true,
           expenseReports: {
             where: { wasCancelled: false },
             include: { taxPayer: { select: { id: true, razonSocial: true } } },
@@ -205,10 +205,11 @@ export const moneyRequestRouter = router({
         input: input.taxPayer,
         userId: user.id,
       });
-      const { facturaNumber, searchableImage } =
-        await reimbursementOrderImageGuard({
-          input,
-        });
+
+      const uploadedImages = await reimbursementOrderImageGuard({
+        input,
+      });
+
       const MoneyReq = await prisma?.moneyRequest.create({
         data: {
           accountId: user.id,
@@ -223,9 +224,13 @@ export const moneyRequestRouter = router({
           comments: input.comments,
           taxPayerId: taxPayer?.id,
           costCategoryId: input.costCategoryId,
-          facturaNumber,
-          searchableImage: searchableImage?.id
-            ? { connect: { id: searchableImage.id } }
+          facturaNumber: input.facturaNumber,
+          searchableImages: uploadedImages?.length
+            ? {
+                connect: input.searchableImages.map((x) => ({
+                  imageName: x.imageName,
+                })),
+              }
             : {},
         },
         include: { account: { select: { displayName: true } } },

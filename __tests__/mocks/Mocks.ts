@@ -269,7 +269,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
         type: 'CURRENT',
       },
     },
-    searchableImage: null,
+    searchableImages: [],
     facturaNumber: null,
     costCategory: null,
     createdAt: new Date(),

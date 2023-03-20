@@ -107,7 +107,7 @@ const CreateMoneyRequestModal = ({
             >
               Guardar
             </Button>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
+            <Button colorScheme="gray" mr={3} onClick={handleOnClose}>
               Cerrar
             </Button>
           </ModalFooter>
