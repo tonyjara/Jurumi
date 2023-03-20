@@ -1,25 +1,15 @@
-import { currencyOptions } from '@/lib/utils/SelectOptions';
 import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import { defaultReimbursementOrderSearchableImage } from '@/lib/validations/moneyRequest.validate';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
-import {
-  Button,
-  Divider,
-  Flex,
-  HStack,
-  IconButton,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Button, Divider, Flex, IconButton, Text } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
-import React from 'react';
+import React, { useState } from 'react';
 import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
 } from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import FormControlledFacturaNumber from '../FormControlled/FormControlledFacturaNumber';
 import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
@@ -34,6 +24,7 @@ const ReimbursementOrderImagesForm = ({
   errors,
   setValue,
 }: formProps<FormMoneyRequest>) => {
+  const [imageIsLoading, setImageIsLoading] = useState(false);
   const { fields, prepend, remove } = useFieldArray({
     control,
     name: 'searchableImages',
@@ -49,6 +40,7 @@ const ReimbursementOrderImagesForm = ({
           Comprobantes
         </Text>
         <Button
+          isDisabled={imageIsLoading}
           onClick={() => prepend(defaultReimbursementOrderSearchableImage)}
           aria-label="add"
           rightIcon={<AddIcon />}
@@ -77,6 +69,7 @@ const ReimbursementOrderImagesForm = ({
             </Flex>
             {user && (
               <FormControlledImageUpload
+                setImageIsLoading={setImageIsLoading}
                 control={control}
                 errors={errors}
                 urlName={`searchableImages.${index}.url`}

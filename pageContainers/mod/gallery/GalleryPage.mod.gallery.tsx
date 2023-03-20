@@ -19,7 +19,7 @@ const GalleryPage = () => {
     imageName: string;
     url: string;
     text: string;
-    factruraNumber: string;
+    facturaNumber: string;
   } | null>(null);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setPageIndex, setPageSize, pageSize } = dynamicTableProps;
@@ -46,7 +46,7 @@ const GalleryPage = () => {
                   imageName: x.imageName,
                   url: x.url,
                   text: x.text,
-                  factruraNumber: x.facturaNumber,
+                  facturaNumber: x.facturaNumber,
                 });
                 onOpen();
               }}

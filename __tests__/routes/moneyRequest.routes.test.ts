@@ -58,7 +58,6 @@ test('test find by id', async () => {
   >;
   const input: Input = { id: 'cleyy43mp0003pftwekyy3pny' };
   const result = await adminCaller.moneyRequest.findCompleteById(input);
-  console.log(result);
 
   expect(result).not.toBe(null);
   if (!result) throw 'no result';

@@ -75,7 +75,11 @@ const SearchableImageModalCell = ({
 
   return (
     <>
-      <IconButton onClick={onOpen} aria-label="image icon" fontSize={'2xl'}>
+      <IconButton
+        onClick={() => searchableImages.length && onOpen()}
+        aria-label="image icon"
+        fontSize={'2xl'}
+      >
         {searchableImages.length > 0 ? (
           searchableImages.length > 1 ? (
             <BsImages />

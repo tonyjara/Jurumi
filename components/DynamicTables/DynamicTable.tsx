@@ -1,4 +1,3 @@
-// Chakra imports
 import {
   Card,
   CardHeader,
@@ -107,6 +106,7 @@ const DynamicTable = <T extends object>({
   };
 
   const redRowColor = useColorModeValue('red.700', 'red.300');
+  const rowHoverColor = useColorModeValue('gray.100', 'gray.700');
 
   const cellRef = useRef(null);
   return (
@@ -221,6 +221,8 @@ const DynamicTable = <T extends object>({
                     : undefined
                 }
                 key={row.id}
+                /* _hover={{ backgroundColor: rowHoverColor, cursor: 'pointer' }} */
+                /* onClick={() => console.log(row)} */
               >
                 {row.getVisibleCells().map((cell) => {
                   // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
