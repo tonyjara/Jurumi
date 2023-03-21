@@ -12,6 +12,7 @@ import {
   SimpleGrid,
   useDisclosure,
 } from '@chakra-ui/react';
+import type { Currency, Prisma } from '@prisma/client';
 import React, { useState } from 'react';
 
 const GalleryPage = () => {
@@ -20,6 +21,8 @@ const GalleryPage = () => {
     url: string;
     text: string;
     facturaNumber: string;
+    amount: Prisma.Decimal;
+    currency: Currency;
   } | null>(null);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setPageIndex, setPageSize, pageSize } = dynamicTableProps;
@@ -47,6 +50,8 @@ const GalleryPage = () => {
                   url: x.url,
                   text: x.text,
                   facturaNumber: x.facturaNumber,
+                  amount: x.amount,
+                  currency: x.currency,
                 });
                 onOpen();
               }}

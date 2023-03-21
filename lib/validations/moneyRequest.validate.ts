@@ -14,6 +14,13 @@ export type moneyReqTaxPayer = {
   ruc: string;
   bankInfo: TaxPayerBankInfo;
 };
+export type MoneyReqSearchableImage = {
+  imageName: string;
+  url: string;
+  facturaNumber: string;
+  amount?: any;
+  currency: Currency;
+};
 
 export type FormMoneyRequest = Omit<
   MoneyRequest,
@@ -21,7 +28,7 @@ export type FormMoneyRequest = Omit<
 > & {
   amountRequested?: any;
   taxPayer: moneyReqTaxPayer | null;
-  searchableImages: { imageName: string; url: string; facturaNumber: string }[];
+  searchableImages: MoneyReqSearchableImage[];
 };
 
 export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
@@ -76,6 +83,8 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           imageName: z.string(),
           url: z.string(),
           facturaNumber: z.string(),
+          amount: z.any().transform((value) => new Prisma.Decimal(value)),
+          currency: z.nativeEnum(Currency),
         })
         .array(),
     })
@@ -133,7 +142,17 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
         }
 
         if (val.moneyRequestType === 'REIMBURSMENT_ORDER') {
+          const currencySet = new Set();
           val.searchableImages.forEach((image, index) => {
+            currencySet.add(image.currency);
+            if (currencySet.size > 1) {
+              ctx.addIssue({
+                path: [`searchableImages.${index}.currency`],
+                code: z.ZodIssueCode.custom,
+                message: 'Solo puedes tener un tipo de moneda por solicitud.',
+              });
+            }
+
             if (image.facturaNumber.length < 13) {
               ctx.addIssue({
                 path: [`searchableImages.${index}.facturaNumber`],
@@ -149,11 +168,22 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
                 message: 'Favor suba un comprobante.',
               });
             }
+
+            if (image.amount.toNumber() <= 1) {
+              ctx.addIssue({
+                path: [`searchableImages.${index}.amount`],
+                code: z.ZodIssueCode.custom,
+                message: 'El monto debe ser mayor a 1.',
+              });
+            }
           });
         }
       }
 
-      if (val.amountRequested.toNumber() <= 1) {
+      if (
+        val.moneyRequestType !== 'REIMBURSMENT_ORDER' &&
+        val.amountRequested.toNumber() <= 1
+      ) {
         ctx.addIssue({
           path: ['amountRequested'],
           code: z.ZodIssueCode.custom,
@@ -163,11 +193,14 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
     })
 );
 
-export const defaultReimbursementOrderSearchableImage = {
-  url: '',
-  imageName: '',
-  facturaNumber: '',
-};
+export const defaultReimbursementOrderSearchableImage: MoneyReqSearchableImage =
+  {
+    url: '',
+    imageName: '',
+    facturaNumber: '',
+    amount: new Prisma.Decimal(0),
+    currency: 'PYG',
+  };
 export const defaultMoneyRequestData: FormMoneyRequest = {
   id: '',
   comments: '',
@@ -248,14 +281,16 @@ export const moneyRequestMock = ({
       {
         url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
         imageName,
-
         facturaNumber: faker.random.numeric(13).toString(),
+        amount: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+        currency: 'PYG',
       },
       {
         url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
         imageName: imageName2,
-
         facturaNumber: faker.random.numeric(13).toString(),
+        amount: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+        currency: 'PYG',
       },
     ],
   };

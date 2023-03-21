@@ -29,6 +29,8 @@ import {
 } from '@/lib/validations/org.validate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import type { Currency, Prisma } from '@prisma/client';
+import { decimalFormat } from '@/lib/utils/DecimalHelpers';
 
 const ImageEnlargeModal = ({
   url,
@@ -37,10 +39,14 @@ const ImageEnlargeModal = ({
   onClose,
   text,
   facturaNumber,
+  currency,
+  amount,
 }: {
   url?: string;
   imageName?: string;
   facturaNumber?: string;
+  amount?: Prisma.Decimal;
+  currency?: Currency;
   text?: string;
   isOpen: boolean;
   onClose: () => void;
@@ -119,6 +125,12 @@ const ImageEnlargeModal = ({
                 <br />
                 {facturaNumber}
               </Text>
+              <Text mb={'10px'} fontSize={'xl'}>
+                <span style={{ fontWeight: 'bold' }}>Monto:</span>
+                <br />
+                {amount && currency && decimalFormat(amount, currency)}
+              </Text>
+
               <Text mb={'10px'} fontSize={'xl'}>
                 <span style={{ fontWeight: 'bold' }}>Texto:</span> {text}
               </Text>

@@ -94,6 +94,10 @@ const ExpenseRepAndRetPringPage = ({
                 <Td fontWeight={'bold'}>Fuente de financiamiento:</Td>
                 <Td>{req.project?.financerName}</Td>
               </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Comentarios:</Td>
+                <Td>{req.comments}</Td>
+              </Tr>
             </Tbody>
           </Table>
         </TableContainer>
@@ -109,6 +113,7 @@ const ExpenseRepAndRetPringPage = ({
             <Thead>
               <Tr>
                 <Th color={headerColor}>Concepto</Th>
+                <Th color={headerColor}>Comentarios</Th>
                 <Th color={headerColor}>Factura número</Th>
                 <Th color={headerColor}>Proveedor</Th>
                 <Th color={headerColor}>Monto</Th>
@@ -119,6 +124,7 @@ const ExpenseRepAndRetPringPage = ({
               {req.expenseReports.map((x) => (
                 <Tr key={x.id}>
                   <Td whiteSpace={'break-spaces'}>{x.concept}</Td>
+                  <Td whiteSpace={'break-spaces'}>{x.comments}</Td>
                   <Td whiteSpace={'break-spaces'}>
                     {formatedFacturaNumber(x.facturaNumber)}
                   </Td>

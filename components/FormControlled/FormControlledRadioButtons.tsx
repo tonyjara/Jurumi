@@ -26,6 +26,7 @@ interface InputProps<T extends FieldValues> {
   hidden?: boolean;
   onChangeMw?: () => void; //middlewarish func
   disable?: boolean;
+  error?: string; // escape hatch for nested objects
 }
 
 const FormControlledRadioButtons = <T extends FieldValues>({
@@ -38,9 +39,13 @@ const FormControlledRadioButtons = <T extends FieldValues>({
   hidden,
   onChangeMw,
   disable,
+  error,
 }: InputProps<T>) => {
   return (
-    <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
+    <FormControl
+      display={hidden ? 'none' : 'block'}
+      isInvalid={!!errors[name] || !!error}
+    >
       <FormLabel fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -67,6 +72,7 @@ const FormControlledRadioButtons = <T extends FieldValues>({
           </RadioGroup>
         )}
       />
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!errors[name] ? (
         <FormHelperText>{helperText}</FormHelperText>
       ) : (

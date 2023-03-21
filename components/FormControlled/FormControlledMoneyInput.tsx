@@ -33,6 +33,7 @@ interface InputProps<T extends FieldValues> {
   currency: Currency;
   totalAmount?: Decimal;
   disable?: boolean;
+  error?: string; // escape hatch for nested objects
 }
 
 const FormControlledMoneyInput = <T extends FieldValues>({
@@ -46,9 +47,13 @@ const FormControlledMoneyInput = <T extends FieldValues>({
   currency,
   totalAmount,
   disable,
+  error,
 }: InputProps<T>) => {
   return (
-    <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
+    <FormControl
+      display={hidden ? 'none' : 'block'}
+      isInvalid={!!errors[name] || !!error}
+    >
       <FormLabel whiteSpace={'nowrap'} fontSize={'md'} color={'gray.500'}>
         {label}
       </FormLabel>
@@ -86,6 +91,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
           </InputGroup>
         )}
       />
+      {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!errors[name] ? (
         <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
       ) : (

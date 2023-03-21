@@ -1,3 +1,5 @@
+import { currencyOptions } from '@/lib/utils/SelectOptions';
+import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
 import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import { defaultReimbursementOrderSearchableImage } from '@/lib/validations/moneyRequest.validate';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
@@ -10,26 +12,35 @@ import type {
   FieldErrorsImpl,
   UseFormSetValue,
 } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import FormControlledFacturaNumber from '../FormControlled/FormControlledFacturaNumber';
 import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
+import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
+import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
   setValue: UseFormSetValue<T>;
+  isEdit?: boolean;
 }
 
 const ReimbursementOrderImagesForm = ({
   control,
   errors,
   setValue,
+  isEdit,
 }: formProps<FormMoneyRequest>) => {
   const [imageIsLoading, setImageIsLoading] = useState(false);
-  const { fields, prepend, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'searchableImages',
   });
   const user = useSession().data?.user;
+  const searchableImages = useWatch({
+    control,
+    name: 'searchableImages',
+  });
 
   return (
     <>
@@ -41,7 +52,7 @@ const ReimbursementOrderImagesForm = ({
         </Text>
         <Button
           isDisabled={imageIsLoading}
-          onClick={() => prepend(defaultReimbursementOrderSearchableImage)}
+          onClick={() => append(defaultReimbursementOrderSearchableImage)}
           aria-label="add"
           rightIcon={<AddIcon />}
         >
@@ -50,6 +61,7 @@ const ReimbursementOrderImagesForm = ({
       </Flex>
       {fields.map((x, index) => {
         const errorForField = errors?.searchableImages?.[index];
+        const currency = searchableImages[index]?.currency;
         return (
           <Flex flexDir={'column'} mt="10px" key={x.id} width="100%" gap={5}>
             <Flex width={'100%'} alignItems="center" gap={'10px'}>
@@ -67,6 +79,27 @@ const ReimbursementOrderImagesForm = ({
                 marginTop="22px"
               />
             </Flex>
+            <FormControlledRadioButtons
+              control={control}
+              errors={errors}
+              disable={isEdit}
+              name={`searchableImages.${index}.currency`}
+              label="Moneda"
+              options={currencyOptions}
+              error={errorForField?.currency?.message}
+            />
+            <FormControlledMoneyInput
+              control={control}
+              errors={errors}
+              disable={isEdit}
+              name={`searchableImages.${index}.amount`}
+              label={`Monto comprobante ${index + 1}`}
+              prefix={translateCurrencyPrefix(currency ?? 'PYG')}
+              currency={currency ?? 'PYG'}
+              //@ts-ignore
+              error={errorForField?.amount?.message}
+            />
+
             {user && (
               <FormControlledImageUpload
                 setImageIsLoading={setImageIsLoading}

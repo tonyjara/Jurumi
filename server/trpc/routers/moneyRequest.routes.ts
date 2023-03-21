@@ -9,7 +9,7 @@ import {
 } from '../initTrpc';
 import {
   handleWhereImApprover,
-  reimbursementOrderImageGuard,
+  reimbursementOrderImageGuard as handleWhenReimbursementOrder,
 } from './utils/MoneyRequest.routeUtils';
 import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
@@ -206,7 +206,7 @@ export const moneyRequestRouter = router({
         userId: user.id,
       });
 
-      const uploadedImages = await reimbursementOrderImageGuard({
+      const uploadedImages = await handleWhenReimbursementOrder({
         input,
       });
 
