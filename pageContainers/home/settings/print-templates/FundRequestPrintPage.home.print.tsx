@@ -86,6 +86,10 @@ const FundRequestPrintPage = ({
                 <Td fontWeight={'bold'}>Monto solicitado:</Td>
                 <Td>{decimalFormat(req.amountRequested, req.currency)}</Td>
               </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Comentarios:</Td>
+                <Td>{req.comments}</Td>
+              </Tr>
             </Tbody>
           </Table>
         </TableContainer>

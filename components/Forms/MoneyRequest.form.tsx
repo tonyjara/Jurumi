@@ -1,4 +1,6 @@
-import { Divider, VStack } from '@chakra-ui/react';
+import { decimalFormat } from '@/lib/utils/DecimalHelpers';
+import { Divider, Flex, Text, VStack } from '@chakra-ui/react';
+import { Prisma } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import type {
@@ -43,6 +45,22 @@ const MoneyRequestForm = ({
   const status = useWatch({ control, name: 'status' });
   const projectId = useWatch({ control, name: 'projectId' });
   const moneyRequestType = useWatch({ control, name: 'moneyRequestType' });
+  const searchableImages = useWatch({ control, name: 'searchableImages' });
+
+  const totalInPYG = decimalFormat(
+    searchableImages.reduce((acc, val) => {
+      if (val.currency !== 'PYG') return acc;
+      return acc.add(val.amount);
+    }, new Prisma.Decimal(0)),
+    'PYG'
+  );
+  const totalInUSD = decimalFormat(
+    searchableImages.reduce((acc, val) => {
+      if (val.currency !== 'USD') return acc;
+      return acc.add(val.amount);
+    }, new Prisma.Decimal(0)),
+    'USD'
+  );
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
   const { data: orgs } = isAdminOrMod
@@ -91,11 +109,22 @@ const MoneyRequestForm = ({
             showBankInfo={true}
           />
           {moneyRequestType === 'REIMBURSMENT_ORDER' && (
-            <ReimbursementOrderImagesForm
-              control={control}
-              errors={errors}
-              setValue={setValue}
-            />
+            <>
+              <ReimbursementOrderImagesForm
+                control={control}
+                errors={errors}
+                setValue={setValue}
+                isEdit={isEdit}
+              />
+              <Flex flexDir={'column'} justifyContent={'space-between'}>
+                {currency === 'PYG' && (
+                  <Text fontSize={'xl'}>Total en PYG: {totalInPYG} </Text>
+                )}
+                {currency === 'USD' && (
+                  <Text fontSize={'xl'}>Total en USD: {totalInUSD} </Text>
+                )}
+              </Flex>
+            </>
           )}
         </>
       )}
@@ -106,22 +135,25 @@ const MoneyRequestForm = ({
         isTextArea={true}
         label="Concepto de la solicitud"
       />
-
-      <FormControlledRadioButtons
-        control={control}
-        errors={errors}
-        name="currency"
-        label="Moneda"
-        options={currencyOptions}
-      />
-      <FormControlledMoneyInput
-        control={control}
-        errors={errors}
-        name={'amountRequested'}
-        label="Monto solicitado"
-        prefix={translateCurrencyPrefix(currency)}
-        currency={currency}
-      />
+      {moneyRequestType !== 'REIMBURSMENT_ORDER' && (
+        <>
+          <FormControlledRadioButtons
+            control={control}
+            errors={errors}
+            name="currency"
+            label="Moneda"
+            options={currencyOptions}
+          />
+          <FormControlledMoneyInput
+            control={control}
+            errors={errors}
+            name={'amountRequested'}
+            label="Monto solicitado"
+            prefix={translateCurrencyPrefix(currency)}
+            currency={currency}
+          />
+        </>
+      )}
 
       <FormControlledSelect
         disable={isEdit}

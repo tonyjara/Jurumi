@@ -10,7 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { knownErrors } from '@/lib/dictionaries/knownErrors';
 import { trpcClient } from '@/lib/utils/trpcClient';

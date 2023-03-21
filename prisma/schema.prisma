@@ -517,6 +517,9 @@ model searchableImage {
   imageName     String    @unique
   facturaNumber String    @default("")
 
+  currency Currency @default(PYG)
+  amount   Decimal  @default(0) @db.Decimal(19, 4)
+
   accounts        Account?       @relation(fields: [accountId], references: [id])
   accountId       String?
   expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])

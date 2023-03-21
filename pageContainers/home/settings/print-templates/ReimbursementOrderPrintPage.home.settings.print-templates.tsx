@@ -100,6 +100,10 @@ const ReimbursementOrderPrintPage = ({
                   <br />
                 </Td>
               </Tr>
+              <Tr>
+                <Td fontWeight={'bold'}>Comentarios:</Td>
+                <Td>{req.comments}</Td>
+              </Tr>
             </Tbody>
           </Table>
         </TableContainer>
