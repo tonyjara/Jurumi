@@ -2,7 +2,7 @@ import { MoneyResquestApprovalStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { validateMoneyRequest } from '@/lib/validations/moneyRequest.validate';
 import {
-  adminModProcedure,
+  adminModObserverProcedure,
   adminProcedure,
   protectedProcedure,
   router,
@@ -23,7 +23,7 @@ import { upsertTaxPayter } from './utils/TaxPayer.routeUtils';
 import { createMoneyRequestSlackNotification } from './notifications/slack/moneyRequestCreate.notification.slack';
 
 export const moneyRequestRouter = router({
-  getMany: adminModProcedure.query(async () => {
+  getMany: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyRequest.findMany({
       take: 20,
       orderBy: { createdAt: 'desc' },
@@ -109,7 +109,7 @@ export const moneyRequestRouter = router({
     return await prisma?.moneyRequest.count({ where: { accountId: user.id } });
   }),
 
-  getManyComplete: adminModProcedure
+  getManyComplete: adminModObserverProcedure
     .input(
       z.object({
         status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
@@ -164,7 +164,7 @@ export const moneyRequestRouter = router({
         where: input.status ? handleWhereImApprover(input, user.id) : {},
       });
     }),
-  findCompleteById: adminModProcedure
+  findCompleteById: adminModObserverProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       if (!input.id.length) return null;

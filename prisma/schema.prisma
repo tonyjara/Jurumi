@@ -556,6 +556,7 @@ enum Role {
   ADMIN
   MODERATOR
   USER
+  OBSERVER
   MEMBER
 }
 

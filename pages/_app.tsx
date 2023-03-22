@@ -10,20 +10,11 @@ import { Toaster } from 'react-hot-toast';
 import RootLayout from '../layouts/RootLayout';
 import { theme } from '../styles/Theme';
 import BrowserNotificationsManager from '@/components/Notifications/BrowserNotificationsManager';
-import OpenReplay from '@openreplay/tracker/cjs';
-import { useEffect } from 'react';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
-  const tracker = new OpenReplay({
-    projectKey: process.env.OPEN_REPLAY_KEY,
-    ingestPoint: process.env.OPEN_REPLAY_INGEST_POINT,
-  });
-  useEffect(() => {
-    tracker.start(); // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   return (
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>

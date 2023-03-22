@@ -13,15 +13,18 @@ export async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   })) as { user?: Account };
 
-  const isAdminOrMod =
-    session?.user?.role === 'ADMIN' || session?.user?.role === 'MODERATOR';
+  const isAdminOrModOrObserver =
+    session?.user?.role === 'ADMIN' ||
+    session?.user?.role === 'MODERATOR' ||
+    session?.user?.role === 'OBSERVER';
+
   const isAdmin = session?.user?.role === 'ADMIN';
 
   if (req.nextUrl.pathname.startsWith('/home')) {
     if (!session) return redirect('/');
   }
   if (req.nextUrl.pathname.startsWith('/mod')) {
-    if (!isAdminOrMod) return redirect('/home');
+    if (!isAdminOrModOrObserver) return redirect('/home');
   }
   if (req.nextUrl.pathname.startsWith('/admin')) {
     if (!isAdmin) return redirect('/home');

@@ -7,15 +7,16 @@ import {
   adminModProcedure,
   router,
   protectedProcedure,
+  adminModObserverProcedure,
 } from '../initTrpc';
 import prisma from '@/server/db/client';
 
 export const moneyAccRouter = router({
-  getMany: adminModProcedure.query(async () => {
+  getMany: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany();
   }),
 
-  getManyWithTransactions: adminModProcedure.query(async () => {
+  getManyWithTransactions: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       include: {
         _count: { select: { transactions: true } },
@@ -37,7 +38,7 @@ export const moneyAccRouter = router({
       orderBy: { id: 'desc' },
     });
   }),
-  getManyPublic: protectedProcedure.query(async () => {
+  getManyPublic: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       select: {
         displayName: true,
@@ -48,7 +49,7 @@ export const moneyAccRouter = router({
     });
   }),
 
-  getManyBankAccWithLastTx: adminModProcedure.query(async () => {
+  getManyBankAccWithLastTx: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: false },
       include: {
@@ -57,7 +58,7 @@ export const moneyAccRouter = router({
       },
     });
   }),
-  getManyCashAccsWithLastTx: adminModProcedure.query(async () => {
+  getManyCashAccsWithLastTx: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: true },
       include: { transactions: { take: 1, orderBy: { id: 'desc' } } },

@@ -92,11 +92,11 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
 export const SidebarLinks: (
   isAdminOrMod: boolean,
   isAdmin: boolean
-) => Array<LinkItemProps> = (isAdminOrMod, isAdmin) => {
+) => Array<LinkItemProps> = (isAdminModOrObserver, isAdmin) => {
   return [
     { name: 'Inicio', icon: FiHome, dest: '/home' },
     ...AdminLinks(isAdmin),
-    ...AdminModLinks(isAdminOrMod),
+    ...AdminModLinks(isAdminModOrObserver),
     { name: 'Mi asociación', icon: VscOrganization, dest: '/home/membership' },
     { name: 'Mis solicitudes', icon: BsCash, dest: '/home/requests' },
     {
