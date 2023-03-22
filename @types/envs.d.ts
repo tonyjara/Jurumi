@@ -39,8 +39,8 @@ declare global {
       AMQP_URL: string;
 
       // OPENREPLAY
-      OPEN_REPLAY_KEY: string;
-      OPEN_REPLAY_INGEST_POINT: string;
+      NEXT_PUBLIC_OPEN_REPLAY_KEY: string;
+      NEXT_PUBLIC_OPEN_REPLAY_INGEST_POINT: string;
     }
   }
 }
