@@ -82,6 +82,7 @@ const CreateAccountModal = ({
     { value: 'USER', label: 'Usuario' },
     { value: 'MODERATOR', label: 'Moderador' },
     { value: 'ADMIN', label: 'Admin' },
+    { value: 'OBSERVER', label: 'Observaror' },
   ];
 
   return (

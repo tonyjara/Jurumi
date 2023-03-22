@@ -39,6 +39,7 @@
     "@emotion/styled": "11.10.5",
     "@hookform/devtools": "4.3.0",
     "@hookform/resolvers": "2.9.11",
+    "@openreplay/tracker": "^5.0.1",
     "@prisma/client": "4.10.1",
     "@pronestor/react-zoom-pan-pinch": "2.4.5",
     "@sendgrid/mail": "7.7.0",

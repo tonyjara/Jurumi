@@ -48,6 +48,26 @@ const isAdminOrMod = t.middleware(({ next, ctx }) => {
     },
   });
 });
+
+const isAdminOrModOrObserver = t.middleware(({ next, ctx }) => {
+  const role = ctx.session?.user?.role;
+  if (
+    !ctx.session?.user ||
+    !(role === 'ADMIN' || role === 'MODERATOR' || role === 'OBSERVER')
+  ) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'admin-mod-only',
+    });
+  }
+  return next({
+    ctx: {
+      // Infers the `session` as non-nullable
+      session: ctx.session,
+    },
+  });
+});
+
 export const middleware = t.middleware;
 export const router = t.router;
 // export const caller = router.createCaller({});
@@ -55,4 +75,7 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(isAuthed);
 export const adminModProcedure = t.procedure.use(isAdminOrMod);
+export const adminModObserverProcedure = t.procedure.use(
+  isAdminOrModOrObserver
+);
 export const adminProcedure = t.procedure.use(isAdmin);

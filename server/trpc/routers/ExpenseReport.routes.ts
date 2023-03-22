@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateExpenseReport } from '@/lib/validations/expenseReport.validate';
 import {
-  adminModProcedure,
+  adminModObserverProcedure,
   adminProcedure,
   protectedProcedure,
   router,
@@ -73,7 +73,7 @@ export const expenseReportsRouter = router({
         },
       });
     }),
-  getManyComplete: adminModProcedure
+  getManyComplete: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -120,7 +120,7 @@ export const expenseReportsRouter = router({
         },
       });
     }),
-  findCompleteById: adminModProcedure
+  findCompleteById: adminModObserverProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       if (!input.id.length) return null;

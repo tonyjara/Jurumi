@@ -6,6 +6,7 @@ import {
   adminModProcedure,
   router,
   protectedProcedure,
+  adminModObserverProcedure,
 } from '../initTrpc';
 import prisma from '@/server/db/client';
 import { createImageLogo } from './utils/Org.routeUtils';
@@ -23,7 +24,7 @@ export const orgRouter = router({
       },
     });
   }),
-  getMany: adminModProcedure.query(async () => {
+  getMany: adminModObserverProcedure.query(async () => {
     return await prisma?.organization.findMany({
       include: {
         moneyAdministrators: { select: { id: true, displayName: true } },
@@ -39,7 +40,7 @@ export const orgRouter = router({
       select: { organizations: { select: { id: true, displayName: true } } },
     });
   }),
-  getForDashboard: adminModProcedure
+  getForDashboard: adminModObserverProcedure
     .input(z.object({ orgId: z.string().optional() }))
     .query(async ({ input }) => {
       if (!input.orgId) return null;
@@ -67,11 +68,13 @@ export const orgRouter = router({
         },
       });
     }),
-  getManyForSelect: adminModProcedure.input(z.object({})).query(async () => {
-    return await prisma?.organization.findMany({
-      select: { id: true, displayName: true },
-    });
-  }),
+  getManyForSelect: adminModObserverProcedure
+    .input(z.object({}))
+    .query(async () => {
+      return await prisma?.organization.findMany({
+        select: { id: true, displayName: true },
+      });
+    }),
   create: adminModProcedure
     .input(validateOrganization)
     .mutation(async ({ input, ctx }) => {

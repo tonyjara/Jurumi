@@ -1,22 +1,27 @@
 import { z } from 'zod';
 import { validateTransactionEdit } from '@/lib/validations/transaction.edit.validate';
-import { adminModProcedure, adminProcedure, router } from '../../initTrpc';
+import {
+  adminModObserverProcedure,
+  adminModProcedure,
+  adminProcedure,
+  router,
+} from '../../initTrpc';
 import { handleOrderBy } from '../utils/Sorting.routeUtils';
 import { transactionRouteUtils } from '../utils/Transaction.routeUtils';
 import prisma from '@/server/db/client';
 import { createManyTransactions } from './createMany.transaction.routes';
 
 export const transactionsRouter = router({
-  getMany: adminModProcedure.query(async () => {
+  getMany: adminModObserverProcedure.query(async () => {
     return await prisma?.transaction.findMany({
       take: 20,
       orderBy: { createdAt: 'desc' },
     });
   }),
-  count: adminModProcedure.query(async () => {
+  count: adminModObserverProcedure.query(async () => {
     return await prisma?.transaction.count();
   }),
-  getManyComplete: adminModProcedure
+  getManyComplete: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -46,7 +51,7 @@ export const transactionsRouter = router({
         },
       });
     }),
-  findManyCompleteById: adminModProcedure
+  findManyCompleteById: adminModObserverProcedure
     .input(z.object({ ids: z.number().array() }))
     .query(async ({ input }) => {
       if (!input.ids.length) return null;
@@ -93,7 +98,7 @@ export const transactionsRouter = router({
       });
       return x;
     }),
-  isLastTransaction: adminModProcedure
+  isLastTransaction: adminModObserverProcedure
     .input(
       z.object({
         moneyAccountId: z.string().nullable(),

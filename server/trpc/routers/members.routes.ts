@@ -1,4 +1,8 @@
-import { adminModProcedure, router } from '../initTrpc';
+import {
+  adminModObserverProcedure,
+  adminModProcedure,
+  router,
+} from '../initTrpc';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import prisma from '@/server/db/client';
@@ -6,10 +10,10 @@ import { validateMember } from '@/lib/validations/member.validate';
 import { handleOrderBy } from './utils/Sorting.routeUtils';
 
 export const membersRouter = router({
-  count: adminModProcedure.query(async () => {
+  count: adminModObserverProcedure.query(async () => {
     return await prisma?.membership.count();
   }),
-  getMany: adminModProcedure
+  getMany: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),

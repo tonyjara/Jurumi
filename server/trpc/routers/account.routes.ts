@@ -1,4 +1,5 @@
 import {
+  adminModObserverProcedure,
   adminModProcedure,
   protectedProcedure,
   publicProcedure,
@@ -90,7 +91,7 @@ export const accountsRouter = router({
     });
   }),
 
-  getMany: adminModProcedure
+  getMany: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -111,7 +112,7 @@ export const accountsRouter = router({
         orderBy: handleOrderBy({ input }),
       });
     }),
-  getAllActive: adminModProcedure.query(async () => {
+  getAllActive: adminModObserverProcedure.query(async () => {
     //Use this to build options with react-select
     return await prisma?.account.findMany({
       where: { active: true },
@@ -164,7 +165,7 @@ export const accountsRouter = router({
       });
     }),
 
-  findByEmail: adminModProcedure
+  findByEmail: adminModObserverProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ input }) => {
       return await prisma?.account.findMany({

@@ -1,7 +1,12 @@
 import { validateImbursement } from '@/lib/validations/imbursement.validate';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { adminProcedure, adminModProcedure, router } from '../initTrpc';
+import {
+  adminProcedure,
+  adminModProcedure,
+  router,
+  adminModObserverProcedure,
+} from '../initTrpc';
 import { handleOrderBy } from './utils/Sorting.routeUtils';
 import prisma from '@/server/db/client';
 import { imbursementCreateUtils } from './utils/Imbursement.routeUtils';
@@ -17,13 +22,13 @@ const {
 } = imbursementCreateUtils;
 
 export const imbursementsRouter = router({
-  getMany: adminModProcedure.query(async () => {
+  getMany: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyRequest.findMany({
       take: 20,
       orderBy: { createdAt: 'desc' },
     });
   }),
-  getManyComplete: adminModProcedure
+  getManyComplete: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -53,7 +58,9 @@ export const imbursementsRouter = router({
         },
       });
     }),
-  count: adminModProcedure.query(async () => prisma?.imbursement.count()),
+  count: adminModObserverProcedure.query(async () =>
+    prisma?.imbursement.count()
+  ),
 
   create: adminModProcedure
     .input(validateImbursement)

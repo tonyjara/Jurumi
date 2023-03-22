@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { validateProject } from '@/lib/validations/project.validate';
 import {
+  adminModObserverProcedure,
   adminModProcedure,
   adminProcedure,
   protectedProcedure,
@@ -35,7 +36,7 @@ export const projectRouter = router({
       where: { allowedUsers: !isModOrAdmin ? { some: { id: user.id } } : {} },
     });
   }),
-  getManyForTable: adminModProcedure
+  getManyForTable: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -90,7 +91,7 @@ export const projectRouter = router({
       });
     }),
 
-  getLastProjectTransaction: adminModProcedure
+  getLastProjectTransaction: adminModObserverProcedure
     .input(
       z.object({
         projectId: z.string().optional(),
@@ -114,7 +115,7 @@ export const projectRouter = router({
         },
       });
     }),
-  getProjectTransactions: adminModProcedure
+  getProjectTransactions: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
