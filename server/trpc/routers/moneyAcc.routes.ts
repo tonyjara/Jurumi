@@ -38,7 +38,7 @@ export const moneyAccRouter = router({
       orderBy: { id: 'desc' },
     });
   }),
-  getManyPublic: adminModObserverProcedure.query(async () => {
+  getManyPublic: protectedProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       select: {
         displayName: true,

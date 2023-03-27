@@ -1,7 +1,7 @@
-import TablePagination from '@/components/DynamicTables/TablePagination';
-import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
-import ImageEnlargeModal from '@/components/Modals/imageEnlarge.modal';
-import { trpcClient } from '@/lib/utils/trpcClient';
+import TablePagination from "@/components/DynamicTables/TablePagination";
+import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
+import ImageEnlargeModal from "@/components/Modals/imageEnlarge.modal";
+import { trpcClient } from "@/lib/utils/trpcClient";
 import {
   Box,
   Card,
@@ -11,9 +11,9 @@ import {
   InputGroup,
   SimpleGrid,
   useDisclosure,
-} from '@chakra-ui/react';
-import type { Currency, Prisma } from '@prisma/client';
-import React, { useState } from 'react';
+} from "@chakra-ui/react";
+import type { Currency, Prisma } from "@prisma/client";
+import React, { useState } from "react";
 
 const GalleryPage = () => {
   const [clickedImage, setClickedImage] = useState<{
@@ -31,16 +31,19 @@ const GalleryPage = () => {
     pageIndex,
     pageSize,
   });
+  data?.map((x) => {
+    x.accountId;
+  });
 
   const { data: count } = trpcClient.gallery.count.useQuery();
 
   return (
-    <Card overflow={'auto'}>
+    <Card overflow={"auto"}>
       <CardBody>
-        <InputGroup mb={'10px'}>
-          <Input maxW={'300px'} placeholder="Buscar por texto" />
+        <InputGroup mb={"10px"}>
+          <Input maxW={"300px"} placeholder="Buscar por texto" />
         </InputGroup>
-        <SimpleGrid w="80vw" columns={8} minChildWidth={'180px'} spacing={6}>
+        <SimpleGrid w="80vw" columns={8} minChildWidth={"180px"} spacing={6}>
           {data?.map((x) => (
             <Box
               cursor="pointer"
