@@ -31,6 +31,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import type { Currency, Prisma } from '@prisma/client';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
+import axios from 'axios';
 
 const ImageEnlargeModal = ({
   url,
