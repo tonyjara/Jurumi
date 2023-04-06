@@ -14,6 +14,7 @@ import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
 import type { FormProject } from '../../lib/validations/project.validate';
 import { defaultCostCategoryData } from '../../lib/validations/project.validate';
 import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
+import FormControlledNumberInput from '../FormControlled/FormControlledNumberInput';
 import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
 import FormControlledText from '../FormControlled/FormControlledText';
 
@@ -89,6 +90,16 @@ const CostCategoryForm = ({
                 icon={<DeleteIcon />}
               />
             </HStack>
+            <FormControlledNumberInput
+              control={control}
+              errors={errors}
+              prefix="1 $ = Gs. "
+              name={`costCategories.${index}.referenceExchangeRate`}
+              label="Valor referencial de dólar en guaranies."
+              helperText={
+                'Este valor se toma como referencia para calcular porcentajes de ejecución y otros datos.'
+              }
+            />
             <Divider />
           </VStack>
         );

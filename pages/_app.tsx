@@ -23,6 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') return;
     tracker.start();
     tracker.setUserID(session?.user.email ?? '');
     // eslint-disable-next-line react-hooks/exhaustive-deps

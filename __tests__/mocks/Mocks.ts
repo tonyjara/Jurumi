@@ -79,6 +79,7 @@ export const projectMock: () => FormProject = () => {
         assignedAmount: new Prisma.Decimal(
           faker.commerce.price(1000000, 3000000)
         ),
+        referenceExchangeRate: 7000,
         projectId: null,
       },
       {
@@ -88,6 +89,7 @@ export const projectMock: () => FormProject = () => {
         createdById: '',
         updatedById: null,
         displayName: faker.commerce.product(),
+        referenceExchangeRate: 7000,
         currency: 'PYG',
         assignedAmount: new Prisma.Decimal(
           faker.commerce.price(1000000, 3000000)

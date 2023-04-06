@@ -4,7 +4,9 @@ import { createColumnHelper } from '@tanstack/react-table';
 import DateCell from '@/components/DynamicTables/DynamicCells/DateCell';
 import EnumTextCell from '@/components/DynamicTables/DynamicCells/EnumTextCell';
 import MoneyCell from '@/components/DynamicTables/DynamicCells/MoneyCell';
-import PercentageCell from '@/components/DynamicTables/DynamicCells/PercentageCell';
+import PercentageCell, {
+  percentageCellUtil,
+} from '@/components/DynamicTables/DynamicCells/PercentageCell';
 import TextCell from '@/components/DynamicTables/DynamicCells/TextCell';
 import { ApprovalUtils } from '@/lib/utils/ApprovalUtilts';
 import {
@@ -134,26 +136,43 @@ export const moneyRequestsColumns = ({
       />
     ),
   }),
-  columnHelper.display({
-    header: 'Rendido',
-    cell: (x) => (
-      <Center>
-        {x.row.original.moneyRequestType === 'REIMBURSMENT_ORDER' ? (
-          <SearchableImageModalCell
-            searchableImages={x.row.original.searchableImages}
-          />
-        ) : (
-          <PercentageCell
-            total={x.row.original.amountRequested}
-            executed={reduceExpenseReports(x.row.original.expenseReports).add(
-              reduceExpenseReturns(x.row.original.expenseReturns)
+  columnHelper.accessor(
+    (row) => {
+      const total = row.amountRequested;
+      const executed = reduceExpenseReports(row.expenseReports).add(
+        reduceExpenseReturns(row.expenseReturns)
+      );
+
+      return percentageCellUtil(executed, total);
+    },
+    {
+      id: 'no-global-sort',
+      header: 'Rendido',
+
+      cell: (x) => {
+        const total = x.row.original.amountRequested;
+        const executed = reduceExpenseReports(
+          x.row.original.expenseReports
+        ).add(reduceExpenseReturns(x.row.original.expenseReturns));
+        return (
+          <Center>
+            {x.row.original.moneyRequestType === 'REIMBURSMENT_ORDER' ? (
+              <SearchableImageModalCell
+                searchableImages={x.row.original.searchableImages}
+              />
+            ) : (
+              <PercentageCell
+                total={total}
+                executed={executed}
+                currency={x.row.original.currency}
+              />
             )}
-            currency={x.row.original.currency}
-          />
-        )}
-      </Center>
-    ),
-  }),
+          </Center>
+        );
+      },
+    }
+  ),
+
   columnHelper.display({
     header: 'Opciones',
     cell: (x) => {

@@ -1,3 +1,4 @@
+/** Sort queries the prisma way for tables */
 export const handleOrderBy = ({
   input,
 }: {
@@ -15,6 +16,9 @@ export const handleOrderBy = ({
 }) => {
   if (input.sorting && input.sorting[0]) {
     const prop = input.sorting[0];
+
+    //Escape hatch for complex sort columns
+    if (prop.id === 'no-global-sort') return { createdAt: 'desc' };
     if (prop.id.includes('_')) {
       const split = prop.id.split('_');
       return {

@@ -181,6 +181,7 @@ export const projectRouter = router({
             assignedAmount: cat.assignedAmount,
             createdById: ctx.session.user.id,
             currency: cat.currency,
+            referenceExchangeRate: cat.referenceExchangeRate,
           } as CostCategory)
       );
 
@@ -212,10 +213,12 @@ export const projectRouter = router({
               createdById: ctx.session.user.id,
               currency: cat.currency,
               projectId: input.id,
+              referenceExchangeRate: cat.referenceExchangeRate,
             },
             update: {
               displayName: cat.displayName,
               assignedAmount: cat.assignedAmount,
+              referenceExchangeRate: cat.referenceExchangeRate,
               createdById: ctx.session.user.id,
               currency: cat.currency,
             },

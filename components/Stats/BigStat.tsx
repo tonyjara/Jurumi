@@ -19,7 +19,7 @@ const BigStat = ({
       <StatLabel color={labelColor} fontSize={{ base: 'md', md: 'lg' }}>
         {label}
       </StatLabel>
-      <StatNumber fontSize={{ base: 'xl', md: '3xl' }}>{value}</StatNumber>
+      <StatNumber fontSize={{ base: 'lg', md: '3xl' }}>{value}</StatNumber>
     </Stat>
   );
 };

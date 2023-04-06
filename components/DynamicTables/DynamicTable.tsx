@@ -177,6 +177,11 @@ const DynamicTable = <T extends object>({
                     key={header.id}
                     onClick={() => handleToggleSorting(header)}
                     isNumeric={meta?.isNumeric}
+                    color={
+                      globalFilter && header.id === 'no-global-sort'
+                        ? 'red.300'
+                        : undefined
+                    }
                   >
                     <Flex>
                       {flexRender(

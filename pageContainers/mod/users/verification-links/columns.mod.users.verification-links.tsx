@@ -53,7 +53,7 @@ export const verificationLinksColumns = ({
         !x.row.original.hasBeenUsed;
       return isActive ? (
         <CopyLinkCellButton
-          disabled={user?.role !== 'ADMIN'}
+          disabled={!(user?.role === 'ADMIN' || user?.role === 'MODERATOR')}
           link={x.row.original.verificationLink}
         />
       ) : (

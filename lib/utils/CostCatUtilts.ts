@@ -1,6 +1,20 @@
 import type { CostCategory, Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { decimalFormat } from './DecimalHelpers';
+
+export const reduceCostCatAsignedAmountsInGs = (costCats: CostCategory[]) => {
+  return costCats.reduce((acc, val) => {
+    if (val.currency === 'PYG') {
+      return acc.add(val.assignedAmount);
+    }
+    if (val.currency === 'USD') {
+      return acc.add(val.assignedAmount.times(val.referenceExchangeRate));
+    }
+
+    return acc;
+  }, new Prisma.Decimal(0));
+};
+
 export const reduceCostCatAsignedAmount = ({
   costCats,
   currency,
@@ -16,7 +30,8 @@ export const reduceCostCatAsignedAmount = ({
     return acc;
   }, new Prisma.Decimal(0));
 };
-export const forMatedreduceCostCatAsignedAmount = ({
+
+export const formatedReduceCostCatAsignedAmount = ({
   costCats,
   currency,
 }: {
