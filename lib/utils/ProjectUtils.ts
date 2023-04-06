@@ -1,4 +1,4 @@
-import type { CostCategory, Currency, Transaction } from '@prisma/client';
+import type { CostCategory, Currency } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import type { Decimal } from '@prisma/client/runtime';
 

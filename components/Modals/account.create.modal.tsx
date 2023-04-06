@@ -93,6 +93,11 @@ const CreateAccountModal = ({
           <ModalHeader>Crear un usuario</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <Text color={'gray.500'} mb={'20px'}>
+              Obs: Las invitaciones generadas al crear un usuario tienen una
+              validés de 1 hora. Pasado el tiempo de validés se puede generar un
+              nuevo link desde Usuarios/Links de verificación
+            </Text>
             {value.length > 0 && (
               <Container textAlign={'center'}>
                 <Text fontWeight={'bold'} fontSize={'xl'}>

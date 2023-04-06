@@ -1,6 +1,9 @@
 // This is a dictionary that replaces known error with usable text messages
 
 export const knownErrors = (error: string) => {
+  if (error.includes('(`taxPayerId`,`facturaNumber`)')) {
+    return 'Este contribuyente ya tiene una factura con el mismo número, favor pongase en contacto con el administrador para solucionar este problema. ';
+  }
   if (error.includes('Unique constraint failed')) {
     return 'Este campo ya existe, favor ingrese un valor distinto.';
   }
@@ -28,6 +31,7 @@ export const knownErrors = (error: string) => {
   if (error.includes('Membership already exists')) {
     return 'El usuario ya esta asociado';
   }
+
   console.error(error);
   return 'Hubo un error, favor intente nuevamente';
 };

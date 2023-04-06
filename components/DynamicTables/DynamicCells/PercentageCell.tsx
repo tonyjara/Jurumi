@@ -8,6 +8,9 @@ import type { Decimal } from '@prisma/client/runtime';
 import { decimalFormat } from '../../../lib/utils/DecimalHelpers';
 import type { Currency } from '@prisma/client';
 
+export const percentageCellUtil = (executed: Decimal, total: Decimal) =>
+  executed.dividedBy(total).times(100).toFixed(0);
+
 const PercentageCell = ({
   total,
   executed,
@@ -17,7 +20,7 @@ const PercentageCell = ({
   executed: Decimal;
   currency: Currency;
 }) => {
-  const percentage = executed.dividedBy(total).times(100).toFixed(0);
+  const percentage = percentageCellUtil(executed, total);
 
   return (
     <Tooltip label={decimalFormat(executed, currency)}>

@@ -2,8 +2,9 @@ import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
 import BigStat from '@/components/Stats/BigStat';
 import SmallStat from '@/components/Stats/SmallStat';
 import {
-  forMatedreduceCostCatAsignedAmount,
+  formatedReduceCostCatAsignedAmount,
   reduceCostCatAsignedAmount,
+  reduceCostCatAsignedAmountsInGs,
 } from '@/lib/utils/CostCatUtilts';
 import { decimalFormat } from '@/lib/utils/DecimalHelpers';
 import { projectExecutedAmount } from '@/lib/utils/ProjectUtils';
@@ -43,18 +44,20 @@ const ProjectStats = ({
     ? projectWithLastTx?.transactions[0]?.currentBalance
     : new Prisma.Decimal(0);
 
-  const executedInGs = project
-    ? projectExecutedAmount({ costCats: project?.costCategories }).gs
-    : new Prisma.Decimal(0);
-  const assignedAmount = project
-    ? reduceCostCatAsignedAmount({
-        costCats: project.costCategories,
-        currency: 'PYG',
-      })
-    : new Prisma.Decimal(0);
+  const executedInGs = projectExecutedAmount({
+    costCats: project?.costCategories ?? [],
+  }).gs;
+  const assignedAmount = reduceCostCatAsignedAmount({
+    costCats: project?.costCategories ?? [],
+    currency: 'PYG',
+  });
+
+  const totalAsignedInGs = reduceCostCatAsignedAmountsInGs(
+    project?.costCategories ?? []
+  );
 
   const percentageExecuted =
-    executedInGs.dividedBy(assignedAmount).toNumber() * 100;
+    executedInGs.dividedBy(totalAsignedInGs).toNumber() * 100;
 
   const { data: getProjectWTx, isFetching } =
     trpcClient.project.getProjectTransactions.useQuery(
@@ -71,19 +74,17 @@ const ProjectStats = ({
     <div>
       <StatGroup mb={'20px'}>
         <BigStat
-          label="Asignado en Gs."
-          value={decimalFormat(assignedAmount, 'PYG')}
+          label="Total asignado en Gs."
+          value={decimalFormat(totalAsignedInGs, 'PYG')}
         />
+
+        <BigStat label="En Gs." value={decimalFormat(assignedAmount, 'PYG')} />
         <BigStat
-          label="Asignado en Usd."
-          value={
-            project
-              ? forMatedreduceCostCatAsignedAmount({
-                  costCats: project.costCategories,
-                  currency: 'USD',
-                })
-              : 0
-          }
+          label="En Usd."
+          value={formatedReduceCostCatAsignedAmount({
+            costCats: project?.costCategories ?? [],
+            currency: 'USD',
+          })}
         />
       </StatGroup>
 
@@ -98,7 +99,7 @@ const ProjectStats = ({
         />
         <SmallStat
           color="orange.300"
-          label="Ejecutado."
+          label="Ejecutado en Gs."
           value={decimalFormat(executedInGs, 'PYG')}
         />
       </StatGroup>

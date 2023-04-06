@@ -291,19 +291,20 @@ model Project {
 }
 
 model CostCategory {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime?       @updatedAt
-  createdById    String
-  updatedById    String?
-  displayName    String
-  currency       Currency
-  projectId      String?
-  assignedAmount Decimal         @default(0) @db.Decimal(19, 4) //this can keep being edit
-  project        Project?        @relation(fields: [projectId], references: [id])
-  transactions   Transaction[]
-  expenseReport  ExpenseReport[]
-  moneyRequest   MoneyRequest[]
+  id                    String          @id @default(cuid())
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime?       @updatedAt
+  createdById           String
+  updatedById           String?
+  displayName           String
+  currency              Currency
+  projectId             String?
+  assignedAmount        Decimal         @default(0) @db.Decimal(19, 4) //this can keep being edit
+  referenceExchangeRate Float           @default(0)
+  project               Project?        @relation(fields: [projectId], references: [id])
+  transactions          Transaction[]
+  expenseReport         ExpenseReport[]
+  moneyRequest          MoneyRequest[]
 }
 
 model Imbursement {

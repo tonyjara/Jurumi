@@ -16,6 +16,7 @@ const validateCostCategory: z.ZodType<FormCostCategory> = z.lazy(() =>
     updatedAt: z.date().nullable(),
     createdById: z.string(),
     updatedById: z.string().nullable(),
+    referenceExchangeRate: z.number(),
     displayName: stringReqMinMax('Favor ingrese un nombre', 3, 32),
     assignedAmount: z.any().transform((value) => new Prisma.Decimal(value)),
     projectId: z.string().nullable(),
@@ -68,6 +69,7 @@ export const defaultCostCategoryData: FormCostCategory = {
   displayName: '',
   currency: 'PYG',
   assignedAmount: new Prisma.Decimal(0),
+  referenceExchangeRate: 7000,
   projectId: null,
 };
 

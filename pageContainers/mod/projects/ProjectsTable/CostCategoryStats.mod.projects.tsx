@@ -22,6 +22,7 @@ const CostCategoryStats = ({
   project: ProjectComplete | undefined;
 }) => {
   const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: true });
+
   return (
     <Box mt={'10px'}>
       <Flex alignItems={'center'} gap={5}>
@@ -47,12 +48,26 @@ const CostCategoryStats = ({
               const executedAmount = costCat.transactions[0]
                 ? costCat.transactions[0].currentBalance
                 : new Prisma.Decimal(0);
+
               const executedCurrency = costCat.transactions[0]
                 ? costCat.transactions[0].currency
                 : 'PYG';
 
+              const assignedAmountInGs =
+                costCat.currency == 'PYG'
+                  ? costCat.assignedAmount
+                  : costCat.assignedAmount.times(costCat.referenceExchangeRate);
+
               const assignedAmount = costCat.assignedAmount;
 
+              const handleAsignedLabel = () => {
+                if (costCat.currency === 'USD')
+                  return `Asignado (${decimalFormat(
+                    costCat.assignedAmount.times(costCat.referenceExchangeRate),
+                    'PYG'
+                  )}). Tasa de cambio: ${costCat.referenceExchangeRate}`;
+                return 'Asignado';
+              };
               return (
                 <Box mb={'10px'} key={costCat.id}>
                   <Text fontSize={'lg'} fontWeight={'bold'} mb={'10px'}>
@@ -60,7 +75,7 @@ const CostCategoryStats = ({
                   </Text>
                   <StatGroup alignItems={'center'} mb={'10px'} gap={5}>
                     <SmallStat
-                      label="Asignado"
+                      label={handleAsignedLabel()}
                       value={decimalFormat(assignedAmount, costCat.currency)}
                     />
 
@@ -71,7 +86,7 @@ const CostCategoryStats = ({
                     />
 
                     <PercentageCell
-                      total={assignedAmount}
+                      total={assignedAmountInGs}
                       executed={executedAmount}
                       currency={costCat.currency}
                     />
