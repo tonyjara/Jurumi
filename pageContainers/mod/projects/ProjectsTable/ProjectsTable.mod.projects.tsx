@@ -1,14 +1,15 @@
-import { useDisclosure } from '@chakra-ui/react';
-import type { CostCategory, Currency, Prisma, Project } from '@prisma/client';
-import React, { useEffect, useState } from 'react';
-import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
-import DynamicTable from '@/components/DynamicTables/DynamicTable';
-import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import EditProjectModal from '@/components/Modals/project.edit.modal';
-import { projectsColumn } from './columns.mod.projects';
-import { myToast } from '@/components/Toasts & Alerts/MyToast';
-import CreateProjectModal from '@/components/Modals/project.create.modal';
+import { useDisclosure } from "@chakra-ui/react";
+import type { CostCategory, Currency, Prisma, Project } from "@prisma/client";
+import React, { useEffect, useState } from "react";
+import type { TableOptions } from "@/components/DynamicTables/DynamicTable";
+import DynamicTable from "@/components/DynamicTables/DynamicTable";
+import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import EditProjectModal from "@/components/Modals/project.edit.modal";
+import { projectsColumn } from "./columns.mod.projects";
+import { myToast } from "@/components/Toasts & Alerts/MyToast";
+import CreateProjectModal from "@/components/Modals/project.create.modal";
+import RowOptionsModProjects from "./rowOptions.mod.projects";
 
 export type ProjectForTable = Project & {
     costCategories: (CostCategory & {
@@ -74,29 +75,38 @@ const ProjectsTable = () => {
             onClick: () =>
                 preferences?.selectedOrganization
                     ? onOpen()
-                    : myToast.error('Favor seleccione una organización'),
-            label: 'Crear proyecto',
+                    : myToast.error("Favor seleccione una organización"),
+            label: "Crear proyecto",
         },
         {
             onClick: () => setGlobalFilter(true),
-            label: `${globalFilter ? '✅' : '❌'} Filtro global`,
+            label: `${globalFilter ? "✅" : "❌"} Filtro global`,
         },
         {
             onClick: () => setGlobalFilter(false),
-            label: `${!globalFilter ? '✅' : '❌'} Filtro local`,
+            label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
         },
     ];
+
+    const rowOptionsFunction = (x: ProjectForTable) => {
+        return (
+            <RowOptionsModProjects
+                x={x}
+                onEditOpen={onEditOpen}
+                setEditProject={setEditProject}
+            />
+        );
+    };
 
     return (
         <>
             <DynamicTable
-                title={'Proyectos'}
+                title={"Proyectos"}
                 columns={projectsColumn({
-                    onEditOpen,
-                    setEditProject,
                     pageIndex,
                     pageSize,
                 })}
+                rowOptions={rowOptionsFunction}
                 loading={isFetching || isLoading}
                 options={tableOptions}
                 data={handleDataSource() ?? []}
