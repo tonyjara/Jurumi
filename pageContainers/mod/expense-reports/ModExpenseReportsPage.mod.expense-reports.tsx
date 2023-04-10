@@ -94,14 +94,14 @@ const ModExpenseReportsPage = () => {
         <>
             <DynamicTable
                 title={"Rendiciones"}
-                searchBar={
-                    <TableSearchbar
-                        type="text"
-                        placeholder="Buscar por ID"
-                        searchValue={searchValue}
-                        setSearchValue={setSearchValue}
-                    />
-                }
+                /* searchBar={ */
+                /*     <TableSearchbar */
+                /*         type="text" */
+                /*         placeholder="Buscar por ID" */
+                /*         searchValue={searchValue} */
+                /*         setSearchValue={setSearchValue} */
+                /*     /> */
+                /* } */
                 rowOptions={rowOptionsFunction}
                 options={tableOptions}
                 loading={isFetching}

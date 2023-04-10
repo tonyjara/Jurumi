@@ -1,15 +1,16 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import React from "react";
-import { BsThreeDots } from "react-icons/bs";
 import type { TableOptions } from "../DynamicTable";
-
+import { BiWorld } from "react-icons/bi";
 const TableTitleMenu = ({
     options,
     label,
+    globalFilter,
 }: {
     options?: TableOptions[];
     label: string | undefined;
+    globalFilter?: boolean;
 }) => {
     return (
         <div>
@@ -19,8 +20,21 @@ const TableTitleMenu = ({
                         fontSize={{ base: "2xl", md: "3xl" }}
                         as={Button}
                         rightIcon={<ChevronDownIcon />}
+                        alignItems="center"
+                        flexDir={"row"}
+                        display="flex"
                     >
-                        {label}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: "10px",
+                            }}
+                        >
+                            {globalFilter && <BiWorld color="green" />}
+                            {label}
+                        </div>
                     </MenuButton>
                     <MenuList>
                         {options.map((x) => (
