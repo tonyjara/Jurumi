@@ -3,6 +3,7 @@ import { z } from "zod";
 import { validateMoneyRequest } from "@/lib/validations/moneyRequest.validate";
 import {
     adminModObserverProcedure,
+    adminModProcedure,
     adminProcedure,
     protectedProcedure,
     router,
@@ -145,7 +146,7 @@ export const moneyRequestRouter = router({
                         },
                         include: {
                             searchableImage: {
-                                select: { url: true, imageName: true, id: true },
+                                select: { url: true, imageName: true },
                             },
                         },
                     },
@@ -208,7 +209,7 @@ export const moneyRequestRouter = router({
                         },
                         include: {
                             searchableImage: {
-                                select: { url: true, imageName: true, id: true },
+                                select: { url: true, imageName: true },
                             },
                         },
                     },
@@ -302,7 +303,7 @@ export const moneyRequestRouter = router({
             });
             return x;
         }),
-    cancelById: adminProcedure
+    cancelById: adminModProcedure
         .input(
             z.object({
                 id: z.string(),

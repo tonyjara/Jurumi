@@ -49,7 +49,6 @@ export type MoneyRequestComplete = MoneyRequest & {
     } | null;
     transactions: (Transaction & {
         searchableImage: {
-            id: string;
             url: string;
             imageName: string;
         } | null;
