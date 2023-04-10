@@ -1,6 +1,5 @@
-import type { Account, MoneyRequest } from "@prisma/client";
+import type { Account } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
-
 import DateCell from "@/components/DynamicTables/DynamicCells/DateCell";
 import EnumTextCell from "@/components/DynamicTables/DynamicCells/EnumTextCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
@@ -19,7 +18,6 @@ import {
     translatedMoneyReqType,
 } from "@/lib/utils/TranslatedEnums";
 import type { MoneyRequestComplete } from "./MoneyRequestsPage.mod.requests";
-import RowOptionsModRequests from "./rowOptions.mod.requests";
 import { Center } from "@chakra-ui/react";
 import SearchableImageModalCell from "@/components/DynamicTables/DynamicCells/SearchableImagesModalCell";
 
@@ -27,26 +25,12 @@ const columnHelper = createColumnHelper<MoneyRequestComplete>();
 
 export const moneyRequestsColumns = ({
     user,
-    onEditOpen,
-    setEditMoneyRequest,
     pageIndex,
     pageSize,
-    setReqForReport,
-    onExpRepOpen,
-    onExpReturnOpen,
 }: {
     user: Omit<Account, "password"> | undefined;
-    onEditOpen: () => void;
-    setEditMoneyRequest: React.Dispatch<
-        React.SetStateAction<MoneyRequest | null>
-    >;
-    setReqForReport: React.Dispatch<
-        React.SetStateAction<MoneyRequestComplete | null>
-    >;
     pageSize: number;
     pageIndex: number;
-    onExpRepOpen: () => void;
-    onExpReturnOpen: () => void;
 }) => [
         columnHelper.display({
             cell: (x) => x.row.index + 1 + pageIndex * pageSize,
@@ -172,26 +156,4 @@ export const moneyRequestsColumns = ({
                 },
             }
         ),
-
-        /* columnHelper.display({ */
-        /*   header: 'Opciones', */
-        /*   cell: (x) => { */
-        /*     const { needsApproval, hasBeenApproved } = ApprovalUtils( */
-        /*       x.row.original as any, */
-        /*       user */
-        /*     ); */
-        /*     return ( */
-        /*       <RowOptionsModRequests */
-        /*         needsApproval={needsApproval()} */
-        /*         x={x.row.original} */
-        /*         onEditOpen={onEditOpen} */
-        /*         setEditMoneyRequest={setEditMoneyRequest} */
-        /*         hasBeenApproved={hasBeenApproved()} */
-        /*         setReqForReport={setReqForReport} */
-        /*         onExpRepOpen={onExpRepOpen} */
-        /*         onExpReturnOpen={onExpReturnOpen} */
-        /*       /> */
-        /*     ); */
-        /*   }, */
-        /* }), */
     ];

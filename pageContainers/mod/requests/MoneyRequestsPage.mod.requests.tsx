@@ -172,13 +172,8 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
                 }
                 columns={moneyRequestsColumns({
                     user,
-                    onEditOpen,
-                    setEditMoneyRequest,
                     pageIndex,
                     pageSize,
-                    setReqForReport,
-                    onExpRepOpen,
-                    onExpReturnOpen: onExpenseReturnOpen,
                 })}
                 loading={isFetching || isLoading}
                 options={tableOptions}
