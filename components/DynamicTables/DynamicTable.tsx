@@ -129,17 +129,19 @@ const DynamicTable = <T extends object>({
             backgroundColor={backgroundColor}
         >
             {!noHeader && (
-                <CardHeader>
-                    <Flex justifyContent={"space-between"}>
-                        <Flex flexDirection={"row"} gap="10px">
-                            <Flex flexDirection={"column"}>
-                                <TableTitleMenu label={title} options={options} />
+                <CardHeader w="100%">
+                    <Flex flexDirection={{ base: "column", md: "row" }} gap="10px">
+                        <Flex flexDirection={"column"}>
+                            <TableTitleMenu
+                                globalFilter={globalFilter}
+                                label={title}
+                                options={options}
+                            />
 
-                                <Text fontSize="md">{subTitle}</Text>
-                                {headerComp}
-                            </Flex>
-                            {searchBar}
+                            <Text fontSize="md">{subTitle}</Text>
+                            {headerComp}
                         </Flex>
+                        {searchBar}
                     </Flex>
                 </CardHeader>
             )}
@@ -228,10 +230,11 @@ const DynamicTable = <T extends object>({
                                         return e.pageX;
                                     };
                                     const handleY = () => {
-                                        const limit = innerHeight - 400;
-                                        if (e.pageY > limit) {
-                                            return innerHeight - 400;
-                                        }
+                                        // Generated errors in large lists.
+                                        /* const limit = innerHeight - 400; */
+                                        /* if (e.pageY > limit) { */
+                                        /*     return innerHeight - 400; */
+                                        /* } */
                                         return e.pageY;
                                     };
 

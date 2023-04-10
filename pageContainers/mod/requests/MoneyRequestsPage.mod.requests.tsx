@@ -47,7 +47,13 @@ export type MoneyRequestComplete = MoneyRequest & {
         razonSocial: string;
         ruc: string;
     } | null;
-    transactions: Transaction[];
+    transactions: (Transaction & {
+        searchableImage: {
+            id: string;
+            url: string;
+            imageName: string;
+        } | null;
+    })[];
     expenseReports: (ExpenseReport & {
         taxPayer: {
             id: string;
@@ -62,7 +68,7 @@ export type MoneyRequestComplete = MoneyRequest & {
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     const session = useSession();
     const user = session.data?.user;
-    const [searchValue, setSearchValue] = useState("");
+    const [searchValue, setSearchValue] = useState({ value: "", filter: "id" });
     const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
         null
     );
@@ -75,7 +81,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
 
     useEffect(() => {
         if (query.moneyRequestId) {
-            setSearchValue(query.moneyRequestId);
+            setSearchValue({ value: query.moneyRequestId, filter: "id" });
         }
         return () => { };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,14 +121,13 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         );
 
     const { data: findByIdData, isFetching } =
-        trpcClient.moneyRequest.findCompleteById.useQuery(
-            { id: searchValue },
-            { enabled: searchValue.length > 0 }
-        );
+        trpcClient.moneyRequest.findCompleteById.useQuery(searchValue, {
+            enabled: searchValue.value.length > 0,
+        });
 
     const handleDataSource = () => {
         if (!moneyRequests) return [];
-        if (findByIdData) return [findByIdData];
+        if (findByIdData) return findByIdData;
         if (moneyRequests) return moneyRequests;
         return [];
     };
@@ -165,9 +170,16 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
                 searchBar={
                     <TableSearchbar
                         type="text"
-                        placeholder="Buscar por ID"
+                        placeholder="Buscar por"
                         searchValue={searchValue}
                         setSearchValue={setSearchValue}
+                        filterOptions={[
+                            { value: "id", label: "Id" },
+                            {
+                                value: "amountRequested",
+                                label: "Igual o mayor al Monto solicitado",
+                            },
+                        ]}
                     />
                 }
                 columns={moneyRequestsColumns({

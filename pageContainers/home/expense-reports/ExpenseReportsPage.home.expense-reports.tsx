@@ -31,7 +31,7 @@ export type MyExpenseReport = ExpenseReport & {
 };
 
 const MyExpenseReportsPage = () => {
-    const [searchValue, setSearchValue] = useState("");
+    const [searchValue, setSearchValue] = useState({ value: "", filter: "id" });
     const [editExpenseReport, setEditExpenseReport] =
         useState<MyExpenseReport | null>(null);
     const dynamicTableProps = useDynamicTable();
@@ -89,14 +89,14 @@ const MyExpenseReportsPage = () => {
         <>
             <DynamicTable
                 title={"Mis Rendiciones"}
-                searchBar={
-                    <TableSearchbar
-                        type="text"
-                        placeholder="Buscar por ID"
-                        searchValue={searchValue}
-                        setSearchValue={setSearchValue}
-                    />
-                }
+                /* searchBar={ */
+                /*     <TableSearchbar */
+                /*         type="text" */
+                /*         placeholder="Buscar por" */
+                /*         searchValue={searchValue} */
+                /*         setSearchValue={setSearchValue} */
+                /*     /> */
+                /* } */
                 rowOptions={rowOptionsFunction}
                 options={tableOptions}
                 loading={isFetching}

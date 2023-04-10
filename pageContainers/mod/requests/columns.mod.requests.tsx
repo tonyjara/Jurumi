@@ -20,6 +20,7 @@ import {
 import type { MoneyRequestComplete } from "./MoneyRequestsPage.mod.requests";
 import { Center } from "@chakra-ui/react";
 import SearchableImageModalCell from "@/components/DynamicTables/DynamicCells/SearchableImagesModalCell";
+import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCell";
 
 const columnHelper = createColumnHelper<MoneyRequestComplete>();
 
@@ -44,7 +45,7 @@ export const moneyRequestsColumns = ({
         columnHelper.display({
             cell: (x) => {
                 const { needsApproval, approvalText, approverNames } = ApprovalUtils(
-                    x.getValue() as any,
+                    x.row.original as any,
                     user
                 );
                 return (
@@ -138,13 +139,28 @@ export const moneyRequestsColumns = ({
                     const executed = reduceExpenseReports(
                         x.row.original.expenseReports
                     ).add(reduceExpenseReturns(x.row.original.expenseReturns));
+
                     return (
                         <Center>
-                            {x.row.original.moneyRequestType === "REIMBURSMENT_ORDER" ? (
+                            {x.row.original.moneyRequestType === "REIMBURSMENT_ORDER" && (
                                 <SearchableImageModalCell
                                     searchableImages={x.row.original.searchableImages}
                                 />
-                            ) : (
+                            )}
+
+                            {x.row.original.moneyRequestType === "MONEY_ORDER" &&
+                                (x.row.original.transactions[0]?.searchableImage?.url ? (
+                                    <ImageModalCell
+                                        url={x.row.original.transactions[0]?.searchableImage.url}
+                                        imageName={
+                                            x.row.original.transactions[0]?.searchableImage.imageName
+                                        }
+                                    />
+                                ) : (
+                                    <td>-</td>
+                                ))}
+
+                            {x.row.original.moneyRequestType === "FUND_REQUEST" && (
                                 <PercentageCell
                                     total={total}
                                     executed={executed}
