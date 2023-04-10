@@ -228,10 +228,11 @@ const DynamicTable = <T extends object>({
                                         return e.pageX;
                                     };
                                     const handleY = () => {
-                                        const limit = innerHeight - 400;
-                                        if (e.pageY > limit) {
-                                            return innerHeight - 400;
-                                        }
+                                        // Generated errors in large lists.
+                                        /* const limit = innerHeight - 400; */
+                                        /* if (e.pageY > limit) { */
+                                        /*     return innerHeight - 400; */
+                                        /* } */
                                         return e.pageY;
                                     };
 
