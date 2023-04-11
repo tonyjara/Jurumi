@@ -13,6 +13,7 @@
     "dev": "concurrently -n \"[lint,next]\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && next dev \"",
     "dev:staging": "env-cmd -f .env.staging  next dev",
     "prod": "env-cmd -f .env.prod  next dev",
+    "prod:studio": "env-cmd -f .env.prod npx prisma studio",
     "start": "next start",
     "lint": "next lint",
     "test:watch": "jest --watch",

@@ -3,7 +3,6 @@ import { addHours, isBefore } from "date-fns";
 import BooleanCell from "@/components/DynamicTables/DynamicCells/BooleanCell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
 import CopyLinkCellButton from "@/components/DynamicTables/usersPage/CopyLink.cellButton";
-import RowOptionsVerificationLinks from "./rowOptions.mod.users.verification-links";
 import type { VerificationLinksWithAccountName } from "./VerifyLinksPage.mod.users";
 import type { Account } from "@prisma/client";
 
