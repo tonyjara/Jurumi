@@ -1,15 +1,7 @@
-import {
-    Menu,
-    MenuButton,
-    IconButton,
-    MenuList,
-    MenuItem,
-    Portal,
-} from "@chakra-ui/react";
+import { MenuItem } from "@chakra-ui/react";
 import type { MoneyRequest } from "@prisma/client";
 import router from "next/router";
 import React from "react";
-import { BsThreeDots } from "react-icons/bs";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import type { MoneyRequestComplete } from "./MoneyRequestsPage.mod.requests";
@@ -80,14 +72,6 @@ const RowOptionsModRequests = ({
 
     return (
         <div>
-            {/* <Menu> */}
-            {/*   <MenuButton */}
-            {/*     as={IconButton} */}
-            {/*     aria-label="options button" */}
-            {/*     icon={<BsThreeDots />} */}
-            {/*   /> */}
-            {/* <Portal> */}
-            {/* <MenuList> */}
             <MenuItem
                 isDisabled={(needsApproval && !hasBeenApproved) || isAccepted}
                 onClick={() => {
@@ -176,9 +160,6 @@ const RowOptionsModRequests = ({
                 targetName="solicitud"
                 onConfirm={() => deleteById({ id: x.id })}
             />
-            {/*     </MenuList> */}
-            {/*   </Portal> */}
-            {/* </Menu> */}
             <MoneyRequestPrintComponents
                 x={x}
                 isPrinting={isPrinting}
