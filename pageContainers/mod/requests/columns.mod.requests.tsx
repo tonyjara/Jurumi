@@ -157,7 +157,7 @@ export const moneyRequestsColumns = ({
                                         }
                                     />
                                 ) : (
-                                    <td>-</td>
+                                    <div>-</div>
                                 ))}
 
                             {x.row.original.moneyRequestType === "FUND_REQUEST" && (

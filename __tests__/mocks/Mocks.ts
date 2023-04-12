@@ -254,6 +254,8 @@ export const expenseReturnMock = ({
 };
 
 export const moneyReqCompleteMock = (userId: string | undefined) => {
+    const imageName1 = uuidV4();
+    const imageName2 = uuidV4();
     const x: MoneyRequestComplete = {
         id: "cldagi67k005qpftt2ssd67m9",
         comments: faker.commerce.productDescription().substring(0, 100),
@@ -271,7 +273,42 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
                 type: "CURRENT",
             },
         },
-        searchableImages: [],
+        searchableImages: [
+            {
+                id: "clgb8t2iz001o9k0e8pl6i7kj",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                url: "https://statingstoragebrasil.blob.core.windows.net/clddek00c0000pfuegl07osko/7267e150-8277-4296-98a7-63fdfda9e60d?sv=2021-10-04&ss=b&srt=sco&spr=https%2Chttp&st=2023-04-10T19%3A44%3A35Z&se=2023-04-29T01%3A44%3A35Z&sp=rw&sig=pGaO37fpO7PfwLXZcGNKIDpBCj%2B7%2BLJTs%2BsClz%2FIRvE%3D",
+                text: "",
+                imageName: "7267e150-8277-4296-98a7-63fdfda9e60d",
+                facturaNumber: "3906832915780",
+                currency: "PYG",
+                amount: new Prisma.Decimal(2831538),
+                accountId: null,
+                expenseReportId: null,
+                moneyRequestId: "clgb8t2j2001s9k0e5rh9ahit",
+                expenseReturnId: null,
+                transactionId: null,
+                imbursementId: null,
+            },
+            {
+                id: "clgb8t2j1001q9k0e20b88ho6",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                url: "https://statingstoragebrasil.blob.core.windows.net/clddek00c0000pfuegl07osko/fd613edb-fb69-4e5d-983e-30eeae83a324?sv=2021-10-04&ss=b&srt=sco&spr=https%2Chttp&st=2023-04-10T19%3A44%3A40Z&se=2023-04-29T01%3A44%3A40Z&sp=rw&sig=vfMZ6fbgQqV5IDqdWfcDzwrnZpazzO6lSkxu4dneOZ8%3D",
+                text: "",
+                imageName: "fd613edb-fb69-4e5d-983e-30eeae83a324",
+                facturaNumber: "3045909511258",
+                currency: "PYG",
+                amount: new Prisma.Decimal(1123856),
+                accountId: null,
+                expenseReportId: null,
+                moneyRequestId: "clgb8t2j2001s9k0e5rh9ahit",
+                expenseReturnId: null,
+                transactionId: null,
+                imbursementId: null,
+            },
+        ],
         facturaNumber: null,
         costCategory: null,
         createdAt: new Date(),
@@ -342,7 +379,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
                 expenseReportId: null,
                 searchableImage: {
                     url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
-                    imageName,
+                    imageName: imageName1,
                 },
             },
             {
@@ -369,7 +406,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
                 expenseReportId: null,
                 searchableImage: {
                     url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
-                    imageName,
+                    imageName: imageName2,
                 },
             },
         ],
