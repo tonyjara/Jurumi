@@ -11,22 +11,22 @@ import {
   Spinner,
   Flex,
   Image,
-} from '@chakra-ui/react';
-import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+} from "@chakra-ui/react";
+import React, { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import type {
   Control,
   FieldValues,
   Path,
   SetFieldValue,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import { AiOutlineCloudUpload } from 'react-icons/ai';
-import uploadFileToBlob from '../../lib/utils/azure-storage-blob';
-import { compressCoverPhoto } from '../../lib/utils/ImageCompressor';
-import { myToast } from '../Toasts & Alerts/MyToast';
-import { v4 as uuidV4 } from 'uuid';
-import axios from 'axios';
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { AiOutlineCloudUpload } from "react-icons/ai";
+import uploadFileToBlob from "../../lib/utils/azure-storage-blob";
+import { compressCoverPhoto } from "../../lib/utils/ImageCompressor";
+import { myToast } from "../Toasts & Alerts/MyToast";
+import { v4 as uuidV4 } from "uuid";
+import axios from "axios";
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
@@ -79,8 +79,9 @@ const FormControlledImageUpload = <T extends FieldValues>(
         lastModified: getFile.lastModified,
       });
       const compressed = await compressCoverPhoto(file);
+      /* const compressed = file; */
 
-      const req = await axios('/api/get-connection-string');
+      const req = await axios("/api/get-connection-string");
       const { connectionString } = req.data;
 
       const url = await uploadFileToBlob(compressed, userId, connectionString);
@@ -102,12 +103,12 @@ const FormControlledImageUpload = <T extends FieldValues>(
     maxFiles: 1,
     multiple: false,
     accept: {
-      'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
+      "image/*": [".png", ".gif", ".jpeg", ".jpg"],
     },
   });
-  const activeBg = useColorModeValue('gray.100', 'gray.600');
+  const activeBg = useColorModeValue("gray.100", "gray.600");
 
-  const imageNameSplit = idName.split('.');
+  const imageNameSplit = idName.split(".");
   const imageObjectKey = imageNameSplit[0];
   const imageName = imageNameSplit[1];
   const imageError =
@@ -115,11 +116,11 @@ const FormControlledImageUpload = <T extends FieldValues>(
       imageName &&
       errors[imageObjectKey] &&
       errors[imageObjectKey][imageName]) ??
-    '';
+    "";
 
   return (
     <FormControl hidden={hidden} isInvalid={!!imageError}>
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <HStack>
@@ -128,19 +129,19 @@ const FormControlledImageUpload = <T extends FieldValues>(
           py="5px"
           borderWidth={2}
           _dark={{
-            color: 'gray.500',
+            color: "gray.500",
           }}
           h="100px"
-          textAlign={'center'}
+          textAlign={"center"}
           borderStyle="dashed"
           rounded="md"
           transition="background-color 0.2s ease"
           _hover={{ bg: activeBg }}
-          bg={isDragActive ? activeBg : 'transparent'}
+          bg={isDragActive ? activeBg : "transparent"}
           {...getRootProps()}
         >
-          <Flex color={'gray.400'}>
-            {!uploading && 'Arrastre una foto o busque entre sus archivos'}
+          <Flex color={"gray.400"}>
+            {!uploading && "Arrastre una foto o busque entre sus archivos"}
             {uploading && (
               <span>
                 Subiendo, un momento porfavor. <Spinner size="xl" />
@@ -158,9 +159,9 @@ const FormControlledImageUpload = <T extends FieldValues>(
         </VStack>
 
         <Image
-          style={{ borderRadius: '8px' }}
-          alt={'upload picture'}
-          src={pictureUrl?.length ? pictureUrl : '/no-image.png'}
+          style={{ borderRadius: "8px" }}
+          alt={"upload picture"}
+          src={pictureUrl?.length ? pictureUrl : "/no-image.png"}
           width={100}
           height={100}
         />
@@ -168,7 +169,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
 
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!imageError.message ? (
-        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
         //@ts-ignore
         <FormErrorMessage>{imageError.message}</FormErrorMessage>
