@@ -1,15 +1,16 @@
-import { z } from 'zod';
-import { adminProcedure, protectedProcedure, router } from '../initTrpc';
-import prisma from '@/server/db/client';
-import { validateExpenseReturn } from '@/lib/validations/expenseReturn.validate';
-import { expenseReturnCreateUtils } from './utils/ExpenseReturn.routeUtils';
-import { TRPCError } from '@trpc/server';
+import { z } from "zod";
+import { adminProcedure, protectedProcedure, router } from "../initTrpc";
+import prisma from "@/server/db/client";
+import { validateExpenseReturn } from "@/lib/validations/expenseReturn.validate";
+import { expenseReturnCreateUtils } from "./utils/ExpenseReturn.routeUtils";
+import { TRPCError } from "@trpc/server";
 
 export const expenseReturnsRouter = router({
   create: protectedProcedure
     .input(validateExpenseReturn)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
+      input.accountId = user.id;
 
       await prisma.$transaction(async (txCtx) => {
         const imageProof =
@@ -19,8 +20,8 @@ export const expenseReturnsRouter = router({
           });
         if (!imageProof) {
           throw new TRPCError({
-            code: 'PRECONDITION_FAILED',
-            message: 'no imbursement proof',
+            code: "PRECONDITION_FAILED",
+            message: "no imbursement proof",
           });
         }
 

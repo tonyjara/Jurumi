@@ -1,16 +1,16 @@
-import { validateImbursement } from '@/lib/validations/imbursement.validate';
-import { TRPCError } from '@trpc/server';
-import { z } from 'zod';
+import { validateImbursement } from "@/lib/validations/imbursement.validate";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import {
   adminProcedure,
   adminModProcedure,
   router,
   adminModObserverProcedure,
-} from '../initTrpc';
-import { handleOrderBy } from './utils/Sorting.routeUtils';
-import prisma from '@/server/db/client';
-import { imbursementCreateUtils } from './utils/Imbursement.routeUtils';
-import { cancelTransactions } from './utils/Cancelations.routeUtils';
+} from "../initTrpc";
+import { handleOrderBy } from "./utils/Sorting.routeUtils";
+import prisma from "@/server/db/client";
+import { imbursementCreateUtils } from "./utils/Imbursement.routeUtils";
+import { cancelTransactions } from "./utils/Cancelations.routeUtils";
 
 const {
   createMoneyAccountTx,
@@ -25,7 +25,7 @@ export const imbursementsRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyRequest.findMany({
       take: 20,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }),
   getManyComplete: adminModObserverProcedure
@@ -66,6 +66,7 @@ export const imbursementsRouter = router({
     .input(validateImbursement)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
+      input.accountId = user.id;
       // Creates imbursments, connects taxpayer, creates images and transactions for money accounts and for projects.
       return await prisma?.$transaction(async (txCtx) => {
         const taxPayer = await upsertTaxPayter({
@@ -75,8 +76,8 @@ export const imbursementsRouter = router({
 
         if (!taxPayer || !input.moneyAccountId) {
           throw new TRPCError({
-            code: 'PRECONDITION_FAILED',
-            message: 'taxpayer failed',
+            code: "PRECONDITION_FAILED",
+            message: "taxpayer failed",
           });
         }
         //create images
@@ -116,6 +117,7 @@ export const imbursementsRouter = router({
     .input(validateImbursement)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
+      input.accountId = user.id;
 
       const taxPayer = await prisma?.taxPayer.upsert({
         where: {
@@ -131,21 +133,12 @@ export const imbursementsRouter = router({
 
       if (!taxPayer || !input.imbursementProof || !input.moneyAccountId) {
         throw new TRPCError({
-          code: 'PRECONDITION_FAILED',
-          message: 'taxpayer failed',
+          code: "PRECONDITION_FAILED",
+          message: "taxpayer failed",
         });
       }
-      const imbursementProof = await prisma?.searchableImage.upsert({
-        where: {
-          imageName: input.imbursementProof?.imageName,
-        },
-        create: {
-          url: input.imbursementProof.url,
-          imageName: input.imbursementProof.imageName,
-          text: '',
-        },
-        update: {},
-      });
+      const imbursementProof = await createImbursementProof({ input });
+
       const createInvoiceFromOrg = async () => {
         if (!input.invoiceFromOrg) return null;
 
@@ -154,9 +147,10 @@ export const imbursementsRouter = router({
             imageName: input.imbursementProof?.imageName,
           },
           create: {
+            accountId: user.id,
             url: input.invoiceFromOrg.url,
             imageName: input.invoiceFromOrg.imageName,
-            text: '',
+            text: "",
           },
           update: {},
         });
@@ -219,8 +213,8 @@ export const imbursementsRouter = router({
         const tx = imbursement.transactions[0];
         if (!tx) {
           throw new TRPCError({
-            code: 'PRECONDITION_FAILED',
-            message: 'transaction not found',
+            code: "PRECONDITION_FAILED",
+            message: "transaction not found",
           });
         }
 

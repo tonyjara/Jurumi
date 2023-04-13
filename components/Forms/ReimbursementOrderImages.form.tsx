@@ -1,23 +1,23 @@
-import { currencyOptions } from '@/lib/utils/SelectOptions';
-import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
-import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
-import { defaultReimbursementOrderSearchableImage } from '@/lib/validations/moneyRequest.validate';
-import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
-import { Button, Divider, Flex, IconButton, Text } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
-import React, { useState } from 'react';
+import { currencyOptions } from "@/lib/utils/SelectOptions";
+import { translateCurrencyPrefix } from "@/lib/utils/TranslatedEnums";
+import type { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
+import { defaultReimbursementOrderSearchableImage } from "@/lib/validations/moneyRequest.validate";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { Button, Divider, Flex, IconButton, Text } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import React, { useState } from "react";
 import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import { useFieldArray } from 'react-hook-form';
-import FormControlledFacturaNumber from '../FormControlled/FormControlledFacturaNumber';
-import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
-import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
-import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
+import FormControlledFacturaNumber from "../FormControlled/FormControlledFacturaNumber";
+import FormControlledImageUpload from "../FormControlled/FormControlledImageUpload";
+import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
+import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
@@ -32,22 +32,23 @@ const ReimbursementOrderImagesForm = ({
   isEdit,
 }: formProps<FormMoneyRequest>) => {
   const [imageIsLoading, setImageIsLoading] = useState(false);
+  const isAdmin = useSession().data?.user.role === "ADMIN";
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'searchableImages',
+    name: "searchableImages",
   });
   const user = useSession().data?.user;
   const searchableImages = useWatch({
     control,
-    name: 'searchableImages',
+    name: "searchableImages",
   });
 
   return (
     <>
-      <Divider my={'10px'} />
-      <Flex width={'100%'} alignItems="center" justifyContent={'space-between'}>
-        <Text fontSize={'lg'} fontWeight="bold">
-          {' '}
+      <Divider my={"10px"} />
+      <Flex width={"100%"} alignItems="center" justifyContent={"space-between"}>
+        <Text fontSize={"lg"} fontWeight="bold">
+          {" "}
           Comprobantes
         </Text>
         <Button
@@ -63,8 +64,8 @@ const ReimbursementOrderImagesForm = ({
         const errorForField = errors?.searchableImages?.[index];
         const currency = searchableImages[index]?.currency;
         return (
-          <Flex flexDir={'column'} mt="10px" key={x.id} width="100%" gap={5}>
-            <Flex width={'100%'} alignItems="center" gap={'10px'}>
+          <Flex flexDir={"column"} mt="10px" key={x.id} width="100%" gap={5}>
+            <Flex width={"100%"} alignItems="center" gap={"10px"}>
               <FormControlledFacturaNumber
                 control={control}
                 errors={errors}
@@ -91,11 +92,11 @@ const ReimbursementOrderImagesForm = ({
             <FormControlledMoneyInput
               control={control}
               errors={errors}
-              disable={isEdit}
+              disable={!isAdmin && isEdit}
               name={`searchableImages.${index}.amount`}
               label={`Monto comprobante ${index + 1}`}
-              prefix={translateCurrencyPrefix(currency ?? 'PYG')}
-              currency={currency ?? 'PYG'}
+              prefix={translateCurrencyPrefix(currency ?? "PYG")}
+              currency={currency ?? "PYG"}
               //@ts-ignore
               error={errorForField?.amount?.message}
             />

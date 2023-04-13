@@ -1,7 +1,8 @@
-import { adminModObserverProcedure, router } from '../initTrpc';
-import prisma from '@/server/db/client';
-import { z } from 'zod';
-import axios from 'axios';
+import { adminModObserverProcedure, adminProcedure, router } from "../initTrpc";
+import prisma from "@/server/db/client";
+import { z } from "zod";
+import axios from "axios";
+import { validateReplaceImageFormData } from "@/components/AdminUtils/ReplaceSearchableImage";
 
 export const galleryRouter = router({
   getManyImages: adminModObserverProcedure
@@ -18,7 +19,7 @@ export const galleryRouter = router({
       return await prisma.searchableImage.findMany({
         take: pageSize,
         skip: pageIndex * pageSize,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       });
     }),
   count: adminModObserverProcedure.query(async () => {
@@ -28,7 +29,19 @@ export const galleryRouter = router({
     .input(z.object({ imageName: z.string() }))
     .mutation(async ({ input }) => {
       await axios.post(`${process.env.MS_OCR_URL}/api/process-image`, input, {
-        headers: { 'x-api-key': process.env.MS_API_KEY },
+        headers: { "x-api-key": process.env.MS_API_KEY },
+      });
+    }),
+  replaceImageUrl: adminProcedure
+    .input(validateReplaceImageFormData)
+    .mutation(async ({ input }) => {
+      return await prisma.searchableImage.update({
+        where: { imageName: input.oldImageName },
+        data: {
+          url: input.url,
+          imageName: input.newImageName,
+          accountId: input.userId,
+        },
       });
     }),
 });

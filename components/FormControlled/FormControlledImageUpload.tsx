@@ -79,7 +79,6 @@ const FormControlledImageUpload = <T extends FieldValues>(
         lastModified: getFile.lastModified,
       });
       const compressed = await compressCoverPhoto(file);
-      /* const compressed = file; */
 
       const req = await axios("/api/get-connection-string");
       const { connectionString } = req.data;

@@ -1,17 +1,17 @@
-import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
-import { validateTransactionCreate } from '@/lib/validations/transaction.create.validate';
-import type { Prisma, searchableImage } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
-import { adminModProcedure } from '../../initTrpc';
+import type { FormTransactionCreate } from "@/lib/validations/transaction.create.validate";
+import { validateTransactionCreate } from "@/lib/validations/transaction.create.validate";
+import type { Prisma, searchableImage } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import { adminModProcedure } from "../../initTrpc";
 import {
   checkIfUserIsMoneyAdmin,
   transactionRouteUtils,
-} from '../utils/Transaction.routeUtils';
-import prisma from '@/server/db/client';
-import { moneyRequestApprovedBrowserNotification } from '../notifications/browser/moneyReqApprovedAndExecuted.notification.browser';
-import { moneyRequestApprovedSendgridNotification } from '../notifications/sendgrid/moneyReqApprovedAndExecuted.notification.sendgrid';
-import { moneyRequestApprovedDbNotification } from '../notifications/db/moneyReqApprovedAndExecuted.notification.db';
-import { saveEmailMsgToDb } from '../notifications/db/saveEmailToDb';
+} from "../utils/Transaction.routeUtils";
+import prisma from "@/server/db/client";
+import { moneyRequestApprovedBrowserNotification } from "../notifications/browser/moneyReqApprovedAndExecuted.notification.browser";
+import { moneyRequestApprovedSendgridNotification } from "../notifications/sendgrid/moneyReqApprovedAndExecuted.notification.sendgrid";
+import { moneyRequestApprovedDbNotification } from "../notifications/db/moneyReqApprovedAndExecuted.notification.db";
+import { saveEmailMsgToDb } from "../notifications/db/saveEmailToDb";
 
 export const createManyTransactions = adminModProcedure
   .input(validateTransactionCreate)
@@ -20,11 +20,13 @@ export const createManyTransactions = adminModProcedure
       async (txCtx) => {
         if (!input.moneyRequestId) {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'missing data',
+            code: "BAD_REQUEST",
+            message: "missing data",
           });
         }
         const user = ctx.session.user;
+        input.accountId = user.id;
+
         const searchableImage = await createTxImage({ input });
         //1. Check money admin permissions
         await checkIfUserIsMoneyAdmin(user);
@@ -49,7 +51,7 @@ export const createManyTransactions = adminModProcedure
         //3. Change request status
         const req = await txCtx?.moneyRequest.update({
           where: { id: input.moneyRequestId },
-          data: { status: 'ACCEPTED' },
+          data: { status: "ACCEPTED" },
           include: {
             account: {
               select: {
@@ -71,7 +73,7 @@ export const createManyTransactions = adminModProcedure
         await saveEmailMsgToDb({
           accountId: user.id,
           msg,
-          tag: 'moneyReqApproved',
+          tag: "moneyReqApproved",
         });
       },
       { timeout: 20000 }
@@ -85,9 +87,10 @@ const createTxImage = async ({ input }: { input: FormTransactionCreate }) => {
       imageName: input.searchableImage.imageName,
     },
     create: {
+      accountId: input.accountId,
       url: input.searchableImage.url,
       imageName: input.searchableImage.imageName,
-      text: '',
+      text: "",
     },
     update: {},
   });
@@ -112,7 +115,7 @@ async function createMoneyAccTransactions({
     // 1. Get latest transaction of the money Account
     const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUniqueOrThrow({
       where: { id: moneyAccountId },
-      include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+      include: { transactions: { take: 1, orderBy: { id: "desc" } } },
     });
 
     // 2. Calculate balance based on transaction or initialbalance
@@ -134,7 +137,7 @@ async function createMoneyAccTransactions({
         currency: tx.currency,
         openingBalance: openingBalance,
         currentBalance: currentBalance,
-        transactionType: 'MONEY_ACCOUNT',
+        transactionType: "MONEY_ACCOUNT",
         moneyAccountId,
         moneyRequestId: formTransaction.moneyRequestId,
         imbursementId: formTransaction.imbursementId,
