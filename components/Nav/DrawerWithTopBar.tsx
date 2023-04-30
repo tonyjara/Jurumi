@@ -1,13 +1,13 @@
-import type { ReactNode } from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import React from 'react';
-import { Box, useColorModeValue, useDisclosure } from '@chakra-ui/react';
-import MyTopBar from './components/MyTopBar';
-import { useSession } from 'next-auth/react';
-import useDidMountEffect from '@/lib/hooks/useDidMountEffect';
-import DesktopSidebar from './Desktop/DesktopSidebar';
-import MobileSidebar from './Mobile/MobileSidebar';
+import type { ReactNode } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
+import React from "react";
+import { Box, useColorModeValue, useDisclosure } from "@chakra-ui/react";
+import MyTopBar from "./components/MyTopBar";
+import { useSession } from "next-auth/react";
+import useDidMountEffect from "@/lib/hooks/useDidMountEffect";
+import DesktopSidebar from "./Desktop/DesktopSidebar";
+import MobileSidebar from "./Mobile/MobileSidebar";
 
 export default function DrawerWithTopBar({
   children,
@@ -16,12 +16,12 @@ export default function DrawerWithTopBar({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { status } = useSession();
-  const authenticated = status === 'authenticated';
+  const authenticated = status === "authenticated";
   const [minimized, setMinimized] = useState(false);
 
   useEffect(() => {
     const isMinimized = JSON.parse(
-      localStorage.getItem('sidebarToggle') ?? 'false'
+      localStorage.getItem("sidebarToggle") ?? "false"
     );
     setMinimized(isMinimized);
 
@@ -29,12 +29,12 @@ export default function DrawerWithTopBar({
   }, []);
 
   useDidMountEffect(() => {
-    localStorage.setItem('sidebarToggle', JSON.stringify(minimized));
+    localStorage.setItem("sidebarToggle", JSON.stringify(minimized));
     return () => {};
   }, [minimized]);
 
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+    <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
       {authenticated && (
         <div>
           <DesktopSidebar minimized={minimized} setMinimized={setMinimized} />
@@ -46,20 +46,20 @@ export default function DrawerWithTopBar({
 
       <Box
         //MOBILE
-        display={{ base: 'block', md: 'none' }}
+        display={{ base: "block", md: "none" }}
         transition="0.2s ease"
-        py={'75px'}
-        px={'10px'}
+        py={"75px"}
+        px={"10px"}
       >
         {children}
       </Box>
 
       <Box
         //DESKTOP
-        display={{ base: 'none', md: 'flex' }}
+        display={{ base: "none", md: "block" }}
         transition="0.2s ease"
-        py={'75px'}
-        px={'10px'}
+        py={"75px"}
+        px={"10px"}
         ml={!authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }}
       >
         {children}

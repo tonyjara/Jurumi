@@ -1,12 +1,12 @@
-import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
+import type { FormExpenseReport } from "@/lib/validations/expenseReport.validate";
 import type {
   ExpenseReport,
   TaxPayer,
   searchableImage,
   Prisma,
-} from '@prisma/client';
-import { TRPCError } from '@trpc/server';
-import prisma from '@/server/db/client';
+} from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import prisma from "@/server/db/client";
 
 export async function createCostCategoryTransactions({
   expenseReport,
@@ -28,7 +28,7 @@ export async function createCostCategoryTransactions({
   // 1. Get latest transaction of the money Account
   const getLastestCostCatWithTx = await txCtx.costCategory.findUniqueOrThrow({
     where: { id: costCategoryId },
-    include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+    include: { transactions: { take: 1, orderBy: { id: "desc" } } },
   });
 
   // 2. If it's the first transaction, opening balance is always 0
@@ -50,7 +50,7 @@ export async function createCostCategoryTransactions({
       currentBalance: currentBalance,
       costCategoryId,
       projectId: expenseReport.projectId,
-      transactionType: 'COST_CATEGORY',
+      transactionType: "COST_CATEGORY",
       expenseReportId: expenseReport.id,
       moneyRequestId: expenseReport.moneyRequestId,
       searchableImage: expenseReport.searchableImage?.imageName.length
@@ -71,8 +71,8 @@ export const createExpenseReportProof = async ({
 }) => {
   if (!input.searchableImage) {
     throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message: 'no imbursement proof',
+      code: "PRECONDITION_FAILED",
+      message: "no imbursement proof",
     });
   }
   const imbursementProof = await prisma?.searchableImage.upsert({
@@ -80,9 +80,10 @@ export const createExpenseReportProof = async ({
       imageName: input.searchableImage?.imageName,
     },
     create: {
+      accountId: input.accountId,
       url: input.searchableImage.url,
       imageName: input.searchableImage.imageName,
-      text: '',
+      text: "",
     },
     update: {},
   });

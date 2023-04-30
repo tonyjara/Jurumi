@@ -1,16 +1,15 @@
-import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
-import prisma from '@/server/db/client';
-import { Prisma } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
+import type { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
+import prisma from "@/server/db/client";
+import { Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 export const handleWhereImApprover = (
   input: {
-    status?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | undefined;
+    status?: "PENDING" | "ACCEPTED" | "REJECTED" | undefined;
   },
   userId: string
 ) => {
-  if (input.status === 'PENDING') {
+  if (input.status === "PENDING") {
     return {
       moneyRequestApprovals: {
         none: {
@@ -36,30 +35,30 @@ export const reimbursementOrderImageGuard = async ({
 }: {
   input: FormMoneyRequest;
 }) => {
-  if (input.moneyRequestType !== 'REIMBURSMENT_ORDER') return null;
+  if (input.moneyRequestType !== "REIMBURSMENT_ORDER") return null;
 
   const totalInPYG = input.searchableImages.reduce((acc, val) => {
-    if (val.currency !== 'PYG') return acc;
+    if (val.currency !== "PYG") return acc;
     return acc.add(val.amount);
   }, new Prisma.Decimal(0));
 
   const totalInUSD = input.searchableImages.reduce((acc, val) => {
-    if (val.currency !== 'USD') return acc;
+    if (val.currency !== "USD") return acc;
     return acc.add(val.amount);
   }, new Prisma.Decimal(0));
 
   // There cannot be mixed currencies in the transaction
-  input.searchableImages[0]?.currency === 'PYG'
-    ? (input.currency = 'PYG')
-    : (input.currency = 'USD');
-  input.searchableImages[0]?.currency === 'PYG'
+  input.searchableImages[0]?.currency === "PYG"
+    ? (input.currency = "PYG")
+    : (input.currency = "USD");
+  input.searchableImages[0]?.currency === "PYG"
     ? (input.amountRequested = totalInPYG)
     : (input.amountRequested = totalInUSD);
 
   if (!input.searchableImages.length) {
     throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message: 'no reimbursement proof',
+      code: "PRECONDITION_FAILED",
+      message: "no reimbursement proof",
     });
   }
 
@@ -69,13 +68,18 @@ export const reimbursementOrderImageGuard = async ({
         imageName: searchableImage?.imageName,
       },
       create: {
+        accountId: input.accountId,
         url: searchableImage.url,
         imageName: searchableImage.imageName,
-        text: '',
-        facturaNumber: searchableImage.facturaNumber ?? '',
+        text: "",
+        facturaNumber: searchableImage.facturaNumber ?? "",
         amount: searchableImage.amount,
       },
-      update: {},
+      update: {
+        url: searchableImage.url,
+        facturaNumber: searchableImage.facturaNumber ?? "",
+        amount: searchableImage.amount,
+      },
     });
   }
 

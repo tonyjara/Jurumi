@@ -1,8 +1,8 @@
-import type { FormImbursement } from '@/lib/validations/imbursement.validate';
-import type { Imbursement, searchableImage, TaxPayer } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
-import prisma from '@/server/db/client';
+import type { FormImbursement } from "@/lib/validations/imbursement.validate";
+import type { Imbursement, searchableImage, TaxPayer } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import prisma from "@/server/db/client";
 
 const createMoneyAccountTx = async ({
   txCtx,
@@ -24,13 +24,13 @@ const createMoneyAccountTx = async ({
   // 2. Get latest transaction of the bank Account
   const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUnique({
     where: { id: input.moneyAccountId },
-    include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+    include: { transactions: { take: 1, orderBy: { id: "desc" } } },
   });
 
   if (!getMoneyAccAndLatestTx) {
     throw new TRPCError({
-      code: 'NOT_FOUND',
-      message: 'No money request or transaction.',
+      code: "NOT_FOUND",
+      message: "No money request or transaction.",
     });
   }
   // 3. Calculate balance based on transaction or initialbalance
@@ -56,7 +56,7 @@ const createMoneyAccountTx = async ({
       openingBalance: openingBalance,
       currentBalance: currentBalance,
       moneyAccountId: input.moneyAccountId,
-      transactionType: 'MONEY_ACCOUNT',
+      transactionType: "MONEY_ACCOUNT",
       imbursementId: imbursement.id,
       searchableImage: imbursement.imbursementProof?.id
         ? { connect: { id: imbursement.imbursementProof?.id } }
@@ -99,10 +99,10 @@ const createProjectImbursementTx = async ({
       transactions: {
         where: {
           projectId: input.projectId,
-          transactionType: 'PROJECT_IMBURSEMENT',
+          transactionType: "PROJECT_IMBURSEMENT",
         },
         take: 1,
-        orderBy: { id: 'desc' },
+        orderBy: { id: "desc" },
       },
     },
   });
@@ -128,7 +128,7 @@ const createProjectImbursementTx = async ({
       openingBalance: openingBalance,
       currentBalance: currentBalance,
       projectId: input.projectId,
-      transactionType: 'PROJECT_IMBURSEMENT',
+      transactionType: "PROJECT_IMBURSEMENT",
       imbursementId: imbursement.id,
       searchableImage: imbursement.imbursementProof?.id
         ? { connect: { id: imbursement.imbursementProof?.id } }
@@ -145,9 +145,10 @@ const createInvoiceFromOrg = async ({ input }: { input: FormImbursement }) => {
       imageName: input.invoiceFromOrg?.imageName,
     },
     create: {
+      accountId: input.accountId,
       url: input.invoiceFromOrg.url,
       imageName: input.invoiceFromOrg.imageName,
-      text: '',
+      text: "",
     },
     update: {},
   });
@@ -159,8 +160,8 @@ const createImbursementProof = async ({
 }) => {
   if (!input.imbursementProof) {
     throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message: 'no imbursement proof',
+      code: "PRECONDITION_FAILED",
+      message: "no imbursement proof",
     });
   }
   const imbursementProof = await prisma?.searchableImage.upsert({
@@ -168,9 +169,10 @@ const createImbursementProof = async ({
       imageName: input.imbursementProof?.imageName,
     },
     create: {
+      accountId: input.accountId,
       url: input.imbursementProof.url,
       imageName: input.imbursementProof.imageName,
-      text: '',
+      text: "",
     },
     update: {},
   });
@@ -195,8 +197,8 @@ const createImbursement = async ({
 }) => {
   if (!imbursementProof) {
     throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message: 'no imbursement proof',
+      code: "PRECONDITION_FAILED",
+      message: "no imbursement proof",
     });
   }
   const imbursement = await txCtx?.imbursement.create({

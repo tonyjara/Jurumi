@@ -1,15 +1,15 @@
-import { TRPCError } from '@trpc/server';
-import { z } from 'zod';
-import { validateOrganization } from '@/lib/validations/org.validate';
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { validateOrganization } from "@/lib/validations/org.validate";
 import {
   adminProcedure,
   adminModProcedure,
   router,
   protectedProcedure,
   adminModObserverProcedure,
-} from '../initTrpc';
-import prisma from '@/server/db/client';
-import { createImageLogo } from './utils/Org.routeUtils';
+} from "../initTrpc";
+import prisma from "@/server/db/client";
+import { createImageLogo } from "./utils/Org.routeUtils";
 
 export const orgRouter = router({
   getCurrent: protectedProcedure.query(async ({ ctx }) => {
@@ -49,19 +49,19 @@ export const orgRouter = router({
         where: { id: input.orgId },
         include: {
           moneyAccounts: {
-            include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+            include: { transactions: { take: 1, orderBy: { id: "desc" } } },
           },
           imageLogo: { select: { id: true, imageName: true, url: true } },
           moneyRequestApprovers: true,
           moneyAdministrators: true,
           projects: {
             include: {
-              transactions: { take: 1, orderBy: { id: 'desc' } },
+              transactions: { take: 1, orderBy: { id: "desc" } },
               costCategories: {
-                include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+                include: { transactions: { take: 1, orderBy: { id: "desc" } } },
               },
               imbursements: {
-                include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+                include: { transactions: { take: 1, orderBy: { id: "desc" } } },
               },
             },
           },
@@ -79,8 +79,7 @@ export const orgRouter = router({
     .input(validateOrganization)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
-
-      const imageLogo = await createImageLogo({ input });
+      const imageLogo = await createImageLogo({ input, accountId: user.id });
 
       const org = await prisma?.organization.create({
         data: {
@@ -115,29 +114,14 @@ export const orgRouter = router({
 
       if (!fetchedOrg) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'not found',
+          code: "BAD_REQUEST",
+          message: "not found",
         });
       }
       const moneyAdminIds = fetchedOrg.moneyAdministrators;
       const moneyReqApproverIds = fetchedOrg.moneyRequestApprovers;
 
-      const createImageLogo = async () => {
-        if (!input.imageLogo) return null;
-
-        return await prisma?.searchableImage.upsert({
-          where: {
-            imageName: input.imageLogo?.imageName,
-          },
-          create: {
-            url: input.imageLogo.url,
-            imageName: input.imageLogo.imageName,
-            text: '',
-          },
-          update: {},
-        });
-      };
-      const imageLogo = await createImageLogo();
+      const imageLogo = await createImageLogo({ input, accountId: user.id });
 
       const org = await prisma?.organization.update({
         where: { id: input.id },

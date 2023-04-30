@@ -68,6 +68,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
   const user = session.data?.user;
   const [searchValue, setSearchValue] = useState({ value: "", filter: "id" });
+  const [selectedRows, setSelectedRows] = useState<MoneyRequestComplete[]>([]);
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null
   );
@@ -151,6 +152,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     return (
       <RowOptionsModRequests
         needsApproval={needsApproval()}
+        selectedRows={selectedRows}
         x={x}
         onEditOpen={onEditOpen}
         setEditMoneyRequest={setEditMoneyRequest}
@@ -185,6 +187,8 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           user,
           pageIndex,
           pageSize,
+          selectedRows,
+          setSelectedRows,
         })}
         loading={isFetching || isLoading}
         options={tableOptions}

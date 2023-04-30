@@ -1,7 +1,7 @@
-import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
-import type { ExpenseReturn, Prisma } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
-import prisma from '@/server/db/client';
+import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
+import type { ExpenseReturn, Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import prisma from "@/server/db/client";
 
 const createMoneyAccountTx = async ({
   txCtx,
@@ -21,7 +21,7 @@ const createMoneyAccountTx = async ({
   // 2. Get latest transaction of the bank Account
   const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUniqueOrThrow({
     where: { id: expenseReturn.moneyAccountId },
-    include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+    include: { transactions: { take: 1, orderBy: { id: "desc" } } },
   });
 
   const transactionAmount = expenseReturn.amountReturned;
@@ -42,7 +42,7 @@ const createMoneyAccountTx = async ({
       currentBalance: currentBalance,
       moneyAccountId: expenseReturn.moneyAccountId,
       moneyRequestId: expenseReturn.moneyRequestId,
-      transactionType: 'EXPENSE_RETURN',
+      transactionType: "EXPENSE_RETURN",
       expenseReturnId: expenseReturn.id,
       searchableImage: expenseReturn.searchableImage?.id
         ? { connect: { id: expenseReturn.searchableImage?.id } }
@@ -60,8 +60,8 @@ const createExpenseReportProof = async ({
 }) => {
   if (!input.searchableImage) {
     throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message: 'no image proof',
+      code: "PRECONDITION_FAILED",
+      message: "no image proof",
     });
   }
   const imageProof = await txCtx?.searchableImage.upsert({
@@ -69,9 +69,10 @@ const createExpenseReportProof = async ({
       imageName: input.searchableImage?.imageName,
     },
     create: {
+      accountId: input.accountId,
       url: input.searchableImage.url,
       imageName: input.searchableImage.imageName,
-      text: '',
+      text: "",
     },
     update: {},
   });

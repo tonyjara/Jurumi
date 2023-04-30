@@ -7,60 +7,60 @@ import { RowOptionCancelDialog } from "@/components/Toasts & Alerts/RowOptions.c
 import type { ExpenseReportComplete } from "./ModExpenseReportsPage.mod.expense-reports";
 
 const RowOptionsHomeExpenseReports = ({
-    x,
-    setEditExpenseReport,
-    onEditOpen,
+  x,
+  setEditExpenseReport,
+  onEditOpen,
 }: {
-    x: ExpenseReportComplete;
-    setEditExpenseReport: React.Dispatch<
-        React.SetStateAction<ExpenseReportComplete | null>
-    >;
-    onEditOpen: () => void;
+  x: ExpenseReportComplete;
+  setEditExpenseReport: React.Dispatch<
+    React.SetStateAction<ExpenseReportComplete | null>
+  >;
+  onEditOpen: () => void;
 }) => {
-    const context = trpcClient.useContext();
+  const context = trpcClient.useContext();
 
-    const { mutate: cancelById } =
-        trpcClient.expenseReport.cancelById.useMutation(
-            handleUseMutationAlerts({
-                successText: "Se ha anulado su rendición",
-                callback: () => {
-                    context.expenseReport.invalidate();
-                },
-            })
-        );
-    const { mutate: deleteById } =
-        trpcClient.expenseReport.deleteById.useMutation(
-            handleUseMutationAlerts({
-                successText: "Se ha eliminado su rendición",
-                callback: () => {
-                    context.expenseReport.invalidate();
-                },
-            })
-        );
-
-    return (
-        <>
-            <MenuItem
-                isDisabled={x.wasCancelled}
-                onClick={() => {
-                    setEditExpenseReport(x);
-                    onEditOpen();
-                }}
-            >
-                Editar
-            </MenuItem>
-
-            <RowOptionCancelDialog
-                isDisabled={x.wasCancelled}
-                targetName="rendición"
-                onConfirm={() => cancelById({ id: x.id })}
-            />
-            <RowOptionDeleteDialog
-                targetName="rendición"
-                onConfirm={() => deleteById({ id: x.id })}
-            />
-        </>
+  const { mutate: cancelById } =
+    trpcClient.expenseReport.cancelById.useMutation(
+      handleUseMutationAlerts({
+        successText: "Se ha anulado su rendición",
+        callback: () => {
+          context.expenseReport.invalidate();
+        },
+      })
     );
+  const { mutate: deleteById } =
+    trpcClient.expenseReport.deleteById.useMutation(
+      handleUseMutationAlerts({
+        successText: "Se ha eliminado su rendición",
+        callback: () => {
+          context.expenseReport.invalidate();
+        },
+      })
+    );
+
+  return (
+    <>
+      <MenuItem
+        isDisabled={x.wasCancelled}
+        onClick={() => {
+          setEditExpenseReport(x);
+          onEditOpen();
+        }}
+      >
+        Editar
+      </MenuItem>
+
+      <RowOptionCancelDialog
+        isDisabled={x.wasCancelled}
+        targetName="rendición"
+        onConfirm={() => cancelById({ id: x.id })}
+      />
+      <RowOptionDeleteDialog
+        targetName="rendición"
+        onConfirm={() => deleteById({ id: x.id })}
+      />
+    </>
+  );
 };
 
 export default RowOptionsHomeExpenseReports;
