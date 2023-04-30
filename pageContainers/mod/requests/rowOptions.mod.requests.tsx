@@ -15,6 +15,7 @@ import cloneDeep from "lodash.clonedeep";
 import UsePrintComponent from "@/components/Print/UsePrintComponent";
 import MoneyRequestPrintComponents from "@/components/Print/MoneyRequest.print.components";
 import { useSession } from "next-auth/react";
+import ExportToExcelMenuItem from "@/components/Xlsx/ExportToExcelMenuItem";
 
 const RowOptionsModRequests = ({
   x,
@@ -25,6 +26,7 @@ const RowOptionsModRequests = ({
   setReqForReport,
   onExpRepOpen,
   onExpReturnOpen,
+  selectedRows,
 }: {
   x: MoneyRequestComplete;
   setEditMoneyRequest: React.Dispatch<
@@ -38,6 +40,7 @@ const RowOptionsModRequests = ({
   >;
   onExpRepOpen: () => void;
   onExpReturnOpen: () => void;
+  selectedRows: MoneyRequestComplete[];
 }) => {
   const context = trpcClient.useContext();
   const isAdmin = useSession().data?.user.role === "ADMIN";
@@ -140,7 +143,8 @@ const RowOptionsModRequests = ({
       >
         Ver transacciones
       </MenuItem>
-      <MenuItem>Exportar como excel</MenuItem>
+
+      <ExportToExcelMenuItem data={selectedRows} />
       <MenuItem onClick={handlePrintFundRequest}>Imprimir solicitud</MenuItem>
 
       {x.moneyRequestType === "FUND_REQUEST" && (

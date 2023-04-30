@@ -1,28 +1,29 @@
 import React from "react";
-import type { HTMLProps } from "react";
-
-export default function IndeterminateCheckbox({
-  indeterminate,
-  ...rest
-}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
-  const ref = React.useRef<HTMLInputElement>(null!);
-
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-    //@ts-ignore
-  }, [ref, indeterminate]);
-
+import { Checkbox } from "@chakra-ui/react";
+import type { Row } from "@tanstack/react-table";
+export default function SelectCheckBoxCell({
+  selectedRows,
+  setSelectedRows,
+  row,
+}: {
+  row: Row<any>;
+  selectedRows: any[];
+  setSelectedRows: (rows: any[]) => void;
+}) {
+  const isChecked = selectedRows.some((x) => x.id === row.original.id);
   return (
-    <input
-      onClick={(e) => {
+    <Checkbox
+      size="lg"
+      isChecked={isChecked}
+      onChange={(e) => {
         e.stopPropagation();
+        if (isChecked) {
+          setSelectedRows(selectedRows.filter((x) => x.id !== row.original.id));
+          return;
+        }
+
+        setSelectedRows([...selectedRows, row.original]);
       }}
-      type="checkbox"
-      ref={ref}
-      style={{ cursor: "pointer", height: "20px", width: "20px" }}
-      {...rest}
     />
   );
 }

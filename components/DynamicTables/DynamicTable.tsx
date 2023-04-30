@@ -82,8 +82,6 @@ const DynamicTable = <T extends object>({
   colorRedKey,
   rowOptions,
 }: DynamicTableProps<T>) => {
-  const [rowSelection, setRowSelection] = React.useState({});
-
   const [menuData, setMenuData] = useState<{
     index: number | null;
     x: number;
@@ -98,14 +96,15 @@ const DynamicTable = <T extends object>({
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: !globalFilter ? setSorting : undefined,
     getSortedRowModel: !globalFilter ? getSortedRowModel() : undefined,
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    state: !globalFilter
-      ? {
-          sorting,
-          rowSelection,
-        }
-      : { rowSelection },
+    state: { sorting },
+    /* enableRowSelection: true, */
+    /* onRowSelectionChange: setRowSelection, */
+    /* state: !globalFilter */
+    /*   ? { */
+    /*       sorting, */
+    /*       rowSelection, */
+    /*     } */
+    /*   : { rowSelection }, */
   });
 
   const handleToggleSorting = (header: Header<T, unknown>) => {
@@ -223,6 +222,7 @@ const DynamicTable = <T extends object>({
                 key={row.id}
                 _hover={{ backgroundColor: rowHoverColor, cursor: "pointer" }}
                 onClick={(e) => {
+                  // opens menu at click position with row data.
                   if (i === menuData?.index) {
                     return setMenuData({ ...menuData, index: null });
                   }
@@ -234,11 +234,6 @@ const DynamicTable = <T extends object>({
                     return e.pageX;
                   };
                   const handleY = () => {
-                    // Generated errors in large lists.
-                    /* const limit = innerHeight - 400; */
-                    /* if (e.pageY > limit) { */
-                    /*     return innerHeight - 400; */
-                    /* } */
                     return e.pageY;
                   };
 

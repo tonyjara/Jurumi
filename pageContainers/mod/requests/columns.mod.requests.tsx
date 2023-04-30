@@ -1,5 +1,5 @@
 import type { Account } from "@prisma/client";
-import { createColumnHelper } from "@tanstack/react-table";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import DateCell from "@/components/DynamicTables/DynamicCells/DateCell";
 import EnumTextCell from "@/components/DynamicTables/DynamicCells/EnumTextCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
@@ -21,7 +21,8 @@ import type { MoneyRequestComplete } from "./MoneyRequestsPage.mod.requests";
 import { Center } from "@chakra-ui/react";
 import SearchableImageModalCell from "@/components/DynamicTables/DynamicCells/SearchableImagesModalCell";
 import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCell";
-import IndeterminateCheckbox from "@/components/DynamicTables/DynamicCells/SelectCheckBoxCell";
+import SelectCheckBoxCell from "@/components/DynamicTables/DynamicCells/SelectCheckBoxCell";
+import HeaderSelectCheckBox from "@/components/DynamicTables/DynamicCells/HeaderSelectCheckBox";
 
 const columnHelper = createColumnHelper<MoneyRequestComplete>();
 
@@ -29,30 +30,30 @@ export const moneyRequestsColumns = ({
   user,
   pageIndex,
   pageSize,
+  selectedRows,
+  setSelectedRows,
 }: {
   user: Omit<Account, "password"> | undefined;
   pageSize: number;
   pageIndex: number;
-}) => [
+  selectedRows: any[];
+  setSelectedRows: (rows: any[]) => void;
+}): ColumnDef<MoneyRequestComplete, any>[] => [
   {
     id: "select",
-    header: ({ table }: any) => (
-      <IndeterminateCheckbox
-        {...{
-          checked: table.getIsAllRowsSelected(),
-          indeterminate: table.getIsSomeRowsSelected(),
-          onChange: table.getToggleAllRowsSelectedHandler(),
-        }}
+    header: ({ table }) => (
+      <HeaderSelectCheckBox
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        table={table}
+        pageSize={pageSize}
       />
     ),
-    cell: ({ row }: any) => (
-      <IndeterminateCheckbox
-        {...{
-          checked: row.getIsSelected(),
-          disabled: !row.getCanSelect(),
-          indeterminate: row.getIsSomeSelected(),
-          onChange: row.getToggleSelectedHandler(),
-        }}
+    cell: ({ row }) => (
+      <SelectCheckBoxCell
+        row={row}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
       />
     ),
   },
