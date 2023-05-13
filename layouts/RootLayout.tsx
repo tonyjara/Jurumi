@@ -1,15 +1,29 @@
-import Head from 'next/head';
-import React from 'react';
-import DrawerWithTopBar from '../components/Nav/DrawerWithTopBar';
+import Head from "next/head";
+import { useRouter } from "next/router";
+import React from "react";
+import DrawerWithTopBar from "../components/Nav/DrawerWithTopBar";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  const titleText = `JURUMI ${
-    process.env.NODE_ENV === 'development' ? 'DEV' : ''
+  const router = useRouter();
+  const pathName = router.pathname.split("/");
+  const title = pathName[pathName.length - 1];
+  const defaultText = `JURUMI ${
+    process.env.NODE_ENV === "development" ? "DEV" : ""
   }`;
+  const handleTitles = (x: string) => {
+    const titlesDictionary: any = {
+      ["money-accounts"]: "Cuentas",
+      ["seed"]: "Seed",
+      ["imbursements"]: "Desembolsos",
+      ["requests"]: "Solicitudes",
+      ["money-account-offset"]: "Ajustes",
+    };
+    return titlesDictionary[x] ?? defaultText;
+  };
   return (
     <DrawerWithTopBar>
       <Head>
-        <title>{titleText}</title>
+        <title>{handleTitles(title ?? "")}</title>
       </Head>
       {children}
     </DrawerWithTopBar>

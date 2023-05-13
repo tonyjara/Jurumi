@@ -1,4 +1,4 @@
-import { trpcClient } from '@/lib/utils/trpcClient';
+import { trpcClient } from "@/lib/utils/trpcClient";
 import {
   Button,
   Card,
@@ -11,15 +11,16 @@ import {
   RadioGroup,
   Stack,
   Text,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 
-import React, { useRef, useState } from 'react';
-import DeleteSeeds from './DeleteSeeds.admin.seed';
-import ImbursementSeeds from './ImbursementSeeds.admin.seed';
-import MoneyReqSeeds from './MoneyReqSeeds.admin.seed';
+import React, { useRef, useState } from "react";
+import DeleteSeeds from "./DeleteSeeds.admin.seed";
+import ImbursementSeeds from "./ImbursementSeeds.admin.seed";
+import MoneyAccountSeeds from "./MoneyAccountSeeds.admin.seed";
+import MoneyReqSeeds from "./MoneyReqSeeds.admin.seed";
 
 const SeedPage = () => {
-  const [multiplier, setMultiplier] = useState('1');
+  const [multiplier, setMultiplier] = useState("1");
   const slackChannelIdRef = useRef(null);
   const { mutate } =
     trpcClient.notifications.sendSlackChannelMessage.useMutation();
@@ -27,12 +28,16 @@ const SeedPage = () => {
   return (
     <Card>
       <CardHeader>
-        <Text fontSize={'3xl'}>Seed </Text>
+        <Text fontSize={"3xl"}>Seed </Text>
+        <Text>
+          Dejar que cada solicitud se ejecute completamente antes de empezar una
+          nueva para evitar corrupción de datos{" "}
+        </Text>
       </CardHeader>
       <CardBody>
-        <RadioGroup mb={'20px'} onChange={setMultiplier} value={multiplier}>
+        <RadioGroup mb={"20px"} onChange={setMultiplier} value={multiplier}>
           <HStack>
-            <Text fontSize={'xl'}>Multiplicador</Text>
+            <Text fontSize={"xl"}>Multiplicador</Text>
             <Radio value="1">X 1</Radio>
             <Radio value="2">X 2</Radio>
             <Radio value="5">X 5</Radio>
@@ -42,10 +47,11 @@ const SeedPage = () => {
         <Stack spacing={10}>
           <MoneyReqSeeds multiplier={multiplier} />
           <ImbursementSeeds multiplier={multiplier} />
+          <MoneyAccountSeeds multiplier={multiplier} />
           <DeleteSeeds />
         </Stack>
-        <Stack mt={'20px'}>
-          <Text fontSize={'2xl'}>Slack</Text>
+        <Stack mt={"20px"}>
+          <Text fontSize={"2xl"}>Slack</Text>
           <Text>No olvidar invitar al bot</Text>
           <Flex>
             <Input

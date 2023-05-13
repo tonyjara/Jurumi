@@ -1,0 +1,30 @@
+#Money Balances
+
+Inside Jurumi there are certain tables in the database that can hold money balances. These tables hold transactions, through those transactions they can determine the current balance that they have. Depending on the transaction TYPE we can see what transaction affects which table. 
+
+Transaction types:
+  MEMBERSHIP_PAYMENT
+  PROJECT_IMBURSEMENT
+  EXPENSE_RETURN
+  COST_CATEGORY -- This is the only one that doesn't directly affect a money account
+  MONEY_ACCOUNT
+  MONEY_ACCOUNT_IMBURSEMENT
+  OFFSET
+
+These are all the tables in the databse that can hold balances
+
+1 - MoneyAccounts
+2 - CostCategories 
+3 - Projects
+
+
+
+## Cost CostCategories
+
+Cost categories are affected only when EXPENSE_RETURN is used. This is because the money is not going to a specific account, but rather to a category.
+Expense reports with no cost category will no create transactions.
+
+
+## Project imbursements
+
+They keep track of how much money has been received by a project. This is done by adding the amount to the project's balance. This is done by using the PROJECT_IMBURSEMENT transaction type.

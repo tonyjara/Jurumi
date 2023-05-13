@@ -18,7 +18,7 @@ import {
   cancelExpenseReports,
   cancelExpenseReturns,
   cancelMoneyReqApprovals,
-  cancelTransactions,
+  cancelTransactionsAndRevertBalance,
 } from "./utils/Cancelations.routeUtils";
 import { upsertTaxPayter } from "./utils/TaxPayer.routeUtils";
 import { createMoneyRequestSlackNotification } from "./notifications/slack/moneyRequestCreate.notification.slack";
@@ -141,7 +141,6 @@ export const moneyRequestRouter = router({
           transactions: {
             where: {
               cancellationId: null,
-              costCategoryId: null,
               isCancellation: false,
             },
             include: {
@@ -335,7 +334,7 @@ export const moneyRequestRouter = router({
           },
         });
 
-        await cancelTransactions({
+        await cancelTransactionsAndRevertBalance({
           txCtx,
           transactions: moneyReq.transactions,
         });
@@ -378,7 +377,7 @@ export const moneyRequestRouter = router({
           },
         });
 
-        await cancelTransactions({
+        await cancelTransactionsAndRevertBalance({
           txCtx,
           transactions: moneyReq.transactions,
         });

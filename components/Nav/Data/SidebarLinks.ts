@@ -1,5 +1,4 @@
 import type { IconType } from "react-icons";
-import type { LinkItemChild } from "../components/NavItemChild";
 import { FiHome, FiSettings, FiUsers, FiGlobe } from "react-icons/fi";
 import { BsCash, BsCashStack, BsLink45Deg } from "react-icons/bs";
 import { TbReceiptTax, TbSeeding } from "react-icons/tb";
@@ -11,6 +10,7 @@ import { TbReportMoney } from "react-icons/tb";
 import { IoIosPeople } from "react-icons/io";
 import { VscOrganization } from "react-icons/vsc";
 import { TfiGallery } from "react-icons/tfi";
+import { ImPageBreak } from "react-icons/im";
 export interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -75,6 +75,11 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               name: "Transacciones",
               icon: FaExchangeAlt,
               dest: "/mod/transactions",
+            },
+            {
+              name: "Ajustes de cuenta",
+              icon: ImPageBreak,
+              dest: "/mod/money-account-offset",
             },
           ],
         },

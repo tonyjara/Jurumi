@@ -1,12 +1,12 @@
-import type { Transaction } from '@prisma/client';
-import { TransactionType } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import { Currency } from '@prisma/client';
-import { z } from 'zod';
+import type { Transaction } from "@prisma/client";
+import { TransactionType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { Currency } from "@prisma/client";
+import { z } from "zod";
 
 export type FormTransactionEdit = Omit<
   Transaction,
-  'openingBalance' | 'transactionAmount' | 'currentBalance'
+  "openingBalance" | "transactionAmount" | "currentBalance"
 > & {
   openingBalance?: any;
   transactionAmount?: any;
@@ -32,6 +32,7 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
           .transform((value) => new Prisma.Decimal(value)),
         moneyRequestId: z.string().nullable(),
         expenseReportId: z.string().nullable(),
+        moneyAccountOffsetId: z.string().nullable(),
         projectId: z.string().nullable(),
         expenseReturnId: z.string().nullable(),
         membershipId: z.string().nullable(),
@@ -44,25 +45,25 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
         moneyAccountId: z
           .string({
             required_error:
-              'Favor seleccione una cuenta de donde extraer el dinero.',
+              "Favor seleccione una cuenta de donde extraer el dinero.",
           })
-          .min(2, 'Favor seleccione una cuenta de donde extraer el dinero.'),
+          .min(2, "Favor seleccione una cuenta de donde extraer el dinero."),
         searchableImage: z
           .object({
             imageName: z
               .string()
-              .min(1, 'Favor suba la imágen de su comprobante'),
-            url: z.string().min(1, 'Favor suba la imágen de su comprobante'),
+              .min(1, "Favor suba la imágen de su comprobante"),
+            url: z.string().min(1, "Favor suba la imágen de su comprobante"),
           })
           .nullable(),
       })
       .superRefine((val, ctx) => {
         if (!(val.expenseReturnId || val.imbursementId || val.moneyRequestId)) {
           ctx.addIssue({
-            path: ['id'],
+            path: ["id"],
             code: z.ZodIssueCode.custom,
             message:
-              'La transacción debe estar relacionada con un desembolso, retorno o una solicitud.',
+              "La transacción debe estar relacionada con un desembolso, retorno o una solicitud.",
           });
         }
       })
@@ -72,12 +73,13 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   id: 0,
   createdAt: new Date(),
   updatedAt: null,
-  accountId: '',
+  accountId: "",
   updatedById: null,
-  currency: 'PYG',
+  moneyAccountOffsetId: null,
+  currency: "PYG",
   transactionAmount: new Prisma.Decimal(0),
   currentBalance: new Prisma.Decimal(0),
-  moneyAccountId: '',
+  moneyAccountId: "",
   openingBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
   membershipPaymentRequestId: null,
@@ -88,7 +90,7 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   expenseReturnId: null,
   isCancellation: false,
   cancellationId: null,
-  transactionType: 'MONEY_ACCOUNT',
-  searchableImage: { url: '', imageName: '' },
+  transactionType: "MONEY_ACCOUNT",
+  searchableImage: { url: "", imageName: "" },
   expenseReportId: null,
 };

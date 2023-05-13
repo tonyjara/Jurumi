@@ -1,7 +1,6 @@
-import type { FormTransactionCreate } from '@/lib/validations/transaction.create.validate';
-import type { Prisma } from '@prisma/client';
-import { v4 as uuidV4 } from 'uuid';
-import prisma from '@/server/db/client';
+import type { FormTransactionCreate } from "@/lib/validations/transaction.create.validate";
+import type { Prisma } from "@prisma/client";
+import { v4 as uuidV4 } from "uuid";
 
 export const createSeedTransaction = async ({
   moneyAccId,
@@ -31,7 +30,7 @@ export const createSeedTransaction = async ({
     txMock.transactions[0].transactionAmount = amountRequested;
     txMock.transactions[0].moneyAccountId = moneyAccId;
     txMock.searchableImage = {
-      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+      url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
       imageName: uuidV4(),
     };
   }

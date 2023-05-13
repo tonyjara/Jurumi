@@ -42,6 +42,7 @@ model Account {
   fcmNotificationTokens    FcmNotificationTokens[]
   notifications            Notifications[]
   passwordRecoveryLinks    PasswordRecoveryLinks[]
+  moneyAccountOffset       MoneyAccountOffset[]
 }
 
 model Membership {
@@ -245,6 +246,7 @@ model MoneyAccount {
   organization             Organization[]             @relation("MoneyAccountToOrganization")
   expenseReturn            ExpenseReturn[]
   membershipPaymentRequest MembershipPaymentRequest[]
+  moneyAccountOffset       MoneyAccountOffset[]
 }
 
 model BankInfo {
@@ -469,6 +471,24 @@ model ExpenseReturn {
   account        Account      @relation(fields: [accountId], references: [id])
 }
 
+model MoneyAccountOffset {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  wasCancelled    Boolean   @default(false)
+  currency        Currency
+  offsettedAmount Decimal   @default(0) @db.Decimal(19, 4)
+  previousBalance Decimal  @default(0) @db.Decimal(19, 4)
+  offsetJustification String
+
+  moneyAccountId String
+  moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
+
+  transactions Transaction[]
+}
+
 //A transaction can be linked to a moneyAccount or to a CostCategory, everytime a transaction history is required it needs specific transactions
 model Transaction {
   id                Int              @id @default(autoincrement())
@@ -505,8 +525,10 @@ model Transaction {
   expenseReport              ExpenseReport?            @relation(fields: [expenseReportId], references: [id])
   membershipId               String?
   membership                 Membership?               @relation(fields: [membershipId], references: [id])
-  membershipPaymentRequest   MembershipPaymentRequest? @relation(fields: [membershipPaymentRequestId], references: [id])
   membershipPaymentRequestId String?
+  membershipPaymentRequest   MembershipPaymentRequest? @relation(fields: [membershipPaymentRequestId], references: [id])
+  moneyAccountOffsetId       String?                   
+  moneyAccountOffset         MoneyAccountOffset?       @relation(fields: [moneyAccountOffsetId], references: [id])
 }
 
 model searchableImage {
@@ -634,8 +656,10 @@ enum MoneyResquestApprovalStatus {
 
 enum TransactionType {
   MEMBERSHIP_PAYMENT
+  MONEY_ACCOUNT_IMBURSEMENT
   PROJECT_IMBURSEMENT
   EXPENSE_RETURN
   COST_CATEGORY
   MONEY_ACCOUNT
+  OFFSET
 }

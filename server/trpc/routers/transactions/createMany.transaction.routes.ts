@@ -13,7 +13,7 @@ import { moneyRequestApprovedSendgridNotification } from "../notifications/sendg
 import { moneyRequestApprovedDbNotification } from "../notifications/db/moneyReqApprovedAndExecuted.notification.db";
 import { saveEmailMsgToDb } from "../notifications/db/saveEmailToDb";
 
-export const createManyTransactions = adminModProcedure
+export const createManyTransactionsForMoneyRequests = adminModProcedure
   .input(validateTransactionCreate)
   .mutation(async ({ input, ctx }) => {
     await prisma?.$transaction(
@@ -30,6 +30,7 @@ export const createManyTransactions = adminModProcedure
         const searchableImage = await createTxImage({ input });
         //1. Check money admin permissions
         await checkIfUserIsMoneyAdmin(user);
+
         for (const txField of input.transactions) {
           //2. Create transactions
           await createMoneyAccTransactions({
@@ -63,6 +64,7 @@ export const createManyTransactions = adminModProcedure
           },
         });
 
+        //4. Send notifications
         await moneyRequestApprovedDbNotification({ input: req, txCtx });
         await moneyRequestApprovedBrowserNotification({ input: req, txCtx });
         const msg = await moneyRequestApprovedSendgridNotification({

@@ -1,15 +1,18 @@
-import { Prisma } from '@prisma/client';
-import { z } from 'zod';
-import type { FormBankInfo } from '@/lib/validations/moneyAcc.validate';
-import { validateMoneyAccount } from '@/lib/validations/moneyAcc.validate';
+import { Prisma } from "@prisma/client";
+import { z } from "zod";
+import type { FormBankInfo } from "@/lib/validations/moneyAcc.validate";
+import { validateMoneyAccount } from "@/lib/validations/moneyAcc.validate";
 import {
   adminProcedure,
   adminModProcedure,
   router,
   protectedProcedure,
   adminModObserverProcedure,
-} from '../initTrpc';
-import prisma from '@/server/db/client';
+} from "../initTrpc";
+import prisma from "@/server/db/client";
+import { validateMoneyAccountOffset } from "@/lib/validations/moneyAccountOffset.validate";
+import { handleOrderBy } from "./utils/Sorting.routeUtils";
+import { cancelTransactionsAndRevertBalance } from "./utils/Cancelations.routeUtils";
 
 export const moneyAccRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
@@ -22,7 +25,7 @@ export const moneyAccRouter = router({
         _count: { select: { transactions: true } },
         bankInfo: true,
         transactions: {
-          orderBy: { id: 'desc' },
+          orderBy: { id: "desc" },
           include: {
             account: { select: { displayName: true } },
             moneyAccount: { select: { displayName: true } },
@@ -35,9 +38,38 @@ export const moneyAccRouter = router({
         },
       },
       take: 20,
-      orderBy: { id: 'desc' },
+      orderBy: { id: "desc" },
     });
   }),
+
+  countccountOffsets: adminModObserverProcedure.query(async () =>
+    prisma?.moneyAccountOffset.count()
+  ),
+  getManyAccountOffsets: adminModObserverProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ input }) => {
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+      return await prisma?.moneyAccountOffset.findMany({
+        include: {
+          account: { select: { displayName: true } },
+          moneyAccount: { select: { displayName: true } },
+          transactions: { select: { id: true } },
+        },
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy({ input }),
+      });
+    }),
   getManyPublic: protectedProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       select: {
@@ -54,14 +86,14 @@ export const moneyAccRouter = router({
       where: { isCashAccount: false },
       include: {
         bankInfo: true,
-        transactions: { take: 1, orderBy: { id: 'desc' } },
+        transactions: { take: 1, orderBy: { id: "desc" } },
       },
     });
   }),
   getManyCashAccsWithLastTx: adminModObserverProcedure.query(async () => {
     return await prisma?.moneyAccount.findMany({
       where: { isCashAccount: true },
-      include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+      include: { transactions: { take: 1, orderBy: { id: "desc" } } },
     });
   }),
   create: adminModProcedure
@@ -124,6 +156,58 @@ export const moneyAccRouter = router({
       });
       return x;
     }),
+  offsetBalance: adminModProcedure
+    .input(validateMoneyAccountOffset)
+    .mutation(async ({ input: i, ctx }) => {
+      const userId = ctx.session.user.id;
+      await prisma.$transaction(async (txCtx) => {
+        const getMoneyAccWithLastTx = async () => {
+          return await txCtx.moneyAccount.findUniqueOrThrow({
+            where: { id: i.moneyAccountId },
+            include: {
+              transactions: {
+                where: {
+                  NOT: {
+                    transactionType: {
+                      in: ["COST_CATEGORY", "PROJECT_IMBURSEMENT"],
+                    },
+                  },
+                },
+                take: 1,
+                orderBy: { id: "desc" },
+              },
+            },
+          });
+        };
+
+        const lastMoneyAccWithTx = await getMoneyAccWithLastTx();
+        const previousBalance = lastMoneyAccWithTx.transactions[0]
+          ? lastMoneyAccWithTx.transactions[0].currentBalance
+          : lastMoneyAccWithTx.initialBalance;
+
+        await txCtx.moneyAccountOffset.create({
+          data: {
+            moneyAccountId: i.moneyAccountId,
+            currency: i.currency,
+            offsettedAmount: i.offsettedAmount,
+            offsetJustification: i.offsetJustification,
+            previousBalance,
+            accountId: userId,
+            transactions: {
+              create: {
+                openingBalance: previousBalance,
+                currentBalance: previousBalance.add(i.offsettedAmount),
+                transactionAmount: i.offsettedAmount,
+                transactionType: "OFFSET",
+                moneyAccountId: i.moneyAccountId,
+                currency: i.currency,
+                accountId: userId,
+              },
+            },
+          },
+        });
+      });
+    }),
   deleteById: adminProcedure
     .input(
       z.object({
@@ -135,5 +219,44 @@ export const moneyAccRouter = router({
         where: { id: input.id },
       });
       return x;
+    }),
+  deleteMoneyAccountOffsetById: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        transactionId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await prisma?.transaction.delete({
+        where: { id: input.transactionId },
+      });
+      const x = await prisma?.moneyAccountOffset.delete({
+        where: { id: input.id },
+      });
+      return x;
+    }),
+
+  cancelMoneyAccountOffsetById: adminModProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await prisma.$transaction(async (txCtx) => {
+        const moneyAccOffset = await txCtx?.moneyAccountOffset.update({
+          where: { id: input.id },
+          data: { wasCancelled: true },
+          include: {
+            //Account offsets only have one transaction
+            transactions: true,
+          },
+        });
+        await cancelTransactionsAndRevertBalance({
+          txCtx,
+          transactions: moneyAccOffset.transactions,
+        });
+      });
     }),
 });

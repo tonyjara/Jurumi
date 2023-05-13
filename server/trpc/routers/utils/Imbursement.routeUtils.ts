@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import prisma from "@/server/db/client";
 
-const createMoneyAccountTx = async ({
+const createMoneyAccImbursementTx = async ({
   txCtx,
   imbursement,
   input,
@@ -22,25 +22,27 @@ const createMoneyAccountTx = async ({
   if (!input.moneyAccountId) return;
 
   // 2. Get latest transaction of the bank Account
-  const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUnique({
+  const getMoneyAccAndLatestTx = await txCtx.moneyAccount.findUniqueOrThrow({
     where: { id: input.moneyAccountId },
-    include: { transactions: { take: 1, orderBy: { id: "desc" } } },
+    include: {
+      transactions: {
+        take: 1,
+        orderBy: { id: "desc" },
+      },
+    },
   });
 
-  if (!getMoneyAccAndLatestTx) {
-    throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "No money request or transaction.",
-    });
-  }
   // 3. Calculate balance based on transaction or initialbalance
   const transactionAmount = input.wasConvertedToOtherCurrency
     ? input.finalAmount
     : input.amountInOtherCurrency;
+
   const lastTx = getMoneyAccAndLatestTx?.transactions[0];
+
   const openingBalance = lastTx
     ? lastTx.currentBalance
     : getMoneyAccAndLatestTx.initialBalance;
+
   const currentBalance = lastTx
     ? lastTx.currentBalance.add(transactionAmount)
     : getMoneyAccAndLatestTx.initialBalance.add(transactionAmount);
@@ -56,7 +58,7 @@ const createMoneyAccountTx = async ({
       openingBalance: openingBalance,
       currentBalance: currentBalance,
       moneyAccountId: input.moneyAccountId,
-      transactionType: "MONEY_ACCOUNT",
+      transactionType: "MONEY_ACCOUNT_IMBURSEMENT",
       imbursementId: imbursement.id,
       searchableImage: imbursement.imbursementProof?.id
         ? { connect: { id: imbursement.imbursementProof?.id } }
@@ -244,7 +246,7 @@ const upsertTaxPayter = async ({
 };
 
 export const imbursementCreateUtils = {
-  createMoneyAccountTx,
+  createMoneyAccImbursementTx,
   createProjectImbursementTx,
   createInvoiceFromOrg,
   createImbursement,

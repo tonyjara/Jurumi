@@ -7,19 +7,19 @@ import {
   InputGroup,
   InputRightElement,
   Button,
-} from '@chakra-ui/react';
-import type { Currency } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import type { Decimal } from '@prisma/client/runtime';
-import React from 'react';
-import CurrencyInput from 'react-currency-input-field';
+} from "@chakra-ui/react";
+import type { Currency } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { Decimal } from "@prisma/client/runtime";
+import React from "react";
+import CurrencyInput from "react-currency-input-field";
 import type {
   Control,
   FieldErrorsImpl,
   FieldValues,
   Path,
-} from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+} from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -34,11 +34,13 @@ interface InputProps<T extends FieldValues> {
   totalAmount?: Decimal;
   disable?: boolean;
   error?: string; // escape hatch for nested objects
+  allowNegativeValue?: boolean;
 }
 
 const FormControlledMoneyInput = <T extends FieldValues>({
   control,
   name,
+  allowNegativeValue,
   errors,
   label,
   helperText,
@@ -51,10 +53,10 @@ const FormControlledMoneyInput = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <FormControl
-      display={hidden ? 'none' : 'block'}
+      display={hidden ? "none" : "block"}
       isInvalid={!!errors[name] || !!error}
     >
-      <FormLabel whiteSpace={'nowrap'} fontSize={'md'} color={'gray.500'}>
+      <FormLabel whiteSpace={"nowrap"} fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <Controller
@@ -68,14 +70,15 @@ const FormControlledMoneyInput = <T extends FieldValues>({
               customInput={Input}
               name={name}
               value={field.value}
-              decimalScale={currency === 'PYG' ? 0 : 2} // precision
+              decimalScale={currency === "PYG" ? 0 : 2} // precision
               //This makes the input crash have errors
               // fixedDecimalLength={currency === 'PYG' ? 0 : 2}
               groupSeparator=","
+              allowNegativeValue={allowNegativeValue}
               decimalSeparator="."
-              prefix={prefix ?? 'Gs. '}
+              prefix={prefix ?? "Gs. "}
               onValueChange={(value) => {
-                if (value?.endsWith('.') && currency === 'USD') {
+                if (value?.endsWith(".") && currency === "USD") {
                   return field.onChange(value);
                 }
                 return value
@@ -93,7 +96,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
       />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!errors[name] ? (
-        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
         //@ts-ignore
         <FormErrorMessage>{errors[name].message}</FormErrorMessage>
