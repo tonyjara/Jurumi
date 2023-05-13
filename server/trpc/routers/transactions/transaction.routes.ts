@@ -1,21 +1,19 @@
-import { z } from 'zod';
-import { validateTransactionEdit } from '@/lib/validations/transaction.edit.validate';
+import { z } from "zod";
+import { validateTransactionEdit } from "@/lib/validations/transaction.edit.validate";
 import {
   adminModObserverProcedure,
   adminModProcedure,
-  adminProcedure,
   router,
-} from '../../initTrpc';
-import { handleOrderBy } from '../utils/Sorting.routeUtils';
-import { transactionRouteUtils } from '../utils/Transaction.routeUtils';
-import prisma from '@/server/db/client';
-import { createManyTransactions } from './createMany.transaction.routes';
+} from "../../initTrpc";
+import { handleOrderBy } from "../utils/Sorting.routeUtils";
+import prisma from "@/server/db/client";
+import { createManyTransactionsForMoneyRequests } from "./createMany.transaction.routes";
 
 export const transactionsRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
     return await prisma?.transaction.findMany({
       take: 20,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }),
   count: adminModObserverProcedure.query(async () => {
@@ -40,6 +38,7 @@ export const transactionsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         include: {
+          moneyAccountOffset: true,
           moneyAccount: { select: { displayName: true, id: true } },
           account: { select: { displayName: true, id: true } },
           moneyRequest: true,
@@ -58,6 +57,7 @@ export const transactionsRouter = router({
       return await prisma?.transaction.findMany({
         where: { id: { in: input.ids } },
         include: {
+          moneyAccountOffset: true,
           moneyAccount: { select: { displayName: true, id: true } },
           account: { select: { displayName: true, id: true } },
           moneyRequest: true,
@@ -70,7 +70,7 @@ export const transactionsRouter = router({
       });
     }),
 
-  createMany: createManyTransactions,
+  createMany: createManyTransactionsForMoneyRequests,
   edit: adminModProcedure
     .input(validateTransactionEdit)
     .mutation(async ({ input, ctx }) => {
@@ -90,7 +90,7 @@ export const transactionsRouter = router({
                 create: {
                   url: input.searchableImage.url,
                   imageName: input.searchableImage.imageName,
-                  text: '',
+                  text: "",
                 },
               }
             : {},
@@ -112,7 +112,7 @@ export const transactionsRouter = router({
         include: {
           transactions: {
             take: 1,
-            orderBy: { id: 'desc' },
+            orderBy: { id: "desc" },
           },
         },
       });
@@ -125,26 +125,27 @@ export const transactionsRouter = router({
       return false;
     }),
 
-  deleteById: adminProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        moneyAccountId: z.string().nullable(),
-        costCategoryId: z.string().nullable(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      //for the moment being it will only allow delete if it's the last transaction.
-
-      await transactionRouteUtils.checkIfIsLastTransaction({
-        moneyAccountId: input.moneyAccountId,
-        costCategoryId: input.costCategoryId,
-        transactionId: input.id,
-      });
-
-      const x = await prisma?.transaction.delete({
-        where: { id: input.id },
-      });
-      return x;
-    }),
+  /* DO NOT DELETE TRANSACTIONS DIRECTLY */
+  /* deleteById: adminProcedure */
+  /*    .input( */
+  /*      z.object({ */
+  /*        id: z.number(), */
+  /*        moneyAccountId: z.string().nullable(), */
+  /*        costCategoryId: z.string().nullable(), */
+  /*      }) */
+  /*    ) */
+  /*    .mutation(async ({ input }) => { */
+  /*      //for the moment being it will only allow delete if it's the last transaction. */
+  /**/
+  /*      await transactionRouteUtils.checkIfIsLastTransaction({ */
+  /*        moneyAccountId: input.moneyAccountId, */
+  /*        costCategoryId: input.costCategoryId, */
+  /*        transactionId: input.id, */
+  /*      }); */
+  /**/
+  /*      const x = await prisma?.transaction.delete({ */
+  /*        where: { id: input.id }, */
+  /*      }); */
+  /*      return x; */
+  /*    }), */
 });

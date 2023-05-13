@@ -1,11 +1,11 @@
 import type {
   FormTransactionCreate,
   TransactionField,
-} from '@/lib/validations/transaction.create.validate';
-import type { Account, Prisma, searchableImage } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
-import { getSelectedOrganizationId } from './Preferences.routeUtils';
-import prisma from '@/server/db/client';
+} from "@/lib/validations/transaction.create.validate";
+import type { Account, Prisma, searchableImage } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import { getSelectedOrganizationId } from "./Preferences.routeUtils";
+import prisma from "@/server/db/client";
 
 async function checkIfIsLastTransaction({
   moneyAccountId,
@@ -20,15 +20,15 @@ async function checkIfIsLastTransaction({
     const lastTxFromCostCat = await prisma?.costCategory.findUnique({
       where: { id: costCategoryId },
 
-      select: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+      select: { transactions: { take: 1, orderBy: { id: "desc" } } },
     });
     const latestTransactionId = lastTxFromCostCat?.transactions[0]?.id;
 
     if (latestTransactionId && latestTransactionId !== transactionId) {
       //reject the requests if there is a newer record. See 'Constraints' in docs.
       throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'New record already exists.',
+        code: "FORBIDDEN",
+        message: "New record already exists.",
       });
     }
   }
@@ -36,7 +36,7 @@ async function checkIfIsLastTransaction({
     const lastTransactionFromMoneyAcc = await prisma?.moneyAccount.findUnique({
       where: { id: moneyAccountId },
 
-      select: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+      select: { transactions: { take: 1, orderBy: { id: "desc" } } },
     });
     const latestTransactionId =
       lastTransactionFromMoneyAcc?.transactions[0]?.id;
@@ -44,20 +44,20 @@ async function checkIfIsLastTransaction({
     if (latestTransactionId && latestTransactionId !== transactionId) {
       //reject the requests if there is a newer record. See 'Constraints' in docs.
       throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'New record already exists.',
+        code: "FORBIDDEN",
+        message: "New record already exists.",
       });
     }
   }
 }
 
-export async function checkIfUserIsMoneyAdmin(user: Omit<Account, 'password'>) {
+export async function checkIfUserIsMoneyAdmin(user: Omit<Account, "password">) {
   //1. Get org id
   const getPrefs = await getSelectedOrganizationId(user);
   if (!getPrefs?.selectedOrganization) {
     throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: 'No org selected.',
+      code: "UNAUTHORIZED",
+      message: "No org selected.",
     });
   }
 
@@ -73,12 +73,12 @@ export async function checkIfUserIsMoneyAdmin(user: Omit<Account, 'password'>) {
   //4. Check that user is part of money administrators
   if (!org?.moneyAdministrators.some((x) => x.id === user.id)) {
     throw new TRPCError({
-      code: 'FORBIDDEN',
-      message: 'User not money admin',
+      code: "FORBIDDEN",
+      message: "User not money admin",
     });
   }
 }
-
+// Cost categories are money account exclusive to projects
 async function createCostCategoryTransactions({
   formTransaction,
   txCtx,
@@ -94,13 +94,14 @@ async function createCostCategoryTransactions({
 }) {
   if (!formTransaction.projectId || !formTransaction.costCategoryId) return;
   const costCategoryId = formTransaction.costCategoryId;
+
   // 1. Get latest transaction of the money Account
   const getLastestCostCatWithTx = await txCtx.costCategory.findUniqueOrThrow({
     where: { id: costCategoryId },
-    include: { transactions: { take: 1, orderBy: { id: 'desc' } } },
+    include: { transactions: { take: 1, orderBy: { id: "desc" } } },
   });
-  // 2. If it's the first transaction, opening balance is always 0
 
+  // 2. If it's the first transaction, opening balance is always 0
   const lastTx = getLastestCostCatWithTx?.transactions[0];
   const openingBalance = lastTx ? lastTx.currentBalance : 0;
 
@@ -113,11 +114,11 @@ async function createCostCategoryTransactions({
       transactionAmount: txField.transactionAmount,
       accountId: accountId,
       currency: txField.currency,
-      openingBalance: openingBalance,
-      currentBalance: currentBalance,
+      openingBalance,
+      currentBalance,
       costCategoryId,
       projectId: formTransaction.projectId,
-      transactionType: 'COST_CATEGORY',
+      transactionType: "COST_CATEGORY",
       moneyRequestId: formTransaction.moneyRequestId,
       searchableImage: searchableImage
         ? {

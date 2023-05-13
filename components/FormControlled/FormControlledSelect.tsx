@@ -4,17 +4,17 @@ import {
   FormHelperText,
   FormErrorMessage,
   useColorModeValue,
-} from '@chakra-ui/react';
-import type { ChakraStylesConfig } from 'chakra-react-select';
-import { Select } from 'chakra-react-select';
-import React from 'react';
+} from "@chakra-ui/react";
+import type { ChakraStylesConfig } from "chakra-react-select";
+import { Select } from "chakra-react-select";
+import React from "react";
 import type {
   Control,
   ControllerRenderProps,
   FieldValues,
   Path,
-} from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+} from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -30,10 +30,12 @@ interface InputProps<T extends FieldValues> {
   optionLabel?: string;
   optionValue?: string;
   disable?: boolean;
+  value?: any;
 }
 
 const FormControlledSelect = <T extends FieldValues>({
   control,
+  value,
   name,
   errors,
   label,
@@ -71,20 +73,20 @@ const FormControlledSelect = <T extends FieldValues>({
     return field.value;
   };
 
-  const dropDownColor = useColorModeValue('#CBD5E0', '#4A5568');
+  const dropDownColor = useColorModeValue("#CBD5E0", "#4A5568");
 
   const chakraStyles: ChakraStylesConfig = {
     dropdownIndicator: (provided: any) => ({
       ...provided,
       background: dropDownColor,
       p: 0,
-      w: '40px',
+      w: "40px",
     }),
   };
 
   return (
     <FormControl isInvalid={!!errors[name] || !!error}>
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <Controller
@@ -100,8 +102,8 @@ const FormControlledSelect = <T extends FieldValues>({
               handleOnChange(e, field);
             }}
             chakraStyles={chakraStyles}
-            value={handleValue(field)}
-            noOptionsMessage={() => 'No hay opciones.'}
+            value={value ? handleValue({ value } as any) : handleValue(field)}
+            noOptionsMessage={() => "No hay opciones."}
             placeholder=""
             isClearable={isClearable}
             isMulti={isMulti}

@@ -144,6 +144,17 @@ const RowOptionsModRequests = ({
         Ver transacciones
       </MenuItem>
 
+      <MenuItem
+        onClick={() => {
+          router.push({
+            pathname: "/mod/expense-reports",
+            query: { expenseReportsIds: x.expenseReports.map((x) => x.id) },
+          });
+        }}
+      >
+        Ver Rendiciones
+      </MenuItem>
+
       <ExportToExcelMenuItem data={selectedRows} />
       <MenuItem onClick={handlePrintFundRequest}>Imprimir solicitud</MenuItem>
 

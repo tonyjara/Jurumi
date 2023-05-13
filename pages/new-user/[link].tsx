@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Stack,
@@ -6,25 +6,25 @@ import {
   Heading,
   useColorModeValue,
   Text,
-} from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/router';
-import FormControlledText from '@/components/FormControlled/FormControlledText';
+} from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import FormControlledText from "@/components/FormControlled/FormControlledText";
 import {
   handleUseMutationAlerts,
   myToast,
-} from '@/components/Toasts & Alerts/MyToast';
-import type { GetServerSideProps } from 'next';
-import { verifyToken } from '@/lib/utils/asyncJWT';
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { FormNewUser } from '@/lib/validations/newUser.validate';
+} from "@/components/Toasts & Alerts/MyToast";
+import type { GetServerSideProps } from "next";
+import { verifyToken } from "@/lib/utils/asyncJWT";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { FormNewUser } from "@/lib/validations/newUser.validate";
 import {
   defaultNewUserData,
   validateNewUser,
-} from '@/lib/validations/newUser.validate';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import prisma from '@/server/db/client';
+} from "@/lib/validations/newUser.validate";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import prisma from "@/server/db/client";
 
 export default function NewUser(props?: {
   token: string;
@@ -43,9 +43,9 @@ export default function NewUser(props?: {
   const { error, mutate, isLoading } =
     trpcClient.magicLinks.assignPasswordToNewAccount.useMutation(
       handleUseMutationAlerts({
-        successText: 'Has creado tu cuenta!',
+        successText: "Has creado tu cuenta!",
         callback: async () => {
-          router.push('/home');
+          router.push("/home");
         },
       })
     );
@@ -67,16 +67,16 @@ export default function NewUser(props?: {
     <form onSubmit={handleSubmit(submitForm)} noValidate>
       <Stack spacing={2} py={{ base: 5, md: 10 }}>
         <Heading
-          textAlign={'center'}
+          textAlign={"center"}
           py={{ base: 0, md: 5 }}
-          fontSize={{ base: '2xl', md: '4xl' }}
+          fontSize={{ base: "2xl", md: "4xl" }}
         >
           Confirmación de cuenta: {props?.data?.email}
         </Heading>
         <Heading
           py={{ base: 0, md: 5 }}
-          alignSelf={'center'}
-          size={'sm'}
+          alignSelf={"center"}
+          size={"sm"}
           maxW="400px"
         >
           Hola {props?.data?.displayName}, has sido invitado/a a formar parte de
@@ -84,28 +84,28 @@ export default function NewUser(props?: {
         </Heading>
 
         <Box
-          rounded={'lg'}
+          rounded={"lg"}
           bg={{
-            base: '-moz-initial',
-            md: useColorModeValue('white', 'gray.700'),
+            base: "-moz-initial",
+            md: useColorModeValue("white", "gray.700"),
           }}
-          boxShadow={{ base: 'none', md: 'lg' }}
+          boxShadow={{ base: "none", md: "lg" }}
           p={5}
-          minW={{ base: 'full', md: 'lg' }}
+          minW={{ base: "full", md: "lg" }}
           maxW="xl"
-          alignSelf={'center'}
+          alignSelf={"center"}
         >
           {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
           <Stack spacing={2}>
             <FormControlledText
-              label={'Contraseña'}
+              label={"Contraseña"}
               errors={errors}
               control={control}
               name="password"
               type="password"
             />
             <FormControlledText
-              label={'Confirme su contraseña'}
+              label={"Confirme su contraseña"}
               errors={errors}
               control={control}
               name="confirmPassword"
@@ -115,16 +115,16 @@ export default function NewUser(props?: {
             <Stack spacing={5}>
               <Stack
                 spacing={5}
-                textAlign={'center'}
-                direction={{ base: 'column' }}
+                textAlign={"center"}
+                direction={{ base: "column" }}
               >
                 <Button
                   isDisabled={isLoading || isSubmitting}
                   type="submit"
-                  bg={'blue.400'}
-                  color={'white'}
+                  bg={"blue.400"}
+                  color={"white"}
                   _hover={{
-                    bg: 'blue.500',
+                    bg: "blue.500",
                   }}
                 >
                   Guardar
@@ -146,12 +146,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   const verify = (await verifyToken(token, secret).catch((err) => {
-    console.error('Verify err: ' + JSON.stringify(err));
+    console.error("Verify err: " + JSON.stringify(err));
   })) as {
     data: { email: string; displayName: string; linkId: string };
   } | null;
 
-  if (verify && 'data' in verify) {
+  if (verify && "data" in verify) {
     const verifyLink = await prisma?.accountVerificationLinks.findUnique({
       where: { id: verify.data.linkId },
     });

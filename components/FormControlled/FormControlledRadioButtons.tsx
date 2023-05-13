@@ -6,15 +6,15 @@ import {
   Radio,
   RadioGroup,
   Stack,
-} from '@chakra-ui/react';
-import React from 'react';
+} from "@chakra-ui/react";
+import React from "react";
 import type {
   Control,
   FieldErrorsImpl,
   FieldValues,
   Path,
-} from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+} from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -27,10 +27,12 @@ interface InputProps<T extends FieldValues> {
   onChangeMw?: () => void; //middlewarish func
   disable?: boolean;
   error?: string; // escape hatch for nested objects
+  value?: any;
 }
 
 const FormControlledRadioButtons = <T extends FieldValues>({
   control,
+  value,
   name,
   errors,
   label,
@@ -43,10 +45,10 @@ const FormControlledRadioButtons = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <FormControl
-      display={hidden ? 'none' : 'block'}
+      display={hidden ? "none" : "block"}
       isInvalid={!!errors[name] || !!error}
     >
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <Controller
@@ -59,7 +61,7 @@ const FormControlledRadioButtons = <T extends FieldValues>({
               onChangeMw && onChangeMw();
               field.onChange(e);
             }}
-            value={field.value}
+            value={value ?? field.value}
           >
             <Stack direction="row">
               {options.map((x) => (

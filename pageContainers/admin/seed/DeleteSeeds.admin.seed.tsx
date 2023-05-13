@@ -1,8 +1,8 @@
-import { ButtonDeleteDialog } from '@/components/Toasts & Alerts/button.delete.dialog';
-import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { Stack, ButtonGroup, Text } from '@chakra-ui/react';
-import React from 'react';
+import { ButtonDeleteDialog } from "@/components/Toasts & Alerts/button.delete.dialog";
+import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { Stack, ButtonGroup, Text } from "@chakra-ui/react";
+import React from "react";
 
 const DeleteSeeds = () => {
   const context = trpcClient.useContext();
@@ -62,6 +62,16 @@ const DeleteSeeds = () => {
       })
     );
 
+  const { mutate: deleteAllMoneyAccountOffsets } =
+    trpcClient.seed.deleteManyMoneyAccountOffsets.useMutation(
+      handleUseMutationAlerts({
+        successText: `Se eliminaron los ajustes.`,
+        callback: () => {
+          context.invalidate();
+        },
+      })
+    );
+
   const deleteALL = () => {
     deleteALLtransactions();
     deleteAllExpenseReps();
@@ -69,11 +79,12 @@ const DeleteSeeds = () => {
     deleteALLExpenseReturns();
     deleteAllMoneyReqs();
     deleteALLMoneyApprovals();
+    deleteAllMoneyAccountOffsets();
   };
 
   return (
     <Stack>
-      <Text mb={'10px'} color={'red.400'} fontWeight="bold" fontSize={'2xl'}>
+      <Text mb={"10px"} color={"red.400"} fontWeight="bold" fontSize={"2xl"}>
         Borrar
       </Text>
       <ButtonGroup>
@@ -108,6 +119,12 @@ const DeleteSeeds = () => {
           buttonText="Eliminar todas las aprobaciones"
           targetName="TODAS las aprobaciones"
         />
+        <ButtonDeleteDialog
+          onConfirm={() => deleteAllMoneyAccountOffsets()}
+          buttonText="Eliminar todas los ajustes"
+          targetName="TODOS los ajustes"
+        />
+
         <ButtonDeleteDialog
           onConfirm={deleteALL}
           buttonText="Eliminar TODO"

@@ -8,25 +8,25 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import type { FormExpenseReport } from "@/lib/validations/expenseReport.validate";
 import {
   defaultExpenseReportData,
   validateExpenseReport,
-} from '@/lib/validations/expenseReport.validate';
-import ExpenseReportForm from '../Forms/ExpenseReport.form';
+} from "@/lib/validations/expenseReport.validate";
+import ExpenseReportForm from "../Forms/ExpenseReport.form";
 import {
   reduceExpenseReports,
   reduceExpenseReturns,
-} from '@/lib/utils/TransactionUtils';
-import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
+} from "@/lib/utils/TransactionUtils";
+import { decimalFormat } from "@/lib/utils/DecimalHelpers";
+import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -55,8 +55,8 @@ const CreateExpenseReportModal = ({
 
   useEffect(() => {
     if (moneyRequest && isOpen) {
-      setValue('projectId', moneyRequest.projectId);
-      setValue('moneyRequestId', moneyRequest.id);
+      setValue("projectId", moneyRequest.projectId);
+      setValue("moneyRequestId", moneyRequest.id);
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,7 +65,7 @@ const CreateExpenseReportModal = ({
   const { error, mutate, isLoading } =
     trpcClient.expenseReport.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su rendición ha sido creada!',
+        successText: "Su rendición ha sido creada!",
         callback: () => {
           handleOnClose();
           context.moneyRequest.invalidate();

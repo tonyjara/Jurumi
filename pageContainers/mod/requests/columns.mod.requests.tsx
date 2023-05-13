@@ -197,4 +197,8 @@ export const moneyRequestsColumns = ({
       },
     }
   ),
+  columnHelper.accessor("id", {
+    cell: (x) => <TextCell text={x.getValue()} />,
+    header: "ID",
+  }),
 ];

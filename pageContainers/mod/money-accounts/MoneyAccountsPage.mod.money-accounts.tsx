@@ -13,50 +13,54 @@ import {
   CardBody,
   CardHeader,
   Flex,
-} from '@chakra-ui/react';
-import type { BankInfo, MoneyAccount, Transaction } from '@prisma/client';
-import React, { useEffect, useState } from 'react';
-import type { TableOptions } from '@/components/DynamicTables/DynamicTable';
-import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
-import ThreeDotTableButton from '@/components/DynamicTables/Utils/ThreeDotTableButton';
-import CreateMoneyAccModal from '@/components/Modals/MoneyAcc.create.modal';
-import EditMoneyAccModal from '@/components/Modals/moneyAcc.edit.modal';
-import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
-import { translateBankNames } from '@/lib/utils/TranslatedEnums';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import TransactionsTable from '../transactions/TransactionsTable';
-import AccordionOptionsMoneyAccountsPage from './accordionOptions.mod.money-accounts';
-import { customScrollbar } from 'styles/CssUtils';
-import LoadingPlantLottie from '@/components/Spinners-Loading/LoadiingPlantLottie';
+} from "@chakra-ui/react";
+import type { BankInfo, MoneyAccount, Transaction } from "@prisma/client";
+import React, { useEffect, useState } from "react";
+import type { TableOptions } from "@/components/DynamicTables/DynamicTable";
+import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
+import ThreeDotTableButton from "@/components/DynamicTables/Utils/ThreeDotTableButton";
+import CreateMoneyAccModal from "@/components/Modals/MoneyAcc.create.modal";
+import EditMoneyAccModal from "@/components/Modals/moneyAcc.edit.modal";
+import { formatedAccountBalance } from "@/lib/utils/TransactionUtils";
+import { translateBankNames } from "@/lib/utils/TranslatedEnums";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import TransactionsTable from "../transactions/TransactionsTable";
+import AccordionOptionsMoneyAccountsPage from "./accordionOptions.mod.money-accounts";
+import { customScrollbar } from "styles/CssUtils";
+import LoadingPlantLottie from "@/components/Spinners-Loading/LoadiingPlantLottie";
+import CreateMoneyAccountOffsetModal from "@/components/Modals/MoneyAccountOffset.create.modal";
 
 export type MoneyAccWithTransactions = MoneyAccount & {
+  bankInfo: BankInfo | null;
+  _count: {
+    transactions: number;
+  };
   transactions: (Transaction & {
-    Imbursement: {
-      concept: string;
-    } | null;
     account: {
       displayName: string;
     };
+    moneyAccount: {
+      displayName: string;
+    } | null;
+    imbursement: {
+      concept: string;
+    } | null;
     moneyRequest: {
       description: string;
     } | null;
-    moneyAccount: {
-      displayName: string;
-    };
     searchableImage: {
       id: string;
       url: string;
       imageName: string;
     } | null;
   })[];
-  bankInfo: BankInfo | null;
-  _count: {
-    transactions: number;
-  };
 };
 
 const MoneyAccountsPage = () => {
   const [editData, setEditData] = useState<MoneyAccount | null>(null);
+  const [offsetData, setOffsetData] = useState<MoneyAccWithTransactions | null>(
+    null
+  );
   const dynamicTableProps = useDynamicTable();
 
   const {
@@ -64,6 +68,13 @@ const MoneyAccountsPage = () => {
     onOpen: onEditOpen,
     onClose: onEditClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isOffsetOpen,
+    onOpen: onOffsetOpen,
+    onClose: onOffsetClose,
+  } = useDisclosure();
+
   const {
     isOpen: isMoneyAccOpen,
     onOpen: onMoneyAccOpen,
@@ -82,21 +93,21 @@ const MoneyAccountsPage = () => {
   const { data, isFetching, isLoading } =
     trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
-  const bg = useColorModeValue('white', 'gray.700');
-  const cardBg = useColorModeValue('white', 'gray.800');
+  const bg = useColorModeValue("white", "gray.700");
+  const cardBg = useColorModeValue("white", "gray.800");
   const tableOptions: TableOptions[] = [
     {
       onClick: onMoneyAccOpen,
-      label: 'Crear cuenta',
+      label: "Crear cuenta",
     },
   ];
 
   return (
     <Card w="100%" backgroundColor={cardBg}>
       <CardHeader>
-        <Flex justifyContent={'space-between'}>
-          <Flex flexDirection={'column'}>
-            <Text fontWeight={'bold'} fontSize={{ base: '2xl', md: '3xl' }}>
+        <Flex justifyContent={"space-between"}>
+          <Flex flexDirection={"column"}>
+            <Text fontWeight={"bold"} fontSize={{ base: "2xl", md: "3xl" }}>
               Cuentas
             </Text>
           </Flex>
@@ -105,13 +116,13 @@ const MoneyAccountsPage = () => {
       </CardHeader>
       <CardBody>
         <Accordion
-          borderRadius={'8px'}
+          borderRadius={"8px"}
           backgroundColor={bg}
           allowToggle
-          display={'block'}
+          display={"block"}
           css={customScrollbar}
-          overflow={'auto'}
-          w={'100%'}
+          overflow={"auto"}
+          w={"100%"}
         >
           {data &&
             data.map((moneyAcc) => {
@@ -120,34 +131,36 @@ const MoneyAccountsPage = () => {
                   <AccordionButton as={Flex}>
                     <AccordionIcon />
 
-                    <HStack minW={'600px'} h={'35px'} pr="20px">
+                    <HStack minW={"600px"} h={"35px"} pr="20px">
                       <Text
-                        textOverflow={'ellipsis'}
-                        w={'250px'}
+                        textOverflow={"ellipsis"}
+                        w={"250px"}
                         overflow="hidden"
-                        whiteSpace={'nowrap'}
-                        fontSize={'lg'}
+                        whiteSpace={"nowrap"}
+                        fontSize={"lg"}
                       >
                         {moneyAcc.displayName}
                       </Text>
                       <Divider orientation="vertical" />
-                      <Text pl={'5px'} w={'150px'} fontSize={'lg'}>
+                      <Text pl={"5px"} w={"150px"} fontSize={"lg"}>
                         {moneyAcc.bankInfo
                           ? translateBankNames(moneyAcc.bankInfo?.bankName)
-                          : 'Caja chica'}
+                          : "Caja chica"}
                       </Text>
                       <Divider orientation="vertical" />
                       <Text
-                        pl={'5px'}
-                        w={'150px'}
+                        pl={"5px"}
+                        w={"150px"}
                         fontWeight="bold"
-                        fontSize={'lg'}
+                        fontSize={"lg"}
                         whiteSpace="nowrap"
                       >
                         {formatedAccountBalance(moneyAcc)}
                       </Text>
 
                       <AccordionOptionsMoneyAccountsPage
+                        setOffsetData={setOffsetData}
+                        onOffsetOpen={onOffsetOpen}
                         setEditData={setEditData}
                         accountData={moneyAcc}
                       />
@@ -162,7 +175,7 @@ const MoneyAccountsPage = () => {
                       dynamicTableProps={dynamicTableProps}
                     />
                   </AccordionPanel>
-                  <Divider ml={'10px'} w={'98%'} />
+                  <Divider ml={"10px"} w={"98%"} />
                 </AccordionItem>
               );
             })}
@@ -179,6 +192,13 @@ const MoneyAccountsPage = () => {
           isOpen={isMoneyAccOpen}
           onClose={onMoneyAccClose}
         />
+        <CreateMoneyAccountOffsetModal
+          moneyAccount={offsetData}
+          setOffsetData={setOffsetData}
+          isOpen={isOffsetOpen}
+          onClose={onOffsetClose}
+        />
+
         {(isLoading || isFetching) && <LoadingPlantLottie />}
       </CardBody>
     </Card>

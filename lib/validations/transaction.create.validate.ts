@@ -1,18 +1,18 @@
-import { faker } from '@faker-js/faker';
-import type { MoneyRequest, Transaction } from '@prisma/client';
-import { TransactionType } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import { Currency } from '@prisma/client';
-import { z } from 'zod';
-import { v4 as uuidV4 } from 'uuid';
+import { faker } from "@faker-js/faker";
+import type { MoneyRequest, Transaction } from "@prisma/client";
+import { TransactionType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { Currency } from "@prisma/client";
+import { z } from "zod";
+import { v4 as uuidV4 } from "uuid";
 
 type withMoney = Omit<
   Transaction,
-  | 'openingBalance'
-  | 'transactionAmount'
-  | 'currentBalance'
-  | 'currency'
-  | 'moneyAccountId'
+  | "openingBalance"
+  | "transactionAmount"
+  | "currentBalance"
+  | "currency"
+  | "moneyAccountId"
 > & {
   openingBalance?: any;
   currentBalance?: any;
@@ -41,11 +41,11 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
             moneyAccountId: z
               .string({
                 required_error:
-                  'Favor seleccione una cuenta de donde extraer el dinero.',
+                  "Favor seleccione una cuenta de donde extraer el dinero.",
               })
               .min(
                 2,
-                'Favor seleccione una cuenta de donde extraer el dinero.'
+                "Favor seleccione una cuenta de donde extraer el dinero."
               ),
           })
         ),
@@ -53,6 +53,7 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         createdAt: z.date(),
         updatedAt: z.date().nullable(),
         accountId: z.string(),
+        moneyAccountOffsetId: z.string().nullable(),
         isCancellation: z.boolean(),
         projectId: z.string().nullable(),
         updatedById: z.string().nullable(),
@@ -78,10 +79,10 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
       .superRefine((val, ctx) => {
         if (!(val.expenseReturnId || val.imbursementId || val.moneyRequestId)) {
           ctx.addIssue({
-            path: ['id'],
+            path: ["id"],
             code: z.ZodIssueCode.custom,
             message:
-              'La transacción debe estar relacionada con un desembolso, retorno o una solicitud.',
+              "La transacción debe estar relacionada con un desembolso, retorno o una solicitud.",
           });
         }
       })
@@ -91,16 +92,17 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   id: 0,
   createdAt: new Date(),
   updatedAt: null,
-  accountId: '',
+  accountId: "",
   updatedById: null,
   transactions: [
     {
-      currency: 'PYG',
+      currency: "PYG",
       transactionAmount: new Prisma.Decimal(0),
-      moneyAccountId: '',
+      moneyAccountId: "",
     },
   ],
-  transactionType: 'MONEY_ACCOUNT',
+  transactionType: "MONEY_ACCOUNT",
+  moneyAccountOffsetId: null,
   openingBalance: new Prisma.Decimal(0),
   currentBalance: new Prisma.Decimal(0),
   moneyRequestId: null,
@@ -112,7 +114,7 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   costCategoryId: null,
   projectId: null,
   isCancellation: false,
-  searchableImage: { url: '', imageName: '' },
+  searchableImage: { url: "", imageName: "" },
   expenseReportId: null,
 };
 export const transactionMock: (
@@ -135,7 +137,7 @@ export const transactionMock: (
       {
         transactionAmount: amountRequested,
         //@ts-ignore
-        moneyAccountId: moneyAccOptions(currency)[0]?.value ?? '',
+        moneyAccountId: moneyAccOptions(currency)[0]?.value ?? "",
         currency,
       },
     ],
@@ -144,6 +146,7 @@ export const transactionMock: (
     updatedAt: null,
     accountId,
     updatedById: null,
+    moneyAccountOffsetId: null,
     openingBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
     currentBalance: new Prisma.Decimal(0),
     isCancellation: false,
@@ -156,9 +159,9 @@ export const transactionMock: (
     membershipPaymentRequestId: null,
     costCategoryId,
     expenseReportId: null,
-    transactionType: 'MONEY_ACCOUNT',
+    transactionType: "MONEY_ACCOUNT",
     searchableImage: {
-      url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+      url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
       imageName,
     },
   };

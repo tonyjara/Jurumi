@@ -10,10 +10,10 @@ import {
 import { handleOrderBy } from "./utils/Sorting.routeUtils";
 import prisma from "@/server/db/client";
 import { imbursementCreateUtils } from "./utils/Imbursement.routeUtils";
-import { cancelTransactions } from "./utils/Cancelations.routeUtils";
+import { cancelTransactionsAndRevertBalance } from "./utils/Cancelations.routeUtils";
 
 const {
-  createMoneyAccountTx,
+  createMoneyAccImbursementTx,
   createProjectImbursementTx,
   createInvoiceFromOrg,
   createImbursement,
@@ -101,7 +101,7 @@ export const imbursementsRouter = router({
           ...props,
         });
 
-        await createMoneyAccountTx({
+        await createMoneyAccImbursementTx({
           ...props,
           imbursement,
         });
@@ -204,21 +204,15 @@ export const imbursementsRouter = router({
     .mutation(async ({ input }) => {
       return await prisma.$transaction(async (txCtx) => {
         // Create a transaction that reverses the previous one and reference the new and old one with each other.,
+        // Imbursements could have two transactions, one for the imbursement and another for project imbursement.
         const imbursement = await txCtx.imbursement.update({
           where: { id: input.id },
           data: { wasCancelled: true },
           include: { transactions: true },
         });
 
-        const tx = imbursement.transactions[0];
-        if (!tx) {
-          throw new TRPCError({
-            code: "PRECONDITION_FAILED",
-            message: "transaction not found",
-          });
-        }
-
-        await cancelTransactions({
+        //Cancel project imbursement
+        await cancelTransactionsAndRevertBalance({
           txCtx,
           transactions: imbursement.transactions,
         });

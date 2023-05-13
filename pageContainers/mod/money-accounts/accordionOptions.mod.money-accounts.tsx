@@ -1,28 +1,35 @@
-import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
-import { trpcClient } from '@/lib/utils/trpcClient';
+import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import { trpcClient } from "@/lib/utils/trpcClient";
 import {
   Menu,
   MenuButton,
   IconButton,
   MenuList,
   MenuItem,
-} from '@chakra-ui/react';
-import type { MoneyAccount } from '@prisma/client';
-import React from 'react';
-import { BsThreeDots } from 'react-icons/bs';
+} from "@chakra-ui/react";
+import type { MoneyAccount } from "@prisma/client";
+import React from "react";
+import { BsThreeDots } from "react-icons/bs";
+import type { MoneyAccWithTransactions } from "./MoneyAccountsPage.mod.money-accounts";
 
 const AccordionOptionsMoneyAccountsPage = ({
   setEditData,
   accountData,
+  onOffsetOpen,
+  setOffsetData,
 }: {
   setEditData: React.Dispatch<React.SetStateAction<MoneyAccount | null>>;
-  accountData: MoneyAccount;
+  accountData: MoneyAccWithTransactions;
+  onOffsetOpen: () => void;
+  setOffsetData: React.Dispatch<
+    React.SetStateAction<MoneyAccWithTransactions | null>
+  >;
 }) => {
   const context = trpcClient.useContext();
 
   const { mutate: deleteById } = trpcClient.moneyAcc.deleteById.useMutation(
     handleUseMutationAlerts({
-      successText: 'Se ha eliminado la cuenta!',
+      successText: "Se ha eliminado la cuenta!",
       callback: () => {
         context.transaction.invalidate();
         context.moneyAcc.invalidate();
@@ -47,6 +54,15 @@ const AccordionOptionsMoneyAccountsPage = ({
             }}
           >
             Editar
+          </MenuItem>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setOffsetData(accountData);
+              onOffsetOpen();
+            }}
+          >
+            Generar Ajuste
           </MenuItem>
           <MenuItem
             onClick={(e) => {
