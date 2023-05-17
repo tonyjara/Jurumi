@@ -6,16 +6,16 @@ import {
   FormErrorMessage,
   InputGroup,
   InputLeftElement,
-} from '@chakra-ui/react';
-import React from 'react';
+} from "@chakra-ui/react";
+import React from "react";
 import type {
   Control,
   FieldErrorsImpl,
   FieldValues,
   Path,
-} from 'react-hook-form';
-import { Controller } from 'react-hook-form';
-import { NumericFormat } from 'react-number-format';
+} from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { NumericFormat } from "react-number-format";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -42,10 +42,11 @@ const FormControlledNumberInput = <T extends FieldValues>({
   prefix,
   hidden,
   disable,
+  maxLength,
 }: InputProps<T>) => {
   return (
-    <FormControl display={hidden ? 'none' : 'block'} isInvalid={!!errors[name]}>
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+    <FormControl display={hidden ? "none" : "block"} isInvalid={!!errors[name]}>
+      <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <Controller
@@ -54,11 +55,12 @@ const FormControlledNumberInput = <T extends FieldValues>({
         render={({ field }) => (
           <InputGroup>
             {inputLeft && (
-              <InputLeftElement pointerEvents={'none'}>
+              <InputLeftElement pointerEvents={"none"}>
                 {inputLeft}
               </InputLeftElement>
             )}
             <NumericFormat
+              maxLength={maxLength}
               value={field.value}
               thousandSeparator=","
               decimalScale={2}
@@ -70,7 +72,7 @@ const FormControlledNumberInput = <T extends FieldValues>({
                 e.target.select();
               }}
               customInput={Input}
-              borderColor={'gray.300'}
+              borderColor={"gray.300"}
               disabled={disable}
             />
 
@@ -79,7 +81,7 @@ const FormControlledNumberInput = <T extends FieldValues>({
         )}
       />
       {!errors[name] ? (
-        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
         //@ts-ignore
         <FormErrorMessage>{errors[name].message}</FormErrorMessage>

@@ -15,7 +15,7 @@ model Account {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
   email       String    @unique
-  displayName String    @unique
+  displayName String
   password    String
   role        Role      @default(USER)
   isVerified  Boolean   @default(false)
@@ -43,6 +43,7 @@ model Account {
   notifications            Notifications[]
   passwordRecoveryLinks    PasswordRecoveryLinks[]
   moneyAccountOffset       MoneyAccountOffset[]
+  supportTickets           SupportTicket[]
 }
 
 model Membership {
@@ -89,27 +90,30 @@ model MembershipPaymentRequest {
 }
 
 model BecomeMemberRequest {
-  id                    String                    @id @default(cuid())
-  createdAt             DateTime                  @default(now())
-  updatedAt             DateTime?                 @updatedAt
-  fullName              String
-  cedula                String                    @unique
-  phoneNumber           String
-  email                 String                    @unique
-  birthDate             DateTime
-  nationality           String
-  address               String
-  occupation            String
-  areaOfWork            String
-  company               String
-  currentRole           String
-  workPhone             String
-  professionalReference String
-  requestReason         String
-  howCanYouContribute   String
-  referenceMemberName   String
-  agreesToOrgTerms      Boolean
-  status                BecomeMemberRequestStatus
+  id          String                    @id @default(cuid())
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime?                 @updatedAt
+  fullName    String
+  documentId  String // cedula o pasaporte                       @unique
+  phoneNumber String
+  email       String                    @unique
+  birthDate   DateTime
+  nationality String
+  address     String
+  occupation  String
+  // areaOfWork            String
+  // company               String
+  // currentRole           String
+  // workPhone             String
+  // professionalReference String
+  // requestReason         String
+  // howCanYouContribute   String
+  // referenceMemberName   String
+  // agreesToOrgTerms      Boolean
+  status      BecomeMemberRequestStatus
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
 model NotificationSettings {
@@ -207,6 +211,36 @@ model Organization {
   searchableImageId        String?
   imageLogo                searchableImage?           @relation(fields: [searchableImageId], references: [id])
   membershipPaymentRequest MembershipPaymentRequest[]
+  becomeMemberRequests     BecomeMemberRequest[]
+  OrgMembershipPreferences OrgMembershipPreferences?
+}
+
+model OrgMembershipPreferences {
+  id                                  String    @id @default(cuid())
+  createdAt                           DateTime  @default(now())
+  updatedAt                           DateTime? @updatedAt
+  membershipApprovalEmail             String
+  supportTicketsEmail                 String
+  becomeMemberRequestReceivedMessage  String
+  becomeMemberRequestRejectionMessage String
+  becomeMemberRequestAcceptedMessage  String
+  bankAccountTransferData             String
+
+  orgId String       @unique
+  org   Organization @relation(fields: [orgId], references: [id])
+}
+
+model SupportTicket {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  title           String
+  message         String
+  supportImageUrl String
+  supportImageId  String
+
+  accountId String
+  account   Account @relation(fields: [accountId], references: [id])
 }
 
 model OrganizationMember {
@@ -472,13 +506,13 @@ model ExpenseReturn {
 }
 
 model MoneyAccountOffset {
-  id              String    @id @default(cuid())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime? @updatedAt
-  wasCancelled    Boolean   @default(false)
-  currency        Currency
-  offsettedAmount Decimal   @default(0) @db.Decimal(19, 4)
-  previousBalance Decimal  @default(0) @db.Decimal(19, 4)
+  id                  String    @id @default(cuid())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime? @updatedAt
+  wasCancelled        Boolean   @default(false)
+  currency            Currency
+  offsettedAmount     Decimal   @default(0) @db.Decimal(19, 4)
+  previousBalance     Decimal   @default(0) @db.Decimal(19, 4)
   offsetJustification String
 
   moneyAccountId String
@@ -527,7 +561,7 @@ model Transaction {
   membership                 Membership?               @relation(fields: [membershipId], references: [id])
   membershipPaymentRequestId String?
   membershipPaymentRequest   MembershipPaymentRequest? @relation(fields: [membershipPaymentRequestId], references: [id])
-  moneyAccountOffsetId       String?                   
+  moneyAccountOffsetId       String?
   moneyAccountOffset         MoneyAccountOffset?       @relation(fields: [moneyAccountOffsetId], references: [id])
 }
 

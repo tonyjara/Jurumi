@@ -3,6 +3,7 @@ declare global {
     interface ProcessEnv {
       //PUBLIC
       NEXT_PUBLIC_WEB_URL: string;
+      NEXT_PUBLIC_DEFAULT_ORG_ID: string;
       //AUTH
       NEXTAUTH_SECRET: string;
       NEXTAUTH_URL: string;

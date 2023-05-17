@@ -10,6 +10,7 @@ export const galleryRouter = router({
       z.object({
         pageIndex: z.number().nullish(),
         pageSize: z.number().min(1).max(100).nullish(),
+        facturaNumber: z.string(),
       })
     )
     .query(async ({ input }) => {
@@ -20,6 +21,10 @@ export const galleryRouter = router({
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: { createdAt: "desc" },
+        where:
+          input.facturaNumber.length > 0
+            ? { facturaNumber: { startsWith: input.facturaNumber } }
+            : undefined,
       });
     }),
   count: adminModObserverProcedure.query(async () => {

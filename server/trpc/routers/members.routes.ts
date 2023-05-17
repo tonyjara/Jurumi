@@ -1,13 +1,15 @@
 import {
   adminModObserverProcedure,
   adminModProcedure,
+  publicProcedure,
   router,
-} from '../initTrpc';
-import { TRPCError } from '@trpc/server';
-import { z } from 'zod';
-import prisma from '@/server/db/client';
-import { validateMember } from '@/lib/validations/member.validate';
-import { handleOrderBy } from './utils/Sorting.routeUtils';
+} from "../initTrpc";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import prisma from "@/server/db/client";
+import { validateMember } from "@/lib/validations/member.validate";
+import { handleOrderBy } from "./utils/Sorting.routeUtils";
+import { validateBecomeMemberRequest } from "@/lib/validations/becomeMember.validate";
 
 export const membersRouter = router({
   count: adminModObserverProcedure.query(async () => {
@@ -35,6 +37,32 @@ export const membersRouter = router({
         include: { account: true },
       });
     }),
+  createMemberRequest: publicProcedure
+    .input(validateBecomeMemberRequest)
+    .mutation(async ({ input: i }) => {
+      // Reject if preferences not set
+
+      const req = await prisma.becomeMemberRequest.create({
+        data: {
+          fullName: i.fullName,
+          documentId: i.documentId,
+          phoneNumber: i.phoneNumber,
+          email: i.email,
+          birthDate: i.birthDate,
+          nationality: i.nationality,
+          address: i.address,
+          occupation: i.occupation,
+          status: "PENDING",
+          organizationId: i.organizationId,
+        },
+      });
+
+      // Send email to consejo
+
+      // Send confirmation email to user
+
+      return req;
+    }),
   create: adminModProcedure
     .input(validateMember)
     .mutation(async ({ ctx, input }) => {
@@ -51,8 +79,8 @@ export const membersRouter = router({
 
       if (userWithSameEmail?.membership) {
         throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'Membership already exists',
+          code: "UNAUTHORIZED",
+          message: "Membership already exists",
         });
       }
 
@@ -67,7 +95,7 @@ export const membersRouter = router({
                 memberSince: input.memberSince,
                 expirationDate: input.expirationDate,
                 initialBalance: input.initialBalance,
-                currency: 'PYG',
+                currency: "PYG",
                 memberType: input.memberType,
               },
             },
@@ -79,11 +107,11 @@ export const membersRouter = router({
         await prisma.account.create({
           data: {
             displayName: input.displayName,
-            role: 'MEMBER',
+            role: "MEMBER",
             email: input.email,
             isVerified: false,
             active: true,
-            password: '',
+            password: "",
             preferences: { create: { selectedOrganization: orgId } },
             membership: {
               create: {
@@ -91,7 +119,7 @@ export const membersRouter = router({
                 memberSince: input.memberSince,
                 expirationDate: input.expirationDate,
                 initialBalance: input.initialBalance,
-                currency: 'PYG',
+                currency: "PYG",
                 memberType: input.memberType,
               },
             },

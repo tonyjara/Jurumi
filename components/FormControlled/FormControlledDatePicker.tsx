@@ -1,6 +1,6 @@
-import 'react-day-picker/dist/style.css';
-import React, { useState, useEffect } from 'react';
-import es from 'date-fns/locale/es';
+import "react-day-picker/dist/style.css";
+import React, { useState, useEffect } from "react";
+import es from "date-fns/locale/es";
 
 import type {
   Control,
@@ -8,11 +8,11 @@ import type {
   FieldError,
   FieldValues,
   Path,
-} from 'react-hook-form';
-import { Controller, useWatch } from 'react-hook-form';
-import { DayPicker } from 'react-day-picker';
-import format from 'date-fns/format';
-import { isValid, parse } from 'date-fns';
+} from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
+import { DayPicker } from "react-day-picker";
+import format from "date-fns/format";
+import { isValid, parse } from "date-fns";
 import {
   Button,
   FormControl,
@@ -25,10 +25,11 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@chakra-ui/react';
+  useColorModeValue,
+} from "@chakra-ui/react";
 
-import { CalendarIcon } from '@chakra-ui/icons';
-import useDebounce from '@/lib/hooks/useDebounce';
+import { CalendarIcon } from "@chakra-ui/icons";
+import useDebounce from "@/lib/hooks/useDebounce";
 
 interface controllerProps<T extends FieldValues> {
   control: Control<T>;
@@ -47,8 +48,9 @@ const FormControlledDatePicker = <T extends FieldValues>(
   const { name, control, errors, label, hidden, helperText, error } = props;
   const [selectedDate, setSelectedDate] = React.useState<Date>();
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>("");
 
+  const borderColor = useColorModeValue("gray.300", "white");
   const watchValue = useWatch({ control, name });
 
   const debouncedWatchValue = useDebounce(watchValue, 500);
@@ -57,7 +59,7 @@ const FormControlledDatePicker = <T extends FieldValues>(
   useEffect(() => {
     if (debouncedWatchValue) {
       setSelectedDate(debouncedWatchValue);
-      const date = format(debouncedWatchValue, 'dd-MM-y');
+      const date = format(debouncedWatchValue, "dd-MM-y");
       setInputValue(date);
     }
 
@@ -68,7 +70,7 @@ const FormControlledDatePicker = <T extends FieldValues>(
   const handleInputChangeWithField = (e: any, onChange: any) => {
     open && setOpen(false);
     setInputValue(e.currentTarget.value);
-    const date = parse(e.currentTarget.value, 'dd-MM-y', new Date());
+    const date = parse(e.currentTarget.value, "dd-MM-y", new Date());
     if (isValid(date)) {
       setSelectedDate(date);
       onChange(date);
@@ -81,20 +83,20 @@ const FormControlledDatePicker = <T extends FieldValues>(
     setSelectedDate(date);
 
     if (date) {
-      setInputValue(format(date, 'dd-MM-y'));
+      setInputValue(format(date, "dd-MM-y"));
       // closePopper();
       setOpen(false);
     } else {
-      setInputValue('');
+      setInputValue("");
     }
   };
 
   return (
     <FormControl
-      display={hidden ? 'none' : 'block'}
+      display={hidden ? "none" : "block"}
       isInvalid={!!errors[name] || !!error?.length}
     >
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <Controller
@@ -108,14 +110,15 @@ const FormControlledDatePicker = <T extends FieldValues>(
                   <Input
                     onClick={() => open && setOpen(false)}
                     type="text"
-                    placeholder={format(new Date(), 'dd-MM-y')}
+                    placeholder={format(new Date(), "dd-MM-y")}
                     value={inputValue}
                     onChange={(e) =>
                       handleInputChangeWithField(e, field.onChange)
                     }
+                    borderColor={borderColor}
                   />
                   <InputRightElement
-                    cursor={'pointer'}
+                    cursor={"pointer"}
                     onClick={() => setOpen(true)}
                   >
                     <CalendarIcon />
@@ -137,14 +140,14 @@ const FormControlledDatePicker = <T extends FieldValues>(
                 />
                 <Button onClick={() => setOpen(false)}>Cerrar</Button>
               </PopoverContent>
-              {<div style={{ color: 'red' }}>{errors[name]?.message}</div>}
+              {<div style={{ color: "red" }}>{errors[name]?.message}</div>}
             </Popover>
           );
         }}
       />
       {!!error?.length && <FormErrorMessage>{error}</FormErrorMessage>}
       {!errors[name] ? (
-        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
         //@ts-ignore
         <FormErrorMessage>{errors[name]?.message}</FormErrorMessage>

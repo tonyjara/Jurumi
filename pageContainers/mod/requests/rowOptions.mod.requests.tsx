@@ -61,6 +61,7 @@ const RowOptionsModRequests = ({
     })
   );
   const isAccepted = x.status === "ACCEPTED";
+  const isCancelled = x.wasCancelled;
   const isFullyExecuted = reduceExpenseReports(x.expenseReports)
     .add(reduceExpenseReturns(x.expenseReturns))
     .equals(x.amountRequested);
@@ -76,7 +77,9 @@ const RowOptionsModRequests = ({
   return (
     <div>
       <MenuItem
-        isDisabled={(needsApproval && !hasBeenApproved) || isAccepted}
+        isDisabled={
+          (needsApproval && !hasBeenApproved) || isAccepted || isCancelled
+        }
         onClick={() => {
           router.push({
             pathname: "/mod/transactions/create",
@@ -88,7 +91,7 @@ const RowOptionsModRequests = ({
         {needsApproval && !hasBeenApproved && "( Necesita aprobación )"}
       </MenuItem>
       <MenuItem
-        isDisabled={isAccepted}
+        isDisabled={isAccepted || isCancelled}
         onClick={() => {
           const rejected = cloneDeep(x);
           rejected.status = "REJECTED";
@@ -99,7 +102,7 @@ const RowOptionsModRequests = ({
         Rechazar
       </MenuItem>
       <MenuItem
-        isDisabled={!isAdmin && isAccepted}
+        isDisabled={(!isAdmin && isAccepted) || isCancelled}
         onClick={() => {
           setEditMoneyRequest(x);
           onEditOpen();
@@ -134,6 +137,7 @@ const RowOptionsModRequests = ({
         Generar devolución
       </MenuItem>
       <MenuItem
+        isDisabled={!x.transactions.length}
         onClick={() => {
           router.push({
             pathname: "/mod/transactions",
@@ -145,6 +149,7 @@ const RowOptionsModRequests = ({
       </MenuItem>
 
       <MenuItem
+        isDisabled={!x.expenseReports.length}
         onClick={() => {
           router.push({
             pathname: "/mod/expense-reports",
