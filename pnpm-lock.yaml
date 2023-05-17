@@ -121,6 +121,9 @@ dependencies:
   env-cmd:
     specifier: 10.1.0
     version: 10.1.0
+  envsafe:
+    specifier: ^2.0.3
+    version: 2.0.3
   firebase:
     specifier: 9.17.1
     version: 9.17.1
@@ -200,8 +203,8 @@ dependencies:
     specifier: 1.2.3
     version: 1.2.3(react@18.2.0)
   react-number-format:
-    specifier: 5.1.3
-    version: 5.1.3(react-dom@18.2.0)(react@18.2.0)
+    specifier: 5.2.0
+    version: 5.2.0(react-dom@18.2.0)(react@18.2.0)
   react-query:
     specifier: 3.39.3
     version: 3.39.3(react-dom@18.2.0)(react@18.2.0)
@@ -5590,6 +5593,11 @@ packages:
       cross-spawn: 7.0.3
     dev: false
 
+  /envsafe@2.0.3:
+    resolution: {integrity: sha512-51lek8h5btjXhXUDW//Pno7HPydM1WQzltOb1/ONRKdwB2QkfAURnN4Qn0cJ5LzGvX2Km1ReR2O3K3Bqq9sBMg==}
+    engines: {node: '>=10'}
+    dev: false
+
   /error-ex@1.3.2:
     resolution: {integrity: sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==}
     dependencies:
@@ -8722,11 +8730,11 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-number-format@5.1.3(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-N4XVBXDEIu9qVZIIwKTfCwhPh1fWx/i50I6XnMLsckj7OHi7A85+AMCzUmMCpx05usVVee14Rr/P7MUY0Pp2Kg==}
+  /react-number-format@5.2.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-GEj2U/1eAbVe8rq0ky1jdKwsCiMGygwPcPnm1Y5ADSbl8NIfK9Mbzje5TdG1QOu1m7cr7PM1irN5fi/p2FGghQ==}
     peerDependencies:
-      react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^18.0.0
-      react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^18.0.0
+      react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
       prop-types: 15.8.1
       react: 18.2.0

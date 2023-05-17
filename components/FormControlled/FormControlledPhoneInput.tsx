@@ -1,4 +1,4 @@
-import { PhoneIcon } from '@chakra-ui/icons';
+import { PhoneIcon } from "@chakra-ui/icons";
 import {
   FormControl,
   FormLabel,
@@ -7,11 +7,11 @@ import {
   FormErrorMessage,
   InputGroup,
   InputRightElement,
-} from '@chakra-ui/react';
-import React from 'react';
-import type { Control, FieldErrors, FieldValues, Path } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
-import { PatternFormat } from 'react-number-format';
+} from "@chakra-ui/react";
+import React from "react";
+import type { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { PatternFormat } from "react-number-format";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -31,7 +31,7 @@ const FormControlledPhoneInput = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name]}>
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <Controller
@@ -39,17 +39,17 @@ const FormControlledPhoneInput = <T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <InputGroup>
-            <InputRightElement pointerEvents={'none'}>
+            <InputRightElement pointerEvents={"none"}>
               <PhoneIcon />
             </InputRightElement>
 
             <PatternFormat
-              borderColor={'gray.300'}
+              borderColor={"gray.300"}
               value={field.value}
               customInput={Input}
-              format={'#### ### ###'}
-              mask="_"
-              allowEmptyFormatting
+              format={"#### ### ###"}
+              /* mask="_" */
+              /* allowEmptyFormatting */
               onValueChange={({ formattedValue }: any) => {
                 field.onChange(formattedValue);
               }}
@@ -58,7 +58,9 @@ const FormControlledPhoneInput = <T extends FieldValues>({
         )}
       />
       {!errors[name] ? (
-        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        <FormHelperText color={"gray.500"}>
+          {helperText ?? "Ej: 0981 123 123"}
+        </FormHelperText>
       ) : (
         //@ts-ignore
         <FormErrorMessage>{errors[name].message}</FormErrorMessage>

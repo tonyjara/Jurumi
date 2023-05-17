@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
-import type { Account } from 'next-auth';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import type { Account } from "next-auth";
 
 export const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL;
 
@@ -14,20 +14,20 @@ export async function middleware(req: NextRequest) {
   })) as { user?: Account };
 
   const isAdminOrModOrObserver =
-    session?.user?.role === 'ADMIN' ||
-    session?.user?.role === 'MODERATOR' ||
-    session?.user?.role === 'OBSERVER';
+    session?.user?.role === "ADMIN" ||
+    session?.user?.role === "MODERATOR" ||
+    session?.user?.role === "OBSERVER";
 
-  const isAdmin = session?.user?.role === 'ADMIN';
+  const isAdmin = session?.user?.role === "ADMIN";
 
-  if (req.nextUrl.pathname.startsWith('/home')) {
-    if (!session) return redirect('/');
+  if (req.nextUrl.pathname.startsWith("/home")) {
+    if (!session) return redirect("/");
   }
-  if (req.nextUrl.pathname.startsWith('/mod')) {
-    if (!isAdminOrModOrObserver) return redirect('/home');
+  if (req.nextUrl.pathname.startsWith("/mod")) {
+    if (!isAdminOrModOrObserver) return redirect("/home");
   }
-  if (req.nextUrl.pathname.startsWith('/admin')) {
-    if (!isAdmin) return redirect('/home');
+  if (req.nextUrl.pathname.startsWith("/admin")) {
+    if (!isAdmin) return redirect("/home");
   }
 
   return;

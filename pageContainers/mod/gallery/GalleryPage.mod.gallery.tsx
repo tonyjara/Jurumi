@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import React, { useState } from "react";
 
 const GalleryPage = () => {
+  const [searchValue, setSearchValue] = useState<string>("");
   const [clickedImage, setClickedImage] = useState<searchableImage | null>(
     null
   );
@@ -27,6 +28,7 @@ const GalleryPage = () => {
   const { data } = trpcClient.gallery.getManyImages.useQuery({
     pageIndex,
     pageSize,
+    facturaNumber: searchValue,
   });
   data?.map((x) => {
     x.accountId;
@@ -38,7 +40,14 @@ const GalleryPage = () => {
     <Card overflow={"auto"}>
       <CardBody>
         <InputGroup mb={"10px"}>
-          <Input maxW={"300px"} placeholder="Buscar por texto" />
+          <Input
+            value={searchValue}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
+            maxW={"300px"}
+            placeholder="Buscar por número de factura"
+          />
         </InputGroup>
         <SimpleGrid w="80vw" columns={8} minChildWidth={"180px"} spacing={6}>
           {data?.map((x, i) => {
