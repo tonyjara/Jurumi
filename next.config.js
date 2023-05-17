@@ -4,7 +4,7 @@ const { i18n } = require("./next-i18next.config");
 const nextConfig = {
   i18n,
   reactStrictMode: true,
-  swcMinify: false,
+  swcMinify: true,
   // output: 'standalone', only for docker deploy
   experimental: {
     swcPlugins: [
