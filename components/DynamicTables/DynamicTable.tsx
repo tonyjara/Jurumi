@@ -130,6 +130,8 @@ const DynamicTable = <T extends object>({
       css={customScrollbar}
       overflow={"auto"}
       backgroundColor={backgroundColor}
+      /* maxH={"600px"} */
+      maxH="calc(100vh - 80px)"
     >
       {!noHeader && (
         <CardHeader w="100%">
@@ -148,7 +150,6 @@ const DynamicTable = <T extends object>({
           </Flex>
         </CardHeader>
       )}
-
       <Table
         css={customScrollbar}
         overflowX={"scroll"}

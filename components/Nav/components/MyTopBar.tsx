@@ -54,16 +54,16 @@ const MyTopBar = ({ onOpen, authenticated }: MobileProps) => {
             <Button variant={"ghost"}>Asociarse</Button>
           </Link>
         )}
+        {authenticated && (
+          <IconButton
+            display={{ base: "flex", md: "none" }}
+            onClick={onOpen}
+            variant="outline"
+            aria-label="open menu"
+            icon={<FiMenu />}
+          />
+        )}
       </div>
-      {authenticated && (
-        <IconButton
-          display={{ base: "flex", md: "none" }}
-          onClick={onOpen}
-          variant="outline"
-          aria-label="open menu"
-          icon={<FiMenu />}
-        />
-      )}
       <Box>
         <NavbarProfileSection />
       </Box>

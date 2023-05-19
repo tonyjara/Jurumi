@@ -1,34 +1,41 @@
-import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import { Divider, Flex, Text, VStack } from '@chakra-ui/react';
-import { Prisma } from '@prisma/client';
-import { useSession } from 'next-auth/react';
-import React from 'react';
+import { decimalFormat } from "@/lib/utils/DecimalHelpers";
+import { Divider, Flex, Text, VStack } from "@chakra-ui/react";
+import { Prisma } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import React from "react";
 import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
+  UseFormReset,
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import {
   currencyOptions,
   moneyRequestStatusOptions,
   moneyRequestTypeOptions,
-} from '../../lib/utils/SelectOptions';
-import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormMoneyRequest } from '../../lib/validations/moneyRequest.validate';
-import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
-import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
-import FormControlledSelect from '../FormControlled/FormControlledSelect';
-import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
-import FormControlledText from '../FormControlled/FormControlledText';
-import ReimbursementOrderImagesForm from './ReimbursementOrderImages.form';
+} from "../../lib/utils/SelectOptions";
+import { translateCurrencyPrefix } from "../../lib/utils/TranslatedEnums";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import {
+  FormMoneyRequest,
+  MockMoneyRequest,
+} from "../../lib/validations/moneyRequest.validate";
+import SeedButton from "../DevTools/SeedButton";
+import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
+import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
+import FormControlledSelect from "../FormControlled/FormControlledSelect";
+import FormControlledTaxPayerId from "../FormControlled/FormControlledTaxPayerId";
+import FormControlledText from "../FormControlled/FormControlledText";
+import ReimbursementOrderImagesForm from "./ReimbursementOrderImages.form";
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
   setValue: UseFormSetValue<T>;
   isEdit?: boolean;
+  orgId: string | null;
+  reset: UseFormReset<T>;
 }
 
 const MoneyRequestForm = ({
@@ -36,30 +43,32 @@ const MoneyRequestForm = ({
   errors,
   setValue,
   isEdit,
+  orgId,
+  reset,
 }: formProps<FormMoneyRequest>) => {
   const { data: session } = useSession();
   const user = session?.user;
-  const isAdminOrMod = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
+  const isAdminOrMod = user?.role === "ADMIN" || user?.role === "MODERATOR";
 
-  const currency = useWatch({ control, name: 'currency' });
-  const status = useWatch({ control, name: 'status' });
-  const projectId = useWatch({ control, name: 'projectId' });
-  const moneyRequestType = useWatch({ control, name: 'moneyRequestType' });
-  const searchableImages = useWatch({ control, name: 'searchableImages' });
+  const currency = useWatch({ control, name: "currency" });
+  const status = useWatch({ control, name: "status" });
+  const projectId = useWatch({ control, name: "projectId" });
+  const moneyRequestType = useWatch({ control, name: "moneyRequestType" });
+  const searchableImages = useWatch({ control, name: "searchableImages" });
 
   const totalInPYG = decimalFormat(
     searchableImages.reduce((acc, val) => {
-      if (val.currency !== 'PYG') return acc;
+      if (val.currency !== "PYG") return acc;
       return acc.add(val.amount);
     }, new Prisma.Decimal(0)),
-    'PYG'
+    "PYG"
   );
   const totalInUSD = decimalFormat(
     searchableImages.reduce((acc, val) => {
-      if (val.currency !== 'USD') return acc;
+      if (val.currency !== "USD") return acc;
       return acc.add(val.amount);
     }, new Prisma.Decimal(0)),
-    'USD'
+    "USD"
   );
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
@@ -75,7 +84,7 @@ const MoneyRequestForm = ({
   }));
 
   const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
-    { projectId: projectId ?? '' },
+    { projectId: projectId ?? "" },
     { enabled: !!projectId?.length }
   );
 
@@ -87,6 +96,20 @@ const MoneyRequestForm = ({
 
   return (
     <VStack spacing={5}>
+      {orgId && (
+        <SeedButton
+          reset={reset}
+          mock={() => {
+            const randomProject =
+              projects?.[Math.floor(Math.random() * projects.length)];
+            return MockMoneyRequest({
+              organizationId: orgId,
+              moneyRequestType: "FUND_REQUEST",
+              projectId: randomProject?.id ?? null,
+            });
+          }}
+        />
+      )}
       <FormControlledSelect
         control={control}
         errors={errors}
@@ -95,8 +118,8 @@ const MoneyRequestForm = ({
         disable={isEdit}
         options={moneyRequestTypeOptions ?? []}
       />
-      {(moneyRequestType === 'MONEY_ORDER' ||
-        moneyRequestType === 'REIMBURSMENT_ORDER') && (
+      {(moneyRequestType === "MONEY_ORDER" ||
+        moneyRequestType === "REIMBURSMENT_ORDER") && (
         <>
           <FormControlledTaxPayerId
             label="A la orden de:"
@@ -108,7 +131,7 @@ const MoneyRequestForm = ({
             helperText="Ingresar ruc o C.I."
             showBankInfo={true}
           />
-          {moneyRequestType === 'REIMBURSMENT_ORDER' && (
+          {moneyRequestType === "REIMBURSMENT_ORDER" && (
             <>
               <ReimbursementOrderImagesForm
                 control={control}
@@ -116,12 +139,12 @@ const MoneyRequestForm = ({
                 setValue={setValue}
                 isEdit={isEdit}
               />
-              <Flex flexDir={'column'} justifyContent={'space-between'}>
-                {currency === 'PYG' && (
-                  <Text fontSize={'xl'}>Total en PYG: {totalInPYG} </Text>
+              <Flex flexDir={"column"} justifyContent={"space-between"}>
+                {currency === "PYG" && (
+                  <Text fontSize={"xl"}>Total en PYG: {totalInPYG} </Text>
                 )}
-                {currency === 'USD' && (
-                  <Text fontSize={'xl'}>Total en USD: {totalInUSD} </Text>
+                {currency === "USD" && (
+                  <Text fontSize={"xl"}>Total en USD: {totalInUSD} </Text>
                 )}
               </Flex>
             </>
@@ -135,7 +158,7 @@ const MoneyRequestForm = ({
         isTextArea={true}
         label="Concepto de la solicitud"
       />
-      {moneyRequestType !== 'REIMBURSMENT_ORDER' && (
+      {moneyRequestType !== "REIMBURSMENT_ORDER" && (
         <>
           <FormControlledRadioButtons
             control={control}
@@ -147,7 +170,7 @@ const MoneyRequestForm = ({
           <FormControlledMoneyInput
             control={control}
             errors={errors}
-            name={'amountRequested'}
+            name={"amountRequested"}
             label="Monto solicitado"
             prefix={translateCurrencyPrefix(currency)}
             currency={currency}
@@ -164,11 +187,11 @@ const MoneyRequestForm = ({
         options={projectOptions ?? []}
         isClearable
       />
-      {moneyRequestType !== 'FUND_REQUEST' && costCatOptions()?.length && (
+      {moneyRequestType !== "FUND_REQUEST" && costCatOptions()?.length && (
         <FormControlledSelect
           control={control}
           errors={errors}
-          name={'costCategoryId'}
+          name={"costCategoryId"}
           label="Linea presupuestaria"
           options={costCatOptions() ?? []}
           isClearable
@@ -195,8 +218,8 @@ const MoneyRequestForm = ({
             name="organizationId"
             label="Seleccione una organización"
             options={orgs ?? []}
-            optionLabel={'displayName'}
-            optionValue={'id'}
+            optionLabel={"displayName"}
+            optionValue={"id"}
             isClearable
           />
           <FormControlledRadioButtons
@@ -206,7 +229,7 @@ const MoneyRequestForm = ({
             label="Estado de la soliciutd"
             options={moneyRequestStatusOptions}
           />
-          {status === 'REJECTED' && (
+          {status === "REJECTED" && (
             <FormControlledText
               control={control}
               errors={errors}

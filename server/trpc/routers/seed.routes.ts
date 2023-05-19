@@ -2,7 +2,6 @@ import { z } from "zod";
 import { adminProcedure, router } from "../initTrpc";
 import prisma from "@/server/db/client";
 import {
-  expenseReportMock,
   expenseReturnMock,
   imbursementMock,
   moneyAccountOffsetMock,
@@ -11,7 +10,8 @@ import {
 import { appRouter } from "./router";
 import { createSeedTransaction } from "./utils/Seed.routeUtils";
 import { TRPCError } from "@trpc/server";
-import { moneyRequestMock } from "@/lib/validations/moneyRequest.validate";
+import { MockExpenseReport } from "@/lib/validations/expenseReport.validate";
+import { MockMoneyRequest } from "@/lib/validations/moneyRequest.validate";
 
 export const seedRouter = router({
   createMoneyRequests: adminProcedure
@@ -29,11 +29,11 @@ export const seedRouter = router({
       if (!project) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const mock = moneyRequestMock({
+        const mock = MockMoneyRequest({
           organizationId: prefs.selectedOrganization,
           moneyRequestType: "FUND_REQUEST",
+          projectId: project.id,
         });
-        mock.projectId = project.id;
         await caller.moneyRequest.create(mock);
       }
     }),
@@ -58,11 +58,11 @@ export const seedRouter = router({
       if (!moneyAcc) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const requestMock = moneyRequestMock({
+        const requestMock = MockMoneyRequest({
           organizationId: prefs.selectedOrganization,
           moneyRequestType: "FUND_REQUEST",
+          projectId: project.id,
         });
-        requestMock.projectId = project.id;
 
         requestMock.status = "ACCEPTED";
 
@@ -102,11 +102,11 @@ export const seedRouter = router({
       if (!moneyAcc) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const requestMock = moneyRequestMock({
+        const requestMock = MockMoneyRequest({
           organizationId: prefs.selectedOrganization,
           moneyRequestType: "REIMBURSMENT_ORDER",
+          projectId: project.id,
         });
-        requestMock.projectId = project.id;
         requestMock.costCategoryId = project.costCategories[0].id;
         requestMock.status = "ACCEPTED";
 
@@ -147,12 +147,12 @@ export const seedRouter = router({
       if (!moneyAcc) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const requestMock = moneyRequestMock({
+        const requestMock = MockMoneyRequest({
           organizationId: prefs.selectedOrganization,
           moneyRequestType: "FUND_REQUEST",
+          projectId: project.id,
         });
 
-        requestMock.projectId = project.id;
         requestMock.status = "ACCEPTED";
 
         const req = await caller.moneyRequest.create(requestMock);
@@ -170,7 +170,7 @@ export const seedRouter = router({
           caller,
         });
 
-        const expenseRepMock = expenseReportMock({
+        const expenseRepMock = MockExpenseReport({
           moneyReqId: req.id,
           projectId: req.projectId,
           costCategoryId: project.costCategories[0].id,
@@ -205,11 +205,11 @@ export const seedRouter = router({
       if (!moneyAcc) return;
 
       for (let x = 1; x <= input.multiplier; x++) {
-        const requestMock = moneyRequestMock({
+        const requestMock = MockMoneyRequest({
           organizationId: prefs.selectedOrganization,
           moneyRequestType: "FUND_REQUEST",
+          projectId: project.id,
         });
-        requestMock.projectId = project.id;
         requestMock.status = "ACCEPTED";
 
         const req = await caller.moneyRequest.create(requestMock);
@@ -227,7 +227,7 @@ export const seedRouter = router({
           caller,
         });
 
-        const expenseRepMock = expenseReportMock({
+        const expenseRepMock = MockExpenseReport({
           moneyReqId: req.id,
           projectId: req.projectId,
           costCategoryId: project.costCategories[0].id,
@@ -276,9 +276,10 @@ export const seedRouter = router({
         if (!moneyAcc) throw new Error("No money account");
 
         for (let x = 1; x <= input.multiplier; x++) {
-          const requestMock = moneyRequestMock({
+          const requestMock = MockMoneyRequest({
             organizationId: prefs.selectedOrganization,
             moneyRequestType: "FUND_REQUEST",
+            projectId: project.id,
           });
 
           const random = Math.floor(
@@ -288,7 +289,6 @@ export const seedRouter = router({
           if (!randomCostCatId) throw new Error("No cost category id");
           requestMock.costCategoryId = randomCostCatId;
 
-          requestMock.projectId = project.id;
           requestMock.status = "ACCEPTED";
 
           const req = await caller.moneyRequest.create(requestMock);
@@ -306,7 +306,7 @@ export const seedRouter = router({
             caller,
           });
 
-          const expenseRepMock = expenseReportMock({
+          const expenseRepMock = MockExpenseReport({
             moneyReqId: req.id,
             projectId: req.projectId,
             costCategoryId: randomCostCatId,

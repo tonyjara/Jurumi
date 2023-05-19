@@ -1,11 +1,11 @@
 // This component handles everythinf so that looking for a taxpayer from datospy or our own database is a smooth process.
 
-import { startCase } from '@/lib/utils/MyLodash';
+import { startCase } from "@/lib/utils/MyLodash";
 import {
   bankNameOptions,
   ownerDocTypeOptions,
-} from '@/lib/utils/SelectOptions';
-import { AddIcon, Search2Icon } from '@chakra-ui/icons';
+} from "@/lib/utils/SelectOptions";
+import { AddIcon, Search2Icon } from "@chakra-ui/icons";
 import {
   FormControl,
   FormLabel,
@@ -19,27 +19,27 @@ import {
   Divider,
   Box,
   Flex,
-} from '@chakra-ui/react';
-import type { TaxPayer, TaxPayerBankInfo } from '@prisma/client';
-import axios from 'axios';
-import type { DropdownIndicatorProps, GroupBase } from 'chakra-react-select';
-import { Select, components } from 'chakra-react-select';
-import React, { useEffect, useState } from 'react';
+} from "@chakra-ui/react";
+import type { TaxPayer, TaxPayerBankInfo } from "@prisma/client";
+import axios from "axios";
+import type { DropdownIndicatorProps, GroupBase } from "chakra-react-select";
+import { Select, components } from "chakra-react-select";
+import React, { useEffect, useState } from "react";
 import type {
   Control,
   ControllerRenderProps,
   FieldValues,
   Path,
   SetFieldValue,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
-import { AiOutlineMinusSquare } from 'react-icons/ai';
-import useDebounce from '../../lib/hooks/useDebounce';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import CreateTaxPayerModal from '../Modals/taxPayer.create.modal';
-import FormControlledSelect from './FormControlledSelect';
-import FormControlledText from './FormControlledText';
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { AiOutlineMinusSquare } from "react-icons/ai";
+import useDebounce from "../../lib/hooks/useDebounce";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import CreateTaxPayerModal from "../Modals/taxPayer.create.modal";
+import FormControlledSelect from "./FormControlledSelect";
+import FormControlledText from "./FormControlledText";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -51,6 +51,7 @@ interface InputProps<T extends FieldValues> {
   helperText?: string;
   label?: string;
   showBankInfo?: boolean;
+  bankInfoName?: string;
 }
 export interface datosPyResponse {
   razonsocial: string;
@@ -77,10 +78,11 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     helperText,
     label,
     showBankInfo,
+    bankInfoName,
   } = props;
   const [loading, setLoading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [selectInput, setSelectInput] = useState('');
+  const [selectInput, setSelectInput] = useState("");
   const [selectOptions, setSelectOptions] = useState<
     { value: string; label: string }[] | null
   >([]);
@@ -129,7 +131,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
           signal: controller.signal,
         }
       );
-      if (status !== 200) throw 'not 200';
+      if (status !== 200) throw "not 200";
       const datosFrompy = data as datosPyResponse[];
 
       const options = datosFrompy.map((x) => ({
@@ -168,15 +170,18 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     e: any | { value: string; label: string } | undefined,
     field: ControllerRenderProps<T, Path<T>>
   ) => {
-    field.onChange(e?.value ?? '');
-    setValue(razonSocialName, e?.label ?? '');
+    field.onChange(e?.value ?? "");
+    setValue(razonSocialName, e?.label ?? "");
     if (showBankInfo && fetchedTaxPayers.length && e?.value) {
       const foundBankInfo = fetchedTaxPayers.find(
         (x) => x.ruc === e.value
       )?.bankInfo;
 
       if (!foundBankInfo) return;
-      setValue('taxPayer.bankInfo', foundBankInfo);
+      setValue(
+        bankInfoName ? `${bankInfoName}.bankInfo` : "taxPayer.bankInfo",
+        foundBankInfo
+      );
     }
   };
 
@@ -204,7 +209,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const rucNameSplit = rucName.split('.');
+  const rucNameSplit = rucName.split(".");
   const taxPayerString = rucNameSplit[0];
   const rucString = rucNameSplit[1];
   const taxPayerError =
@@ -212,20 +217,20 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
       rucString &&
       errors[taxPayerString] &&
       errors[taxPayerString][rucString]) ??
-    '';
+    "";
 
   return (
     <>
       <FormControl isInvalid={!!taxPayerError}>
-        <FormLabel fontSize={'md'} color={'gray.500'}>
-          {label ?? 'Contribuyente'}
+        <FormLabel fontSize={"md"} color={"gray.500"}>
+          {label ?? "Contribuyente"}
         </FormLabel>
         <HStack>
           <Controller
             control={control}
             name={rucName}
             render={({ field }) => (
-              <div style={{ width: '90%' }}>
+              <div style={{ width: "90%" }}>
                 <Select
                   autoFocus={autoFocus}
                   menuIsOpen={openDropdown}
@@ -242,10 +247,10 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
                   }}
                   onChange={(e) => handleOnSelect(e, field)}
                   value={selectOptions?.find((x) => x.value === field.value)}
-                  noOptionsMessage={() => 'No hay opciones.'}
+                  noOptionsMessage={() => "No hay opciones."}
                   placeholder={
                     <span>
-                      <Search2Icon h={'30px'} fontSize="lg" /> Ingrese un ruc y
+                      <Search2Icon h={"30px"} fontSize="lg" /> Ingrese un ruc y
                       aguarde la busqueda
                     </span>
                   }
@@ -255,7 +260,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             )}
           />
 
-          <IconButton onClick={onOpen} aria-label={'Add user '}>
+          <IconButton onClick={onOpen} aria-label={"Add user "}>
             <AddIcon />
           </IconButton>
         </HStack>
@@ -266,7 +271,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
           </Text>
         )}
         {!taxPayerError.message ? (
-          <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+          <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
         ) : (
           //@ts-ignore
           <FormErrorMessage>{taxPayerError.message}</FormErrorMessage>
@@ -275,9 +280,9 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
       {showBankInfo && (
         <>
           <Divider />
-          <Flex alignItems={'center'} gap="10px" alignSelf={'start'}>
+          <Flex alignItems={"center"} gap="10px" alignSelf={"start"}>
             <IconButton
-              size={'sm'}
+              size={"sm"}
               icon={<AiOutlineMinusSquare />}
               aria-label="bank info toggle"
               onClick={onFadeToggle}
@@ -286,13 +291,17 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             <Text color="gray.500">Datos para transferencia</Text>
           </Flex>
           <Box
-            style={{ width: '100%', display: isFadeOpen ? 'block' : 'none' }}
+            style={{ width: "100%", display: isFadeOpen ? "block" : "none" }}
           >
             <FormControlledSelect
               control={control}
               errors={errors}
               //@ts-ignore
-              name="taxPayer.bankInfo.bankName"
+              name={
+                bankInfoName
+                  ? `${bankInfoName}.bankInfo.bankName`
+                  : "taxPayer.bankInfo.bankName"
+              }
               label="Seleccione el banco"
               options={bankNameOptions}
             />
@@ -300,26 +309,46 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
               control={control}
               errors={errors}
               //@ts-ignore
-              name="taxPayer.bankInfo.ownerName"
+              name={
+                bankInfoName
+                  ? `${bankInfoName}.bankInfo.ownerName`
+                  : "taxPayer.bankInfo.ownerName"
+              }
               label="Denominación"
               autoFocus={true}
               //@ts-ignore
-              error={errors.taxPayer?.bankInfo?.ownerName?.message}
+              error={
+                bankInfoName
+                  ? errors[bankInfoName]?.bankInfo?.ownerName?.message
+                  : errors.taxPayer?.bankInfo?.ownerName?.message
+              }
             />
             <FormControlledText
               control={control}
               errors={errors}
               //@ts-ignore
-              name="taxPayer.bankInfo.accountNumber"
+              name={
+                bankInfoName
+                  ? `${bankInfoName}.bankInfo.accountNumber`
+                  : "taxPayer.bankInfo.accountNumber"
+              }
               label="Número de cuenta"
               //@ts-ignore
-              error={errors.taxPayer?.bankInfo?.accountNumber?.message}
+              error={
+                bankInfoName
+                  ? errors[bankInfoName]?.bankInfo?.accountNumber?.message
+                  : errors.taxPayer?.bankInfo?.accountNumber?.message
+              }
             />
             <FormControlledSelect
               control={control}
               errors={errors}
               //@ts-ignore
-              name="taxPayer.bankInfo.ownerDocType"
+              name={
+                bankInfoName
+                  ? `${bankInfoName}.bankInfo.ownerDocType`
+                  : "taxPayer.bankInfo.ownerDocType"
+              }
               label="Tipo de documento"
               options={ownerDocTypeOptions}
             />
@@ -327,10 +356,18 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
               control={control}
               errors={errors}
               //@ts-ignore
-              name="taxPayer.bankInfo.ownerDoc"
+              name={
+                bankInfoName
+                  ? `${bankInfoName}.bankInfo.ownerDoc`
+                  : "taxPayer.bankInfo.ownerDoc"
+              }
               label="Documento del titular"
               //@ts-ignore
-              error={errors.taxPayer?.bankInfo?.ownerDoc?.message}
+              error={
+                bankInfoName
+                  ? errors[bankInfoName]?.bankInfo?.ownerDoc?.message
+                  : errors.taxPayer?.bankInfo?.ownerDoc?.message
+              }
             />
             <Divider />
           </Box>

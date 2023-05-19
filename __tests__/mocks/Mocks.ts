@@ -4,7 +4,6 @@ import { faker } from "@faker-js/faker";
 import { v4 as uuidV4 } from "uuid";
 import { randEnumValue } from "@/lib/utils/TypescriptUtils";
 import type { FormProject } from "@/lib/validations/project.validate";
-import type { FormExpenseReport } from "@/lib/validations/expenseReport.validate";
 import type {
   FormBankInfo,
   FormMoneyAccount,
@@ -154,42 +153,6 @@ export const imbursementMock: (
     },
     accountId: "",
     wasCancelled: false,
-  };
-  return x;
-};
-
-export const expenseReportMock = ({
-  moneyReqId,
-  projectId,
-  costCategoryId,
-}: {
-  moneyReqId: string;
-  projectId: string;
-  costCategoryId: string;
-}) => {
-  const imageName = uuidV4();
-  const x: FormExpenseReport = {
-    concept: faker.commerce.productDescription().substring(0, 32),
-    searchableImage: {
-      url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
-      imageName,
-    },
-    taxPayer: {
-      razonSocial: faker.name.fullName(),
-      ruc: faker.random.numeric(6) + "-" + faker.random.numeric(1),
-    },
-    id: "",
-    createdAt: new Date(),
-    updatedAt: null,
-    currency: "PYG",
-    moneyRequestId: moneyReqId,
-    amountSpent: new Prisma.Decimal(faker.commerce.price(100000, 300000)),
-    facturaNumber: faker.random.numeric(13).toString(),
-    comments: faker.commerce.productDescription().substring(0, 123),
-    accountId: "",
-    wasCancelled: false,
-    projectId,
-    costCategoryId,
   };
   return x;
 };

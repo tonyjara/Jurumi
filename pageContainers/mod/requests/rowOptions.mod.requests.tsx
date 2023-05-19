@@ -62,9 +62,11 @@ const RowOptionsModRequests = ({
   );
   const isAccepted = x.status === "ACCEPTED";
   const isCancelled = x.wasCancelled;
-  const isFullyExecuted = reduceExpenseReports(x.expenseReports)
+  const isGreaterOrEqualToExecutionTotal = reduceExpenseReports(
+    x.expenseReports
+  )
     .add(reduceExpenseReturns(x.expenseReturns))
-    .equals(x.amountRequested);
+    .greaterThanOrEqualTo(x.amountRequested);
 
   const {
     isPrinting,
@@ -113,7 +115,9 @@ const RowOptionsModRequests = ({
 
       {x.moneyRequestType === "FUND_REQUEST" && (
         <MenuItem
-          isDisabled={!isAccepted || x.wasCancelled || isFullyExecuted}
+          isDisabled={
+            !isAccepted || x.wasCancelled || isGreaterOrEqualToExecutionTotal
+          }
           onClick={() => {
             setReqForReport(x);
             onExpRepOpen();
@@ -126,7 +130,7 @@ const RowOptionsModRequests = ({
         isDisabled={
           !isAccepted ||
           x.wasCancelled ||
-          isFullyExecuted ||
+          isGreaterOrEqualToExecutionTotal ||
           x.moneyRequestType === "REIMBURSMENT_ORDER"
         }
         onClick={() => {
@@ -165,10 +169,10 @@ const RowOptionsModRequests = ({
 
       {x.moneyRequestType === "FUND_REQUEST" && (
         <MenuItem
-          isDisabled={!isFullyExecuted}
+          isDisabled={!isGreaterOrEqualToExecutionTotal}
           onClick={handlePrintExpenseRepsAndRets}
         >
-          Imprimir rendición
+          Imprimir rendición/es
         </MenuItem>
       )}
       <RowOptionCancelDialog
