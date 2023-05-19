@@ -11,6 +11,7 @@ import prisma from "@/server/db/client";
 import {
   createCostCategoryTransactions,
   createExpenseReportProof,
+  createReimbursementRequestBasedOnExpenseReport,
 } from "./utils/ExpenseReport.routeUtils";
 
 export const expenseReportsRouter = router({
@@ -168,8 +169,8 @@ export const expenseReportsRouter = router({
           message: "no proof",
         });
       }
-      await prisma.$transaction(async (txCtx) => {
-        const expenseReport = await txCtx?.expenseReport.create({
+      const expenseReport = await prisma.$transaction(async (txCtx) => {
+        const postExpenseReport = await txCtx?.expenseReport.create({
           data: {
             accountId: user.id,
             concept: input.concept,
@@ -189,7 +190,7 @@ export const expenseReportsRouter = router({
             taxPayer: true,
           },
         });
-        if (!expenseReport) {
+        if (!postExpenseReport) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
             message: "taxpayer failed",
@@ -197,9 +198,16 @@ export const expenseReportsRouter = router({
         }
 
         await createCostCategoryTransactions({
-          expenseReport,
+          expenseReport: postExpenseReport,
           txCtx,
         });
+        return postExpenseReport;
+      });
+
+      await createReimbursementRequestBasedOnExpenseReport({
+        input,
+        ctx,
+        expenseReport,
       });
     }),
   edit: protectedProcedure

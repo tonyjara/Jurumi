@@ -7,6 +7,14 @@ import type {
 } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import prisma from "@/server/db/client";
+import {
+  FormMoneyRequest,
+  MoneyReqSearchableImage,
+} from "@/lib/validations/moneyRequest.validate";
+import { appRouter } from "../router";
+import { Session } from "next-auth";
+import Decimal from "decimal.js";
+import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 
 export async function createCostCategoryTransactions({
   expenseReport,
@@ -89,4 +97,76 @@ export const createExpenseReportProof = async ({
   });
 
   return imbursementProof;
+};
+
+/** This function creates a reimbursement request whenever the amount of the expense report exceeds the total of the fund request. */
+export const createReimbursementRequestBasedOnExpenseReport = async ({
+  input,
+  ctx,
+  expenseReport,
+}: {
+  input: FormExpenseReport;
+  ctx: { session: Session };
+  expenseReport: ExpenseReport & {
+    account: {
+      id: string;
+    };
+    taxPayer: TaxPayer;
+    searchableImage: searchableImage | null;
+  };
+}) => {
+  if (
+    !input.spentAmountIsGraterThanMoneyRequest ||
+    !input.reimburseTo ||
+    !input.pendingAmount ||
+    !expenseReport.searchableImage ||
+    !expenseReport.searchableImage.url ||
+    !expenseReport.searchableImage.imageName
+  )
+    return;
+  const user = ctx.session.user;
+  const caller = appRouter.createCaller({ session: ctx.session });
+
+  const preferences = await prisma.preferences.findUniqueOrThrow({
+    where: { accountId: user.id },
+  });
+
+  const pendingAmount = input.pendingAmount as Decimal;
+  const formatedPendingAmount = decimalFormat(pendingAmount, input.currency);
+  const difference = input.amountSpent.sub(pendingAmount);
+  const formattedDifference = decimalFormat(difference, input.currency);
+  const formattedAmountSpent = decimalFormat(input.amountSpent, input.currency);
+
+  const defaultReimbursementOrderSearchableImage: MoneyReqSearchableImage = {
+    url: expenseReport.searchableImage?.url,
+    imageName: expenseReport.searchableImage?.imageName,
+    facturaNumber: input.facturaNumber,
+    amount: difference,
+    currency: input.currency,
+  };
+
+  const reimbursementRequest: FormMoneyRequest = {
+    id: "",
+    comments: "",
+    createdAt: new Date(),
+    updatedAt: null,
+    description: `Esta solicitud fue creada automáticamente en base a la rendición de gastos con código: ${expenseReport.id} . El valor pendiente para llegar al total de la solicitud de fondos al momento de la creación de esta rendición fue de ${formatedPendingAmount} . El monto rendido fue de ${formattedAmountSpent}, siendo asi la diferencia entre ambos de ${formattedDifference}`,
+    status: "PENDING",
+    moneyRequestType: "REIMBURSMENT_ORDER",
+    currency: "PYG",
+    amountRequested: difference,
+    costCategoryId: input.costCategoryId,
+    accountId: "",
+    projectId: input.projectId,
+    archived: false,
+    softDeleted: false,
+    rejectionMessage: "",
+    organizationId: preferences.selectedOrganization,
+    wasCancelled: false,
+    taxPayer: input.reimburseTo,
+    facturaNumber: input.facturaNumber,
+    searchableImages: [defaultReimbursementOrderSearchableImage],
+  };
+
+  await caller.moneyRequest.create(reimbursementRequest);
 };

@@ -1,32 +1,34 @@
-import { VStack } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
-import React from 'react';
+import { Box, VStack, Text } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import React from "react";
 import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
   UseFormReset,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import { currencyOptions } from '../../lib/utils/SelectOptions';
-import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
-import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
-import FormControlledFacturaNumber from '../FormControlled/FormControlledFacturaNumber';
-import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
-import FormControlledSelect from '../FormControlled/FormControlledSelect';
-import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
-import FormControlledText from '../FormControlled/FormControlledText';
-import type { FormExpenseReport } from '../../lib/validations/expenseReport.validate';
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { currencyOptions } from "../../lib/utils/SelectOptions";
+import { translateCurrencyPrefix } from "../../lib/utils/TranslatedEnums";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import FormControlledImageUpload from "../FormControlled/FormControlledImageUpload";
+import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
+import FormControlledFacturaNumber from "../FormControlled/FormControlledFacturaNumber";
+import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
+import FormControlledSelect from "../FormControlled/FormControlledSelect";
+import FormControlledTaxPayerId from "../FormControlled/FormControlledTaxPayerId";
+import FormControlledText from "../FormControlled/FormControlledText";
+import {
+  FormExpenseReport,
+  MockExpenseReport,
+} from "../../lib/validations/expenseReport.validate";
 import {
   reduceExpenseReports,
   reduceExpenseReturns,
-} from '@/lib/utils/TransactionUtils';
-import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
-import SeedButton from '../DevTools/SeedButton';
-import { expenseReportMock } from '@/__tests__/mocks/Mocks';
+} from "@/lib/utils/TransactionUtils";
+import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import SeedButton from "../DevTools/SeedButton";
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
@@ -34,6 +36,7 @@ interface formProps<T extends FieldValues> {
   moneyRequest?: CompleteMoneyReqHome;
   reset: UseFormReset<FormExpenseReport>;
   isEdit?: boolean;
+  amountSpentIsBiggerThanPending: boolean;
 }
 
 const ExpenseReportForm = ({
@@ -43,14 +46,15 @@ const ExpenseReportForm = ({
   setValue,
   reset,
   isEdit,
+  amountSpentIsBiggerThanPending,
 }: formProps<FormExpenseReport>) => {
   const { data: session } = useSession();
   const user = session?.user;
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
 
-  const currency = useWatch({ control, name: 'currency' });
-  const projectId = useWatch({ control, name: 'projectId' });
+  const currency = useWatch({ control, name: "currency" });
+  const projectId = useWatch({ control, name: "projectId" });
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,
@@ -58,7 +62,7 @@ const ExpenseReportForm = ({
   }));
 
   const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
-    { projectId: projectId ?? '' },
+    { projectId: projectId ?? "" },
     { enabled: !!projectId?.length }
   );
 
@@ -76,7 +80,7 @@ const ExpenseReportForm = ({
         <SeedButton
           reset={reset}
           mock={() =>
-            expenseReportMock({
+            MockExpenseReport({
               moneyReqId: moneyRequest.id,
               projectId,
               costCategoryId: firstOption.id,
@@ -102,7 +106,7 @@ const ExpenseReportForm = ({
         disable={isEdit}
         control={control}
         errors={errors}
-        name={'amountSpent'}
+        name={"amountSpent"}
         label="Monto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
@@ -113,6 +117,33 @@ const ExpenseReportForm = ({
             .sub(reduceExpenseReturns(moneyRequest.expenseReturns))
         }
       />
+
+      {amountSpentIsBiggerThanPending && (
+        <Box
+          borderWidth="2px"
+          borderColor={"orange"}
+          w={"100%"}
+          p={"10px"}
+          borderRadius={"8px"}
+        >
+          <Text mb={"10px"} fontWeight={"bold"}>
+            Su rendición excede el monto pendiente, favor ingrese sus datos.
+            Jurumi creará automáticamente una orden de reembolso con la
+            diferencia de esta rendición.
+          </Text>
+          <FormControlledTaxPayerId
+            label="A la orden de:"
+            control={control}
+            errors={errors}
+            razonSocialName="reimburseTo.razonSocial"
+            rucName="reimburseTo.ruc"
+            setValue={setValue}
+            helperText="Ingresar ruc o C.I."
+            showBankInfo={true}
+            bankInfoName={"reimburseTo"}
+          />
+        </Box>
+      )}
 
       <FormControlledTaxPayerId
         control={control}
@@ -153,7 +184,7 @@ const ExpenseReportForm = ({
         <FormControlledSelect
           control={control}
           errors={errors}
-          name={'costCategoryId'}
+          name={"costCategoryId"}
           label="Linea presupuestaria"
           options={costCatOptions() ?? []}
           isClearable

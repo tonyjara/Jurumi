@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { knownErrors } from "@/lib/dictionaries/knownErrors";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
@@ -27,6 +27,7 @@ import {
 } from "@/lib/utils/TransactionUtils";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import { Decimal } from "@prisma/client/runtime";
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -73,25 +74,49 @@ const CreateExpenseReportModal = ({
       })
     );
 
+  const pendingAmount = moneyRequest.amountRequested
+    .sub(reduceExpenseReports(moneyRequest.expenseReports))
+    .sub(reduceExpenseReturns(moneyRequest.expenseReturns));
+
+  const formatedPendingAmount = () =>
+    decimalFormat(pendingAmount, moneyRequest.currency);
+  const amountSpent = useWatch({ control, name: "amountSpent" }) as Decimal;
+
+  // When deleting the input field completely this solves error that crashes the app
+  const amountSpentIsBiggerThanPending = amountSpent
+    ? amountSpent.greaterThan(pendingAmount)
+    : false;
+
+  const watchAmountIsBigger = useWatch({
+    control,
+    name: "spentAmountIsGraterThanMoneyRequest",
+  });
+
+  useEffect(() => {
+    if (amountSpentIsBiggerThanPending && !watchAmountIsBigger) {
+      setValue("spentAmountIsGraterThanMoneyRequest", true);
+    }
+
+    if (!amountSpentIsBiggerThanPending && watchAmountIsBigger) {
+      setValue("spentAmountIsGraterThanMoneyRequest", false);
+    }
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amountSpentIsBiggerThanPending]);
+
   const submitFunc = async (data: FormExpenseReport) => {
+    if (amountSpentIsBiggerThanPending) {
+      data.pendingAmount = pendingAmount;
+    }
     mutate(data);
   };
-
-  const pendingAmount = () =>
-    decimalFormat(
-      moneyRequest.amountRequested
-        .sub(reduceExpenseReports(moneyRequest.expenseReports))
-        .sub(reduceExpenseReturns(moneyRequest.expenseReturns)),
-      moneyRequest.currency
-    );
-
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            Crear una rendición. <br /> Pendiente: {pendingAmount()}
+            Crear una rendición. <br /> Pendiente: {formatedPendingAmount()}
           </ModalHeader>
 
           <ModalCloseButton />
@@ -99,6 +124,7 @@ const CreateExpenseReportModal = ({
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ExpenseReportForm
               reset={reset}
+              amountSpentIsBiggerThanPending={amountSpentIsBiggerThanPending}
               moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}

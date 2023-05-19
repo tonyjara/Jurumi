@@ -8,19 +8,19 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import type { FormExpenseReport } from "@/lib/validations/expenseReport.validate";
 import {
   defaultExpenseReportData,
   validateExpenseReport,
-} from '@/lib/validations/expenseReport.validate';
-import ExpenseReportForm from '../Forms/ExpenseReport.form';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
+} from "@/lib/validations/expenseReport.validate";
+import ExpenseReportForm from "../Forms/ExpenseReport.form";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 
 const EditExpenseReportModal = ({
   isOpen,
@@ -55,7 +55,7 @@ const EditExpenseReportModal = ({
   const { error, mutate, isLoading } =
     trpcClient.expenseReport.edit.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su rendición ha sido editada!',
+        successText: "Su rendición ha sido editada!",
         callback: () => {
           onClose();
           reset();
@@ -84,6 +84,8 @@ const EditExpenseReportModal = ({
               control={control}
               errors={errors as any}
               isEdit={true}
+              // This data is not editable, it should be edited in the reimbursement request
+              amountSpentIsBiggerThanPending={false}
             />
           </ModalBody>
 

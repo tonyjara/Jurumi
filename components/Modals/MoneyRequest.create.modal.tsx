@@ -8,21 +8,23 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import type { FormMoneyRequest } from '@/lib/validations/moneyRequest.validate';
-import { moneyRequestMock } from '@/lib/validations/moneyRequest.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import SeedButton from "../DevTools/SeedButton";
+import {
+  FormMoneyRequest,
+  MockMoneyRequest,
+} from "@/lib/validations/moneyRequest.validate";
 import {
   defaultMoneyRequestData,
   validateMoneyRequest,
-} from '@/lib/validations/moneyRequest.validate';
-import MoneyRequestForm from '../Forms/MoneyRequest.form';
+} from "@/lib/validations/moneyRequest.validate";
+import MoneyRequestForm from "../Forms/MoneyRequest.form";
 
 const CreateMoneyRequestModal = ({
   isOpen,
@@ -53,7 +55,7 @@ const CreateMoneyRequestModal = ({
 
   useEffect(() => {
     if (orgId && isOpen) {
-      setValue('organizationId', orgId);
+      setValue("organizationId", orgId);
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,7 +64,7 @@ const CreateMoneyRequestModal = ({
   const { error, mutate, isLoading } =
     trpcClient.moneyRequest.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su solicitud ha sido creada!',
+        successText: "Su solicitud ha sido creada!",
         callback: () => {
           handleOnClose();
           context.moneyRequest.invalidate();
@@ -82,20 +84,13 @@ const CreateMoneyRequestModal = ({
           <ModalHeader>Crear una solicitud de fondos</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <SeedButton
-              reset={reset}
-              mock={() =>
-                moneyRequestMock({
-                  organizationId: orgId ?? '',
-                  moneyRequestType: 'FUND_REQUEST',
-                })
-              }
-            />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm
               setValue={setValue}
               control={control}
               errors={errors as any}
+              orgId={orgId}
+              reset={reset}
             />
           </ModalBody>
 

@@ -1,13 +1,13 @@
-import { faker } from '@faker-js/faker';
-import type { MoneyRequest, TaxPayerBankInfo } from '@prisma/client';
-import { BankAccountType } from '@prisma/client';
-import { BankDocType, BankNamesPy } from '@prisma/client';
-import { MoneyRequestStatus, MoneyRequestType } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import { Currency } from '@prisma/client';
-import { z } from 'zod';
-import { stringReqMinMax } from '../utils/ValidationHelpers';
-import { v4 as uuidV4 } from 'uuid';
+import { faker } from "@faker-js/faker";
+import type { MoneyRequest, TaxPayerBankInfo } from "@prisma/client";
+import { BankAccountType } from "@prisma/client";
+import { BankDocType, BankNamesPy } from "@prisma/client";
+import { MoneyRequestStatus, MoneyRequestType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { Currency } from "@prisma/client";
+import { z } from "zod";
+import { stringReqMinMax } from "../utils/ValidationHelpers";
+import { v4 as uuidV4 } from "uuid";
 
 export type moneyReqTaxPayer = {
   razonSocial: string;
@@ -24,7 +24,7 @@ export type MoneyReqSearchableImage = {
 
 export type FormMoneyRequest = Omit<
   MoneyRequest,
-  'amountRequested' | 'taxPayerId'
+  "amountRequested" | "taxPayerId"
 > & {
   amountRequested?: any;
   taxPayer: moneyReqTaxPayer | null;
@@ -38,9 +38,9 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       createdAt: z.date(),
       updatedAt: z.date().nullable(),
       description: stringReqMinMax(
-        'Favor ingrese el concepto del desembolso.',
+        "Favor ingrese el concepto del desembolso.",
         6,
-        128
+        512
       ),
       status: z.nativeEnum(MoneyRequestStatus),
       moneyRequestType: z.nativeEnum(MoneyRequestType),
@@ -49,21 +49,21 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       accountId: z.string(),
       comments: z
         .string()
-        .max(256, 'Has excedido el límite de caractéres (256)'),
+        .max(256, "Has excedido el límite de caractéres (256)"),
       projectId: z.string().nullable(),
       costCategoryId: z.string().nullable(),
       archived: z.boolean(),
       softDeleted: z.boolean(),
       rejectionMessage: z.string(),
-      organizationId: z.string().min(1, 'Favor seleccione una organización.'),
+      organizationId: z.string().min(1, "Favor seleccione una organización."),
       wasCancelled: z.boolean(),
       taxPayer: z
         .object({
           razonSocial: z.string({
-            required_error: 'Favor ingrese el documento del contribuyente.',
+            required_error: "Favor ingrese el documento del contribuyente.",
           }),
           ruc: z.string({
-            required_error: 'Favor ingrese el documento del contribuyente.',
+            required_error: "Favor ingrese el documento del contribuyente.",
           }),
           bankInfo: z.object({
             bankName: z.nativeEnum(BankNamesPy),
@@ -89,24 +89,24 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
         .array(),
     })
     .superRefine((val, ctx) => {
-      if (val.status === 'REJECTED' && val.rejectionMessage.length < 6) {
+      if (val.status === "REJECTED" && val.rejectionMessage.length < 6) {
         ctx.addIssue({
-          path: ['rejectionMessage'],
+          path: ["rejectionMessage"],
           code: z.ZodIssueCode.custom,
-          message: 'Favor justifique el rechazo en al menos 6 caractéres.',
+          message: "Favor justifique el rechazo en al menos 6 caractéres.",
         });
       }
       //Require taxPayer and bank info
-      if (val.moneyRequestType !== 'FUND_REQUEST') {
+      if (val.moneyRequestType !== "FUND_REQUEST") {
         if (
           !val.taxPayer ||
           !val.taxPayer.razonSocial?.length ||
           !val.taxPayer.ruc.length
         ) {
           ctx.addIssue({
-            path: ['taxPayer.ruc'],
+            path: ["taxPayer.ruc"],
             code: z.ZodIssueCode.custom,
-            message: 'Favor ingrese los datos del beneficiario.',
+            message: "Favor ingrese los datos del beneficiario.",
           });
         }
 
@@ -115,9 +115,9 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           val.taxPayer.bankInfo.accountNumber.length < 3
         ) {
           ctx.addIssue({
-            path: ['taxPayer.bankInfo.accountNumber'],
+            path: ["taxPayer.bankInfo.accountNumber"],
             code: z.ZodIssueCode.custom,
-            message: 'Favor ingrese el número de la cuenta bancaria.',
+            message: "Favor ingrese el número de la cuenta bancaria.",
           });
         }
         if (
@@ -125,9 +125,9 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           val.taxPayer.bankInfo.ownerName.length < 3
         ) {
           ctx.addIssue({
-            path: ['taxPayer.bankInfo.ownerName'],
+            path: ["taxPayer.bankInfo.ownerName"],
             code: z.ZodIssueCode.custom,
-            message: 'Favor ingrese la denominación.',
+            message: "Favor ingrese la denominación.",
           });
         }
         if (
@@ -135,13 +135,13 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           val.taxPayer.bankInfo.ownerDoc.length < 3
         ) {
           ctx.addIssue({
-            path: ['taxPayer.bankInfo.ownerDoc'],
+            path: ["taxPayer.bankInfo.ownerDoc"],
             code: z.ZodIssueCode.custom,
-            message: 'Favor ingrese el documento del titular.',
+            message: "Favor ingrese el documento del titular.",
           });
         }
 
-        if (val.moneyRequestType === 'REIMBURSMENT_ORDER') {
+        if (val.moneyRequestType === "REIMBURSMENT_ORDER") {
           const currencySet = new Set();
           val.searchableImages.forEach((image, index) => {
             currencySet.add(image.currency);
@@ -149,7 +149,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
               ctx.addIssue({
                 path: [`searchableImages.${index}.currency`],
                 code: z.ZodIssueCode.custom,
-                message: 'Solo puedes tener un tipo de moneda por solicitud.',
+                message: "Solo puedes tener un tipo de moneda por solicitud.",
               });
             }
 
@@ -157,7 +157,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
               ctx.addIssue({
                 path: [`searchableImages.${index}.facturaNumber`],
                 code: z.ZodIssueCode.custom,
-                message: 'Favor ingrese el número de factura.',
+                message: "Favor ingrese el número de factura.",
               });
             }
 
@@ -165,15 +165,15 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
               ctx.addIssue({
                 path: [`searchableImages.${index}.imageName`],
                 code: z.ZodIssueCode.custom,
-                message: 'Favor suba un comprobante.',
+                message: "Favor suba un comprobante.",
               });
             }
 
-            if (image.amount.toNumber() <= 1) {
+            if (image.amount.toNumber() < 1) {
               ctx.addIssue({
                 path: [`searchableImages.${index}.amount`],
                 code: z.ZodIssueCode.custom,
-                message: 'El monto debe ser mayor a 1.',
+                message: "El monto debe al menos 1.",
               });
             }
           });
@@ -181,13 +181,13 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       }
 
       if (
-        val.moneyRequestType !== 'REIMBURSMENT_ORDER' &&
+        val.moneyRequestType !== "REIMBURSMENT_ORDER" &&
         val.amountRequested.toNumber() <= 1
       ) {
         ctx.addIssue({
-          path: ['amountRequested'],
+          path: ["amountRequested"],
           code: z.ZodIssueCode.custom,
-          message: 'El monto debe ser mayor a 1.',
+          message: "El monto debe ser mayor a 1.",
         });
       }
     })
@@ -195,102 +195,104 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
 
 export const defaultReimbursementOrderSearchableImage: MoneyReqSearchableImage =
   {
-    url: '',
-    imageName: '',
-    facturaNumber: '',
+    url: "",
+    imageName: "",
+    facturaNumber: "",
     amount: new Prisma.Decimal(0),
-    currency: 'PYG',
+    currency: "PYG",
   };
 export const defaultMoneyRequestData: FormMoneyRequest = {
-  id: '',
-  comments: '',
+  id: "",
+  comments: "",
   createdAt: new Date(),
   updatedAt: null,
-  description: '',
-  status: 'PENDING',
-  moneyRequestType: 'FUND_REQUEST',
-  currency: 'PYG',
+  description: "",
+  status: "PENDING",
+  moneyRequestType: "FUND_REQUEST",
+  currency: "PYG",
   amountRequested: new Prisma.Decimal(0),
   costCategoryId: null,
-  accountId: '',
+  accountId: "",
   projectId: null,
   archived: false,
   softDeleted: false,
-  rejectionMessage: '',
-  organizationId: '',
+  rejectionMessage: "",
+  organizationId: "",
   wasCancelled: false,
   taxPayer: {
-    razonSocial: '',
-    ruc: '',
+    razonSocial: "",
+    ruc: "",
     bankInfo: {
-      bankName: 'BANCOP',
-      accountNumber: '',
-      ownerName: '',
-      ownerDocType: 'CI',
-      ownerDoc: '',
-      taxPayerId: '',
-      type: 'SAVINGS',
+      bankName: "BANCOP",
+      accountNumber: "",
+      ownerName: "",
+      ownerDocType: "CI",
+      ownerDoc: "",
+      taxPayerId: "",
+      type: "SAVINGS",
     },
   },
   facturaNumber: null,
   searchableImages: [defaultReimbursementOrderSearchableImage],
 };
 
-export const moneyRequestMock = ({
+export const MockMoneyRequest = ({
   organizationId,
   moneyRequestType,
+  projectId,
 }: {
   organizationId: string;
+  projectId: string | null;
   moneyRequestType: MoneyRequestType;
 }) => {
   const imageName = uuidV4();
   const imageName2 = uuidV4();
   const x: FormMoneyRequest = {
-    id: '',
+    id: "",
     comments: faker.commerce.productDescription().substring(0, 200),
     createdAt: new Date(),
     updatedAt: null,
     description: faker.commerce.productDescription().substring(0, 123),
-    status: 'PENDING',
+    status: "PENDING",
     moneyRequestType,
-    currency: 'PYG',
+    currency: "PYG",
     amountRequested: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
-    accountId: '',
+    accountId: "",
     costCategoryId: null,
-    projectId: null,
+    projectId,
     archived: false,
     softDeleted: false,
-    rejectionMessage: '',
+    rejectionMessage: "",
     wasCancelled: false,
     organizationId,
     taxPayer: {
       razonSocial: faker.company.name(),
       ruc: faker.random.numeric(6),
       bankInfo: {
-        bankName: 'BANCOP',
+        bankName: "BANCOP",
         accountNumber: faker.random.numeric(6),
         ownerName: faker.name.fullName(),
-        ownerDocType: 'CI',
+        ownerDocType: "CI",
         ownerDoc: faker.random.numeric(6),
-        taxPayerId: '',
-        type: 'SAVINGS',
+        taxPayerId: "",
+        type: "SAVINGS",
       },
     },
     facturaNumber: faker.random.numeric(13).toString(),
     searchableImages: [
       {
-        url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+        url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
         imageName,
         facturaNumber: faker.random.numeric(13).toString(),
         amount: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
-        currency: 'PYG',
+        currency: "PYG",
       },
       {
-        url: 'https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa',
+        url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
         imageName: imageName2,
         facturaNumber: faker.random.numeric(13).toString(),
         amount: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
-        currency: 'PYG',
+        currency: "PYG",
       },
     ],
   };
