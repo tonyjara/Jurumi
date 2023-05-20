@@ -44,3 +44,5 @@ Kindly, use pnpm.
 ```
 pnpm dev
 ```
+
+Go to te url: http://localhost:3000/setup to create the first admin account.
