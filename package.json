@@ -143,7 +143,8 @@
     "vite-tsconfig-paths": "^4.0.5",
     "vitest": "^0.29.2"
   },
-  "ct3aMetadata": {
-    "initVersion": "6.10.0"
+  "engines": {
+    "yarn": "Please use pnpm",
+    "npm": "Please use pnpm"
   }
 }
