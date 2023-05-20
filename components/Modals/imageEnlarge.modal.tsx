@@ -24,6 +24,7 @@ import type { searchableImage } from "@prisma/client";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 import { format } from "date-fns";
 import ReplaceSearchableImage from "../AdminUtils/ReplaceSearchableImage";
+import EditSearchableImageForm from "../Forms/SearchableImage.edit.form";
 
 const ImageEnlargeModal = ({
   isOpen,
@@ -57,10 +58,6 @@ const ImageEnlargeModal = ({
     }, 20000);
   };
 
-  const handelSaveChanges = () => {
-    setEditMode(false);
-  };
-
   return (
     <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -84,12 +81,6 @@ const ImageEnlargeModal = ({
                 <Button isDisabled={disableButton} onClick={handleImageScan}>
                   Escanear
                 </Button>
-                {!editMode && (
-                  <Button onClick={() => setEditMode(true)}>Editar</Button>
-                )}
-                {editMode && (
-                  <Button onClick={handelSaveChanges}>Guardar</Button>
-                )}
                 <Button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -98,30 +89,45 @@ const ImageEnlargeModal = ({
                 >
                   {hasCopied ? "Copiado!" : "Copiar link"}
                 </Button>
+                {!editMode && (
+                  <Button onClick={() => setEditMode(true)}>Editar</Button>
+                )}
               </ButtonGroup>
               <ReplaceSearchableImage searchableImage={searchableImage} />
-              <Text mb={"10px"} fontSize={"xl"}>
-                <span style={{ fontWeight: "bold" }}>Fecha:</span> <br />
-                {createdAt && format(createdAt, "dd/MM/yy hh:mm")}
-              </Text>
-              <Text mb={"10px"} fontSize={"xl"}>
-                <span style={{ fontWeight: "bold" }}>Nombre:</span> <br />
-                {imageName}
-              </Text>
-              <Text mb={"10px"} fontSize={"xl"}>
-                <span style={{ fontWeight: "bold" }}>Número de factura:</span>
-                <br />
-                {facturaNumber}
-              </Text>
-              <Text mb={"10px"} fontSize={"xl"}>
-                <span style={{ fontWeight: "bold" }}>Monto:</span>
-                <br />
-                {amount && currency && decimalFormat(amount, currency)}
-              </Text>
+              {!editMode && (
+                <div>
+                  <Text mb={"10px"} fontSize={"xl"}>
+                    <span style={{ fontWeight: "bold" }}>Fecha:</span> <br />
+                    {createdAt && format(createdAt, "dd/MM/yy hh:mm")}
+                  </Text>
+                  <Text mb={"10px"} fontSize={"xl"}>
+                    <span style={{ fontWeight: "bold" }}>Nombre:</span> <br />
+                    {imageName}
+                  </Text>
+                  <Text mb={"10px"} fontSize={"xl"}>
+                    <span style={{ fontWeight: "bold" }}>
+                      Número de factura:
+                    </span>
+                    <br />
+                    {facturaNumber}
+                  </Text>
+                  <Text mb={"10px"} fontSize={"xl"}>
+                    <span style={{ fontWeight: "bold" }}>Monto:</span>
+                    <br />
+                    {amount && currency && decimalFormat(amount, currency)}
+                  </Text>
 
-              <Text mb={"10px"} fontSize={"xl"}>
-                <span style={{ fontWeight: "bold" }}>Texto:</span> {text}
-              </Text>
+                  <Text mb={"10px"} fontSize={"xl"}>
+                    <span style={{ fontWeight: "bold" }}>Texto:</span> {text}
+                  </Text>
+                </div>
+              )}
+              {editMode && (
+                <EditSearchableImageForm
+                  setEditMode={setEditMode}
+                  searchableImage={searchableImage}
+                />
+              )}
             </Box>
           </Flex>
         </ModalBody>
