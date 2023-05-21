@@ -64,7 +64,7 @@ export const moneyRequestsColumns = ({
   }),
   columnHelper.accessor("createdAt", {
     cell: (x) => <DateCell date={x.getValue()} />,
-    header: "Fecha de C.",
+    header: "Fecha de Creación",
     sortingFn: "datetime",
   }),
   columnHelper.display({
@@ -118,7 +118,7 @@ export const moneyRequestsColumns = ({
     cell: (x) => (
       <TextCell text={x.row.original.costCategory?.displayName ?? "-"} />
     ),
-    header: "L. Presup.",
+    header: "Linea Presupuestaria",
   }),
   columnHelper.accessor("description", {
     cell: (x) => (
