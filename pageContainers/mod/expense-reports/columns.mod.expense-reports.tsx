@@ -21,7 +21,7 @@ export const modExpenseReportsColumns = ({
   }),
   columnHelper.accessor("createdAt", {
     cell: (x) => <DateCell date={x.getValue()} />,
-    header: "Fecha de C.",
+    header: "Fecha de Creación",
     sortingFn: "datetime",
   }),
   columnHelper.accessor("account.displayName", {

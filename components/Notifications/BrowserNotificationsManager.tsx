@@ -1,13 +1,13 @@
-import { firebaseApp } from '@/lib/firebase/firebaseConfig';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { BellIcon } from '@chakra-ui/icons';
-import { Button, Card, Flex, Text } from '@chakra-ui/react';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
-import { isIOS } from 'react-device-detect';
+import { firebaseApp } from "@/lib/firebase/firebaseConfig";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { BellIcon } from "@chakra-ui/icons";
+import { Button, Card, Flex, Text } from "@chakra-ui/react";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { isIOS } from "react-device-detect";
 const BrowserNotificationsManager = () => {
   const user = useSession().data?.user;
   const cloudMessagingKeyPair = process.env.NEXT_PUBLIC_FB_MESSAGING_KEY;
@@ -16,7 +16,7 @@ const BrowserNotificationsManager = () => {
   //Mobile notifications DO NOT work on IOS, without this, the app crashes.
 
   const notificationsAreSupported = () =>
-    typeof window !== 'undefined' && !isIOS;
+    typeof window !== "undefined" && !isIOS;
   const router = useRouter();
   const context = trpcClient.useContext();
 
@@ -31,20 +31,20 @@ const BrowserNotificationsManager = () => {
   }) =>
     toast.custom((t) => (
       <Card
-        cursor={'pointer'}
-        justifyContent={'space-between'}
+        cursor={"pointer"}
+        justifyContent={"space-between"}
         onClick={() => url && router.push(url)}
-        maxW={'300px'}
-        padding={'15px'}
+        maxW={"300px"}
+        padding={"15px"}
         boxShadow="2xl"
         transition="0.5s ease"
       >
-        <Flex gap="3" alignItems={'center'}>
-          <BellIcon color={'teal'} fontSize={'2xl'} />
-          <Flex flexDir={'column'}>
-            <Text fontWeight={'bold'}>{title}</Text>
+        <Flex gap="3" alignItems={"center"}>
+          <BellIcon color={"teal"} fontSize={"2xl"} />
+          <Flex flexDir={"column"}>
+            <Text fontWeight={"bold"}>{title}</Text>
 
-            <Text fontSize={'sm'}>{message}</Text>
+            <Text fontSize={"sm"}>{message}</Text>
           </Flex>
 
           <Button
@@ -52,7 +52,7 @@ const BrowserNotificationsManager = () => {
               e.stopPropagation();
               toast.dismiss(t.id);
             }}
-            variant={'ghost'}
+            variant={"ghost"}
             size="sm"
           >
             Cerrar
@@ -62,6 +62,7 @@ const BrowserNotificationsManager = () => {
     ));
 
   const onFbMessage = async () => {
+    if (!firebaseApp.options.projectId?.length) return;
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
       notificationToast({
@@ -81,6 +82,7 @@ const BrowserNotificationsManager = () => {
 
   const saveToken = async () => {
     try {
+      if (!firebaseApp.options.projectId?.length) return;
       const messaging = getMessaging(firebaseApp);
 
       const token = await getToken(messaging, {
@@ -89,7 +91,7 @@ const BrowserNotificationsManager = () => {
 
       mutate({ token });
     } catch (err) {
-      console.error('An error occurred while retrieving token. ', err);
+      console.error("An error occurred while retrieving token. ", err);
       return null;
     }
   };
@@ -100,10 +102,10 @@ const BrowserNotificationsManager = () => {
 
   useEffect(() => {
     if (!permissions || !user) return;
-    if (permissions === 'default') {
+    if (permissions === "default") {
       saveToken();
     }
-    if (permissions === 'granted') {
+    if (permissions === "granted") {
       setMounted(true);
       saveToken();
     }

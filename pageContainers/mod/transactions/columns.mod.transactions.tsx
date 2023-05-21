@@ -50,7 +50,7 @@ export const modTransactionsColumns = ({
   }),
   columnHelper.accessor("createdAt", {
     cell: (x) => <DateCell date={x.getValue()} />,
-    header: "Fecha de C.",
+    header: "Fecha de Creación",
     sortingFn: "datetime",
   }),
   columnHelper.display({
@@ -64,7 +64,7 @@ export const modTransactionsColumns = ({
     header: "Concepto",
   }),
   columnHelper.accessor("transactionType", {
-    header: "T. Transacción",
+    header: "Tipo de Transacción",
     cell: (x) => (
       <EnumTextCell text={x.getValue()} enumFunc={translateTransactionType} />
     ),
@@ -124,7 +124,7 @@ export const modTransactionsColumns = ({
     cell: (x) => <TextCell text={x.row.original.project?.displayName ?? "-"} />,
   }),
   columnHelper.display({
-    header: "L. Presupuestaria",
+    header: "Linea Presupuestaria",
     cell: (x) => (
       <TextCell text={x.row.original.costCategory?.displayName ?? "-"} />
     ),

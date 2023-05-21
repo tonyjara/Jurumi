@@ -27,11 +27,30 @@ You can also hookup open-replay for session replays.
 
 **Side note**: The reasoning behind picking Azure is that Microsoft offers a very generous grant to non-profits. So if your organization lacks the funds to use all the capabilities Jurumi offers, an option could be to apply for Microsoft's non-profit program.
 
+#### Minimum requirements:
+
+- <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Pnpm</a>
+- <a href="https://www.docker.com/products/docker-desktop/" target="_blank">docker</a>
+
 ## Getting started
 
 Create a .env file and copy the contents from the .env.example . Must have variables other than the ones that are already filled in are:
 
 - DATABASE_URL
+
+Install packages (Kindly use pnpm)
+
+```
+cp .env.example .env
+
+pnpm i
+```
+
+Load the environment
+
+```
+docker compose up
+```
 
 Sync your db with the local schema:
 
@@ -39,10 +58,26 @@ Sync your db with the local schema:
 npx prisma db push
 ```
 
-Kindly, use pnpm.
+Run the project
 
 ```
 pnpm dev
 ```
 
 Go to te url: http://localhost:3000/setup to create the first admin account.
+
+- Login with your new credentials
+
+- Edit your default organization clicking on the "Organización" menu
+
+- Add a Money Account From "Cuentas"
+
+#### Use the seed button for testing and quickly filling out forms
+
+For further information about how the app works please visit the <a href="https://docs.opades.org.py" target="_blank">Docs</a>
+
+### Todo
+
+- [ ] Setup Azurite for blob storage locally.
+- [ ] Finish memberships component
+- [ ] Attach OCR repo and integrate easily for local development.

@@ -4,15 +4,15 @@ import {
   protectedProcedure,
   publicProcedure,
   router,
-} from '../initTrpc';
-import { TRPCError } from '@trpc/server';
-import bcrypt from 'bcryptjs';
-import { z } from 'zod';
-import { validateInitialSetup } from '@/lib/validations/setup.validate';
-import { handleOrderBy } from './utils/Sorting.routeUtils';
-import { validateAccount } from '@/lib/validations/account.validate';
-import prisma from '@/server/db/client';
-import { validateAccountProfile } from '@/lib/validations/profileSettings.validate';
+} from "../initTrpc";
+import { TRPCError } from "@trpc/server";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
+import { validateInitialSetup } from "@/lib/validations/setup.validate";
+import { handleOrderBy } from "./utils/Sorting.routeUtils";
+import { validateAccount } from "@/lib/validations/account.validate";
+import prisma from "@/server/db/client";
+import { validateAccountProfile } from "@/lib/validations/profileSettings.validate";
 
 export const accountsRouter = router({
   toggleActivation: adminModProcedure
@@ -20,8 +20,8 @@ export const accountsRouter = router({
     .mutation(async ({ input, ctx }) => {
       if (!ctx.session?.user) {
         throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'No user session.',
+          code: "UNAUTHORIZED",
+          message: "No user session.",
         });
       }
       return await prisma?.account.update({
@@ -116,7 +116,7 @@ export const accountsRouter = router({
     //Use this to build options with react-select
     return await prisma?.account.findMany({
       where: { active: true },
-      orderBy: { displayName: 'asc' },
+      orderBy: { displayName: "asc" },
       select: { id: true, displayName: true, email: true },
     });
   }),
@@ -127,32 +127,49 @@ export const accountsRouter = router({
       const accounts = await prisma?.account.findMany();
       if (accounts?.length) {
         throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'Only allowed when no accounts.',
+          code: "UNAUTHORIZED",
+          message: "Only allowed when no accounts.",
         });
       }
 
       const hashedPass = await bcrypt.hash(input.password, 10);
 
-      return await prisma?.account.create({
+      const account = await prisma?.account.create({
         data: {
           displayName: input.displayName,
           email: input.email.toLowerCase(),
-          role: 'ADMIN',
+          role: "ADMIN",
           isVerified: true,
           active: true,
           password: hashedPass,
         },
       });
+      const defaultOrg = await prisma.organization.create({
+        data: {
+          createdById: account.id,
+          displayName: "Default Organization",
+          members: {
+            connect: { id: account.id },
+          },
+        },
+      });
+      await prisma.preferences.create({
+        data: {
+          accountId: account.id,
+          selectedOrganization: defaultOrg.id,
+        },
+      });
+
+      return account;
     }),
   edit: adminModProcedure
     .input(validateAccount)
     .mutation(async ({ input, ctx }) => {
       const user = ctx.session.user;
-      if (input.role === 'ADMIN' && user.role !== 'ADMIN') {
+      if (input.role === "ADMIN" && user.role !== "ADMIN") {
         throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'Only admins can create admins.',
+          code: "UNAUTHORIZED",
+          message: "Only admins can create admins.",
         });
       }
       return await prisma?.account.update({
@@ -170,12 +187,12 @@ export const accountsRouter = router({
     .query(async ({ input }) => {
       return await prisma?.account.findMany({
         take: 20,
-        orderBy: { email: 'asc' },
+        orderBy: { email: "asc" },
         where: {
           email: {
             search: input.email,
           },
-          role: 'USER',
+          role: "USER",
           isVerified: true,
           active: true,
         },

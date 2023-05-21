@@ -1,11 +1,11 @@
-import { z } from 'zod';
-import { router, protectedProcedure, adminModProcedure } from '../initTrpc';
-import prisma from '@/server/db/client';
-import { subMonths } from 'date-fns';
-import axios from 'axios';
-import { WebClient } from '@slack/web-api';
-import { validateOrgNotificationSettings } from '@/lib/validations/orgNotificationsSettings.validate';
-import { TRPCError } from '@trpc/server';
+import { z } from "zod";
+import { router, protectedProcedure, adminModProcedure } from "../initTrpc";
+import prisma from "@/server/db/client";
+import { subMonths } from "date-fns";
+import axios from "axios";
+import { WebClient } from "@slack/web-api";
+import { validateOrgNotificationSettings } from "@/lib/validations/orgNotificationsSettings.validate";
+import { TRPCError } from "@trpc/server";
 
 export const notificationsRouter = router({
   upsertFcm: protectedProcedure
@@ -28,7 +28,7 @@ export const notificationsRouter = router({
       const web = new WebClient(slackToken);
 
       await web.chat.postMessage({
-        text: 'Hello world!',
+        text: "Hello world!",
         channel: input.channelId,
       });
     }),
@@ -46,7 +46,7 @@ export const notificationsRouter = router({
     return await prisma.notifications.findMany({
       where: { accountId: user.id },
       take: 10,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }),
   markMyNotificationsSeen: protectedProcedure.mutation(async ({ ctx }) => {
@@ -86,8 +86,8 @@ export const notificationsRouter = router({
     });
     if (!fetchedUserOrg) {
       throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'no org found',
+        code: "UNAUTHORIZED",
+        message: "no org found",
       });
     }
 
@@ -96,7 +96,7 @@ export const notificationsRouter = router({
       select: { annoncementsSlackChannelId: true },
     });
 
-    if (!fetchedOrg?.annoncementsSlackChannelId.length) return;
+    if (!fetchedOrg?.annoncementsSlackChannelId.length) return null;
 
     const slackToken = process.env.SLACK_BOT_TOKEN;
 
@@ -106,10 +106,10 @@ export const notificationsRouter = router({
       token: slackToken,
       channel: fetchedOrg.annoncementsSlackChannelId,
     });
-    if (!convs.messages) return;
+    if (!convs.messages) return null;
 
     const filteredMessages = convs.messages.filter(
-      (x) => !('subtype' in x) && !x.text?.includes('<@')
+      (x) => !("subtype" in x) && !x.text?.includes("<@")
     );
 
     // const textMessages = filteredMessages.map((x) =>
@@ -139,7 +139,7 @@ export const notificationsRouter = router({
     for (const x of getTokens) {
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `key=${process.env.FCM_SERVER_KEY}`,
         },
       };
@@ -149,10 +149,10 @@ export const notificationsRouter = router({
         {
           to: x.token,
           notification: {
-            body: 'BODYYYYYYY',
-            title: 'TITLEEEEEE',
+            body: "BODYYYYYYY",
+            title: "TITLEEEEEE",
           },
-          data: { url: '/home/expense-reports' },
+          data: { url: "/home/expense-reports" },
         },
         config
       );
