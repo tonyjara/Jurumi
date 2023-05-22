@@ -10,27 +10,21 @@ import {
   Text,
   useClipboard,
   Container,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import type { accountWithVerifyLink } from '@/lib/validations/account.validate';
-import {
-  defaultAccountData,
-  validateAccount,
-} from '../../lib/validations/account.validate';
-
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import MemberForm from '../Forms/member.form';
-import type { FormMember } from '@/lib/validations/member.validate';
-import { mockFormMember } from '@/lib/validations/member.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import MemberForm from "../Forms/member.form";
+import type { FormMember } from "@/lib/validations/member.validate";
+import { mockFormMember } from "@/lib/validations/member.validate";
 import {
   defaultMemberData,
   validateMember,
-} from '@/lib/validations/member.validate';
-import SeedButton from '../DevTools/SeedButton';
+} from "@/lib/validations/member.validate";
+import SeedButton from "../DevTools/SeedButton";
 
 const CreateMemberModal = ({
   isOpen,
@@ -42,7 +36,7 @@ const CreateMemberModal = ({
   onSubmit?: any;
 }) => {
   const context = trpcClient.useContext();
-  const { onCopy, value, setValue, hasCopied } = useClipboard('');
+  const { onCopy, value, setValue, hasCopied } = useClipboard("");
 
   const {
     handleSubmit,
@@ -54,13 +48,13 @@ const CreateMemberModal = ({
     resolver: zodResolver(validateMember),
   });
   const handleOnClose = () => {
-    setValue('');
+    setValue("");
     reset(defaultMemberData);
     onClose();
   };
   const { error, mutate, isLoading } = trpcClient.members.create.useMutation(
     handleUseMutationAlerts({
-      successText: 'El asociado ha sido creado!',
+      successText: "El asociado ha sido creado!",
       callback: () => {
         context.members.invalidate();
 
@@ -82,17 +76,17 @@ const CreateMemberModal = ({
           <ModalCloseButton />
           <ModalBody>
             <SeedButton reset={reset} mock={() => mockFormMember} />
-            <Text color={'gray.400'}>
+            <Text color={"gray.400"}>
               Si el email ya existe como usuario, los datos del usuario serán
               priorizados.
             </Text>
             {value.length > 0 && (
-              <Container textAlign={'center'}>
-                <Text fontWeight={'bold'} fontSize={'xl'}>
+              <Container textAlign={"center"}>
+                <Text fontWeight={"bold"} fontSize={"xl"}>
                   Comparte el link con la persona que quieres invitar.
                 </Text>
                 <Button onClick={onCopy} mb={10} mt={1}>
-                  {hasCopied ? 'Copiado!' : 'Copiar link de invitación'}
+                  {hasCopied ? "Copiado!" : "Copiar link de invitación"}
                 </Button>
               </Container>
             )}
