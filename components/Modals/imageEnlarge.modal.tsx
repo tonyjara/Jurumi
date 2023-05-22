@@ -35,11 +35,9 @@ const ImageEnlargeModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { url, imageName, createdAt, facturaNumber, amount, currency, text } =
-    searchableImage;
   const [disableButton, setDisableButton] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const { onCopy, hasCopied } = useClipboard(url ?? "");
+  const { onCopy, hasCopied } = useClipboard(searchableImage.url ?? "");
 
   const { mutate } = trpcClient.gallery.scanImage.useMutation(
     handleUseMutationAlerts({
@@ -47,10 +45,12 @@ const ImageEnlargeModal = ({
       callback: () => {},
     })
   );
+  const { data: fetchedSearchableImage } =
+    trpcClient.searchableImage.getById.useQuery({ id: searchableImage.id });
 
   const handleImageScan = async () => {
-    if (!imageName) return;
-    mutate({ imageName: imageName });
+    if (!searchableImage.imageName) return;
+    mutate({ imageName: searchableImage.imageName });
 
     setDisableButton(true);
     setTimeout(() => {
@@ -58,8 +58,13 @@ const ImageEnlargeModal = ({
     }, 20000);
   };
 
+  const handleModalClose = () => {
+    setEditMode(false);
+    onClose();
+  };
+
   return (
-    <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
+    <Modal size="5xl" isOpen={isOpen} onClose={handleModalClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
@@ -68,7 +73,7 @@ const ImageEnlargeModal = ({
             <Box w={{ base: "100%", md: "50%" }}>
               <TransformWrapper>
                 <TransformComponent>
-                  <Image alt="expandable image" src={url} />
+                  <Image alt="expandable image" src={searchableImage.url} />
                 </TransformComponent>
               </TransformWrapper>
             </Box>
@@ -93,39 +98,49 @@ const ImageEnlargeModal = ({
                   <Button onClick={() => setEditMode(true)}>Editar</Button>
                 )}
               </ButtonGroup>
-              <ReplaceSearchableImage searchableImage={searchableImage} />
+              {!editMode && fetchedSearchableImage && (
+                <ReplaceSearchableImage
+                  searchableImage={fetchedSearchableImage}
+                />
+              )}
               {!editMode && (
                 <div>
-                  <Text mb={"10px"} fontSize={"xl"}>
+                  <Text my={"10px"} fontSize={"xl"}>
                     <span style={{ fontWeight: "bold" }}>Fecha:</span> <br />
-                    {createdAt && format(createdAt, "dd/MM/yy hh:mm")}
+                    {searchableImage.createdAt &&
+                      format(searchableImage.createdAt, "dd/MM/yy hh:mm")}
                   </Text>
                   <Text mb={"10px"} fontSize={"xl"}>
                     <span style={{ fontWeight: "bold" }}>Nombre:</span> <br />
-                    {imageName}
+                    {searchableImage.imageName}
                   </Text>
                   <Text mb={"10px"} fontSize={"xl"}>
                     <span style={{ fontWeight: "bold" }}>
                       Número de factura:
                     </span>
                     <br />
-                    {facturaNumber}
+                    {fetchedSearchableImage?.facturaNumber}
                   </Text>
                   <Text mb={"10px"} fontSize={"xl"}>
                     <span style={{ fontWeight: "bold" }}>Monto:</span>
                     <br />
-                    {amount && currency && decimalFormat(amount, currency)}
+                    {fetchedSearchableImage &&
+                      decimalFormat(
+                        fetchedSearchableImage.amount,
+                        fetchedSearchableImage.currency
+                      )}
                   </Text>
 
                   <Text mb={"10px"} fontSize={"xl"}>
-                    <span style={{ fontWeight: "bold" }}>Texto:</span> {text}
+                    <span style={{ fontWeight: "bold" }}>Texto:</span>{" "}
+                    {fetchedSearchableImage?.text}
                   </Text>
                 </div>
               )}
-              {editMode && (
+              {editMode && fetchedSearchableImage && (
                 <EditSearchableImageForm
                   setEditMode={setEditMode}
-                  searchableImage={searchableImage}
+                  searchableImage={fetchedSearchableImage}
                 />
               )}
             </Box>

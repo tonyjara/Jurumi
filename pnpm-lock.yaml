@@ -200,8 +200,8 @@ dependencies:
     specifier: 1.2.3
     version: 1.2.3(react@18.2.0)
   react-number-format:
-    specifier: 5.2.0
-    version: 5.2.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: 5.2.2
+    version: 5.2.2(react-dom@18.2.0)(react@18.2.0)
   react-query:
     specifier: 3.39.3
     version: 3.39.3(react-dom@18.2.0)(react@18.2.0)
@@ -8725,8 +8725,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-number-format@5.2.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-GEj2U/1eAbVe8rq0ky1jdKwsCiMGygwPcPnm1Y5ADSbl8NIfK9Mbzje5TdG1QOu1m7cr7PM1irN5fi/p2FGghQ==}
+  /react-number-format@5.2.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-wCh64Z1HCwXcO2dbgkeYIaB+Rmp/fcsH8kAeRtUkc46dv1pIrgDjie2WkOqKBw8YqyqhwNdYgNFNQuuY+iGJ/g==}
     peerDependencies:
       react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
       react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
