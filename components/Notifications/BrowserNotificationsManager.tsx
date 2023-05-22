@@ -13,7 +13,7 @@ const BrowserNotificationsManager = () => {
   const cloudMessagingKeyPair = process.env.NEXT_PUBLIC_FB_MESSAGING_KEY;
   const [mounted, setMounted] = useState(false);
 
-  //Mobile notifications DO NOT work on IOS, without this, the app crashes.
+  // Mobile notifications DO NOT work on IOS, without this, the app crashes.
 
   const notificationsAreSupported = () =>
     typeof window !== "undefined" && !isIOS;
