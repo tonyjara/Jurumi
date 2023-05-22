@@ -1,6 +1,8 @@
 # JURUMI
 
-Jurumi is a web platform created to manage non-profit's projects, keep track of expenses and soon memberships.
+![image](https://drive.google.com/uc?id=132FlK7B_nfMK-0WHqwwEJIr7agPKqxwf =400x200)
+
+Jurumi is a web platform created to manage Paraguayan non-profit's projects keep track of processes, expenses and soon memberships.
 
 ## Why Jurumi?
 
