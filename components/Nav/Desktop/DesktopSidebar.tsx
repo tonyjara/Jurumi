@@ -36,7 +36,7 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
       w={{ md: minimized ? 20 : 60 }}
       pos="fixed"
       h="full"
-      overflowY={"auto"}
+      overflowY={"hidden"}
       display={{ base: "none", md: "block" }}
       justifyContent="center"
     >
