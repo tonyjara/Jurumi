@@ -91,11 +91,9 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         pageIndex,
         pageSize,
         sorting: globalFilter ? sorting : null,
-      }
-      /* { keepPreviousData: globalFilter ? true : false } */
+      },
+      { keepPreviousData: globalFilter ? true : false }
     );
-
-  /* console.log(moneyRequests ? moneyRequests : ""); */
 
   const { data: findByIdData, isFetching } =
     trpcClient.moneyRequest.findCompleteById.useQuery(
