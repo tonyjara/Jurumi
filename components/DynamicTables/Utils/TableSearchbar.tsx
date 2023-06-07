@@ -1,88 +1,95 @@
 import { ChevronDownIcon, CloseIcon, Search2Icon } from "@chakra-ui/icons";
 import {
-  InputGroup,
-  Input,
-  InputRightElement,
-  Text,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button,
-  Flex,
-  Menu,
+    InputGroup,
+    Input,
+    InputRightElement,
+    Text,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    Button,
+    Flex,
+    Menu,
 } from "@chakra-ui/react";
 import React from "react";
 
 const TableSearchbar = ({
-  searchValue,
-  setSearchValue,
-  type,
-  placeholder,
-  helperText,
-  filterOptions,
+    searchValue,
+    setSearchValue,
+    type,
+    placeholder,
+    helperText,
+    filterOptions,
+    filterValue,
+    setFilterValue,
 }: {
-  searchValue: { value: string; filter: string };
-  setSearchValue: (
-    value: React.SetStateAction<{ value: string; filter: string }>
-  ) => void;
-  type: "text" | "number";
-  placeholder: string;
-  helperText?: string;
-  filterOptions?: { value: string; label: string }[];
+    searchValue: string;
+    setSearchValue: React.Dispatch<React.SetStateAction<string>>;
+    filterValue: string;
+    setFilterValue: React.Dispatch<React.SetStateAction<string>>;
+    type: "text" | "number";
+    placeholder: string;
+    helperText?: string;
+    filterOptions?: { value: string; label: string }[];
 }) => {
-  const hasLength = !!searchValue.value.length;
+    const hasLength = !!searchValue.length;
 
-  const filterLabel =
-    filterOptions?.find((x) => x.value === searchValue.filter)?.label ?? "Id";
+    const filterLabel =
+        filterOptions?.find((x) => x.value === filterValue)?.label ?? "Id";
 
-  return (
-    <Flex w="100%" flexDir={{ base: "column-reverse", md: "row" }}>
-      <InputGroup maxW={"200px"} flexDir={"column"}>
-        <Input
-          type={type}
-          value={searchValue.value}
-          onChange={(x) =>
-            setSearchValue({ ...searchValue, value: x.target.value })
-          }
-          variant={"flushed"}
-          placeholder={placeholder + " " + filterLabel}
-        />
-        <InputRightElement
-          onClick={() =>
-            hasLength && setSearchValue({ ...searchValue, value: "" })
-          }
-          cursor={hasLength ? "pointer" : "auto"}
+    return (
+        <Flex
+            gap={{ base: "0px", md: "20px" }}
+            ml={{ base: "0px", md: "10px" }}
+            w="100%"
+            flexDir={{ base: "column-reverse", md: "row" }}
         >
-          {hasLength ? <CloseIcon /> : <Search2Icon />}
-        </InputRightElement>
-        <Text color={"gray.500"}>{helperText}</Text>
-      </InputGroup>
-      {filterOptions?.length && (
-        <Menu>
-          <MenuButton
-            maxW={"500px"}
-            whiteSpace={"nowrap"}
-            as={Button}
-            rightIcon={<ChevronDownIcon />}
-          >
-            Filtro:{" "}
-            {filterOptions?.find((x) => x.value === searchValue.filter)
-              ?.label ?? ""}
-          </MenuButton>
-          <MenuList>
-            {filterOptions?.map((x) => (
-              <MenuItem
-                onClick={() => setSearchValue({ value: "", filter: x.value })}
-                key={x.value}
-              >
-                {x.label}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
-      )}
-    </Flex>
-  );
+            <InputGroup
+                mt={{ base: "5px", md: "0px" }}
+                maxW={"250px"}
+                flexDir={"column"}
+            >
+                <Input
+                    type={type}
+                    value={searchValue}
+                    onChange={(x) => setSearchValue(x.target.value)}
+                    variant={"flushed"}
+                    placeholder={placeholder + " " + filterLabel}
+                />
+                <InputRightElement
+                    onClick={() => hasLength && setSearchValue("")}
+                    cursor={hasLength ? "pointer" : "auto"}
+                >
+                    {hasLength ? <CloseIcon /> : <Search2Icon />}
+                </InputRightElement>
+                <Text color={"gray.500"}>{helperText}</Text>
+            </InputGroup>
+            {filterOptions?.length && (
+                <Menu>
+                    <MenuButton
+                        maxW={"250px"}
+                        minW={"150px"}
+                        whiteSpace={"normal"}
+                        height={"auto"}
+                        textAlign={"left"}
+                        py={{ base: "5px", md: "0px" }}
+                        as={Button}
+                        rightIcon={<ChevronDownIcon />}
+                    >
+                        Filtro:{" "}
+                        {filterOptions?.find((x) => x.value === filterValue)?.label ?? ""}
+                    </MenuButton>
+                    <MenuList>
+                        {filterOptions?.map((x) => (
+                            <MenuItem onClick={() => setFilterValue(x.value)} key={x.value}>
+                                {x.label}
+                            </MenuItem>
+                        ))}
+                    </MenuList>
+                </Menu>
+            )}
+        </Flex>
+    );
 };
 
 export default TableSearchbar;

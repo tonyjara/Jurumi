@@ -17,12 +17,12 @@ import {
   translatedMoneyReqStatus,
   translatedMoneyReqType,
 } from "@/lib/utils/TranslatedEnums";
-import type { MoneyRequestComplete } from "./MoneyRequestsPage.mod.requests";
 import { Center } from "@chakra-ui/react";
 import SearchableImageModalCell from "@/components/DynamicTables/DynamicCells/SearchableImagesModalCell";
 import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCell";
 import SelectCheckBoxCell from "@/components/DynamicTables/DynamicCells/SelectCheckBoxCell";
 import HeaderSelectCheckBox from "@/components/DynamicTables/DynamicCells/HeaderSelectCheckBox";
+import { MoneyRequestComplete } from "./mod.requests.types";
 
 const columnHelper = createColumnHelper<MoneyRequestComplete>();
 

@@ -1,9 +1,9 @@
-import { translatedMoneyReqType } from '@/lib/utils/TranslatedEnums';
-import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
-import type { MoneyRequestComplete } from '@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests';
-import { format } from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
-import { useReactToPrint } from 'react-to-print';
+import { translatedMoneyReqType } from "@/lib/utils/TranslatedEnums";
+import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
+import { format } from "date-fns";
+import { useEffect, useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
 
 const UsePrintComponent = ({
   x,
@@ -25,7 +25,7 @@ const UsePrintComponent = ({
   const handlePrintFundRequest = useReactToPrint({
     documentTitle: `${translatedMoneyReqType(x.moneyRequestType)} - ${
       x.account.displayName
-    } - ${format(new Date(), 'dd/MM/yy')}`,
+    } - ${format(new Date(), "dd/MM/yy")}`,
     content: () => printFundReqRef.current,
     onBeforeGetContent: () => {
       return new Promise((resolve) => {
@@ -42,7 +42,7 @@ const UsePrintComponent = ({
   const handlePrintExpenseRepsAndRets = useReactToPrint({
     documentTitle: `Rendiciones - ${x.account.displayName} - ${format(
       new Date(),
-      'dd/MM/yy'
+      "dd/MM/yy"
     )}`,
     content: () => printExpRepsAndRetsRef.current,
     onBeforeGetContent: () => {

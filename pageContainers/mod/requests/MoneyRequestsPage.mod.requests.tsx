@@ -1,16 +1,13 @@
-import { useDisclosure } from "@chakra-ui/react";
-import type {
-  Account,
-  CostCategory,
-  ExpenseReport,
-  ExpenseReturn,
-  MoneyRequest,
-  MoneyRequestApproval,
-  Project,
-  searchableImage,
-  TaxPayerBankInfo,
-  Transaction,
-} from "@prisma/client";
+import {
+  Text,
+  HStack,
+  Radio,
+  RadioGroup,
+  useDisclosure,
+  Checkbox,
+  Flex,
+} from "@chakra-ui/react";
+import type { MoneyRequest } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import type { TableOptions } from "@/components/DynamicTables/DynamicTable";
@@ -26,48 +23,18 @@ import CreateExpenseReportModal from "@/components/Modals/ExpenseReport.create.m
 import CreateExpenseReturnModal from "@/components/Modals/ExpenseReturn.create.modal";
 import RowOptionsModRequests from "./rowOptions.mod.requests";
 import { ApprovalUtils } from "@/lib/utils/ApprovalUtilts";
-
-export type MoneyRequestComplete = MoneyRequest & {
-  account: Account;
-  organization: {
-    moneyAdministrators: {
-      id: string;
-      displayName: string;
-    }[];
-    moneyRequestApprovers: {
-      id: string;
-      displayName: string;
-    }[];
-  };
-  project: Project | null;
-  costCategory: CostCategory | null;
-  taxPayer: {
-    id: string;
-    bankInfo: TaxPayerBankInfo | null;
-    razonSocial: string;
-    ruc: string;
-  } | null;
-  transactions: (Transaction & {
-    searchableImage: {
-      url: string;
-      imageName: string;
-    } | null;
-  })[];
-  expenseReports: (ExpenseReport & {
-    taxPayer: {
-      id: string;
-      razonSocial: string;
-    };
-  })[];
-  searchableImages: searchableImage[];
-  expenseReturns: ExpenseReturn[];
-  moneyRequestApprovals: MoneyRequestApproval[];
-};
+import { MoneyRequestComplete } from "./mod.requests.types";
+import useDebounce from "@/lib/hooks/useDebounce";
 
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
   const user = session.data?.user;
-  const [searchValue, setSearchValue] = useState({ value: "", filter: "id" });
+  const [searchValue, setSearchValue] = useState("");
+  const debouncedSearchValue = useDebounce(searchValue, 500);
+  const [filterValue, setFilterValue] = useState("id");
+  const [pendingFilter, setPendingFilter] = useState<
+    "reportPending" | "executionPending" | null
+  >(null);
   const [selectedRows, setSelectedRows] = useState<MoneyRequestComplete[]>([]);
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null
@@ -81,7 +48,8 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
 
   useEffect(() => {
     if (query.moneyRequestId) {
-      setSearchValue({ value: query.moneyRequestId, filter: "id" });
+      setSearchValue(query.moneyRequestId);
+      setFilterValue("id");
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,18 +80,30 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   }, [editMoneyRequest, isEditOpen]);
 
   const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
-  const { data: count } = trpcClient.moneyRequest.count.useQuery();
+  const { data: count } = trpcClient.moneyRequest.count.useQuery({
+    pendingFilter,
+  });
 
   const { data: moneyRequests, isLoading } =
     trpcClient.moneyRequest.getManyComplete.useQuery(
-      { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
-      { keepPreviousData: globalFilter ? true : false }
+      {
+        pendingFilter,
+        pageIndex,
+        pageSize,
+        sorting: globalFilter ? sorting : null,
+      }
+      /* { keepPreviousData: globalFilter ? true : false } */
     );
 
+  /* console.log(moneyRequests ? moneyRequests : ""); */
+
   const { data: findByIdData, isFetching } =
-    trpcClient.moneyRequest.findCompleteById.useQuery(searchValue, {
-      enabled: searchValue.value.length > 0,
-    });
+    trpcClient.moneyRequest.findCompleteById.useQuery(
+      { value: debouncedSearchValue, filter: filterValue, pendingFilter },
+      {
+        enabled: searchValue.length > 0,
+      }
+    );
 
   const handleDataSource = () => {
     if (!moneyRequests) return [];
@@ -164,6 +144,17 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     );
   };
 
+  const radioOptions = [
+    {
+      value: "beingReported",
+      label: "Rendición pendiente",
+    },
+    {
+      value: "pendingExecution",
+      label: "Ejecución pendiente",
+    },
+  ];
+
   return (
     <>
       <DynamicTable
@@ -174,6 +165,8 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
             placeholder="Buscar por"
             searchValue={searchValue}
             setSearchValue={setSearchValue}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
             filterOptions={[
               { value: "id", label: "Id" },
               {
@@ -196,6 +189,44 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         count={count ?? 0}
         colorRedKey={["wasCancelled"]}
         rowOptions={rowOptionsFunction}
+        headerComp={
+          <Flex
+            pt="20px"
+            px={{
+              base: "0px",
+              sm: "5px",
+              md: "5px",
+            }}
+            ml={{ base: "-5px", sm: "0px", md: "0px" }}
+            gap="20px"
+            display="flex"
+            alignItems="center"
+            flexDirection={{ base: "column", md: "row" }}
+          >
+            {radioOptions.map((x) => (
+              <Checkbox
+                size="lg"
+                onChange={() => {
+                  if (pendingFilter === x.value) {
+                    return setPendingFilter(null);
+                  }
+                  setPendingFilter(x.value as any);
+                }}
+                isChecked={pendingFilter === x.value}
+                value={x.value}
+                key={x.value}
+                color="gray.500"
+                textTransform="uppercase"
+                fontWeight="bold"
+                alignItems="center"
+              >
+                <Text fontSize="sm" overflow="hidden">
+                  {x.label}
+                </Text>
+              </Checkbox>
+            ))}
+          </Flex>
+        }
         {...dynamicTableProps}
       />
       {prefs?.selectedOrganization && (

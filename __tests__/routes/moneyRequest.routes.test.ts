@@ -57,10 +57,15 @@ test("test find by id", async () => {
   type Input = inferProcedureInput<
     AppRouter["moneyRequest"]["findCompleteById"]
   >;
-  const input: Input = { value: "cleyy43mp0003pftwekyy3pny", filter: "id" };
+  const input: Input = {
+    value: "cleyy43mp0003pftwekyy3pny",
+    filter: "id",
+    pendingFilter: null,
+  };
   const result = await adminCaller.moneyRequest.findCompleteById({
     value: input.value,
     filter: "id",
+    pendingFilter: null,
   });
 
   expect(result).not.toBe(null);

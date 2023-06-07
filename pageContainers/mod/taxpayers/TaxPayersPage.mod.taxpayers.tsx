@@ -13,9 +13,10 @@ import type { FormTaxPayer } from "@/lib/validations/taxtPayer.validate";
 import RowOptionsHomeTaxPayers from "./rowOptions.mod.taxpayers";
 
 const TaxPayersPage = () => {
-    const [searchValue, setSearchValue] = useState({ value: "", filter: "ruc" });
+    const [searchValue, setSearchValue] = useState("");
+    const [filterValue, setFilterValue] = useState("ruc");
+    const debouncedSearchValue = useDebounce(searchValue, 500);
     const [editTaxPayer, setEditTaxPayer] = useState<FormTaxPayer | null>(null);
-    const debouncedSearchValue = useDebounce(searchValue.value, 500);
     const dynamicTableProps = useDynamicTable();
     const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
         dynamicTableProps;
@@ -78,6 +79,8 @@ const TaxPayersPage = () => {
                         placeholder="Buscar por"
                         searchValue={searchValue}
                         setSearchValue={setSearchValue}
+                        filterValue={filterValue}
+                        setFilterValue={setFilterValue}
                         filterOptions={[{ value: "ruc", label: "Ruc" }]}
                     />
                 }

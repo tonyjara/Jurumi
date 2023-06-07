@@ -11,8 +11,8 @@ import type {
 import type { FormImbursement } from "@/lib/validations/imbursement.validate";
 import type { FormTransactionCreate } from "@/lib/validations/transaction.create.validate";
 import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
-import type { MoneyRequestComplete } from "@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests";
 import { FormMoneyAccounOffset } from "@/lib/validations/moneyAccountOffset.validate";
+import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 
 const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
