@@ -73,7 +73,7 @@ const ApprovalsPage = () => {
         data,
         isFetching: pendingRequestsFetching,
         isLoading,
-    } = trpcClient.moneyRequest.getManyComplete.useQuery(
+    } = trpcClient.moneyRequest.getManyCompleteForApprovalPage.useQuery(
         {
             status: statusState,
             pageIndex,

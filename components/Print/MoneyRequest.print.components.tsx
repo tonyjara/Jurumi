@@ -3,47 +3,47 @@ import ExpenseRepAndRetPringPage from "@/pageContainers/home/settings/print-temp
 import FundRequestPrintPage from "@/pageContainers/home/settings/print-templates/FundRequestPrintPage.home.print";
 import MoneyOrderPrintPage from "@/pageContainers/home/settings/print-templates/MoneyOrderPrintPage.home.setting.print-templates";
 import ReimbursementOrderPrintPage from "@/pageContainers/home/settings/print-templates/ReimbursementOrderPrintPage.home.settings.print-templates";
-import type { MoneyRequestComplete } from "@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests";
+import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 import React from "react";
 
 const MoneyRequestPrintComponents = ({
-    isPrinting,
-    printExpRepsAndRetsRef,
-    printFundReqRef,
-    x,
+  isPrinting,
+  printExpRepsAndRetsRef,
+  printFundReqRef,
+  x,
 }: {
-    isPrinting: boolean;
-    x: MoneyRequestComplete | CompleteMoneyReqHome;
-    printFundReqRef: React.MutableRefObject<null>;
-    printExpRepsAndRetsRef: React.MutableRefObject<null>;
+  isPrinting: boolean;
+  x: MoneyRequestComplete | CompleteMoneyReqHome;
+  printFundReqRef: React.MutableRefObject<null>;
+  printExpRepsAndRetsRef: React.MutableRefObject<null>;
 }) => {
-    return (
-        <div style={{ width: "100%" }}>
-            <div
-                style={{ display: isPrinting ? "block" : "none", width: "100%" }}
-                ref={printFundReqRef}
-            >
-                {" "}
-                {x.moneyRequestType === "FUND_REQUEST" && (
-                    <FundRequestPrintPage moneyRequest={x} />
-                )}
-                {x.moneyRequestType === "REIMBURSMENT_ORDER" && (
-                    <ReimbursementOrderPrintPage moneyRequest={x} />
-                )}
-                {x.moneyRequestType === "MONEY_ORDER" && (
-                    <MoneyOrderPrintPage moneyRequest={x} />
-                )}
-            </div>
-            <div
-                style={{ display: isPrinting ? "block" : "none" }}
-                ref={printExpRepsAndRetsRef}
-            >
-                {x.moneyRequestType === "FUND_REQUEST" && (
-                    <ExpenseRepAndRetPringPage moneyRequest={x} />
-                )}
-            </div>
-        </div>
-    );
+  return (
+    <div style={{ width: "100%" }}>
+      <div
+        style={{ display: isPrinting ? "block" : "none", width: "100%" }}
+        ref={printFundReqRef}
+      >
+        {" "}
+        {x.moneyRequestType === "FUND_REQUEST" && (
+          <FundRequestPrintPage moneyRequest={x} />
+        )}
+        {x.moneyRequestType === "REIMBURSMENT_ORDER" && (
+          <ReimbursementOrderPrintPage moneyRequest={x} />
+        )}
+        {x.moneyRequestType === "MONEY_ORDER" && (
+          <MoneyOrderPrintPage moneyRequest={x} />
+        )}
+      </div>
+      <div
+        style={{ display: isPrinting ? "block" : "none" }}
+        ref={printExpRepsAndRetsRef}
+      >
+        {x.moneyRequestType === "FUND_REQUEST" && (
+          <ExpenseRepAndRetPringPage moneyRequest={x} />
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default MoneyRequestPrintComponents;

@@ -23,6 +23,7 @@ const TableTitleMenu = ({
                         alignItems="center"
                         flexDir={"row"}
                         display="flex"
+                        minW="250px"
                     >
                         <div
                             style={{

@@ -4,7 +4,6 @@ import router from "next/router";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
-import type { MoneyRequestComplete } from "./MoneyRequestsPage.mod.requests";
 import { RowOptionDeleteDialog } from "@/components/Toasts & Alerts/RowOption.delete.dialog";
 import { RowOptionCancelDialog } from "@/components/Toasts & Alerts/RowOptions.cancel.dialog";
 import {
@@ -16,6 +15,7 @@ import UsePrintComponent from "@/components/Print/UsePrintComponent";
 import MoneyRequestPrintComponents from "@/components/Print/MoneyRequest.print.components";
 import { useSession } from "next-auth/react";
 import ExportToExcelMenuItem from "@/components/Xlsx/ExportToExcelMenuItem";
+import { MoneyRequestComplete } from "./mod.requests.types";
 
 const RowOptionsModRequests = ({
   x,

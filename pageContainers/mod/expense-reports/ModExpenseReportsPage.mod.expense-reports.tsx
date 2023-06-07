@@ -10,6 +10,7 @@ import { trpcClient } from "@/lib/utils/trpcClient";
 import { modExpenseReportsColumns } from "./columns.mod.expense-reports";
 import RowOptionsHomeExpenseReports from "./rowOptions.mod.expense-reports";
 import { ExpenseReportsPageProps } from "@/pages/mod/expense-reports";
+import useDebounce from "@/lib/hooks/useDebounce";
 
 export type ExpenseReportComplete = ExpenseReport & {
   project: {
@@ -40,7 +41,9 @@ const ModExpenseReportsPage = ({
 }: {
   query: ExpenseReportsPageProps;
 }) => {
-  const [searchValue, setSearchValue] = useState({ value: "", filter: "id" });
+  const [searchValue, setSearchValue] = useState("");
+  const debouncedSearchValue = useDebounce(searchValue, 500);
+  const [filterValue, setFilterValue] = useState("id");
   const [editExpenseReport, setEditExpenseReport] =
     useState<ExpenseReportComplete | null>(null);
   const dynamicTableProps = useDynamicTable();
@@ -49,10 +52,7 @@ const ModExpenseReportsPage = ({
 
   useEffect(() => {
     if (query.expenseReportsIds) {
-      setSearchValue({
-        ...searchValue,
-        value: String(query.expenseReportsIds) ?? "",
-      });
+      setSearchValue(String(query.expenseReportsIds) ?? "");
     }
 
     return () => {};
@@ -80,8 +80,8 @@ const ModExpenseReportsPage = ({
 
   const { data: findByIdData, isFetching: isFetchingById } =
     trpcClient.expenseReport.findCompleteById.useQuery(
-      { ids: searchValue.value.split(",") },
-      { enabled: searchValue.value.length > 0 }
+      { ids: searchValue.split(",") },
+      { enabled: searchValue.length > 0 }
     );
 
   const { data: count } = trpcClient.expenseReport.count.useQuery();
@@ -122,7 +122,9 @@ const ModExpenseReportsPage = ({
           <TableSearchbar
             type="text"
             placeholder="Buscar por ID"
-            searchValue={searchValue}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
+            searchValue={debouncedSearchValue}
             setSearchValue={setSearchValue}
           />
         }

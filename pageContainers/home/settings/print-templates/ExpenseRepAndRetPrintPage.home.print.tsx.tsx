@@ -5,7 +5,7 @@ import {
   reduceExpenseReturns,
 } from "@/lib/utils/TransactionUtils";
 import { trpcClient } from "@/lib/utils/trpcClient";
-import type { MoneyRequestComplete } from "@/pageContainers/mod/requests/MoneyRequestsPage.mod.requests";
+import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 import { moneyReqCompleteMock } from "@/__tests__/mocks/Mocks";
 import {
   Box,

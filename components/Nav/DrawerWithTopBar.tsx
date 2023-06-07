@@ -36,7 +36,7 @@ export default function DrawerWithTopBar({
   return (
     <Box
       overflow={"hidden"}
-      /* minH="100vh" */
+      minH="100vh"
       bg={useColorModeValue("gray.100", "gray.900")}
     >
       {authenticated && (

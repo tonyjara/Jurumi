@@ -22,6 +22,10 @@ import {
 } from "./utils/Cancelations.routeUtils";
 import { upsertTaxPayter } from "./utils/TaxPayer.routeUtils";
 import { createMoneyRequestSlackNotification } from "./notifications/slack/moneyRequestCreate.notification.slack";
+import {
+  beingReportedRawSqlShort,
+  executionPengingRawSql,
+} from "@/server/db/raw-sql";
 
 export const moneyRequestRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
@@ -93,7 +97,32 @@ export const moneyRequestRouter = router({
         where: { accountId: user.id, status: input.status },
       });
     }),
-  count: protectedProcedure.query(async () => prisma?.moneyRequest.count()),
+  count: protectedProcedure
+    .input(
+      z.object({
+        pendingFilter: z.string().nullable(),
+      })
+    )
+    .query(async ({ input }) => {
+      const getHasBeingReportedIds = await beingReportedRawSqlShort();
+      const hasBeingReportedIds = getHasBeingReportedIds.map((r: any) => r.id);
+
+      const getExecutionPendingIds = await executionPengingRawSql();
+      const executionPendingIds = getExecutionPendingIds.map((r: any) => r.id);
+      const handleWhere = () => {
+        if (input.pendingFilter === "beingReported") {
+          return { id: { in: hasBeingReportedIds } };
+        }
+
+        if (input.pendingFilter === "pendingExecution") {
+          return { id: { in: executionPendingIds } };
+        }
+
+        return undefined;
+      };
+
+      return prisma?.moneyRequest.count({ where: handleWhere() });
+    }),
   countWhereStatus: protectedProcedure
     .input(
       z.object({
@@ -113,7 +142,7 @@ export const moneyRequestRouter = router({
   getManyComplete: adminModObserverProcedure
     .input(
       z.object({
-        status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
+        pendingFilter: z.string().nullable(),
         pageIndex: z.number().nullish(),
         pageSize: z.number().min(1).max(100).nullish(),
         sorting: z
@@ -122,15 +151,34 @@ export const moneyRequestRouter = router({
           .nullish(),
       })
     )
-    .query(async ({ input, ctx }) => {
-      const user = ctx.session.user;
+    .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
       const pageIndex = input.pageIndex ?? 0;
+
+      const getHasBeingReportedIds = await beingReportedRawSqlShort();
+      const hasBeingReportedIds = getHasBeingReportedIds.map((r: any) => r.id);
+
+      const getExecutionPendingIds = await executionPengingRawSql();
+      const executionPendingIds = getExecutionPendingIds.map((r: any) => r.id);
+      const handleWhere = () => {
+        if (input.pendingFilter === "beingReported") {
+          return { id: { in: hasBeingReportedIds } };
+        }
+
+        if (input.pendingFilter === "pendingExecution") {
+          return { id: { in: executionPendingIds } };
+        }
+
+        return undefined;
+      };
 
       return await prisma?.moneyRequest.findMany({
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
+        /* where: { id: { in: hasBeingReportedIds } }, */
+        where: handleWhere(),
+
         include: {
           taxPayer: {
             select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
@@ -165,14 +213,77 @@ export const moneyRequestRouter = router({
             },
           },
         },
+      });
+    }),
 
+  getManyCompleteForApprovalPage: adminModObserverProcedure
+    .input(
+      z.object({
+        status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
+        pageIndex: z.number().nullish(),
+        pageSize: z.number().min(1).max(100).nullish(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const user = ctx.session.user;
+      const pageSize = input.pageSize ?? 10;
+      const pageIndex = input.pageIndex ?? 0;
+
+      return await prisma?.moneyRequest.findMany({
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        orderBy: handleOrderBy({ input }),
         where: input.status ? handleWhereImApprover(input, user.id) : {},
+        include: {
+          taxPayer: {
+            select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
+          },
+          account: true,
+          project: true,
+          costCategory: true,
+          transactions: {
+            where: {
+              cancellationId: null,
+              isCancellation: false,
+            },
+            include: {
+              searchableImage: {
+                select: { url: true, imageName: true },
+              },
+            },
+          },
+          searchableImages: true,
+          moneyRequestApprovals: { where: { wasCancelled: false } },
+          expenseReports: {
+            where: { wasCancelled: false },
+            include: { taxPayer: { select: { id: true, razonSocial: true } } },
+          },
+          expenseReturns: { where: { wasCancelled: false } },
+          organization: {
+            select: {
+              moneyRequestApprovers: {
+                select: { id: true, displayName: true },
+              },
+              moneyAdministrators: { select: { id: true, displayName: true } },
+            },
+          },
+        },
       });
     }),
   findCompleteById: adminModObserverProcedure
-    .input(z.object({ value: z.string(), filter: z.string() }))
+    .input(
+      z.object({
+        value: z.string(),
+        filter: z.string(),
+        pendingFilter: z.string().nullable(),
+      })
+    )
     .query(async ({ input }) => {
-      if (!input.value.length) return null;
+      if (!input.value.length || !input.filter.length) return null;
 
       const handleWhere = () => {
         if (input.filter === "amountRequested") {
@@ -185,14 +296,21 @@ export const moneyRequestRouter = router({
 
         return { ["id"]: input.value };
       };
+      const handleAnd = () => {
+        return {
+          ["AND"]: [
+            /* { */
+            /*   status: "PENDING", */
+            /* }, */
+          ],
+        };
+      };
+
+      const mergedQuery = Object.assign(handleWhere(), handleAnd());
 
       return await prisma?.moneyRequest.findMany({
-        where: handleWhere(),
-        /* where: { */
-        /*     amountRequested: { */
-        /*         gte: new Prisma.Decimal(parseInt(input.value)), */
-        /*     }, */
-        /* }, */
+        /* where: handleWhere(), */
+        where: mergedQuery,
         include: {
           taxPayer: {
             select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
