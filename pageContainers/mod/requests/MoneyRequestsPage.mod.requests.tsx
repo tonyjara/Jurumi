@@ -124,6 +124,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
       label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
+  //
 
   const rowOptionsFunction = (x: MoneyRequestComplete) => {
     const { needsApproval, hasBeenApproved } = ApprovalUtils(x as any, user);
