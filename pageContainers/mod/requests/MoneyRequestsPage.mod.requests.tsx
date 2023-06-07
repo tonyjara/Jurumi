@@ -205,6 +205,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           >
             {radioOptions.map((x) => (
               <Checkbox
+                name={x.value}
                 size="lg"
                 onChange={() => {
                   if (pendingFilter === x.value) {

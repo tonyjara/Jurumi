@@ -38,7 +38,8 @@ const MoneyRequestPrintComponents = ({
         style={{ display: isPrinting ? "block" : "none" }}
         ref={printExpRepsAndRetsRef}
       >
-        {x.moneyRequestType === "FUND_REQUEST" && (
+        {(x.moneyRequestType === "FUND_REQUEST" ||
+          x.moneyRequestType === "MONEY_ORDER") && (
           <ExpenseRepAndRetPringPage moneyRequest={x} />
         )}
       </div>

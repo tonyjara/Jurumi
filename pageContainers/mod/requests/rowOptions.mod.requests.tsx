@@ -113,7 +113,8 @@ const RowOptionsModRequests = ({
         Editar
       </MenuItem>
 
-      {x.moneyRequestType === "FUND_REQUEST" && (
+      {(x.moneyRequestType === "FUND_REQUEST" ||
+        x.moneyRequestType === "MONEY_ORDER") && (
         <MenuItem
           isDisabled={
             !isAccepted || x.wasCancelled || isGreaterOrEqualToExecutionTotal
@@ -131,7 +132,8 @@ const RowOptionsModRequests = ({
           !isAccepted ||
           x.wasCancelled ||
           isGreaterOrEqualToExecutionTotal ||
-          x.moneyRequestType === "REIMBURSMENT_ORDER"
+          x.moneyRequestType === "REIMBURSMENT_ORDER" ||
+          x.moneyRequestType === "MONEY_ORDER"
         }
         onClick={() => {
           setReqForReport(x);
@@ -167,7 +169,8 @@ const RowOptionsModRequests = ({
       <ExportToExcelMenuItem data={selectedRows} />
       <MenuItem onClick={handlePrintFundRequest}>Imprimir solicitud</MenuItem>
 
-      {x.moneyRequestType === "FUND_REQUEST" && (
+      {(x.moneyRequestType === "FUND_REQUEST" ||
+        x.moneyRequestType === "MONEY_ORDER") && (
         <MenuItem
           isDisabled={!isGreaterOrEqualToExecutionTotal}
           onClick={handlePrintExpenseRepsAndRets}
