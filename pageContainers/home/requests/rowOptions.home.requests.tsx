@@ -73,26 +73,28 @@ const RowOptionsHomeRequests = ({
   return (
     <div>
       <>
+        {(x.moneyRequestType === "FUND_REQUEST" ||
+          x.moneyRequestType === "MONEY_ORDER") && (
+          <MenuItem
+            isDisabled={
+              !isAccepted || x.wasCancelled || isGreaterOrEqualToExecutionTotal
+              /* x.moneyRequestType === "REIMBURSMENT_ORDER" */
+            }
+            onClick={() => {
+              setReqForReport(x);
+              onExpRepOpen();
+            }}
+          >
+            Crear rendición
+          </MenuItem>
+        )}
         <MenuItem
           isDisabled={
             !isAccepted ||
             x.wasCancelled ||
             isGreaterOrEqualToExecutionTotal ||
-            x.moneyRequestType === "REIMBURSMENT_ORDER"
-          }
-          onClick={() => {
-            setReqForReport(x);
-            onExpRepOpen();
-          }}
-        >
-          Crear rendición
-        </MenuItem>
-        <MenuItem
-          isDisabled={
-            !isAccepted ||
-            x.wasCancelled ||
-            isGreaterOrEqualToExecutionTotal ||
-            x.moneyRequestType === "REIMBURSMENT_ORDER"
+            x.moneyRequestType === "REIMBURSMENT_ORDER" ||
+            x.moneyRequestType === "MONEY_ORDER"
           }
           onClick={() => {
             setReqForReport(x);
@@ -103,7 +105,8 @@ const RowOptionsHomeRequests = ({
         </MenuItem>
         <MenuItem onClick={handlePrintFundRequest}>Imprimir solicitud</MenuItem>
 
-        {x.moneyRequestType === "FUND_REQUEST" && (
+        {(x.moneyRequestType === "FUND_REQUEST" ||
+          x.moneyRequestType === "MONEY_ORDER") && (
           <MenuItem
             isDisabled={!isGreaterOrEqualToExecutionTotal}
             onClick={handlePrintExpenseRepsAndRets}

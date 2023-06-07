@@ -31,6 +31,7 @@ export default function HeaderSelectCheckBox({
       }}
     >
       <Checkbox
+        name="chckbox"
         size="lg"
         isIndeterminate={isIndeterminate}
         isChecked={isAllChecked}

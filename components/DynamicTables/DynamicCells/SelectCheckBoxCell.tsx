@@ -13,6 +13,7 @@ export default function SelectCheckBoxCell({
   const isChecked = selectedRows.some((x) => x.id === row.original.id);
   return (
     <Checkbox
+      name="selectCheckbox"
       size="lg"
       isChecked={isChecked}
       onChange={(e) => {

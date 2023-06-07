@@ -91,11 +91,9 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         pageIndex,
         pageSize,
         sorting: globalFilter ? sorting : null,
-      }
-      /* { keepPreviousData: globalFilter ? true : false } */
+      },
+      { keepPreviousData: globalFilter ? true : false }
     );
-
-  /* console.log(moneyRequests ? moneyRequests : ""); */
 
   const { data: findByIdData, isFetching } =
     trpcClient.moneyRequest.findCompleteById.useQuery(
@@ -205,6 +203,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           >
             {radioOptions.map((x) => (
               <Checkbox
+                name={x.value}
                 size="lg"
                 onChange={() => {
                   if (pendingFilter === x.value) {

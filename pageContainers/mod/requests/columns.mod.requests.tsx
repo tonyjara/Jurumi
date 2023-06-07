@@ -173,19 +173,20 @@ export const moneyRequestsColumns = ({
               />
             )}
 
-            {x.row.original.moneyRequestType === "MONEY_ORDER" &&
-              (x.row.original.transactions[0]?.searchableImage?.url ? (
-                <ImageModalCell
-                  url={x.row.original.transactions[0]?.searchableImage.url}
-                  imageName={
-                    x.row.original.transactions[0]?.searchableImage.imageName
-                  }
-                />
-              ) : (
-                <div>-</div>
-              ))}
+            {/* {x.row.original.moneyRequestType === "MONEY_ORDER" && */}
+            {/*   (x.row.original.transactions[0]?.searchableImage?.url ? ( */}
+            {/*     <ImageModalCell */}
+            {/*       url={x.row.original.transactions[0]?.searchableImage.url} */}
+            {/*       imageName={ */}
+            {/*         x.row.original.transactions[0]?.searchableImage.imageName */}
+            {/*       } */}
+            {/*     /> */}
+            {/*   ) : ( */}
+            {/*     <div>-</div> */}
+            {/*   ))} */}
 
-            {x.row.original.moneyRequestType === "FUND_REQUEST" && (
+            {(x.row.original.moneyRequestType === "FUND_REQUEST" ||
+              x.row.original.moneyRequestType === "MONEY_ORDER") && (
               <PercentageCell
                 total={total}
                 executed={executed}
