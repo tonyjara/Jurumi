@@ -639,6 +639,8 @@ enum BankNamesPy {
   CITIBANK
   BANCO_DO_BRASIL
   BANCO_DE_LA_NACION_ARGENTINA
+  UENO
+  COOMECIPAR
 }
 
 enum BankDocType {
