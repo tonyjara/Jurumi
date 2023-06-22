@@ -1,17 +1,17 @@
-import TitleComponent from '@/components/Text/TitleComponent';
-import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormAccountProfile } from '@/lib/validations/profileSettings.validate';
+import TitleComponent from "@/components/Text/TitleComponent";
+import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import type { FormAccountProfile } from "@/lib/validations/profileSettings.validate";
 import {
   defaultAccountProfileData,
   validateAccountProfile,
-} from '@/lib/validations/profileSettings.validate';
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import FormControlledSwitch from '@/components/FormControlled/FormControlledSwitch';
+} from "@/lib/validations/profileSettings.validate";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import FormControlledSwitch from "@/components/FormControlled/FormControlledSwitch";
 
 const PreferencesSettingsPage = () => {
   const context = trpcClient.useContext();
@@ -28,7 +28,7 @@ const PreferencesSettingsPage = () => {
   const { error, mutate, isLoading } =
     trpcClient.account.updateMyPreferences.useMutation(
       handleUseMutationAlerts({
-        successText: 'Sus preferencias han sido actualizadas.',
+        successText: "Sus preferencias han sido actualizadas.",
         callback: () => {
           reset();
           context.invalidate();
@@ -51,9 +51,9 @@ const PreferencesSettingsPage = () => {
   };
 
   return (
-    <Box w={'100%'} maxW={'600px'}>
+    <Box w={"100%"} maxW={"600px"}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
-        <Flex gap={'10px'}>
+        <Flex gap={"10px"}>
           <TitleComponent title="Preferencias" />
           <Button
             isDisabled={isLoading || isSubmitting || isLoadingPreferences}
@@ -66,7 +66,7 @@ const PreferencesSettingsPage = () => {
         </Flex>
         {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
 
-        <Text mt={'10px'} fontSize={'2xl'}>
+        <Text mt={"10px"} fontSize={"2xl"}>
           Notificaciones
         </Text>
 
@@ -76,6 +76,13 @@ const PreferencesSettingsPage = () => {
           name="preferences.receiveEmailNotifications"
           label="Recibir notificaciones por correo:  No - Si"
         />
+        <Text>
+          Estas notificaciones incluyen: <br /> - Correos al ser aprovada una
+          solicitud
+          <br />
+          - Correos al ser rechazada una solicitud
+          <br />- Correos al crear una solicitud para aprobadores
+        </Text>
       </form>
     </Box>
   );

@@ -6,6 +6,7 @@ import {
   Box,
   Card,
   CardBody,
+  Flex,
   Image,
   Input,
   InputGroup,
@@ -23,6 +24,7 @@ const GalleryPage = () => {
     null
   );
   const dynamicTableProps = useDynamicTable();
+
   const { pageIndex, setPageIndex, setPageSize, pageSize } = dynamicTableProps;
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { data } = trpcClient.gallery.getManyImages.useQuery({
@@ -62,10 +64,10 @@ const GalleryPage = () => {
                 key={x.id}
                 h="170px"
               >
-                <Text>
-                  <span style={{ fontWeight: "bold" }}>{imageNumber}</span>{" "}
-                  {format(x.createdAt, "dd/MM/yy hh:mm")}
-                </Text>
+                <Flex maxW={"150px"} justifyContent={"space-between"}>
+                  <Text style={{ fontWeight: "bold" }}>{imageNumber} -</Text>{" "}
+                  <Text>{format(x.createdAt, "dd/MM/yy hh:mm")}</Text>
+                </Flex>
                 <Image
                   position="relative"
                   height="150px"
