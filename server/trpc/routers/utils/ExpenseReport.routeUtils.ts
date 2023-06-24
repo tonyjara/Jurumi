@@ -149,6 +149,7 @@ export const createReimbursementRequestBasedOnExpenseReport = async ({
     id: "",
     comments: "",
     createdAt: new Date(),
+    operationDate: new Date(),
     updatedAt: null,
     description: `Esta solicitud fue creada automáticamente en base a la rendición de gastos con código: ${expenseReport.id} . El valor pendiente para llegar al total de la solicitud de fondos al momento de la creación de esta rendición fue de ${formatedPendingAmount} . El monto rendido fue de ${formattedAmountSpent}, siendo asi la diferencia entre ambos de ${formattedDifference}`,
     status: "PENDING",

@@ -77,7 +77,9 @@ const ReimbursementOrderPrintPage = ({
               </Tr>
               <Tr>
                 <Td fontWeight={"bold"}>Fecha:</Td>
-                <Td>{format(new Date(), "dd/MM/yy hh:mm")}</Td>
+                <Td>
+                  {format(req.operationDate ?? new Date(), "dd/MM/yy hh:mm")}
+                </Td>
               </Tr>
               <Tr>
                 <Td fontWeight={"bold"}>Motivo:</Td>

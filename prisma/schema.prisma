@@ -425,6 +425,7 @@ model MoneyRequestApproval {
 model MoneyRequest {
   id               String             @id @default(cuid())
   createdAt        DateTime           @default(now())
+  operationDate    DateTime?          
   updatedAt        DateTime?          @updatedAt
   description      String
   comments         String             @default("")

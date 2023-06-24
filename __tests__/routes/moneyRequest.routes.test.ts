@@ -14,6 +14,7 @@ const prismaMock = mockDeep<PrismaClient>();
 const mockOutPut: MoneyRequest = {
   id: "cleyy43mp0003pftwekyy3pny",
   createdAt: new Date(),
+  operationDate: new Date(),
   updatedAt: null,
   description: "",
   status: "PENDING",

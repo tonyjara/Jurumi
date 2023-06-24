@@ -150,6 +150,7 @@ export const moneyRequestRouter = router({
                     .object({ id: z.string(), desc: z.boolean() })
                     .array()
                     .nullish(),
+                whereFilterList: z.any().array().optional(),
             })
         )
         .query(async ({ input }) => {
@@ -161,6 +162,8 @@ export const moneyRequestRouter = router({
 
             const getExecutionPendingIds = await executionPengingRawSql();
             const executionPendingIds = getExecutionPendingIds.map((r: any) => r.id);
+
+            //This handles raw sql queries
             const handleWhere = () => {
                 if (input.pendingFilter === "beingReported") {
                     return { id: { in: hasBeingReportedIds } };
@@ -173,12 +176,14 @@ export const moneyRequestRouter = router({
                 return undefined;
             };
 
+
             return await prisma?.moneyRequest.findMany({
                 take: pageSize,
                 skip: pageIndex * pageSize,
                 orderBy: handleOrderBy({ input }),
-                /* where: { id: { in: hasBeingReportedIds } }, */
-                where: handleWhere(),
+                where: {
+                    AND: [handleWhere() ?? {}, ...(input?.whereFilterList ?? [])],
+                },
 
                 include: {
                     taxPayer: {
@@ -367,6 +372,7 @@ export const moneyRequestRouter = router({
             const MoneyReq = await prisma?.moneyRequest.create({
                 data: {
                     accountId: user.id,
+                    operationDate: new Date(),
                     amountRequested: new Prisma.Decimal(input.amountRequested),
                     currency: input.currency,
                     description: input.description,
@@ -549,4 +555,10 @@ export const moneyRequestRouter = router({
             });
             return x;
         }),
+    changeOperationDate: adminModProcedure.input(z.object({ date: z.date(), id: z.string() })).mutation(async ({ input }) => {
+        return await prisma.moneyRequest.update({
+            where: { id: input.id }, data: { operationDate: input.date }
+
+        })
+    })
 });

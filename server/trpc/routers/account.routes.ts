@@ -112,10 +112,19 @@ export const accountsRouter = router({
         orderBy: handleOrderBy({ input }),
       });
     }),
-  getAllActive: adminModObserverProcedure.query(async () => {
+  getAllActiveInThisOrg: adminModObserverProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    const preferences = await prisma?.preferences.findUnique({
+      where: { accountId: user.id },
+      select: { selectedOrganization: true },
+    });
+
     //Use this to build options with react-select
     return await prisma?.account.findMany({
-      where: { active: true },
+      where: {
+        active: true,
+        organizations: { some: { id: preferences?.selectedOrganization } },
+      },
       orderBy: { displayName: "asc" },
       select: { id: true, displayName: true, email: true },
     });

@@ -1,5 +1,5 @@
 import { Text, useDisclosure, Checkbox, Flex } from "@chakra-ui/react";
-import type { MoneyRequest } from "@prisma/client";
+import type { MoneyRequest, Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import type { TableOptions } from "@/components/DynamicTables/DynamicTable";
@@ -27,6 +27,9 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
     const [pendingFilter, setPendingFilter] = useState<
         "reportPending" | "executionPending" | null
     >(null);
+    const [whereFilterList, setWhereFilterList] = useState<
+        Prisma.MoneyRequestScalarWhereInput[]
+    >([]);
     const [selectedRows, setSelectedRows] = useState<MoneyRequestComplete[]>([]);
     const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
         null
@@ -83,6 +86,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
                 pageIndex,
                 pageSize,
                 sorting: globalFilter ? sorting : null,
+                whereFilterList
             },
             { keepPreviousData: globalFilter ? true : false }
         );
@@ -150,6 +154,9 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         <>
             <DynamicTable
                 title={"Solicitudes"}
+                enableColumnFilters={true}
+                whereFilterList={whereFilterList}
+                setWhereFilterList={setWhereFilterList}
                 searchBar={
                     <TableSearchbar
                         type="text"
