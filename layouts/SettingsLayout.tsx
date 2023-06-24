@@ -22,8 +22,9 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
     "/home/settigs": 0,
     "/home/settings/preferences": 1,
     "/home/settings/notifications-org": 2,
-    "/home/settings/org-membership-preferences": 3,
-    "/home/settings/print-templates": 4,
+    "/home/settings/money-accounts": 3,
+    "/home/settings/org-membership-preferences": 4,
+    "/home/settings/print-templates": 5,
   };
   useEffect(() => {
     //@ts-ignore
@@ -46,6 +47,9 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
           <>
             <Link href={"/home/settings/notifications-org"}>
               <Tab whiteSpace={"nowrap"}>Notificationes Org.</Tab>
+            </Link>
+            <Link href={"/home/settings/money-accounts"}>
+              <Tab whiteSpace={"nowrap"}>Cuentas</Tab>
             </Link>
             <Link href={"/home/settings/org-membership-preferences"}>
               <Tab whiteSpace={"nowrap"}>Preferencias de Asociados</Tab>
