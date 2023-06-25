@@ -79,15 +79,17 @@ const FormControlledMoneyInput = <T extends FieldValues>({
               prefix={prefix ?? "Gs. "}
               onValueChange={(value) => {
                 if (value?.endsWith(".") && currency === "USD") {
-                  return field.onChange(value);
+                  return field.onChange(value as any);
                 }
                 return value
-                  ? field.onChange(new Prisma.Decimal(value))
-                  : field.onChange(0);
+                  ? field.onChange(new Prisma.Decimal(value) as any)
+                  : field.onChange(0 as any);
               }}
             />
             {totalAmount && (
-              <InputRightElement onClick={() => field.onChange(totalAmount)}>
+              <InputRightElement
+                onClick={() => field.onChange(totalAmount as any)}
+              >
                 <Button>MAX </Button>
               </InputRightElement>
             )}

@@ -14,8 +14,6 @@ import { es } from "date-fns/locale";
 import React, { useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 
-import "react-day-picker/dist/style.css";
-
 const MoneyRequestOperationDateChangeCell = ({
   date,
   id,

@@ -1,4 +1,3 @@
-import "react-day-picker/dist/style.css";
 import React, { useState, useEffect } from "react";
 import es from "date-fns/locale/es";
 
@@ -131,7 +130,8 @@ const FormControlledDatePicker = <T extends FieldValues>(
                   mode="single"
                   defaultMonth={selectedDate}
                   selected={selectedDate}
-                  onSelect={(e: Date | undefined) => {
+                  /* onSelect={(e: Date | undefined) => { */
+                  onSelect={(e: any) => {
                     handleDaySelect(e);
 
                     field.onChange(e ? e : null);

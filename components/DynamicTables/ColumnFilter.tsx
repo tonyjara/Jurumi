@@ -27,7 +27,7 @@ const ColumnFilter = (props: ColumnFilterProps) => {
 
   return (
     <div>
-      {column.id === "select" && (
+      {column.id === "N." && (
         <Button
           leftIcon={<BsFilter />}
           size={"sm"}

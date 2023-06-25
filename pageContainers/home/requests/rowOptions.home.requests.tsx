@@ -21,6 +21,7 @@ const RowOptionsHomeRequests = ({
   onExpRepOpen,
   setReqForReport,
   onExpReturnOpen,
+  setMenuData,
 }: {
   x: CompleteMoneyReqHome;
   setEditMoneyRequest: React.Dispatch<
@@ -32,14 +33,25 @@ const RowOptionsHomeRequests = ({
   onEditOpen: () => void;
   onExpRepOpen: () => void;
   onExpReturnOpen: () => void;
+  setMenuData: React.Dispatch<
+    React.SetStateAction<{
+      x: number;
+      y: number;
+      rowData: any | null;
+    }>
+  >;
 }) => {
   const context = trpcClient.useContext();
+  const closeMenu = () => {
+    setMenuData((prev) => ({ ...prev, rowData: null }));
+  };
 
   const { mutate: deleteById } = trpcClient.moneyRequest.deleteById.useMutation(
     handleUseMutationAlerts({
       successText: "Se ha eliminado la solicitud!",
       callback: () => {
         context.moneyRequest.invalidate();
+        closeMenu();
       },
     })
   );
@@ -50,6 +62,7 @@ const RowOptionsHomeRequests = ({
         successText: "Se ha anulado su solicitud!",
         callback: () => {
           context.invalidate();
+          closeMenu();
         },
       })
     );
@@ -68,7 +81,7 @@ const RowOptionsHomeRequests = ({
     handlePrintFundRequest,
     printFundReqRef,
     printExpRepsAndRetsRef,
-  } = UsePrintComponent({ x });
+  } = UsePrintComponent({ x, callback: closeMenu });
 
   return (
     <div>
@@ -83,6 +96,7 @@ const RowOptionsHomeRequests = ({
             onClick={() => {
               setReqForReport(x);
               onExpRepOpen();
+              closeMenu();
             }}
           >
             Crear rendición
@@ -99,6 +113,7 @@ const RowOptionsHomeRequests = ({
           onClick={() => {
             setReqForReport(x);
             onExpReturnOpen();
+            closeMenu();
           }}
         >
           Generar devolución
@@ -120,6 +135,7 @@ const RowOptionsHomeRequests = ({
           onClick={() => {
             setEditMoneyRequest(x);
             onEditOpen();
+            closeMenu();
           }}
         >
           Editar

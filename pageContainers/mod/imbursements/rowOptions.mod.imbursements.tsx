@@ -8,61 +8,76 @@ import { RowOptionDeleteDialog } from "@/components/Toasts & Alerts/RowOption.de
 import { RowOptionCancelDialog } from "@/components/Toasts & Alerts/RowOptions.cancel.dialog";
 
 const RowOptionsImbursements = ({
-    x,
-    setEditImbursement,
-    onEditOpen,
+  x,
+  setEditImbursement,
+  onEditOpen,
+  setMenuData,
 }: {
-    x: imbursementComplete;
-    setEditImbursement: React.Dispatch<
-        React.SetStateAction<FormImbursement | null>
-    >;
-    onEditOpen: () => void;
+  x: imbursementComplete;
+  setEditImbursement: React.Dispatch<
+    React.SetStateAction<FormImbursement | null>
+  >;
+  onEditOpen: () => void;
+
+  setMenuData: React.Dispatch<
+    React.SetStateAction<{
+      x: number;
+      y: number;
+      rowData: any | null;
+    }>
+  >;
 }) => {
-    const context = trpcClient.useContext();
+  const context = trpcClient.useContext();
+  const closeMenu = () => {
+    setMenuData((prev) => ({ ...prev, rowData: null }));
+  };
 
-    const { mutate: deleteById } = trpcClient.imbursement.deleteById.useMutation(
-        handleUseMutationAlerts({
-            successText: "Se ha eliminado el desembolso!",
-            callback: () => {
-                context.imbursement.invalidate();
-                context.moneyAcc.invalidate();
-            },
-        })
-    );
+  const { mutate: deleteById } = trpcClient.imbursement.deleteById.useMutation(
+    handleUseMutationAlerts({
+      successText: "Se ha eliminado el desembolso!",
+      callback: () => {
+        context.imbursement.invalidate();
+        context.moneyAcc.invalidate();
+        closeMenu();
+      },
+    })
+  );
 
-    const { mutate: cancelById } = trpcClient.imbursement.cancelById.useMutation(
-        handleUseMutationAlerts({
-            successText: "Se ha anulado la transaccion!",
-            callback: () => {
-                context.imbursement.invalidate();
-                context.moneyAcc.invalidate();
-                context.transaction.invalidate();
-            },
-        })
-    );
-    return (
-        <>
-            {!!x.wasCancelled && <MenuItem>Este desembolso fue anulado.</MenuItem>}
-            <MenuItem
-                onClick={() => {
-                    setEditImbursement(x);
-                    onEditOpen();
-                }}
-                isDisabled={x.wasCancelled}
-            >
-                Editar
-            </MenuItem>
-            <RowOptionCancelDialog
-                isDisabled={x.wasCancelled}
-                targetName="desembolso"
-                onConfirm={() => cancelById({ id: x.id })}
-            />
-            <RowOptionDeleteDialog
-                targetName="desembolso"
-                onConfirm={() => deleteById({ id: x.id })}
-            />
-        </>
-    );
+  const { mutate: cancelById } = trpcClient.imbursement.cancelById.useMutation(
+    handleUseMutationAlerts({
+      successText: "Se ha anulado la transaccion!",
+      callback: () => {
+        context.imbursement.invalidate();
+        context.moneyAcc.invalidate();
+        context.transaction.invalidate();
+        closeMenu();
+      },
+    })
+  );
+  return (
+    <>
+      {!!x.wasCancelled && <MenuItem>Este desembolso fue anulado.</MenuItem>}
+      <MenuItem
+        onClick={() => {
+          setEditImbursement(x);
+          onEditOpen();
+          closeMenu();
+        }}
+        isDisabled={x.wasCancelled}
+      >
+        Editar
+      </MenuItem>
+      <RowOptionCancelDialog
+        isDisabled={x.wasCancelled}
+        targetName="desembolso"
+        onConfirm={() => cancelById({ id: x.id })}
+      />
+      <RowOptionDeleteDialog
+        targetName="desembolso"
+        onConfirm={() => deleteById({ id: x.id })}
+      />
+    </>
+  );
 };
 
 export default RowOptionsImbursements;

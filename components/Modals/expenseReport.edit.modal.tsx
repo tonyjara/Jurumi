@@ -21,6 +21,8 @@ import {
 } from "@/lib/validations/expenseReport.validate";
 import ExpenseReportForm from "../Forms/ExpenseReport.form";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import { ExpenseReportComplete } from "@/pageContainers/mod/expense-reports/ModExpenseReportsPage.mod.expense-reports";
+import { MyExpenseReport } from "@/pageContainers/home/expense-reports/ExpenseReportsPage.home.expense-reports";
 
 const EditExpenseReportModal = ({
   isOpen,
@@ -29,7 +31,7 @@ const EditExpenseReportModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  expenseReport: FormExpenseReport;
+  expenseReport: ExpenseReportComplete | MyExpenseReport;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -45,7 +47,42 @@ const EditExpenseReportModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      reset(expenseReport);
+      const editExpenseReport: FormExpenseReport = {
+        searchableImage: expenseReport.searchableImage,
+        taxPayer: {
+          razonSocial: expenseReport.taxPayer.razonSocial,
+          ruc: expenseReport.taxPayer.ruc,
+        },
+        id: expenseReport.id,
+        createdAt: expenseReport.createdAt,
+        updatedAt: null,
+        currency: "USD",
+        accountId: expenseReport.accountId,
+        wasCancelled: false,
+        projectId: expenseReport.projectId,
+        concept: expenseReport.concept,
+        moneyRequestId: expenseReport.moneyRequestId,
+        comments: expenseReport.comments,
+        costCategoryId: expenseReport.costCategoryId,
+        facturaNumber: expenseReport.facturaNumber,
+        amountSpent: expenseReport.amountSpent,
+        pendingAmount: 0,
+        spentAmountIsGraterThanMoneyRequest: false,
+        reimburseTo: {
+          razonSocial: "",
+          ruc: "",
+          bankInfo: {
+            taxPayerId: "",
+            accountNumber: "",
+            ownerName: "",
+            ownerDoc: "",
+            ownerDocType: "CI",
+            type: "SAVINGS",
+            bankName: "ITAU",
+          },
+        },
+      };
+      reset(editExpenseReport);
     }
 
     return () => {};

@@ -59,7 +59,7 @@ const FormControlledRadioButtons = <T extends FieldValues>({
             isDisabled={disable}
             onChange={(e) => {
               onChangeMw && onChangeMw();
-              field.onChange(e);
+              field.onChange(e as any);
             }}
             value={value ?? field.value}
           >

@@ -1,10 +1,12 @@
 import { useDisclosure } from "@chakra-ui/react";
-import type { ExpenseReport } from "@prisma/client";
+import type { ExpenseReport, Prisma } from "@prisma/client";
 import React, { useEffect, useState } from "react";
-import type { TableOptions } from "@/components/DynamicTables/DynamicTable";
+import type {
+  RowOptionsType,
+  TableOptions,
+} from "@/components/DynamicTables/DynamicTable";
 import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
-import TableSearchbar from "@/components/DynamicTables/Utils/TableSearchbar";
 import EditExpenseReportModal from "@/components/Modals/expenseReport.edit.modal";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { expenseReportColums } from "./columns.home.expense-reports";
@@ -28,13 +30,14 @@ export type MyExpenseReport = ExpenseReport & {
     url: string;
     imageName: string;
   } | null;
-  /* reimburseTo: null; */
 };
 
 const MyExpenseReportsPage = () => {
-  /* const [searchValue, setSearchValue] = useState({ value: "", filter: "id" }); */
   const [editExpenseReport, setEditExpenseReport] =
     useState<MyExpenseReport | null>(null);
+  const [whereFilterList, setWhereFilterList] = useState<
+    Prisma.MoneyRequestScalarWhereInput[]
+  >([]);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
@@ -54,16 +57,21 @@ const MyExpenseReportsPage = () => {
 
   const { data: expenseReports, isFetching } =
     trpcClient.expenseReport.getMyOwnComplete.useQuery(
-      { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
+      {
+        pageIndex,
+        pageSize,
+        sorting: globalFilter ? sorting : null,
+        whereFilterList,
+      },
       { keepPreviousData: globalFilter ? true : false }
     );
-  const { data: count } = trpcClient.expenseReport.count.useQuery();
+  const { data: count } = trpcClient.expenseReport.count.useQuery({
+    whereFilterList,
+  });
 
   const handleDataSource = () => {
-    if (!expenseReports) return [];
     // if (findByIdData) return [findByIdData];
-    if (expenseReports) return expenseReports;
-    return [];
+    return expenseReports ?? [];
   };
 
   const tableOptions: TableOptions[] = [
@@ -76,12 +84,13 @@ const MyExpenseReportsPage = () => {
       label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
-  const rowOptionsFunction = (x: MyExpenseReport) => {
+  const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
       <RowOptionsHomeExpenseReports
         x={x}
         onEditOpen={onEditOpen}
         setEditExpenseReport={setEditExpenseReport}
+        setMenuData={setMenuData}
       />
     );
   };
@@ -90,14 +99,9 @@ const MyExpenseReportsPage = () => {
     <>
       <DynamicTable
         title={"Mis Rendiciones"}
-        /* searchBar={ */
-        /*     <TableSearchbar */
-        /*         type="text" */
-        /*         placeholder="Buscar por" */
-        /*         searchValue={searchValue} */
-        /*         setSearchValue={setSearchValue} */
-        /*     /> */
-        /* } */
+        enableColumnFilters={true}
+        whereFilterList={whereFilterList}
+        setWhereFilterList={setWhereFilterList}
         rowOptions={rowOptionsFunction}
         options={tableOptions}
         loading={isFetching}

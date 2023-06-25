@@ -6,19 +6,23 @@ export default function HeaderSelectCheckBox({
   setSelectedRows,
   table,
   pageSize,
+  rowsLength,
 }: {
   table: Table<any>;
   selectedRows: any[];
   setSelectedRows: (rows: any[]) => void;
   pageSize: number;
+  rowsLength: number;
 }): JSX.Element {
   const isIndeterminate =
     selectedRows.length > 0 && selectedRows.length < pageSize;
-  const isAllChecked = selectedRows.length >= pageSize;
+  const isAllChecked = selectedRows.length >= rowsLength;
+
   return (
     <div
       onClick={(e) => {
         e.stopPropagation();
+        const isAllChecked = selectedRows.length >= rowsLength;
         if (isAllChecked) {
           setSelectedRows([]);
           return;

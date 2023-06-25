@@ -4,6 +4,7 @@ import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 
 import { trpcClient } from "@/lib/utils/trpcClient";
 import DynamicTable, {
+  RowOptionsType,
   TableOptions,
 } from "@/components/DynamicTables/DynamicTable";
 import { modMoneyAccountOffsetColumn } from "./columns.mod.moneyAccountOffset";
@@ -33,8 +34,8 @@ const MoneyaccountOffsetPage = () => {
     );
   const { data: count } = trpcClient.moneyAcc.countccountOffsets.useQuery();
 
-  const rowOptionsFunction = (x: MoneyAccountOffsetComplete) => {
-    return <RowOptionsMoneyAccountOffset x={x} />;
+  const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
+    return <RowOptionsMoneyAccountOffset x={x} setMenuData={setMenuData} />;
   };
 
   const tableOptions: TableOptions[] = [

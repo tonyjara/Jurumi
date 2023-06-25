@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, Tooltip } from '@chakra-ui/react';
+import React from "react";
+import { Text } from "@chakra-ui/react";
 
 const EnumTextCell = ({
   text,
@@ -10,12 +10,13 @@ const EnumTextCell = ({
   hover?: string;
   enumFunc: (x: any) => string;
 }) => {
+  {
+    /* <Tooltip label={hover}> */
+  }
   return (
-    <Tooltip label={hover}>
-      <Text fontSize="sm" fontWeight="bold">
-        {enumFunc(text)}
-      </Text>
-    </Tooltip>
+    <Text fontSize="sm" fontWeight="bold">
+      {enumFunc(text)}
+    </Text>
   );
 };
 

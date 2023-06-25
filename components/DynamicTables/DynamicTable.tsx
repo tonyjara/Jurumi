@@ -38,6 +38,16 @@ export interface TableOptions {
     onClick: () => void;
     label: string;
 }
+export type RowOptionsType = (props: {
+    x: any;
+    setMenuData: React.Dispatch<
+        React.SetStateAction<{
+            x: number;
+            y: number;
+            rowData: any | null;
+        }>
+    >;
+}) => JSX.Element;
 
 export interface DynamicTableProps<T extends object> {
     title?: string;
@@ -59,9 +69,9 @@ export interface DynamicTableProps<T extends object> {
     setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
     globalFilter?: boolean;
     colorRedKey?: string[];
-    rowOptions?: any;
+    rowOptions: RowOptionsType;
     enableColumnFilters?: boolean; // If enabled by default all columns will have a filter.
-    whereFilterList?: any[]
+    whereFilterList?: any[];
     setWhereFilterList?: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
@@ -87,13 +97,14 @@ const DynamicTable = <T extends object>({
     colorRedKey,
     rowOptions,
     enableColumnFilters,
-    whereFilterList, setWhereFilterList
+    whereFilterList,
+    setWhereFilterList,
 }: DynamicTableProps<T>) => {
     const [menuData, setMenuData] = useState<{
-        index: number | null;
         x: number;
         y: number;
-    }>({ index: null, x: 0, y: 0 });
+        rowData: any | null;
+    }>({ x: 0, y: 0, rowData: null });
 
     const backgroundColor = useColorModeValue("white", "gray.800");
 
@@ -105,14 +116,6 @@ const DynamicTable = <T extends object>({
         getSortedRowModel: !globalFilter ? getSortedRowModel() : undefined,
         state: { sorting },
         enableColumnFilters: !!enableColumnFilters,
-        /* enableRowSelection: true, */
-        /* onRowSelectionChange: setRowSelection, */
-        /* state: !globalFilter */
-        /*   ? { */
-        /*       sorting, */
-        /*       rowSelection, */
-        /*     } */
-        /*   : { rowSelection }, */
     });
 
     const handleToggleSorting = (header: Header<T, unknown>) => {
@@ -219,13 +222,19 @@ const DynamicTable = <T extends object>({
                             })}
                         </Tr>
                     ))}
-                    {enableColumnFilters && whereFilterList && setWhereFilterList &&
+                    {enableColumnFilters &&
+                        whereFilterList &&
+                        setWhereFilterList &&
                         table.getHeaderGroups().map((headerGroup) => (
                             <Tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
                                         <Th key={header.id}>
-                                            <ColumnFilter whereFilterList={whereFilterList} setWhereFilterList={setWhereFilterList} column={header.column} />
+                                            <ColumnFilter
+                                                whereFilterList={whereFilterList}
+                                                setWhereFilterList={setWhereFilterList}
+                                                column={header.column}
+                                            />
                                         </Th>
                                     );
                                 })}
@@ -235,9 +244,10 @@ const DynamicTable = <T extends object>({
                 <Tbody>
                     {!loading &&
                         data &&
-                        table?.getRowModel().rows.map((row, i) => (
+                        table?.getRowModel().rows.map((row) => (
                             <Tr
                                 color={
+                                    //Colors rows, used for cancelled rows
                                     //@ts-ignore
                                     colorRedKey && colorRedKey.some((key) => !!row.original[key])
                                         ? redRowColor
@@ -245,13 +255,10 @@ const DynamicTable = <T extends object>({
                                 }
                                 key={row.id}
                                 _hover={{ backgroundColor: rowHoverColor, cursor: "pointer" }}
-
                                 //Opens a menu at the clicked row.
                                 onClick={(e) => {
-                                    // opens menu at click position with row data.
-                                    if (i === menuData?.index) {
-                                        return setMenuData({ ...menuData, index: null });
-                                    }
+
+                                    // Limits on how far should the menu open to the right or left
                                     const handleX = () => {
                                         const limit = innerWidth - 300;
                                         if (e.pageX > limit) {
@@ -263,7 +270,11 @@ const DynamicTable = <T extends object>({
                                         return e.pageY;
                                     };
 
-                                    setMenuData({ index: i, x: handleX(), y: handleY() });
+                                    setMenuData({
+                                        x: handleX(),
+                                        y: handleY(),
+                                        rowData: row.original,
+                                    });
                                 }}
                             >
                                 {row.getVisibleCells().map((cell) => {
@@ -279,36 +290,40 @@ const DynamicTable = <T extends object>({
                                         </Td>
                                     );
                                 })}
-                                {/* Invisible cell to open the menu */}
-                                <Td>
-                                    <Portal>
-                                        <Menu isOpen={menuData?.index === i}>
-                                            <MenuList
-                                                position={"absolute"}
-                                                top={menuData?.y}
-                                                left={menuData?.x}
-                                            >
-                                                <MenuGroup>
-                                                    <MenuItem
-                                                        onClick={() =>
-                                                            setMenuData({ ...menuData, index: null })
-                                                        }
-                                                        icon={<CloseIcon />}
-                                                    >
-                                                        Cerrar menú
-                                                    </MenuItem>
-                                                </MenuGroup>
-                                                <MenuDivider />
-                                                <MenuGroup>{rowOptions(row.original)}</MenuGroup>
-                                            </MenuList>
-                                        </Menu>
-                                    </Portal>
-                                </Td>
                             </Tr>
                         ))}
+                    {/* Invisible cell to open the menu */}
                     {(!data || loading) && <SkeletonRows />}
                 </Tbody>
             </Table>
+            <Menu isOpen={menuData.rowData}>
+                <Portal>
+                    <MenuList
+                        //Close the menu when any item is clicked, NOT WORKING FOR PRINTING
+                        /* onClick={() => setMenuData({ ...menuData, index: null, rowData: null })} */
+                        position={"absolute"}
+                        top={menuData?.y}
+                        left={menuData?.x}
+                    >
+                        <MenuGroup>
+                            <MenuItem
+                                onClick={() =>
+                                    setMenuData((prev) => ({ ...prev, rowData: null }))
+                                }
+                                icon={<CloseIcon />}
+                            >
+                                Cerrar menú
+                            </MenuItem>
+                        </MenuGroup>
+                        <MenuDivider />
+                        <MenuGroup>
+                            {menuData.rowData
+                                ? rowOptions({ x: menuData.rowData, setMenuData })
+                                : []}
+                        </MenuGroup>
+                    </MenuList>
+                </Portal>
+            </Menu>
             <TablePagination
                 pageIndex={pageIndex}
                 setPageIndex={setPageIndex}

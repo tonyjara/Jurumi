@@ -51,10 +51,10 @@ const ExpenseReportForm = ({
   const { data: session } = useSession();
   const user = session?.user;
 
-  const { data: projects } = trpcClient.project.getMany.useQuery();
-
   const currency = useWatch({ control, name: "currency" });
   const projectId = useWatch({ control, name: "projectId" });
+
+  const { data: projects } = trpcClient.project.getMany.useQuery();
 
   const projectOptions = projects?.map((proj) => ({
     value: proj.id,

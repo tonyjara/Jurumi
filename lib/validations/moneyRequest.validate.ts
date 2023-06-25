@@ -12,7 +12,7 @@ import { v4 as uuidV4 } from "uuid";
 export type moneyReqTaxPayer = {
     razonSocial: string;
     ruc: string;
-    bankInfo: TaxPayerBankInfo;
+    bankInfo: TaxPayerBankInfo | null;
 };
 export type MoneyReqSearchableImage = {
     imageName: string;

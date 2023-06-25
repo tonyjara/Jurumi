@@ -66,6 +66,6 @@ export const expenseReportColums = ({
     cell: (x) => (
       <TextCell text={x.row.original.costCategory?.displayName ?? "-"} />
     ),
-    header: "L. Presup.",
+    header: "Linea Presupuestaria",
   }),
 ];

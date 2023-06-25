@@ -7,10 +7,10 @@ import {
   InputGroup,
   InputLeftElement,
   Textarea,
-} from '@chakra-ui/react';
-import React from 'react';
-import type { Control, FieldValues, Path } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+} from "@chakra-ui/react";
+import React from "react";
+import type { Control, FieldValues, Path } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -46,7 +46,7 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
   } = props;
   return (
     <FormControl hidden={hidden} isInvalid={!!errors[name] || !!error}>
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
       <Controller
@@ -55,13 +55,13 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
         render={({ field }) => (
           <InputGroup>
             {inputLeft && (
-              <InputLeftElement pointerEvents={'none'}>
+              <InputLeftElement pointerEvents={"none"}>
                 {inputLeft}
               </InputLeftElement>
             )}
             {!isTextArea && (
               <Input
-                borderColor={'gray.300'}
+                borderColor={"gray.300"}
                 maxLength={maxLength}
                 value={field.value}
                 onChange={field.onChange}
@@ -71,7 +71,7 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
             )}
             {isTextArea && (
               <Textarea
-                borderColor={'gray.300'}
+                borderColor={"gray.300"}
                 maxLength={maxLength}
                 value={field.value}
                 onChange={field.onChange}
@@ -84,7 +84,7 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
       />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
       {!errors[name] ? (
-        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
         //@ts-ignore
         <FormErrorMessage>{errors[name].message}</FormErrorMessage>

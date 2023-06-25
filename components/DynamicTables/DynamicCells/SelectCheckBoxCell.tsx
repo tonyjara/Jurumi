@@ -12,19 +12,23 @@ export default function SelectCheckBoxCell({
 }) {
   const isChecked = selectedRows.some((x) => x.id === row.original.id);
   return (
-    <Checkbox
-      name="selectCheckbox"
-      size="lg"
-      isChecked={isChecked}
-      onChange={(e) => {
-        e.stopPropagation();
-        if (isChecked) {
-          setSelectedRows(selectedRows.filter((x) => x.id !== row.original.id));
-          return;
-        }
+    <div onClick={(e) => e.stopPropagation()}>
+      <Checkbox
+        name="selectCheckbox"
+        size="lg"
+        isChecked={isChecked}
+        onChange={(e) => {
+          e.stopPropagation();
+          if (isChecked) {
+            setSelectedRows(
+              selectedRows.filter((x) => x.id !== row.original.id)
+            );
+            return;
+          }
 
-        setSelectedRows([...selectedRows, row.original]);
-      }}
-    />
+          setSelectedRows([...selectedRows, row.original]);
+        }}
+      />
+    </div>
   );
 }

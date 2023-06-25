@@ -13,6 +13,7 @@ import {
   createExpenseReportProof,
   createReimbursementRequestBasedOnExpenseReport,
 } from "./utils/ExpenseReport.routeUtils";
+import { upsertTaxPayer } from "./utils/TaxPayer.routeUtils";
 
 export const expenseReportsRouter = router({
   getMany: protectedProcedure.query(async ({ ctx }) => {
@@ -25,7 +26,19 @@ export const expenseReportsRouter = router({
       },
     });
   }),
-  count: protectedProcedure.query(async () => prisma?.expenseReport.count()),
+  count: protectedProcedure
+    .input(
+      z.object({
+        whereFilterList: z.any().array().optional(),
+      })
+    )
+    .query(async ({ input }) =>
+      prisma?.expenseReport.count({
+        where: {
+          AND: [...(input?.whereFilterList ?? [])],
+        },
+      })
+    ),
   getMyOwnComplete: protectedProcedure
     .input(
       z.object({
@@ -35,6 +48,7 @@ export const expenseReportsRouter = router({
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
+        whereFilterList: z.any().array().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -60,7 +74,9 @@ export const expenseReportsRouter = router({
       };
 
       return await prisma?.expenseReport.findMany({
-        where: { accountId: user.id },
+        where: {
+          AND: [...(input?.whereFilterList ?? []), { accountId: user.id }],
+        },
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy(),
@@ -83,6 +99,7 @@ export const expenseReportsRouter = router({
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
+        whereFilterList: z.any().array().optional(),
       })
     )
     .query(async ({ input }) => {
@@ -110,6 +127,9 @@ export const expenseReportsRouter = router({
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy(),
+        where: {
+          AND: [...(input?.whereFilterList ?? [])],
+        },
         include: {
           costCategory: { select: { id: true, displayName: true } },
           account: { select: { displayName: true, id: true } },
@@ -122,11 +142,19 @@ export const expenseReportsRouter = router({
       });
     }),
   findCompleteById: adminModObserverProcedure
-    .input(z.object({ ids: z.string().array() }))
+    .input(
+      z.object({
+        ids: z.string().array(),
+
+        whereFilterList: z.any().array().optional(),
+      })
+    )
     .query(async ({ input }) => {
       if (!input.ids.length) return null;
       return await prisma?.expenseReport.findMany({
-        where: { id: { in: input.ids } },
+        where: {
+          AND: [...(input?.whereFilterList ?? []), { id: { in: input.ids } }],
+        },
         include: {
           costCategory: { select: { id: true, displayName: true } },
           account: { select: { displayName: true, id: true } },
@@ -213,54 +241,103 @@ export const expenseReportsRouter = router({
   edit: protectedProcedure
     .input(validateExpenseReport)
     .mutation(async ({ input, ctx }) => {
-      const user = ctx.session.user;
+      try {
+        const user = ctx.session.user;
 
-      const taxPayer = await prisma?.taxPayer.upsert({
-        where: {
-          ruc: input.taxPayer.ruc,
-        },
-        create: {
-          createdById: user.id,
-          razonSocial: input.taxPayer.razonSocial,
-          ruc: input.taxPayer.ruc,
-        },
-        update: {},
-      });
-      if (!taxPayer || !input.searchableImage) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "taxpayer failed",
+        const taxPayer = await upsertTaxPayer({
+          input: {
+            razonSocial: input.taxPayer.razonSocial,
+            ruc: input.taxPayer.ruc,
+            bankInfo: null,
+          },
+          userId: user.id,
         });
-      }
 
-      const x = await prisma?.expenseReport.update({
-        where: { id: input.id },
-        data: {
-          accountId: user.id,
-          facturaNumber: input.facturaNumber,
+        if (!taxPayer || !input.searchableImage) {
+          throw new TRPCError({
+            code: "PRECONDITION_FAILED",
+            message: "taxpayer failed",
+          });
+        }
+        //NOT WORKING Check if the cost category changed, if so, cancel the previous transactions and revert the balance
+        /* const previousExpenseReport = */
+        /*   await prisma?.expenseReport.findUniqueOrThrow({ */
+        /*     where: { id: input.id }, */
+        /*     include: { */
+        /*       transactions: true, */
+        /*       searchableImage: true, */
+        /*       account: { select: { id: true } }, */
+        /*     }, */
+        /*   }); */
+        /* if (previousExpenseReport.costCategoryId !== input.costCategoryId) { */
+        /* await prisma.$transaction(async (txCtx) => { */
+        /*   await cancelTransactionsAndRevertBalance({ */
+        /*     txCtx, */
+        /*     transactions: previousExpenseReport.transactions, */
+        /*   }); */
+        /**/
+        /*   const formatedExpenseReport: CreateCostCategoryTransactionsType = { */
+        /*     taxPayer, */
+        /*     taxPayerId: taxPayer.id, */
+        /*     searchableImage: input.searchableImage */
+        /*       ? { */
+        /*           imageName: input.searchableImage.imageName, */
+        /*         } */
+        /*       : null, */
+        /*     id: input.id, */
+        /*     concept: input.concept, */
+        /*     facturaNumber: input.facturaNumber, */
+        /*     amountSpent: input.amountSpent, */
+        /*     comments: input.comments, */
+        /*     currency: input.currency, */
+        /*     createdAt: previousExpenseReport.createdAt, */
+        /*     updatedAt: new Date(), */
+        /*     wasCancelled: false, */
+        /*     accountId: previousExpenseReport.account.id, */
+        /*     projectId: input.projectId, */
+        /*     costCategoryId: input.costCategoryId, */
+        /*     moneyRequestId: input.moneyRequestId, */
+        /*     account: { id: previousExpenseReport.account.id }, */
+        /*   }; */
+        /*   await createCostCategoryTransactions({ */
+        /*     expenseReport: formatedExpenseReport, */
+        /*     txCtx, */
+        /*   }); */
+        /* }); */
+        /* } */
 
-          amountSpent: input.amountSpent,
-          comments: input.comments,
-          currency: input.currency,
-          moneyRequestId: input.moneyRequestId,
-          taxPayerId: taxPayer.id,
-          projectId: input.projectId,
-          searchableImage: {
-            upsert: {
-              create: {
-                url: input.searchableImage.url,
-                imageName: input.searchableImage.imageName,
-                text: "",
-              },
-              update: {
-                url: input.searchableImage.url,
+        const x = await prisma?.expenseReport.update({
+          where: { id: input.id },
+          data: {
+            accountId: user.id,
+            facturaNumber: input.facturaNumber,
+
+            amountSpent: input.amountSpent,
+            comments: input.comments,
+            currency: input.currency,
+            moneyRequestId: input.moneyRequestId,
+            taxPayerId: taxPayer.id,
+            projectId: input.projectId,
+            /* costCategoryId: input.costCategoryId, */
+            searchableImage: {
+              upsert: {
+                create: {
+                  url: input.searchableImage.url,
+                  imageName: input.searchableImage.imageName,
+                  text: "",
+                },
+                update: {
+                  url: input.searchableImage.url,
+                },
               },
             },
           },
-        },
-      });
+        });
 
-      return x;
+        return x;
+      } catch (err) {
+        console.error(err);
+      }
     }),
 
   cancelById: protectedProcedure

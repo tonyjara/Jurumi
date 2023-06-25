@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, Tooltip } from '@chakra-ui/react';
+import React from "react";
+import { Text } from "@chakra-ui/react";
 
 const TextCell = ({
   text,
@@ -10,25 +10,26 @@ const TextCell = ({
   hover?: string | React.ReactNode;
   shortenString?: boolean;
 }) => {
+  {
+    /* <Tooltip label={hover}> */
+  }
   return (
-    <Tooltip label={hover}>
-      <Text
-        style={
-          shortenString
-            ? {
-                textOverflow: 'ellipsis',
-                width: '100px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-              }
-            : {}
-        }
-        fontSize="sm"
-        fontWeight="bold"
-      >
-        {text}
-      </Text>
-    </Tooltip>
+    <Text
+      style={
+        shortenString
+          ? {
+              textOverflow: "ellipsis",
+              width: "100px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+            }
+          : {}
+      }
+      fontSize="sm"
+      fontWeight="bold"
+    >
+      {text}
+    </Text>
   );
 };
 

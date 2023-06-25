@@ -16,17 +16,19 @@ import { Session } from "next-auth";
 import Decimal from "decimal.js";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 
+export type CreateCostCategoryTransactionsType = ExpenseReport & {
+  account: {
+    id: string;
+  };
+  taxPayer: TaxPayer;
+  searchableImage: { imageName: string } | null;
+};
+
 export async function createCostCategoryTransactions({
   expenseReport,
   txCtx,
 }: {
-  expenseReport: ExpenseReport & {
-    account: {
-      id: string;
-    };
-    taxPayer: TaxPayer;
-    searchableImage: searchableImage | null;
-  };
+  expenseReport: CreateCostCategoryTransactionsType;
   txCtx: Prisma.TransactionClient;
 }) {
   if (!expenseReport.projectId || !expenseReport.costCategoryId) return;
@@ -64,7 +66,7 @@ export async function createCostCategoryTransactions({
       searchableImage: expenseReport.searchableImage?.imageName.length
         ? {
             connect: {
-              id: expenseReport.searchableImage.id,
+              imageName: expenseReport.searchableImage.imageName,
             },
           }
         : {},

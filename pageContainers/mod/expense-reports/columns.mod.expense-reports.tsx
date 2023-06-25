@@ -70,7 +70,7 @@ export const modExpenseReportsColumns = ({
     cell: (x) => (
       <TextCell text={x.row.original.costCategory?.displayName ?? "-"} />
     ),
-    header: "L. Presup.",
+    header: "Linea Presupuestaria",
   }),
   columnHelper.accessor("id", {
     cell: (x) => <TextCell text={x.getValue()} />,
