@@ -6,10 +6,21 @@ import { MoneyAccountOffsetComplete } from "./MoneyAccountOffsetsPage.mod.money-
 
 const RowOptionsMoneyAccountOffset = ({
   x,
+  setMenuData,
 }: {
   x: MoneyAccountOffsetComplete;
+  setMenuData: React.Dispatch<
+    React.SetStateAction<{
+      x: number;
+      y: number;
+      rowData: any | null;
+    }>
+  >;
 }) => {
   const context = trpcClient.useContext();
+  const closeMenu = () => {
+    setMenuData((prev) => ({ ...prev, rowData: null }));
+  };
 
   const { mutate: deleteById } =
     trpcClient.moneyAcc.deleteMoneyAccountOffsetById.useMutation(
@@ -17,6 +28,7 @@ const RowOptionsMoneyAccountOffset = ({
         successText: "Se ha eliminado la el ajuste!",
         callback: () => {
           context.invalidate();
+          closeMenu();
         },
       })
     );
@@ -26,6 +38,7 @@ const RowOptionsMoneyAccountOffset = ({
         successText: "Se ha anulado el ajuste!",
         callback: () => {
           context.invalidate();
+          closeMenu();
         },
       })
     );

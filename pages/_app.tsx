@@ -1,3 +1,4 @@
+import "react-day-picker/dist/style.css";
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";

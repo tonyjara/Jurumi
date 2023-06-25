@@ -1,7 +1,10 @@
 import { useDisclosure } from "@chakra-ui/react";
-import type { ExpenseReport } from "@prisma/client";
+import type { ExpenseReport, Prisma } from "@prisma/client";
 import React, { useEffect, useState } from "react";
-import type { TableOptions } from "@/components/DynamicTables/DynamicTable";
+import type {
+  RowOptionsType,
+  TableOptions,
+} from "@/components/DynamicTables/DynamicTable";
 import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import TableSearchbar from "@/components/DynamicTables/Utils/TableSearchbar";
@@ -42,6 +45,9 @@ const ModExpenseReportsPage = ({
   query: ExpenseReportsPageProps;
 }) => {
   const [searchValue, setSearchValue] = useState("");
+  const [whereFilterList, setWhereFilterList] = useState<
+    Prisma.MoneyRequestScalarWhereInput[]
+  >([]);
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const [filterValue, setFilterValue] = useState("id");
   const [editExpenseReport, setEditExpenseReport] =
@@ -74,17 +80,24 @@ const ModExpenseReportsPage = ({
 
   const { data: expenseReports, isFetching } =
     trpcClient.expenseReport.getManyComplete.useQuery(
-      { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
+      {
+        pageIndex,
+        pageSize,
+        sorting: globalFilter ? sorting : null,
+        whereFilterList,
+      },
       { keepPreviousData: globalFilter ? true : false }
     );
 
   const { data: findByIdData, isFetching: isFetchingById } =
     trpcClient.expenseReport.findCompleteById.useQuery(
-      { ids: searchValue.split(",") },
+      { ids: searchValue.split(","), whereFilterList },
       { enabled: searchValue.length > 0 }
     );
 
-  const { data: count } = trpcClient.expenseReport.count.useQuery();
+  const { data: count } = trpcClient.expenseReport.count.useQuery({
+    whereFilterList,
+  });
 
   const handleDataSource = () => {
     if (!expenseReports) return [];
@@ -104,9 +117,10 @@ const ModExpenseReportsPage = ({
     },
   ];
 
-  const rowOptionsFunction = (x: ExpenseReportComplete) => {
+  const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
       <RowOptionsHomeExpenseReports
+        setMenuData={setMenuData}
         x={x}
         onEditOpen={onEditOpen}
         setEditExpenseReport={setEditExpenseReport}
@@ -118,6 +132,9 @@ const ModExpenseReportsPage = ({
     <>
       <DynamicTable
         title={"Rendiciones"}
+        enableColumnFilters={true}
+        whereFilterList={whereFilterList}
+        setWhereFilterList={setWhereFilterList}
         searchBar={
           <TableSearchbar
             type="text"

@@ -1,20 +1,20 @@
 import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionIcon,
-  AccordionPanel,
-  useColorModeValue,
-  HStack,
-  Text,
-  Divider,
-  useDisclosure,
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
+    Accordion,
+    AccordionItem,
+    AccordionButton,
+    AccordionIcon,
+    AccordionPanel,
+    useColorModeValue,
+    HStack,
+    Text,
+    Divider,
+    useDisclosure,
+    Card,
+    CardBody,
+    CardHeader,
+    Flex,
 } from "@chakra-ui/react";
-import type { BankInfo, MoneyAccount, Transaction } from "@prisma/client";
+import type { BankInfo, MoneyAccount, Prisma, Transaction } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import type { TableOptions } from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
@@ -31,178 +31,184 @@ import LoadingPlantLottie from "@/components/Spinners-Loading/LoadiingPlantLotti
 import CreateMoneyAccountOffsetModal from "@/components/Modals/MoneyAccountOffset.create.modal";
 
 export type MoneyAccWithTransactions = MoneyAccount & {
-  bankInfo: BankInfo | null;
-  _count: {
-    transactions: number;
-  };
-  transactions: (Transaction & {
-    account: {
-      displayName: string;
+    bankInfo: BankInfo | null;
+    _count: {
+        transactions: number;
     };
-    moneyAccount: {
-      displayName: string;
-    } | null;
-    imbursement: {
-      concept: string;
-    } | null;
-    moneyRequest: {
-      description: string;
-    } | null;
-    searchableImage: {
-      id: string;
-      url: string;
-      imageName: string;
-    } | null;
-  })[];
+    transactions: (Transaction & {
+        account: {
+            displayName: string;
+        };
+        moneyAccount: {
+            displayName: string;
+        } | null;
+        imbursement: {
+            concept: string;
+        } | null;
+        moneyRequest: {
+            description: string;
+        } | null;
+        searchableImage: {
+            id: string;
+            url: string;
+            imageName: string;
+        } | null;
+    })[];
 };
 
 const MoneyAccountsPage = () => {
-  const [editData, setEditData] = useState<MoneyAccount | null>(null);
-  const [offsetData, setOffsetData] = useState<MoneyAccWithTransactions | null>(
-    null
-  );
-  const dynamicTableProps = useDynamicTable();
+    const [editData, setEditData] = useState<MoneyAccount | null>(null);
+    const [offsetData, setOffsetData] = useState<MoneyAccWithTransactions | null>(
+        null
+    );
 
-  const {
-    isOpen: isEditOpen,
-    onOpen: onEditOpen,
-    onClose: onEditClose,
-  } = useDisclosure();
+    const [whereFilterList, setWhereFilterList] = useState<
+        Prisma.TransactionScalarWhereInput[]
+    >([]);
+    const dynamicTableProps = useDynamicTable();
 
-  const {
-    isOpen: isOffsetOpen,
-    onOpen: onOffsetOpen,
-    onClose: onOffsetClose,
-  } = useDisclosure();
+    const {
+        isOpen: isEditOpen,
+        onOpen: onEditOpen,
+        onClose: onEditClose,
+    } = useDisclosure();
 
-  const {
-    isOpen: isMoneyAccOpen,
-    onOpen: onMoneyAccOpen,
-    onClose: onMoneyAccClose,
-  } = useDisclosure();
+    const {
+        isOpen: isOffsetOpen,
+        onOpen: onOffsetOpen,
+        onClose: onOffsetClose,
+    } = useDisclosure();
 
-  useEffect(() => {
-    if (editData && !isEditOpen) {
-      onEditOpen();
-    }
+    const {
+        isOpen: isMoneyAccOpen,
+        onOpen: onMoneyAccOpen,
+        onClose: onMoneyAccClose,
+    } = useDisclosure();
 
-    return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editData]);
+    useEffect(() => {
+        if (editData && !isEditOpen) {
+            onEditOpen();
+        }
 
-  const { data, isFetching, isLoading } =
-    trpcClient.moneyAcc.getManyWithTransactions.useQuery();
+        return () => { };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editData]);
 
-  const bg = useColorModeValue("white", "gray.700");
-  const cardBg = useColorModeValue("white", "gray.800");
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: onMoneyAccOpen,
-      label: "Crear cuenta",
-    },
-  ];
+    const { data, isFetching, isLoading } =
+        trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
-  return (
-    <Card w="100%" backgroundColor={cardBg}>
-      <CardHeader>
-        <Flex justifyContent={"space-between"}>
-          <Flex flexDirection={"column"}>
-            <Text fontWeight={"bold"} fontSize={{ base: "2xl", md: "3xl" }}>
-              Cuentas
-            </Text>
-          </Flex>
-          <ThreeDotTableButton options={tableOptions} />
-        </Flex>
-      </CardHeader>
-      <CardBody>
-        <Accordion
-          borderRadius={"8px"}
-          backgroundColor={bg}
-          allowToggle
-          display={"block"}
-          css={customScrollbar}
-          overflow={"auto"}
-          w={"100%"}
-        >
-          {data &&
-            data.map((moneyAcc) => {
-              return (
-                <AccordionItem key={moneyAcc.id}>
-                  <AccordionButton as={Flex}>
-                    <AccordionIcon />
+    const bg = useColorModeValue("white", "gray.700");
+    const cardBg = useColorModeValue("white", "gray.800");
+    const tableOptions: TableOptions[] = [
+        {
+            onClick: onMoneyAccOpen,
+            label: "Crear cuenta",
+        },
+    ];
 
-                    <HStack minW={"600px"} h={"35px"} pr="20px">
-                      <Text
-                        textOverflow={"ellipsis"}
-                        w={"250px"}
-                        overflow="hidden"
-                        whiteSpace={"nowrap"}
-                        fontSize={"lg"}
-                      >
-                        {moneyAcc.displayName}
-                      </Text>
-                      <Divider orientation="vertical" />
-                      <Text pl={"5px"} w={"150px"} fontSize={"lg"}>
-                        {moneyAcc.bankInfo
-                          ? translateBankNames(moneyAcc.bankInfo?.bankName)
-                          : "Caja chica"}
-                      </Text>
-                      <Divider orientation="vertical" />
-                      <Text
-                        pl={"5px"}
-                        w={"150px"}
-                        fontWeight="bold"
-                        fontSize={"lg"}
-                        whiteSpace="nowrap"
-                      >
-                        {formatedAccountBalance(moneyAcc)}
-                      </Text>
+    return (
+        <Card w="100%" backgroundColor={cardBg}>
+            <CardHeader>
+                <Flex justifyContent={"space-between"}>
+                    <Flex flexDirection={"column"}>
+                        <Text fontWeight={"bold"} fontSize={{ base: "2xl", md: "3xl" }}>
+                            Cuentas
+                        </Text>
+                    </Flex>
+                    <ThreeDotTableButton options={tableOptions} />
+                </Flex>
+            </CardHeader>
+            <CardBody>
+                <Accordion
+                    borderRadius={"8px"}
+                    backgroundColor={bg}
+                    allowToggle
+                    display={"block"}
+                    css={customScrollbar}
+                    overflow={"auto"}
+                    w={"100%"}
+                >
+                    {data &&
+                        data.map((moneyAcc) => {
+                            return (
+                                <AccordionItem key={moneyAcc.id}>
+                                    <AccordionButton as={Flex}>
+                                        <AccordionIcon />
 
-                      <AccordionOptionsMoneyAccountsPage
-                        setOffsetData={setOffsetData}
-                        onOffsetOpen={onOffsetOpen}
+                                        <HStack minW={"600px"} h={"35px"} pr="20px">
+                                            <Text
+                                                textOverflow={"ellipsis"}
+                                                w={"250px"}
+                                                overflow="hidden"
+                                                whiteSpace={"nowrap"}
+                                                fontSize={"lg"}
+                                            >
+                                                {moneyAcc.displayName}
+                                            </Text>
+                                            <Divider orientation="vertical" />
+                                            <Text pl={"5px"} w={"150px"} fontSize={"lg"}>
+                                                {moneyAcc.bankInfo
+                                                    ? translateBankNames(moneyAcc.bankInfo?.bankName)
+                                                    : "Caja chica"}
+                                            </Text>
+                                            <Divider orientation="vertical" />
+                                            <Text
+                                                pl={"5px"}
+                                                w={"150px"}
+                                                fontWeight="bold"
+                                                fontSize={"lg"}
+                                                whiteSpace="nowrap"
+                                            >
+                                                {formatedAccountBalance(moneyAcc)}
+                                            </Text>
+
+                                            <AccordionOptionsMoneyAccountsPage
+                                                setOffsetData={setOffsetData}
+                                                onOffsetOpen={onOffsetOpen}
+                                                setEditData={setEditData}
+                                                accountData={moneyAcc}
+                                            />
+                                        </HStack>
+                                    </AccordionButton>
+
+                                    <AccordionPanel pb={4}>
+                                        <TransactionsTable
+                                            whereFilterList={whereFilterList}
+                                            setWhereFilterList={setWhereFilterList}
+                                            loading={isFetching}
+                                            data={moneyAcc.transactions as any}
+                                            count={moneyAcc._count.transactions}
+                                            dynamicTableProps={dynamicTableProps}
+                                        />
+                                    </AccordionPanel>
+                                    <Divider ml={"10px"} w={"98%"} />
+                                </AccordionItem>
+                            );
+                        })}
+                </Accordion>
+                {editData && (
+                    <EditMoneyAccModal
+                        accData={editData}
+                        isOpen={isEditOpen}
+                        onClose={onEditClose}
                         setEditData={setEditData}
-                        accountData={moneyAcc}
-                      />
-                    </HStack>
-                  </AccordionButton>
-
-                  <AccordionPanel pb={4}>
-                    <TransactionsTable
-                      loading={isFetching}
-                      data={moneyAcc.transactions as any}
-                      count={moneyAcc._count.transactions}
-                      dynamicTableProps={dynamicTableProps}
                     />
-                  </AccordionPanel>
-                  <Divider ml={"10px"} w={"98%"} />
-                </AccordionItem>
-              );
-            })}
-        </Accordion>
-        {editData && (
-          <EditMoneyAccModal
-            accData={editData}
-            isOpen={isEditOpen}
-            onClose={onEditClose}
-            setEditData={setEditData}
-          />
-        )}
-        <CreateMoneyAccModal
-          isOpen={isMoneyAccOpen}
-          onClose={onMoneyAccClose}
-        />
-        <CreateMoneyAccountOffsetModal
-          moneyAccount={offsetData}
-          setOffsetData={setOffsetData}
-          isOpen={isOffsetOpen}
-          onClose={onOffsetClose}
-        />
+                )}
+                <CreateMoneyAccModal
+                    isOpen={isMoneyAccOpen}
+                    onClose={onMoneyAccClose}
+                />
+                <CreateMoneyAccountOffsetModal
+                    moneyAccount={offsetData}
+                    setOffsetData={setOffsetData}
+                    isOpen={isOffsetOpen}
+                    onClose={onOffsetClose}
+                />
 
-        {(isLoading || isFetching) && <LoadingPlantLottie />}
-      </CardBody>
-    </Card>
-  );
+                {(isLoading || isFetching) && <LoadingPlantLottie />}
+            </CardBody>
+        </Card>
+    );
 };
 
 export default MoneyAccountsPage;

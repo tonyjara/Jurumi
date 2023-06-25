@@ -1,14 +1,14 @@
-import { useDynamicTable } from '@/components/DynamicTables/UseDynamicTable';
-import BigStat from '@/components/Stats/BigStat';
-import SmallStat from '@/components/Stats/SmallStat';
+import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
+import BigStat from "@/components/Stats/BigStat";
+import SmallStat from "@/components/Stats/SmallStat";
 import {
   formatedReduceCostCatAsignedAmount,
   reduceCostCatAsignedAmount,
   reduceCostCatAsignedAmountsInGs,
-} from '@/lib/utils/CostCatUtilts';
-import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import { projectExecutedAmount } from '@/lib/utils/ProjectUtils';
-import { trpcClient } from '@/lib/utils/trpcClient';
+} from "@/lib/utils/CostCatUtilts";
+import { decimalFormat } from "@/lib/utils/DecimalHelpers";
+import { projectExecutedAmount } from "@/lib/utils/ProjectUtils";
+import { trpcClient } from "@/lib/utils/trpcClient";
 import {
   StatGroup,
   Progress,
@@ -16,20 +16,23 @@ import {
   Box,
   useColorModeValue,
   Divider,
-} from '@chakra-ui/react';
-import { Prisma } from '@prisma/client';
-import React from 'react';
-import TransactionsTable from '../transactions/TransactionsTable';
-import type { ProjectComplete } from './ProjectsPage.mod.projects';
-import CostCategoryStats from './ProjectsTable/CostCategoryStats.mod.projects';
+} from "@chakra-ui/react";
+import { Prisma } from "@prisma/client";
+import React, { useState } from "react";
+import TransactionsTable from "../transactions/TransactionsTable";
+import type { ProjectComplete } from "./ProjectsPage.mod.projects";
+import CostCategoryStats from "./ProjectsTable/CostCategoryStats.mod.projects";
 
 const ProjectStats = ({
   project,
 }: {
   project: ProjectComplete | undefined;
 }) => {
-  const labelColor = useColorModeValue('gray.600', 'gray.300');
+  const labelColor = useColorModeValue("gray.600", "gray.300");
   const dynamicTableProps = useDynamicTable();
+  const [whereFilterList, setWhereFilterList] = useState<
+    Prisma.TransactionScalarWhereInput[]
+  >([]);
 
   const { pageIndex, globalFilter, pageSize, sorting } = dynamicTableProps;
 
@@ -49,7 +52,7 @@ const ProjectStats = ({
   }).gs;
   const assignedAmount = reduceCostCatAsignedAmount({
     costCats: project?.costCategories ?? [],
-    currency: 'PYG',
+    currency: "PYG",
   });
 
   const totalAsignedInGs = reduceCostCatAsignedAmountsInGs(
@@ -72,18 +75,18 @@ const ProjectStats = ({
 
   return (
     <div>
-      <StatGroup mb={'20px'}>
+      <StatGroup mb={"20px"}>
         <BigStat
           label="Total asignado en Gs."
-          value={decimalFormat(totalAsignedInGs, 'PYG')}
+          value={decimalFormat(totalAsignedInGs, "PYG")}
         />
 
-        <BigStat label="En Gs." value={decimalFormat(assignedAmount, 'PYG')} />
+        <BigStat label="En Gs." value={decimalFormat(assignedAmount, "PYG")} />
         <BigStat
           label="En Usd."
           value={formatedReduceCostCatAsignedAmount({
             costCats: project?.costCategories ?? [],
-            currency: 'USD',
+            currency: "USD",
           })}
         />
       </StatGroup>
@@ -94,23 +97,23 @@ const ProjectStats = ({
           label="Desembolsado"
           value={decimalFormat(
             imbursed,
-            projectWithLastTx?.transactions[0]?.currency ?? 'PYG'
+            projectWithLastTx?.transactions[0]?.currency ?? "PYG"
           )}
         />
         <SmallStat
           color="orange.300"
           label="Ejecutado en Gs."
-          value={decimalFormat(executedInGs, 'PYG')}
+          value={decimalFormat(executedInGs, "PYG")}
         />
       </StatGroup>
-      <Box my={'20px'}>
-        <Text fontSize={'lg'} color={labelColor} mb={'10px'}>
+      <Box my={"20px"}>
+        <Text fontSize={"lg"} color={labelColor} mb={"10px"}>
           {isNaN(percentageExecuted) ? 0 : percentageExecuted.toFixed(0)}%
           Ejecutado
         </Text>
         <Progress
-          borderRadius={'8px'}
-          colorScheme={'orange'}
+          borderRadius={"8px"}
+          colorScheme={"orange"}
           value={isNaN(percentageExecuted) ? 0 : percentageExecuted}
         />
       </Box>
@@ -118,6 +121,8 @@ const ProjectStats = ({
       <CostCategoryStats project={project} />
 
       <TransactionsTable
+        whereFilterList={whereFilterList}
+        setWhereFilterList={setWhereFilterList}
         loading={isFetching}
         data={getProjectWTx?.transactions ?? ([] as any)}
         count={getProjectWTx?._count?.transactions}

@@ -8,12 +8,23 @@ const RowOptionsModTransactions = ({
   x,
   onEditOpen,
   setEditTransaction,
+  setMenuData,
 }: {
   x: TransactionComplete;
   onEditOpen: () => void;
   setEditTransaction: React.Dispatch<React.SetStateAction<Transaction | null>>;
+  setMenuData: React.Dispatch<
+    React.SetStateAction<{
+      x: number;
+      y: number;
+      rowData: any | null;
+    }>
+  >;
 }) => {
   const router = useRouter();
+  const closeMenu = () => {
+    setMenuData({ x: 0, y: 0, rowData: null });
+  };
 
   const handleQueryParams = () => {
     if (x.moneyRequestId) return { moneyRequestId: x.moneyRequestId };
@@ -36,6 +47,7 @@ const RowOptionsModTransactions = ({
             pathname: "/mod/requests",
             query: handleQueryParams(),
           });
+          closeMenu();
         }}
       >
         Ir a destino de concepto
@@ -45,6 +57,7 @@ const RowOptionsModTransactions = ({
         onClick={() => {
           setEditTransaction(x);
           onEditOpen();
+          closeMenu();
         }}
       >
         Editar

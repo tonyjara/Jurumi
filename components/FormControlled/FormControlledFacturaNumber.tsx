@@ -56,7 +56,7 @@ const FormControlledFacturaNumber = <T extends FieldValues>(
                 customInput={Input}
                 allowEmptyFormatting
                 onValueChange={({ value }) => {
-                  field.onChange(value);
+                  field.onChange(value as any);
                 }}
                 format={"###-###-#######"}
                 mask="_"

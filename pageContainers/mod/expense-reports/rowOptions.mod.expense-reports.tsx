@@ -10,14 +10,26 @@ const RowOptionsHomeExpenseReports = ({
   x,
   setEditExpenseReport,
   onEditOpen,
+  setMenuData,
 }: {
   x: ExpenseReportComplete;
   setEditExpenseReport: React.Dispatch<
     React.SetStateAction<ExpenseReportComplete | null>
   >;
   onEditOpen: () => void;
+
+  setMenuData: React.Dispatch<
+    React.SetStateAction<{
+      x: number;
+      y: number;
+      rowData: any | null;
+    }>
+  >;
 }) => {
   const context = trpcClient.useContext();
+  const closeMenu = () => {
+    setMenuData((prev) => ({ ...prev, menuData: null }));
+  };
 
   const { mutate: cancelById } =
     trpcClient.expenseReport.cancelById.useMutation(
@@ -25,6 +37,7 @@ const RowOptionsHomeExpenseReports = ({
         successText: "Se ha anulado su rendición",
         callback: () => {
           context.expenseReport.invalidate();
+          closeMenu();
         },
       })
     );
@@ -34,6 +47,7 @@ const RowOptionsHomeExpenseReports = ({
         successText: "Se ha eliminado su rendición",
         callback: () => {
           context.expenseReport.invalidate();
+          closeMenu();
         },
       })
     );
@@ -45,6 +59,7 @@ const RowOptionsHomeExpenseReports = ({
         onClick={() => {
           setEditExpenseReport(x);
           onEditOpen();
+          closeMenu();
         }}
       >
         Editar

@@ -96,7 +96,7 @@ const ExpenseRepAndRetPringPage = ({
                             </Tr>
                             <Tr>
                                 <Td fontWeight={"bold"}>Comentarios:</Td>
-                                <Td>{req.comments}</Td>
+                                <Td whiteSpace={"break-spaces"}>{req.comments}</Td>
                             </Tr>
                         </Tbody>
                     </Table>

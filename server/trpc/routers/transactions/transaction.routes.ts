@@ -16,14 +16,23 @@ export const transactionsRouter = router({
       orderBy: { createdAt: "desc" },
     });
   }),
-  count: adminModObserverProcedure.query(async () => {
-    return await prisma?.transaction.count();
-  }),
+  count: adminModObserverProcedure
+    .input(
+      z.object({
+        whereFilterList: z.any().array().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma?.transaction.count({
+        where: { AND: [...(input?.whereFilterList ?? [])] },
+      });
+    }),
   getManyComplete: adminModObserverProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
         pageSize: z.number().min(1).max(100).nullish(),
+        whereFilterList: z.any().array().optional(),
         sorting: z
           .object({ id: z.string(), desc: z.boolean() })
           .array()
@@ -34,6 +43,9 @@ export const transactionsRouter = router({
       const pageSize = input.pageSize ?? 10;
       const pageIndex = input.pageIndex ?? 0;
       return await prisma?.transaction.findMany({
+        where: {
+          AND: [...(input?.whereFilterList ?? [])],
+        },
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),

@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from '@prisma/client';
+import type { Prisma, PrismaClient } from "@prisma/client";
 
 //** Prisma context for transactions */
 export type TxCtx = Omit<
@@ -7,5 +7,5 @@ export type TxCtx = Omit<
     never,
     Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
   >,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >;

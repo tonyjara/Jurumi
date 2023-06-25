@@ -61,12 +61,12 @@ test("test find by id", async () => {
   const input: Input = {
     value: "cleyy43mp0003pftwekyy3pny",
     filter: "id",
-    pendingFilter: null,
+    extraFilters: [],
   };
   const result = await adminCaller.moneyRequest.findCompleteById({
     value: input.value,
     filter: "id",
-    pendingFilter: null,
+    extraFilters: [],
   });
 
   expect(result).not.toBe(null);
