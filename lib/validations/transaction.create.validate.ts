@@ -13,6 +13,8 @@ type withMoney = Omit<
   | "currentBalance"
   | "currency"
   | "moneyAccountId"
+  | "wasConvertedToOtherCurrency"
+  | "exchangeRate"
 > & {
   openingBalance?: any;
   currentBalance?: any;
@@ -23,6 +25,8 @@ export interface TransactionField {
   currency: Currency;
   transactionAmount?: any;
   moneyAccountId: string;
+  wasConvertedToOtherCurrency: boolean;
+  exchangeRate: number;
 }
 export interface FormTransactionCreate extends withMoney {
   transactions: TransactionField[];
@@ -47,6 +51,8 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
                 2,
                 "Favor seleccione una cuenta de donde extraer el dinero."
               ),
+            wasConvertedToOtherCurrency: z.boolean(),
+            exchangeRate: z.number(),
           })
         ),
         id: z.number().int(),
@@ -85,6 +91,25 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
               "La transacción debe estar relacionada con un desembolso, retorno o una solicitud.",
           });
         }
+        val.transactions.forEach((transaction, index) => {
+          if (transaction.transactionAmount.toNumber() <= 0) {
+            ctx.addIssue({
+              path: [`transactions.${index}.transactionAmount`],
+              code: z.ZodIssueCode.custom,
+              message: "Favor ingrese un monto mayor a 0.",
+            });
+          }
+          if (
+            transaction.wasConvertedToOtherCurrency &&
+            transaction.exchangeRate <= 0
+          ) {
+            ctx.addIssue({
+              path: [`transactions.${index}.exchangeRate`],
+              code: z.ZodIssueCode.custom,
+              message: "Favor ingrese una tasa de cambio mayor a 0.",
+            });
+          }
+        });
       })
   );
 
@@ -99,6 +124,8 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
       currency: "PYG",
       transactionAmount: new Prisma.Decimal(0),
       moneyAccountId: "",
+      exchangeRate: 7000,
+      wasConvertedToOtherCurrency: false,
     },
   ],
   transactionType: "MONEY_ACCOUNT",
@@ -139,6 +166,8 @@ export const transactionMock: (
         //@ts-ignore
         moneyAccountId: moneyAccOptions(currency)[0]?.value ?? "",
         currency,
+        exchangeRate: 7000,
+        wasConvertedToOtherCurrency: false,
       },
     ],
     id: 0,

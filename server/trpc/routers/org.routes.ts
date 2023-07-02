@@ -93,6 +93,7 @@ export const orgRouter = router({
           },
           members: { connect: { id: user.id } },
           imageLogo: imageLogo ? { connect: { id: imageLogo.id } } : {},
+          dolarToGuaraniExchangeRate: input.dolarToGuaraniExchangeRate,
         },
       });
       return org;
@@ -129,6 +130,7 @@ export const orgRouter = router({
           displayName: input.displayName,
           updatedById: user.id,
           searchableImageId: imageLogo?.id ?? null,
+          dolarToGuaraniExchangeRate: input.dolarToGuaraniExchangeRate,
           moneyRequestApprovers: {
             disconnect: moneyReqApproverIds, //disconnect old, connect new
             connect: input.moneyRequestApprovers.map((x) => ({ id: x.id })),

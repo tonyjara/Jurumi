@@ -1,4 +1,4 @@
-import { BankNamesPy } from "@prisma/client";
+import { BankNamesPy, Currency } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { v4 as uuidV4 } from "uuid";
@@ -169,6 +169,8 @@ export const TransactionCreateMock = () => {
                 currency: "PYG",
                 transactionAmount: new Prisma.Decimal(0),
                 moneyAccountId: "",
+                exchangeRate: 7000,
+                wasConvertedToOtherCurrency: false,
             },
         ],
         transactionType: "MONEY_ACCOUNT",
@@ -215,10 +217,12 @@ export const expenseReturnMock = ({
     moneyAccountId,
     moneyRequestId,
     amountReturned,
+    currency
 }: {
     moneyAccountId: string;
     moneyRequestId: string;
     amountReturned: Prisma.Decimal;
+    currency: Currency
 }) => {
     const imageName = uuidV4();
     const x: FormExpenseReturn = {
@@ -227,9 +231,11 @@ export const expenseReturnMock = ({
         updatedAt: null,
         amountReturned,
         moneyRequestId,
-        currency: "PYG",
+        currency,
         moneyAccountId,
         accountId: "",
+        wasConvertedToOtherCurrency: false,
+        exchangeRate: 7000,
         searchableImage: {
             url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",
             imageName,
@@ -346,6 +352,8 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
                 id: 116,
                 createdAt: new Date(),
                 updatedAt: null,
+                exchangeRate: 7000,
+                wasConvertedToOtherCurrency: false,
                 updatedById: null,
                 currency: "PYG",
                 openingBalance: new Prisma.Decimal(10000000),
@@ -375,6 +383,8 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
                 createdAt: new Date(),
                 updatedAt: null,
                 updatedById: null,
+                exchangeRate: 7000,
+                wasConvertedToOtherCurrency: false,
                 currency: "PYG",
                 openingBalance: new Prisma.Decimal(8318932),
                 currentBalance: new Prisma.Decimal(9159466),
@@ -405,6 +415,8 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
                 id: "cldagi67y005xpfttj4my35rs",
                 createdAt: new Date(),
                 updatedAt: null,
+                wasConvertedToOtherCurrency: false,
+                exchangeRate: 7000,
                 facturaNumber: "9720455630179",
                 amountSpent: new Prisma.Decimal(840534),
                 currency: "PYG",
@@ -425,6 +437,8 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
                 id: "cldagi6870061pftttzyth6sn",
                 createdAt: new Date(),
                 updatedAt: null,
+                wasConvertedToOtherCurrency: false,
+                exchangeRate: 7000,
                 wasCancelled: false,
                 currency: "PYG",
                 amountReturned: new Prisma.Decimal(840534),

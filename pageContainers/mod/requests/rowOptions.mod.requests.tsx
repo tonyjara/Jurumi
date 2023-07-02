@@ -1,5 +1,5 @@
 import { MenuItem } from "@chakra-ui/react";
-import type { MoneyRequest } from "@prisma/client";
+import { MoneyRequest, Prisma } from "@prisma/client";
 import router from "next/router";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
@@ -7,8 +7,9 @@ import { trpcClient } from "@/lib/utils/trpcClient";
 import { RowOptionDeleteDialog } from "@/components/Toasts & Alerts/RowOption.delete.dialog";
 import { RowOptionCancelDialog } from "@/components/Toasts & Alerts/RowOptions.cancel.dialog";
 import {
-    reduceExpenseReports,
-    reduceExpenseReturns,
+    reduceExpenseReturnsToSetCurrency,
+    reduceExpenseReportsToSetCurrency,
+    reduceTransactionAmountsToSetCurrency,
 } from "@/lib/utils/TransactionUtils";
 import cloneDeep from "lodash.clonedeep";
 import UsePrintComponent from "@/components/Print/UsePrintComponent";
@@ -71,11 +72,26 @@ const RowOptionsModRequests = ({
     );
     const isAccepted = x.status === "ACCEPTED";
     const isCancelled = x.wasCancelled;
-    const isGreaterOrEqualToExecutionTotal = reduceExpenseReports(
-        x.expenseReports
-    )
-        .add(reduceExpenseReturns(x.expenseReturns))
-        .greaterThanOrEqualTo(x.amountRequested);
+    const isGreaterThanOrEqualToExecutionTotal =
+        reduceTransactionAmountsToSetCurrency({
+            transactions: x.transactions,
+            currency: x.currency,
+            // RONDING BY 1 TO AVOID FLOATING POINT ERRORS
+        }).greaterThanOrEqualTo(x.amountRequested.sub(new Prisma.Decimal(1)));
+
+    const isGreaterOrEqualToReportedAndReturnedTotal =
+        reduceExpenseReportsToSetCurrency({
+            expenseReports: x.expenseReports,
+            currency: x.currency,
+        })
+            .add(
+                reduceExpenseReturnsToSetCurrency({
+                    expenseReturns: x.expenseReturns,
+                    currency: x.currency,
+                })
+            )
+            // RONDING BY 1 TO AVOID FLOATING POINT ERRORS
+            .greaterThanOrEqualTo(x.amountRequested.sub(new Prisma.Decimal(1)));
 
     const {
         isPrinting,
@@ -89,7 +105,9 @@ const RowOptionsModRequests = ({
         <div>
             <MenuItem
                 isDisabled={
-                    (needsApproval && !hasBeenApproved) || isAccepted || isCancelled
+                    (needsApproval && !hasBeenApproved) ||
+                    isGreaterThanOrEqualToExecutionTotal ||
+                    isCancelled
                 }
                 onClick={() => {
                     router.push({
@@ -129,7 +147,9 @@ const RowOptionsModRequests = ({
                 x.moneyRequestType === "MONEY_ORDER") && (
                     <MenuItem
                         isDisabled={
-                            !isAccepted || x.wasCancelled || isGreaterOrEqualToExecutionTotal
+                            !isAccepted ||
+                            x.wasCancelled ||
+                            isGreaterOrEqualToReportedAndReturnedTotal
                         }
                         onClick={() => {
                             setReqForReport(x);
@@ -145,7 +165,7 @@ const RowOptionsModRequests = ({
                 isDisabled={
                     !isAccepted ||
                     x.wasCancelled ||
-                    isGreaterOrEqualToExecutionTotal ||
+                    isGreaterOrEqualToReportedAndReturnedTotal ||
                     x.moneyRequestType === "REIMBURSMENT_ORDER" ||
                     x.moneyRequestType === "MONEY_ORDER"
                 }
@@ -192,7 +212,7 @@ const RowOptionsModRequests = ({
             {(x.moneyRequestType === "FUND_REQUEST" ||
                 x.moneyRequestType === "MONEY_ORDER") && (
                     <MenuItem
-                        isDisabled={!isGreaterOrEqualToExecutionTotal}
+                        isDisabled={!isGreaterOrEqualToReportedAndReturnedTotal}
                         onClick={handlePrintExpenseRepsAndRets}
                     >
                         Imprimir rendición/es

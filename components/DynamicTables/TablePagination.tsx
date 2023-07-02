@@ -3,7 +3,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ArrowRightIcon,
-} from '@chakra-ui/icons';
+} from "@chakra-ui/icons";
 import {
   Flex,
   Text,
@@ -14,8 +14,8 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Select,
-} from '@chakra-ui/react';
-import React from 'react';
+} from "@chakra-ui/react";
+import React from "react";
 
 const TablePagination = <T extends object>({
   pageIndex,
@@ -41,12 +41,12 @@ const TablePagination = <T extends object>({
   const lastPage = Math.ceil(count / pageSize);
   return (
     <Flex
-      w={'100%'}
+      w={"100%"}
       maxW="750px"
       justifyContent="space-between"
       p={4}
       alignItems="center"
-      alignSelf={'center'}
+      alignSelf={"center"}
     >
       <Flex>
         <IconButton
@@ -54,29 +54,29 @@ const TablePagination = <T extends object>({
           isDisabled={!canPreviousPage}
           icon={<ArrowLeftIcon h={3} w={3} />}
           mr={4}
-          aria-label={''}
+          aria-label={""}
         />
 
         <IconButton
           onClick={previousPage}
           isDisabled={!canPreviousPage}
           icon={<ChevronLeftIcon h={6} w={6} />}
-          aria-label={''}
+          aria-label={""}
         />
       </Flex>
 
       <Flex alignItems="center">
-        <Text whiteSpace={'nowrap'} mr={8}>
-          Pag.{' '}
+        <Text whiteSpace={"nowrap"} mr={8}>
+          Pag.{" "}
           <Text fontWeight="bold" as="span">
             {pageIndex + 1}
-          </Text>{' '}
-          de{' '}
+          </Text>{" "}
+          de{" "}
           <Text fontWeight="bold" as="span">
             {lastPage}
           </Text>
         </Text>
-        <Text whiteSpace={'nowrap'}>Ir a pag.:</Text>{' '}
+        <Text whiteSpace={"nowrap"}>Ir a pag.:</Text>{" "}
         <NumberInput
           ml={2}
           mr={8}
@@ -103,7 +103,7 @@ const TablePagination = <T extends object>({
           }}
           // minW="130px"
         >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
+          {[10, 20, 30, 40, 50, 100].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
               Mostrar {pageSize}
             </option>
@@ -116,7 +116,7 @@ const TablePagination = <T extends object>({
           onClick={nextPage}
           isDisabled={!canNextPage}
           icon={<ChevronRightIcon h={6} w={6} />}
-          aria-label={''}
+          aria-label={""}
         />
 
         <IconButton
@@ -126,7 +126,7 @@ const TablePagination = <T extends object>({
           isDisabled={!canNextPage}
           icon={<ArrowRightIcon h={3} w={3} />}
           ml={4}
-          aria-label={''}
+          aria-label={""}
         />
       </Flex>
     </Flex>

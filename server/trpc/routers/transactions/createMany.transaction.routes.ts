@@ -140,6 +140,9 @@ async function createMoneyAccTransactions({
         openingBalance: openingBalance,
         currentBalance: currentBalance,
         transactionType: "MONEY_ACCOUNT",
+        wasConvertedToOtherCurrency: tx.wasConvertedToOtherCurrency,
+        exchangeRate: tx.exchangeRate,
+
         moneyAccountId,
         moneyRequestId: formTransaction.moneyRequestId,
         imbursementId: formTransaction.imbursementId,

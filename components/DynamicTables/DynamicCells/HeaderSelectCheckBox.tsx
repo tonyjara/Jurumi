@@ -16,7 +16,7 @@ export default function HeaderSelectCheckBox({
 }): JSX.Element {
   const isIndeterminate =
     selectedRows.length > 0 && selectedRows.length < pageSize;
-  const isAllChecked = selectedRows.length >= rowsLength;
+  const isAllChecked = selectedRows.length >= rowsLength && rowsLength > 0;
 
   return (
     <div

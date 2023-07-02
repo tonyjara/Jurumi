@@ -8,18 +8,13 @@ import {
   InputLeftElement,
 } from "@chakra-ui/react";
 import React from "react";
-import type {
-  Control,
-  FieldErrorsImpl,
-  FieldValues,
-  Path,
-} from "react-hook-form";
+import type { Control, FieldValues, Path } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<any>;
+  errors: any;
   name: Path<T>;
   label: string;
   helperText?: string;
@@ -44,8 +39,20 @@ const FormControlledNumberInput = <T extends FieldValues>({
   disable,
   maxLength,
 }: InputProps<T>) => {
+  const splitName = name.split(".");
+  const reduceErrors = splitName.reduce((acc: any, curr: any) => {
+    if (!acc[curr]) return acc;
+    if (isNaN(curr)) {
+      return acc[curr];
+    }
+    return acc[parseInt(curr)];
+  }, errors);
+
   return (
-    <FormControl display={hidden ? "none" : "block"} isInvalid={!!errors[name]}>
+    <FormControl
+      display={hidden ? "none" : "block"}
+      isInvalid={!!reduceErrors.message}
+    >
       <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
@@ -80,11 +87,10 @@ const FormControlledNumberInput = <T extends FieldValues>({
           </InputGroup>
         )}
       />
-      {!errors[name] ? (
+      {!reduceErrors.message ? (
         <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
-        //@ts-ignore
-        <FormErrorMessage>{errors[name].message}</FormErrorMessage>
+        <FormErrorMessage>{reduceErrors.message}</FormErrorMessage>
       )}
     </FormControl>
   );

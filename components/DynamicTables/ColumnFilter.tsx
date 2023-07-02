@@ -22,8 +22,6 @@ This component lists filters that are specific to a column. They change the way 
 */
 const ColumnFilter = (props: ColumnFilterProps) => {
   const { column, setWhereFilterList, whereFilterList } = props;
-  /* console.log(column.id); */
-  /* console.log(whereFilterList); */
 
   return (
     <div>

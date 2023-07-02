@@ -5,8 +5,8 @@ import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
 import PercentageCell from "@/components/DynamicTables/DynamicCells/PercentageCell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
 import {
-  reduceExpenseReports,
-  reduceExpenseReturns,
+  reduceExpenseReturnsToSetCurrency,
+  reduceExpenseReportsToSetCurrency,
 } from "@/lib/utils/TransactionUtils";
 import {
   translatedMoneyReqStatus,
@@ -89,13 +89,23 @@ export const homeRequestsColumns = ({
         ) : (
           <PercentageCell
             total={x.row.original.amountRequested}
-            executed={reduceExpenseReports(x.row.original.expenseReports).add(
-              reduceExpenseReturns(x.row.original.expenseReturns)
+            executed={reduceExpenseReportsToSetCurrency({
+              expenseReports: x.row.original.expenseReports,
+              currency: x.row.original.currency,
+            }).add(
+              reduceExpenseReturnsToSetCurrency({
+                expenseReturns: x.row.original.expenseReturns,
+                currency: x.row.original.currency,
+              })
             )}
             currency={x.row.original.currency}
           />
         )}
       </Center>
     ),
+  }),
+  columnHelper.accessor("id", {
+    header: "ID",
+    cell: (x) => <TextCell text={x.getValue()} />,
   }),
 ];
