@@ -1,5 +1,6 @@
 import type { BankAccsWithLastTx } from "@/components/OrgCharts/CardGroups/BankAcc.cardGroup";
 import type { CashAccsWithLastTx } from "@/components/OrgCharts/CardGroups/PettyCash.cardGroup";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import {
   Currency,
   ExpenseReport,
@@ -104,3 +105,44 @@ export const formatedAccountBalance = (
 
   return decimalFormat(acc.initialBalance, acc.currency);
 };
+
+/** Find out the pending amount from the moneyRequest based on currency and exchangeRate */
+export function calculateMoneyReqPendingAmount({
+  moneyRequest,
+  currency,
+  exchangeRate,
+}: {
+  moneyRequest: CompleteMoneyReqHome | undefined;
+  currency: Currency;
+  exchangeRate: number;
+}) {
+  if (!moneyRequest) return new Prisma.Decimal(0);
+  const totalAmountRequested = moneyRequest.amountRequested;
+  const totalAmountReportedOrReturned = reduceExpenseReportsToSetCurrency({
+    expenseReports: moneyRequest.expenseReports,
+    currency: moneyRequest.currency,
+  }).add(
+    reduceExpenseReturnsToSetCurrency({
+      expenseReturns: moneyRequest.expenseReturns,
+      currency: moneyRequest.currency,
+    })
+  );
+
+  if (currency !== moneyRequest.currency) {
+    if (currency === "USD") {
+      return totalAmountRequested
+        .sub(totalAmountReportedOrReturned)
+        .dividedBy(exchangeRate ?? 0)
+        .toDecimalPlaces(2);
+    }
+    if (currency === "PYG") {
+      return totalAmountRequested
+        .sub(totalAmountReportedOrReturned)
+        .times(exchangeRate ?? 0)
+        .floor();
+    }
+  }
+  return moneyRequest.currency === "USD"
+    ? totalAmountRequested.sub(totalAmountReportedOrReturned).toDecimalPlaces(2)
+    : totalAmountRequested.sub(totalAmountReportedOrReturned).floor();
+}

@@ -1,7 +1,7 @@
-import type { Currency } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import DecimalFormat from 'decimal-format';
-import { translateCurrencyPrefix } from './TranslatedEnums';
+import type { Currency } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import DecimalFormat from "decimal-format";
+import { translateCurrencyPrefix } from "./TranslatedEnums";
 //For the moment being, only handles PYG
 export const addDecimals = <
   T extends { currency: Currency },
@@ -15,12 +15,12 @@ export const addDecimals = <
     return acc.add(decimalVal);
   }, new Prisma.Decimal(0));
 
-  const df = new DecimalFormat(`${translateCurrencyPrefix('PYG')} #,##0.#`);
+  const df = new DecimalFormat(`${translateCurrencyPrefix("PYG")} #,##0.#`);
   return df.format(decimalTotal.toString());
 };
 
 export const decimalFormat = (x: Prisma.Decimal, y: Currency) => {
-  if (y === 'USD') {
+  if (y === "USD") {
     const df = new DecimalFormat(`${translateCurrencyPrefix(y)} #,##0.00#`);
     return df.format(x.toString());
   }
@@ -44,10 +44,10 @@ export const addDecimalsToNumber = <
 };
 
 export function kFormatter(num: number) {
-  const formatter = Intl.NumberFormat('en', { notation: 'compact' });
+  const formatter = Intl.NumberFormat("en", { notation: "compact" });
   return formatter.format(num);
 }
 export function thousandsFormatter(num: number) {
-  const formatter = Intl.NumberFormat('en');
+  const formatter = Intl.NumberFormat("en");
   return formatter.format(num);
 }

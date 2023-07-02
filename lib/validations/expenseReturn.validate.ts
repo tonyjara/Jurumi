@@ -22,8 +22,8 @@ export const validateExpenseReturn: z.ZodType<FormExpenseReturn> = z
       wasCancelled: z.boolean(),
       currency: z.nativeEnum(Currency),
       amountReturned: z.any().transform((value) => new Prisma.Decimal(value)),
-      moneyAccountId: z.string().min(2),
-      moneyRequestId: z.string().min(2, "Favor seleccione una cuenta."),
+      moneyAccountId: z.string().min(2, "Favor seleccione una cuenta."),
+      moneyRequestId: z.string().min(2),
       accountId: z.string(),
       searchableImage: z.object({
         imageName: z.string().min(1, "Favor suba la imágen de su comprobante"),

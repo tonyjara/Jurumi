@@ -1,4 +1,4 @@
-import { BankNamesPy } from "@prisma/client";
+import { BankNamesPy, Currency } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { v4 as uuidV4 } from "uuid";
@@ -217,10 +217,12 @@ export const expenseReturnMock = ({
     moneyAccountId,
     moneyRequestId,
     amountReturned,
+    currency
 }: {
     moneyAccountId: string;
     moneyRequestId: string;
     amountReturned: Prisma.Decimal;
+    currency: Currency
 }) => {
     const imageName = uuidV4();
     const x: FormExpenseReturn = {
@@ -229,7 +231,7 @@ export const expenseReturnMock = ({
         updatedAt: null,
         amountReturned,
         moneyRequestId,
-        currency: "PYG",
+        currency,
         moneyAccountId,
         accountId: "",
         wasConvertedToOtherCurrency: false,

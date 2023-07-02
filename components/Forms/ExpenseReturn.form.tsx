@@ -55,6 +55,7 @@ const ExpenseReturnForm = ({
   });
 
   const handleCurrencyChange = (e: Currency) => {
+    setValue("moneyAccountId", "");
     if (e !== moneyRequest?.currency) {
       return setValue("wasConvertedToOtherCurrency", true);
     }
@@ -82,6 +83,7 @@ const ExpenseReturnForm = ({
               moneyRequestId: moneyRequest.id,
               moneyAccountId: accOptions[0]?.value ?? "",
               amountReturned: pendingAmount(),
+              currency,
             })
           }
         />

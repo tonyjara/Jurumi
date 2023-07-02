@@ -16,6 +16,7 @@ import { knownErrors } from "@/lib/dictionaries/knownErrors";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 import {
+  calculateMoneyReqPendingAmount,
   reduceExpenseReportsToSetCurrency,
   reduceExpenseReturnsToSetCurrency,
 } from "@/lib/utils/TransactionUtils";
@@ -86,37 +87,8 @@ const CreateExpenseReturnModal = ({
   const currency = useWatch({ control, name: "currency" });
   const exchangeRate = useWatch({ control, name: "exchangeRate" });
 
-  const totalAmountRequested =
-    moneyRequest?.amountRequested ?? new Prisma.Decimal(0);
-
-  const totalAmountReportedOrReturned = moneyRequest
-    ? reduceExpenseReportsToSetCurrency({
-        expenseReports: moneyRequest.expenseReports,
-        currency: moneyRequest.currency,
-      }).add(
-        reduceExpenseReturnsToSetCurrency({
-          expenseReturns: moneyRequest.expenseReturns,
-          currency: moneyRequest.currency,
-        })
-      )
-    : new Prisma.Decimal(0);
-
-  const pendingAmount = () => {
-    if (!moneyRequest) return new Prisma.Decimal(0);
-    if (currency !== moneyRequest.currency) {
-      if (currency === "USD") {
-        return totalAmountRequested
-          .sub(totalAmountReportedOrReturned)
-          .dividedBy(exchangeRate ?? 0);
-      }
-      if (currency === "PYG") {
-        return totalAmountRequested
-          .sub(totalAmountReportedOrReturned)
-          .times(exchangeRate ?? 0);
-      }
-    }
-    return totalAmountRequested.sub(totalAmountReportedOrReturned);
-  };
+  const pendingAmount = () =>
+    calculateMoneyReqPendingAmount({ moneyRequest, currency, exchangeRate });
 
   const formatedPendingAmount = () => decimalFormat(pendingAmount(), currency);
   return (
