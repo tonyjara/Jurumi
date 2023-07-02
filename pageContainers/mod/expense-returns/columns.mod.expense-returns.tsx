@@ -1,16 +1,14 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import DateCell from "@/components/DynamicTables/DynamicCells/DateCell";
-import FacturaNumberCell from "@/components/DynamicTables/DynamicCells/FacturaNumberCell";
 import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
-import type { ExpenseReportComplete } from "./ModExpenseReportsPage.mod.expense-reports";
-import { Prisma } from "@prisma/client";
 import NumberCell from "@/components/DynamicTables/DynamicCells/NumberCell";
+import { ExpenseReturnComplete } from "./ModExpenseReturnsPage.mod.expense-returns";
 
-const columnHelper = createColumnHelper<ExpenseReportComplete>();
+const columnHelper = createColumnHelper<ExpenseReturnComplete>();
 
-export const modExpenseReportsColumns = ({
+export const modExpenseReturnsColumns = ({
   pageIndex,
   pageSize,
 }: {
@@ -30,25 +28,12 @@ export const modExpenseReportsColumns = ({
     header: "Creador",
     cell: (x) => <TextCell text={x.getValue()} />,
   }),
-  columnHelper.accessor("facturaNumber", {
-    cell: (x) => <FacturaNumberCell text={x.getValue()} />,
-    header: "Factura N.",
-  }),
-  columnHelper.accessor("comments", {
-    cell: (x) => (
-      <TextCell
-        shortenString
-        hover={x.getValue()}
-        text={x.getValue().length ? x.getValue() : "-"}
-      />
-    ),
-    header: "Comentarios",
-  }),
-  columnHelper.accessor("amountSpent", {
+
+  columnHelper.accessor("amountReturned", {
     cell: (x) => (
       <MoneyCell amount={x.getValue()} currency={x.row.original.currency} />
     ),
-    header: "Monto",
+    header: "Monto devuelto",
   }),
   columnHelper.accessor("wasConvertedToOtherCurrency", {
     cell: (x) => (
@@ -73,20 +58,6 @@ export const modExpenseReportsColumns = ({
     header: "Comprobante",
   }),
 
-  columnHelper.accessor("taxPayer.razonSocial", {
-    cell: (x) => <TextCell text={x.getValue()} />,
-    header: "Contribuyente",
-  }),
-  columnHelper.display({
-    cell: (x) => <TextCell text={x.row.original.project?.displayName ?? "-"} />,
-    header: "Proyecto",
-  }),
-  columnHelper.display({
-    cell: (x) => (
-      <TextCell text={x.row.original.costCategory?.displayName ?? "-"} />
-    ),
-    header: "Linea Presupuestaria",
-  }),
   columnHelper.accessor("id", {
     cell: (x) => <TextCell text={x.getValue()} />,
     header: "ID",

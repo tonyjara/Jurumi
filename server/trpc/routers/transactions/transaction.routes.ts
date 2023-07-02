@@ -90,13 +90,13 @@ export const transactionsRouter = router({
         where: { id: input.id },
         data: {
           updatedById: ctx.session.user.id,
-          currency: input.currency,
-          openingBalance: input.openingBalance,
-          transactionAmount: input.transactionAmount,
-          moneyAccountId: input.moneyAccountId,
-          moneyRequestId: input.moneyRequestId,
-          imbursementId: input.imbursementId,
-          expenseReturnId: input.expenseReturnId,
+          /* currency: input.currency, */
+          /* openingBalance: input.openingBalance, */
+          /* transactionAmount: input.transactionAmount, */
+          /* moneyAccountId: input.moneyAccountId, */
+          /* moneyRequestId: input.moneyRequestId, */
+          /* imbursementId: input.imbursementId, */
+          /* expenseReturnId: input.expenseReturnId, */
           searchableImage: input.searchableImage
             ? {
                 create: {

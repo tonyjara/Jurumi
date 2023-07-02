@@ -23,6 +23,7 @@ import ExpenseReportForm from "../Forms/ExpenseReport.form";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 import { ExpenseReportComplete } from "@/pageContainers/mod/expense-reports/ModExpenseReportsPage.mod.expense-reports";
 import { MyExpenseReport } from "@/pageContainers/home/expense-reports/ExpenseReportsPage.home.expense-reports";
+import { Prisma } from "@prisma/client";
 
 const EditExpenseReportModal = ({
   isOpen,
@@ -57,6 +58,8 @@ const EditExpenseReportModal = ({
         createdAt: expenseReport.createdAt,
         updatedAt: null,
         currency: "USD",
+        wasConvertedToOtherCurrency: expenseReport.wasConvertedToOtherCurrency,
+        exchangeRate: expenseReport.exchangeRate,
         accountId: expenseReport.accountId,
         wasCancelled: false,
         projectId: expenseReport.projectId,
@@ -123,6 +126,7 @@ const EditExpenseReportModal = ({
               isEdit={true}
               // This data is not editable, it should be edited in the reimbursement request
               amountSpentIsBiggerThanPending={false}
+              pendingAmount={() => new Prisma.Decimal(0)}
             />
           </ModalBody>
 

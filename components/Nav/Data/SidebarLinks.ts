@@ -3,7 +3,7 @@ import { FiHome, FiSettings, FiUsers, FiGlobe } from "react-icons/fi";
 import { BsCash, BsCashStack, BsLink45Deg } from "react-icons/bs";
 import { TbReceiptTax, TbSeeding } from "react-icons/tb";
 import { CgOrganisation } from "react-icons/cg";
-import { MdApproval } from "react-icons/md";
+import { MdApproval, MdOutlineAssignmentReturn } from "react-icons/md";
 import { AiFillBank, AiOutlineProject } from "react-icons/ai";
 import { FaExchangeAlt, FaDonate } from "react-icons/fa";
 import { TbReportMoney } from "react-icons/tb";
@@ -93,6 +93,12 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               icon: TbReportMoney,
               dest: "/mod/expense-reports",
             },
+            {
+              name: "Devoluciones",
+              icon: MdOutlineAssignmentReturn,
+              dest: "/mod/expense-returns",
+            },
+
             { name: "Aprobaciones", icon: MdApproval, dest: "/mod/approvals" },
           ],
         },
@@ -129,6 +135,12 @@ export const SidebarLinks: (
       icon: TbReportMoney,
       dest: "/home/expense-reports",
     },
+    {
+      name: "Mis devoluciones",
+      icon: MdOutlineAssignmentReturn,
+      dest: "/home/expense-returns",
+    },
+
     { name: "Configuración", icon: FiSettings, dest: "/home/settings" },
   ];
 };

@@ -25,7 +25,6 @@ interface InputProps<T extends FieldValues> {
   isTextArea?: boolean;
   hidden?: boolean;
   autoFocus?: boolean;
-  error?: string; // escape hatch for nested objects
 }
 
 const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
@@ -42,10 +41,19 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
     isTextArea,
     hidden,
     autoFocus,
-    error,
   } = props;
+
+  const splitName = name.split(".");
+  const reduceErrors = splitName.reduce((acc: any, curr: any) => {
+    if (!acc[curr]) return acc;
+    if (isNaN(curr)) {
+      return acc[curr];
+    }
+    return acc[parseInt(curr)];
+  }, errors);
+
   return (
-    <FormControl hidden={hidden} isInvalid={!!errors[name] || !!error}>
+    <FormControl hidden={hidden} isInvalid={!!reduceErrors.message}>
       <FormLabel fontSize={"md"} color={"gray.500"}>
         {label}
       </FormLabel>
@@ -82,12 +90,11 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
           </InputGroup>
         )}
       />
-      {error && <FormErrorMessage>{error}</FormErrorMessage>}
-      {!errors[name] ? (
+      {/* {error && <FormErrorMessage>{error}</FormErrorMessage>} */}
+      {!reduceErrors.message ? (
         <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
-        //@ts-ignore
-        <FormErrorMessage>{errors[name].message}</FormErrorMessage>
+        <FormErrorMessage>{reduceErrors.message}</FormErrorMessage>
       )}
     </FormControl>
   );

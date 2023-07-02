@@ -1,28 +1,30 @@
-import { VStack } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
-import React from 'react';
+import { VStack } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import React from "react";
 import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
   UseFormReset,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import { currencyOptions } from '../../lib/utils/SelectOptions';
-import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
-import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
-import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
-import FormControlledSelect from '../FormControlled/FormControlledSelect';
-import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
-import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
-import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
-import type { Currency } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import { expenseReturnMock } from '@/__tests__/mocks/Mocks';
-import SeedButton from '../DevTools/SeedButton';
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { currencyOptions } from "../../lib/utils/SelectOptions";
+import { translateCurrencyPrefix } from "../../lib/utils/TranslatedEnums";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import FormControlledImageUpload from "../FormControlled/FormControlledImageUpload";
+import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
+import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
+import FormControlledSelect from "../FormControlled/FormControlledSelect";
+import { reduceExpenseReportsToSetCurrency } from "@/lib/utils/TransactionUtils";
+import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
+import type { Currency } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { expenseReturnMock } from "@/__tests__/mocks/Mocks";
+import SeedButton from "../DevTools/SeedButton";
+import { Decimal } from "@prisma/client/runtime";
+import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -30,6 +32,8 @@ interface formProps<T extends FieldValues> {
   setValue: UseFormSetValue<T>;
   moneyRequest?: CompleteMoneyReqHome;
   reset: UseFormReset<FormExpenseReturn>;
+  pendingAmount: () => Decimal;
+  isEdit?: boolean;
 }
 
 const ExpenseReturnForm = ({
@@ -38,11 +42,24 @@ const ExpenseReturnForm = ({
   moneyRequest,
   setValue,
   reset,
+  pendingAmount,
+  isEdit,
 }: formProps<FormExpenseReturn>) => {
   const { data: session } = useSession();
   const user = session?.user;
 
-  const currency = useWatch({ control, name: 'currency' });
+  const currency = useWatch({ control, name: "currency" });
+  const wasConvertedToOtherCurrency = useWatch({
+    control,
+    name: "wasConvertedToOtherCurrency",
+  });
+
+  const handleCurrencyChange = (e: Currency) => {
+    if (e !== moneyRequest?.currency) {
+      return setValue("wasConvertedToOtherCurrency", true);
+    }
+    return setValue("wasConvertedToOtherCurrency", false);
+  };
 
   const { data: moneyAccs } = trpcClient.moneyAcc.getManyPublic.useQuery();
 
@@ -54,12 +71,6 @@ const ExpenseReturnForm = ({
         label: `${acc.displayName}`,
       }));
 
-  const pendingAmount = () =>
-    moneyRequest
-      ? moneyRequest.amountRequested.sub(
-          reduceExpenseReports(moneyRequest.expenseReports)
-        )
-      : new Prisma.Decimal(0);
   const accOptions = moneyAccOptions(currency);
   return (
     <VStack spacing={5}>
@@ -69,7 +80,7 @@ const ExpenseReturnForm = ({
           mock={() =>
             expenseReturnMock({
               moneyRequestId: moneyRequest.id,
-              moneyAccountId: accOptions[0]?.value ?? '',
+              moneyAccountId: accOptions[0]?.value ?? "",
               amountReturned: pendingAmount(),
             })
           }
@@ -81,20 +92,29 @@ const ExpenseReturnForm = ({
         name="currency"
         label="Moneda"
         options={currencyOptions}
+        onChangeMw={handleCurrencyChange}
+        disable={isEdit}
       />
+      {wasConvertedToOtherCurrency && (
+        <FormControlledNumberInput
+          control={control}
+          errors={errors}
+          name={"exchangeRate"}
+          label="Tasa de cambio"
+          helperText={"Un dolar equivale X guaranies"}
+          disable={isEdit}
+        />
+      )}
+
       <FormControlledMoneyInput
         control={control}
         errors={errors}
-        name={'amountReturned'}
+        name={"amountReturned"}
         label="Monto devuelto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
-        totalAmount={
-          moneyRequest &&
-          moneyRequest.amountRequested.sub(
-            reduceExpenseReports(moneyRequest.expenseReports)
-          )
-        }
+        totalAmount={pendingAmount()}
+        disable={isEdit}
       />
 
       {user && (
@@ -113,10 +133,11 @@ const ExpenseReturnForm = ({
       <FormControlledSelect
         control={control}
         errors={errors}
-        name={'moneyAccountId'}
+        name={"moneyAccountId"}
         label="Seleccione la cuenta que recibió la devolución"
         options={moneyAccOptions(currency) ?? []}
         isClearable={true}
+        disable={isEdit}
       />
     </VStack>
   );

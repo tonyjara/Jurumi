@@ -213,7 +213,9 @@ model Organization {
   membershipPaymentRequest MembershipPaymentRequest[]
   becomeMemberRequests     BecomeMemberRequest[]
   OrgMembershipPreferences OrgMembershipPreferences?
+  dolarToGuaraniExchangeRate      Float                     @default(0)
 }
+
 
 model OrgMembershipPreferences {
   id                                  String    @id @default(cuid())
@@ -470,6 +472,9 @@ model ExpenseReport {
   concept       String    @default("")
   wasCancelled  Boolean   @default(false)
 
+  wasConvertedToOtherCurrency Boolean   @default(false)
+  exchangeRate                Float     @default(0)
+
   accountId       String
   account         Account          @relation(fields: [accountId], references: [id])
   moneyRequestId  String
@@ -495,6 +500,9 @@ model ExpenseReturn {
   currency        Currency
   amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
   searchableImage searchableImage?
+
+  wasConvertedToOtherCurrency Boolean   @default(false)
+  exchangeRate                Float     @default(0)
 
   transactions Transaction[]
 
@@ -537,6 +545,9 @@ model Transaction {
   isCancellation    Boolean          @default(false)
   transactionType   TransactionType  @default(MONEY_ACCOUNT)
   searchableImage   searchableImage?
+
+  wasConvertedToOtherCurrency Boolean   @default(false)
+  exchangeRate                Float     @default(0)
 
   cancellationId Int?         @unique
   cancellation   Transaction? @relation("cancellation", fields: [cancellationId], references: [id])

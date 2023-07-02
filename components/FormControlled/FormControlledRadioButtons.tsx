@@ -24,7 +24,7 @@ interface InputProps<T extends FieldValues> {
   helperText?: string;
   options: { value: string; label: string }[];
   hidden?: boolean;
-  onChangeMw?: () => void; //middlewarish func
+  onChangeMw?: (e: any) => void; //middlewarish func
   disable?: boolean;
   error?: string; // escape hatch for nested objects
   value?: any;
@@ -58,7 +58,7 @@ const FormControlledRadioButtons = <T extends FieldValues>({
           <RadioGroup
             isDisabled={disable}
             onChange={(e) => {
-              onChangeMw && onChangeMw();
+              onChangeMw && onChangeMw(e);
               field.onChange(e as any);
             }}
             value={value ?? field.value}

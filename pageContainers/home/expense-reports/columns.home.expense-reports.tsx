@@ -68,4 +68,14 @@ export const expenseReportColums = ({
     ),
     header: "Linea Presupuestaria",
   }),
+
+  columnHelper.accessor("id", {
+    cell: (x) => <TextCell text={x.getValue()} />,
+    header: "ID",
+  }),
+
+  columnHelper.accessor("moneyRequestId", {
+    cell: (x) => <TextCell text={x.getValue()} />,
+    header: "Id de Solicitud",
+  }),
 ];

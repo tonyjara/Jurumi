@@ -8,22 +8,26 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import { reduceExpenseReports } from '@/lib/utils/TransactionUtils';
-import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import type { CompleteMoneyReqHome } from '@/pageContainers/home/requests/HomeRequestsPage.home.requests';
-import ExpenseReturnForm from '../Forms/ExpenseReturn.form';
-import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import {
+  reduceExpenseReportsToSetCurrency,
+  reduceExpenseReturnsToSetCurrency,
+} from "@/lib/utils/TransactionUtils";
+import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import ExpenseReturnForm from "../Forms/ExpenseReturn.form";
+import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
 import {
   defaultExpenseReturn,
   validateExpenseReturn,
-} from '@/lib/validations/expenseReturn.validate';
+} from "@/lib/validations/expenseReturn.validate";
+import { Prisma } from "@prisma/client";
+import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 
 const CreateExpenseReturnModal = ({
   isOpen,
@@ -50,18 +54,24 @@ const CreateExpenseReturnModal = ({
     onClose();
   };
 
+  const { data: org } = trpcClient.org.getCurrent.useQuery();
+
   useEffect(() => {
-    if (moneyRequest && isOpen) {
-      setValue('moneyRequestId', moneyRequest.id);
+    if (moneyRequest && isOpen && org) {
+      setValue("moneyRequestId", moneyRequest.id);
+      setValue("exchangeRate", org.dolarToGuaraniExchangeRate);
+      if (moneyRequest.currency !== defaultExpenseReturn.currency) {
+        setValue("wasConvertedToOtherCurrency", true);
+      }
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [moneyRequest, isOpen]);
+  }, [moneyRequest, isOpen, org]);
 
   const { error, mutate, isLoading } =
     trpcClient.expenseReturn.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su devolución ha sido creada!',
+        successText: "Su devolución ha sido creada!",
         callback: () => {
           handleOnClose();
           context.moneyRequest.invalidate();
@@ -73,21 +83,49 @@ const CreateExpenseReturnModal = ({
     mutate(data);
   };
 
-  const pendingAmount = () =>
-    decimalFormat(
-      moneyRequest.amountRequested.sub(
-        reduceExpenseReports(moneyRequest.expenseReports)
-      ),
-      moneyRequest.currency
-    );
+  const currency = useWatch({ control, name: "currency" });
+  const exchangeRate = useWatch({ control, name: "exchangeRate" });
 
+  const totalAmountRequested =
+    moneyRequest?.amountRequested ?? new Prisma.Decimal(0);
+
+  const totalAmountReportedOrReturned = moneyRequest
+    ? reduceExpenseReportsToSetCurrency({
+        expenseReports: moneyRequest.expenseReports,
+        currency: moneyRequest.currency,
+      }).add(
+        reduceExpenseReturnsToSetCurrency({
+          expenseReturns: moneyRequest.expenseReturns,
+          currency: moneyRequest.currency,
+        })
+      )
+    : new Prisma.Decimal(0);
+
+  const pendingAmount = () => {
+    if (!moneyRequest) return new Prisma.Decimal(0);
+    if (currency !== moneyRequest.currency) {
+      if (currency === "USD") {
+        return totalAmountRequested
+          .sub(totalAmountReportedOrReturned)
+          .dividedBy(exchangeRate ?? 0);
+      }
+      if (currency === "PYG") {
+        return totalAmountRequested
+          .sub(totalAmountReportedOrReturned)
+          .times(exchangeRate ?? 0);
+      }
+    }
+    return totalAmountRequested.sub(totalAmountReportedOrReturned);
+  };
+
+  const formatedPendingAmount = () => decimalFormat(pendingAmount(), currency);
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            Crear una devolución. <br /> Pendiente: {pendingAmount()}
+            Crear una devolución. <br /> Pendiente: {formatedPendingAmount()}
           </ModalHeader>
 
           <ModalCloseButton />
@@ -99,6 +137,7 @@ const CreateExpenseReturnModal = ({
               setValue={setValue}
               control={control}
               errors={errors as any}
+              pendingAmount={pendingAmount}
             />
           </ModalBody>
 

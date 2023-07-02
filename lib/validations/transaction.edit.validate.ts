@@ -41,6 +41,8 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
         imbursementId: z.string().nullable(),
         cancellationId: z.number().nullable(),
         transactionType: z.nativeEnum(TransactionType),
+        wasConvertedToOtherCurrency: z.boolean(),
+        exchangeRate: z.number(),
 
         moneyAccountId: z
           .string({
@@ -90,6 +92,8 @@ export const defaultTransactionEditValues: FormTransactionEdit = {
   expenseReturnId: null,
   isCancellation: false,
   cancellationId: null,
+  exchangeRate: 7000,
+  wasConvertedToOtherCurrency: false,
   transactionType: "MONEY_ACCOUNT",
   searchableImage: { url: "", imageName: "" },
   expenseReportId: null,

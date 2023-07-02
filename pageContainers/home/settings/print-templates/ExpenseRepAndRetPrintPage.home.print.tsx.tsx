@@ -1,8 +1,8 @@
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 import { formatedFacturaNumber } from "@/lib/utils/FacturaUtils";
 import {
-    reduceExpenseReports,
-    reduceExpenseReturns,
+    reduceExpenseReportsToSetCurrency,
+    reduceExpenseReturnsToSetCurrency,
 } from "@/lib/utils/TransactionUtils";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
@@ -144,7 +144,10 @@ const ExpenseRepAndRetPringPage = ({
                                 <Td>TOTAL EJECUTADO:</Td>
                                 <Td>
                                     {decimalFormat(
-                                        reduceExpenseReports(req?.expenseReports),
+                                        reduceExpenseReportsToSetCurrency({
+                                            expenseReports: req?.expenseReports,
+                                            currency: req.currency,
+                                        }),
                                         req?.currency
                                     )}
                                 </Td>
@@ -169,7 +172,7 @@ const ExpenseRepAndRetPringPage = ({
                                 <Td fontWeight={"bold"}>Total devuelto:</Td>
                                 <Td>
                                     {decimalFormat(
-                                        reduceExpenseReturns(req.expenseReturns),
+                                        reduceExpenseReturnsToSetCurrency({ expenseReturns: req.expenseReturns, currency: req.currency }),
                                         req.currency
                                     )}
                                 </Td>

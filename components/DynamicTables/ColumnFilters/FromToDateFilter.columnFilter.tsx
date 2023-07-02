@@ -21,11 +21,18 @@ const FromToDateColumnFilter = ({
 }: ColumnFilterProps) => {
   const [fromOpen, setFromOpen] = useState(false);
   const [toOpen, setToOpen] = useState(false);
-  const ref = useRef(null);
+  const fromRef = useRef(null);
+  const toRef = useRef(null);
   useOutsideClick({
-    ref: ref,
+    ref: fromRef,
     handler: () => {
       fromOpen && setFromOpen(false);
+    },
+  });
+
+  useOutsideClick({
+    ref: toRef,
+    handler: () => {
       toOpen && setToOpen(false);
     },
   });
@@ -77,7 +84,7 @@ const FromToDateColumnFilter = ({
 
         {/* FROM */}
         <Portal>
-          <PopoverContent ref={ref}>
+          <PopoverContent ref={fromRef}>
             <DayPicker
               mode="single"
               defaultMonth={from ?? new Date()}
@@ -145,7 +152,7 @@ const FromToDateColumnFilter = ({
 
         {/* TO */}
         <Portal>
-          <PopoverContent>
+          <PopoverContent ref={toRef}>
             <DayPicker
               mode="single"
               defaultMonth={to ?? new Date()}

@@ -33,7 +33,6 @@ interface InputProps<T extends FieldValues> {
   currency: Currency;
   totalAmount?: Decimal;
   disable?: boolean;
-  error?: string; // escape hatch for nested objects
   allowNegativeValue?: boolean;
 }
 
@@ -49,12 +48,19 @@ const FormControlledMoneyInput = <T extends FieldValues>({
   currency,
   totalAmount,
   disable,
-  error,
 }: InputProps<T>) => {
+  const splitName = name.split(".");
+  const reduceErrors = splitName.reduce((acc: any, curr: any) => {
+    if (!acc[curr]) return acc;
+    if (isNaN(curr)) {
+      return acc[curr];
+    }
+    return acc[parseInt(curr)];
+  }, errors);
   return (
     <FormControl
       display={hidden ? "none" : "block"}
-      isInvalid={!!errors[name] || !!error}
+      isInvalid={!!reduceErrors.message}
     >
       <FormLabel whiteSpace={"nowrap"} fontSize={"md"} color={"gray.500"}>
         {label}
@@ -90,18 +96,16 @@ const FormControlledMoneyInput = <T extends FieldValues>({
               <InputRightElement
                 onClick={() => field.onChange(totalAmount as any)}
               >
-                <Button>MAX </Button>
+                <Button isDisabled={disable}>MAX </Button>
               </InputRightElement>
             )}
           </InputGroup>
         )}
       />
-      {error && <FormErrorMessage>{error}</FormErrorMessage>}
-      {!errors[name] ? (
+      {!reduceErrors.message ? (
         <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
-        //@ts-ignore
-        <FormErrorMessage>{errors[name].message}</FormErrorMessage>
+        <FormErrorMessage>{reduceErrors.message}</FormErrorMessage>
       )}
     </FormControl>
   );

@@ -1,6 +1,6 @@
 import { Box, VStack, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { useEffect } from "react";
 import type {
   FieldValues,
   Control,
@@ -23,12 +23,12 @@ import {
   FormExpenseReport,
   MockExpenseReport,
 } from "../../lib/validations/expenseReport.validate";
-import {
-  reduceExpenseReports,
-  reduceExpenseReturns,
-} from "@/lib/utils/TransactionUtils";
+
 import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import SeedButton from "../DevTools/SeedButton";
+import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
+import { Currency } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
@@ -37,6 +37,7 @@ interface formProps<T extends FieldValues> {
   reset: UseFormReset<FormExpenseReport>;
   isEdit?: boolean;
   amountSpentIsBiggerThanPending: boolean;
+  pendingAmount: () => Decimal;
 }
 
 const ExpenseReportForm = ({
@@ -47,11 +48,16 @@ const ExpenseReportForm = ({
   reset,
   isEdit,
   amountSpentIsBiggerThanPending,
+  pendingAmount,
 }: formProps<FormExpenseReport>) => {
   const { data: session } = useSession();
   const user = session?.user;
 
   const currency = useWatch({ control, name: "currency" });
+  const wasConvertedToOtherCurrency = useWatch({
+    control,
+    name: "wasConvertedToOtherCurrency",
+  });
   const projectId = useWatch({ control, name: "projectId" });
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
@@ -73,6 +79,13 @@ const ExpenseReportForm = ({
     }));
 
   const firstOption = costCats ? costCats[0] : null;
+
+  const handleCurrencyChange = (e: Currency) => {
+    if (e !== moneyRequest?.currency) {
+      return setValue("wasConvertedToOtherCurrency", true);
+    }
+    return setValue("wasConvertedToOtherCurrency", false);
+  };
 
   return (
     <VStack spacing={5}>
@@ -101,7 +114,19 @@ const ExpenseReportForm = ({
         label="Moneda"
         options={currencyOptions}
         disable={isEdit}
+        onChangeMw={handleCurrencyChange}
       />
+
+      {wasConvertedToOtherCurrency && (
+        <FormControlledNumberInput
+          control={control}
+          errors={errors}
+          name={"exchangeRate"}
+          label="Tasa de cambio"
+          helperText={"Un dolar equivale X guaranies"}
+          disable={isEdit}
+        />
+      )}
       <FormControlledMoneyInput
         disable={isEdit}
         control={control}
@@ -110,12 +135,7 @@ const ExpenseReportForm = ({
         label="Monto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
-        totalAmount={
-          moneyRequest &&
-          moneyRequest.amountRequested
-            .sub(reduceExpenseReports(moneyRequest.expenseReports))
-            .sub(reduceExpenseReturns(moneyRequest.expenseReturns))
-        }
+        totalAmount={pendingAmount()}
       />
 
       {amountSpentIsBiggerThanPending && (

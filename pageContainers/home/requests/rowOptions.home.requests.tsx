@@ -1,14 +1,14 @@
 import { MenuItem } from "@chakra-ui/react";
 import type { MoneyRequest } from "@prisma/client";
-
+import { Prisma } from "@prisma/client";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import type { CompleteMoneyReqHome } from "./HomeRequestsPage.home.requests";
 import { RowOptionDeleteDialog } from "@/components/Toasts & Alerts/RowOption.delete.dialog";
 import {
-  reduceExpenseReports,
-  reduceExpenseReturns,
+  reduceExpenseReturnsToSetCurrency,
+  reduceExpenseReportsToSetCurrency,
 } from "@/lib/utils/TransactionUtils";
 import MoneyRequestPrintComponents from "@/components/Print/MoneyRequest.print.components";
 import UsePrintComponent from "@/components/Print/UsePrintComponent";
@@ -69,11 +69,21 @@ const RowOptionsHomeRequests = ({
 
   const isAccepted = x.status === "ACCEPTED";
 
-  const isGreaterOrEqualToExecutionTotal = reduceExpenseReports(
-    x.expenseReports
-  )
-    .add(reduceExpenseReturns(x.expenseReturns))
-    .greaterThanOrEqualTo(x.amountRequested);
+  const isCancelled = x.wasCancelled;
+
+  const isGreaterOrEqualToReportedAndReturnedTotal =
+    reduceExpenseReportsToSetCurrency({
+      expenseReports: x.expenseReports,
+      currency: x.currency,
+    })
+      .add(
+        reduceExpenseReturnsToSetCurrency({
+          expenseReturns: x.expenseReturns,
+          currency: x.currency,
+        })
+      )
+      // RONDING BY 1 TO AVOID FLOATING POINT ERRORS
+      .greaterThanOrEqualTo(x.amountRequested.sub(new Prisma.Decimal(1)));
 
   const {
     isPrinting,
@@ -90,8 +100,9 @@ const RowOptionsHomeRequests = ({
           x.moneyRequestType === "MONEY_ORDER") && (
           <MenuItem
             isDisabled={
-              !isAccepted || x.wasCancelled || isGreaterOrEqualToExecutionTotal
-              /* x.moneyRequestType === "REIMBURSMENT_ORDER" */
+              !isAccepted ||
+              x.wasCancelled ||
+              isGreaterOrEqualToReportedAndReturnedTotal
             }
             onClick={() => {
               setReqForReport(x);
@@ -106,7 +117,7 @@ const RowOptionsHomeRequests = ({
           isDisabled={
             !isAccepted ||
             x.wasCancelled ||
-            isGreaterOrEqualToExecutionTotal ||
+            isGreaterOrEqualToReportedAndReturnedTotal ||
             x.moneyRequestType === "REIMBURSMENT_ORDER" ||
             x.moneyRequestType === "MONEY_ORDER"
           }
@@ -123,7 +134,7 @@ const RowOptionsHomeRequests = ({
         {(x.moneyRequestType === "FUND_REQUEST" ||
           x.moneyRequestType === "MONEY_ORDER") && (
           <MenuItem
-            isDisabled={!isGreaterOrEqualToExecutionTotal}
+            isDisabled={!isGreaterOrEqualToReportedAndReturnedTotal}
             onClick={handlePrintExpenseRepsAndRets}
           >
             Imprimir rendición
@@ -131,7 +142,7 @@ const RowOptionsHomeRequests = ({
         )}
 
         <MenuItem
-          isDisabled={isAccepted || x.wasCancelled}
+          isDisabled={isAccepted || isCancelled}
           onClick={() => {
             setEditMoneyRequest(x);
             onEditOpen();

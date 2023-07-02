@@ -11,6 +11,7 @@ import type {
 import { trpcClient } from "../../lib/utils/trpcClient";
 import type { FormOrganization } from "../../lib/validations/org.validate";
 import FormControlledImageUpload from "../FormControlled/FormControlledImageUpload";
+import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
 import FormControlledSelect from "../FormControlled/FormControlledSelect";
 import FormControlledText from "../FormControlled/FormControlledText";
 
@@ -69,6 +70,14 @@ const OrgForm = ({
         }
         optionLabel={"displayName"}
         optionValue={"id"}
+      />
+
+      <FormControlledNumberInput
+        control={control}
+        errors={errors}
+        name="dolarToGuaraniExchangeRate"
+        label="Tasa de cambio"
+        helperText={"Un dolar equivale a X guaranies."}
       />
       {user && (
         <FormControlledImageUpload

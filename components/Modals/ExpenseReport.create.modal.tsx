@@ -22,12 +22,13 @@ import {
 } from "@/lib/validations/expenseReport.validate";
 import ExpenseReportForm from "../Forms/ExpenseReport.form";
 import {
-  reduceExpenseReports,
-  reduceExpenseReturns,
+  reduceExpenseReportsToSetCurrency,
+  reduceExpenseReturnsToSetCurrency,
 } from "@/lib/utils/TransactionUtils";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import { Decimal } from "@prisma/client/runtime";
+import { Prisma } from "@prisma/client";
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -54,14 +55,20 @@ const CreateExpenseReportModal = ({
     onClose();
   };
 
+  const { data: org } = trpcClient.org.getCurrent.useQuery();
+
   useEffect(() => {
-    if (moneyRequest && isOpen) {
+    if (moneyRequest && isOpen && org) {
       setValue("projectId", moneyRequest.projectId);
       setValue("moneyRequestId", moneyRequest.id);
+      setValue("exchangeRate", org.dolarToGuaraniExchangeRate);
+      if (moneyRequest.currency !== defaultExpenseReportData.currency) {
+        setValue("wasConvertedToOtherCurrency", true);
+      }
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [moneyRequest, isOpen]);
+  }, [moneyRequest, isOpen, org]);
 
   const { error, mutate, isLoading } =
     trpcClient.expenseReport.create.useMutation(
@@ -74,17 +81,47 @@ const CreateExpenseReportModal = ({
       })
     );
 
-  const pendingAmount = moneyRequest.amountRequested
-    .sub(reduceExpenseReports(moneyRequest.expenseReports))
-    .sub(reduceExpenseReturns(moneyRequest.expenseReturns));
+  const currency = useWatch({ control, name: "currency" });
+  const exchangeRate = useWatch({ control, name: "exchangeRate" });
 
-  const formatedPendingAmount = () =>
-    decimalFormat(pendingAmount, moneyRequest.currency);
+  const totalAmountRequested =
+    moneyRequest?.amountRequested ?? new Prisma.Decimal(0);
+
+  const totalAmountReportedOrReturned = moneyRequest
+    ? reduceExpenseReportsToSetCurrency({
+        expenseReports: moneyRequest.expenseReports,
+        currency: moneyRequest.currency,
+      }).add(
+        reduceExpenseReturnsToSetCurrency({
+          expenseReturns: moneyRequest.expenseReturns,
+          currency: moneyRequest.currency,
+        })
+      )
+    : new Prisma.Decimal(0);
+
+  const pendingAmount = () => {
+    if (!moneyRequest) return new Prisma.Decimal(0);
+    if (currency !== moneyRequest.currency) {
+      if (currency === "USD") {
+        return totalAmountRequested
+          .sub(totalAmountReportedOrReturned)
+          .dividedBy(exchangeRate ?? 0);
+      }
+      if (currency === "PYG") {
+        return totalAmountRequested
+          .sub(totalAmountReportedOrReturned)
+          .times(exchangeRate ?? 0);
+      }
+    }
+    return totalAmountRequested.sub(totalAmountReportedOrReturned);
+  };
+
+  const formatedPendingAmount = () => decimalFormat(pendingAmount(), currency);
   const amountSpent = useWatch({ control, name: "amountSpent" }) as Decimal;
 
   // When deleting the input field completely this solves error that crashes the app
   const amountSpentIsBiggerThanPending = amountSpent
-    ? amountSpent.greaterThan(pendingAmount)
+    ? amountSpent.greaterThan(pendingAmount())
     : false;
 
   const watchAmountIsBigger = useWatch({
@@ -110,6 +147,7 @@ const CreateExpenseReportModal = ({
     }
     mutate(data);
   };
+
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
@@ -129,6 +167,7 @@ const CreateExpenseReportModal = ({
               setValue={setValue}
               control={control}
               errors={errors as any}
+              pendingAmount={pendingAmount}
             />
           </ModalBody>
 

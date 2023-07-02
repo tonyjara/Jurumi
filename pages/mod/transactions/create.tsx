@@ -1,6 +1,6 @@
-import CreateTransactionPage from '@/pageContainers/mod/transactions/CreateTransactionPage.mod.transactions';
-import type { GetServerSideProps } from 'next';
-import prisma from '@/server/db/client';
+import CreateTransactionPage from "@/pageContainers/mod/transactions/CreateTransactionPage.mod.transactions";
+import type { GetServerSideProps } from "next";
+import prisma from "@/server/db/client";
 export default CreateTransactionPage;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -14,8 +14,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const data = await prisma.moneyRequest.findUnique({
       where: { id: query.moneyRequestId },
       include: {
+        expenseReports: true,
+        expenseReturns: true,
         transactions: {
-          select: { transactionAmount: true },
           where: { cancellationId: null, isCancellation: false },
         },
       },
