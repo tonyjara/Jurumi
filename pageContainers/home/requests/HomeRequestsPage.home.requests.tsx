@@ -5,7 +5,6 @@ import type {
   ExpenseReport,
   ExpenseReturn,
   MoneyRequest,
-  Prisma,
   Project,
   searchableImage,
   Transaction,
@@ -24,6 +23,7 @@ import { trpcClient } from "@/lib/utils/trpcClient";
 import { homeRequestsColumns } from "./columns.home.requests";
 import CreateExpenseReturnModal from "@/components/Modals/ExpenseReturn.create.modal";
 import RowOptionsHomeRequests from "./rowOptions.home.requests";
+import HomeRequestsExtraFilters from "./HomeRequestsExtraFilters.home.requests";
 
 export type CompleteMoneyReqHome = MoneyRequest & {
   account: {
@@ -50,9 +50,8 @@ export type CompleteMoneyReqHome = MoneyRequest & {
   expenseReturns: ExpenseReturn[];
 };
 const MoneyRequestsPage = () => {
-  const [whereFilterList, setWhereFilterList] = useState<
-    Prisma.MoneyRequestScalarWhereInput[]
-  >([]);
+  const [whereFilterList, setWhereFilterList] = useState<string[]>([]);
+  const [extraFilters, setExtraFilters] = useState<string[]>([]);
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
     null
   );
@@ -89,18 +88,15 @@ const MoneyRequestsPage = () => {
         pageSize,
         sorting: globalFilter ? sorting : null,
         whereFilterList,
+        extraFilters,
       },
       { keepPreviousData: globalFilter ? true : false }
     );
 
   const { data: count } = trpcClient.moneyRequest.countMyOwn.useQuery({
+    extraFilters,
     whereFilterList,
   });
-
-  const handleDataSource = () => {
-    if (moneyRequests) return moneyRequests;
-    return [];
-  };
 
   const tableOptions: TableOptions[] = [
     {
@@ -145,7 +141,13 @@ const MoneyRequestsPage = () => {
           pageIndex,
           pageSize,
         })}
-        data={handleDataSource()}
+        headerComp={
+          <HomeRequestsExtraFilters
+            extraFilters={extraFilters}
+            setExtraFilters={setExtraFilters}
+          />
+        }
+        data={moneyRequests ?? []}
         count={count ?? 0}
         colorRedKey={["wasCancelled"]}
         {...dynamicTableProps}

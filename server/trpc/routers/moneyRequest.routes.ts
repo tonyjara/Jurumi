@@ -9,6 +9,7 @@ import {
   router,
 } from "../initTrpc";
 import {
+  handleHomeRequestsExtraFilters,
   handleMoneyRequestExtraFilters,
   handleWhereImApprover,
   reimbursementOrderImageGuard,
@@ -39,7 +40,7 @@ export const moneyRequestRouter = router({
   countMyPendingRequests: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     return await prisma?.moneyRequest.findMany({
-      where: { accountId: user.id, status: "PENDING" },
+      where: { wasCancelled: false, accountId: user.id, status: "PENDING" },
       select: {
         createdAt: true,
         id: true,
@@ -53,6 +54,7 @@ export const moneyRequestRouter = router({
     .input(
       z.object({
         status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
+        extraFilters: z.string().array(),
         pageIndex: z.number().nullish(),
         pageSize: z.number().min(1).max(100).nullish(),
         sorting: z
@@ -73,6 +75,9 @@ export const moneyRequestRouter = router({
         orderBy: handleOrderBy({ input }),
         where: {
           AND: [
+            ...handleHomeRequestsExtraFilters({
+              extraFilters: input.extraFilters,
+            }),
             { accountId: user.id, status: input.status },
             ...(input?.whereFilterList ?? []),
           ],
@@ -130,26 +135,11 @@ export const moneyRequestRouter = router({
         },
       });
     }),
-  countWhereStatus: protectedProcedure
-    .input(
-      z.object({
-        status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
-        whereFilterList: z.any().array().optional(),
-      })
-    )
-    .query(async ({ input }) =>
-      prisma?.moneyRequest.count({
-        where: {
-          AND: [
-            input.status ? { status: input.status } : {},
-            ...(input?.whereFilterList ?? []),
-          ],
-        },
-      })
-    ),
+
   countMyOwn: protectedProcedure
     .input(
       z.object({
+        extraFilters: z.string().array(),
         whereFilterList: z.any().array().optional(),
       })
     )
@@ -157,7 +147,13 @@ export const moneyRequestRouter = router({
       const user = ctx.session.user;
       return await prisma?.moneyRequest.count({
         where: {
-          AND: [...(input?.whereFilterList ?? []), { accountId: user.id }],
+          AND: [
+            ...handleHomeRequestsExtraFilters({
+              extraFilters: input.extraFilters,
+            }),
+            ...(input?.whereFilterList ?? []),
+            { accountId: user.id },
+          ],
         },
       });
     }),
@@ -235,70 +231,6 @@ export const moneyRequestRouter = router({
       });
     }),
 
-  getManyCompleteForApprovalPage: adminModObserverProcedure
-    .input(
-      z.object({
-        status: z.nativeEnum(MoneyResquestApprovalStatus).optional(),
-        pageIndex: z.number().nullish(),
-        pageSize: z.number().min(1).max(100).nullish(),
-        sorting: z
-          .object({ id: z.string(), desc: z.boolean() })
-          .array()
-          .nullish(),
-        whereFilterList: z.any().array().optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const user = ctx.session.user;
-      const pageSize = input.pageSize ?? 10;
-      const pageIndex = input.pageIndex ?? 0;
-
-      return await prisma?.moneyRequest.findMany({
-        take: pageSize,
-        skip: pageIndex * pageSize,
-        orderBy: handleOrderBy({ input }),
-        where: {
-          AND: [
-            input.status ? handleWhereImApprover(input, user.id) : {},
-            ...(input?.whereFilterList ?? []),
-          ],
-        },
-        include: {
-          taxPayer: {
-            select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
-          },
-          account: true,
-          project: true,
-          costCategory: true,
-          transactions: {
-            where: {
-              cancellationId: null,
-              isCancellation: false,
-            },
-            include: {
-              searchableImage: {
-                select: { url: true, imageName: true },
-              },
-            },
-          },
-          searchableImages: true,
-          moneyRequestApprovals: { where: { wasCancelled: false } },
-          expenseReports: {
-            where: { wasCancelled: false },
-            include: { taxPayer: { select: { id: true, razonSocial: true } } },
-          },
-          expenseReturns: { where: { wasCancelled: false } },
-          organization: {
-            select: {
-              moneyRequestApprovers: {
-                select: { id: true, displayName: true },
-              },
-              moneyAdministrators: { select: { id: true, displayName: true } },
-            },
-          },
-        },
-      });
-    }),
   findCompleteById: adminModObserverProcedure
     .input(
       z.object({
