@@ -22,10 +22,10 @@ export const addDecimals = <
 export const decimalFormat = (x: Prisma.Decimal, y: Currency) => {
   if (y === "USD") {
     const df = new DecimalFormat(`${translateCurrencyPrefix(y)} #,##0.00#`);
-    return df.format(x.toString());
+    return df.format(x.toDecimalPlaces(2).toString());
   }
   const df = new DecimalFormat(`${translateCurrencyPrefix(y)} #,##0.#`);
-  return df.format(x.toString());
+  return df.format(x.toDecimalPlaces(0).toString());
 };
 
 export const addDecimalsToNumber = <

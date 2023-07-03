@@ -114,3 +114,14 @@ export const handleMoneyRequestExtraFilters = ({
     removeWasCancelledFilter,
   ];
 };
+export const handleHomeRequestsExtraFilters = ({
+  extraFilters,
+}: {
+  extraFilters: string[];
+}) => {
+  const showWasCancelledFilter = extraFilters.includes("showCancelled")
+    ? undefined
+    : { wasCancelled: false };
+
+  return [showWasCancelledFilter];
+};

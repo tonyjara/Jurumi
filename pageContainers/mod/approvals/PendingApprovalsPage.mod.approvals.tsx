@@ -81,7 +81,7 @@ const ApprovalsPage = () => {
     data,
     isFetching: pendingRequestsFetching,
     isLoading,
-  } = trpcClient.moneyRequest.getManyCompleteForApprovalPage.useQuery(
+  } = trpcClient.moneyApprovals.getManyCompleteForApprovalPage.useQuery(
     {
       status: statusState,
       pageIndex,
@@ -91,7 +91,7 @@ const ApprovalsPage = () => {
     },
     { keepPreviousData: globalFilter ? true : false }
   );
-  const { data: count } = trpcClient.moneyRequest.countWhereStatus.useQuery({
+  const { data: count } = trpcClient.moneyApprovals.countWhereStatus.useQuery({
     status: statusState,
     whereFilterList,
   });
