@@ -10,7 +10,6 @@ import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import EditExpenseReturnModal from "@/components/Modals/ExpenseReturn.edit.modal";
 import RowOptionsHomeExpenseReturns from "@/pageContainers/mod/expense-returns/rowOptions.mod.expense-returns";
-import { modExpenseReturnsColumns } from "@/pageContainers/mod/expense-returns/columns.mod.expense-returns";
 import { homeExpenseReturnsColumns } from "./columns.home.expense-returns";
 
 export type ExpenseReturnComplete = ExpenseReturn & {
