@@ -158,7 +158,7 @@ export const expenseReturnsRouter = router({
             })
         }),
 
-    getMyOwnComplete: adminModObserverProcedure
+    getMyOwnComplete: protectedProcedure
         .input(
             z.object({
                 pageIndex: z.number().nullish(),
@@ -200,7 +200,6 @@ export const expenseReturnsRouter = router({
                     AND: [...(input?.whereFilterList ?? []), { accountId: user.id }],
                 },
                 include: {
-                    account: { select: { displayName: true, id: true } },
                     searchableImage: { select: { url: true, imageName: true } },
                 },
             });

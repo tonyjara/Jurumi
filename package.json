@@ -97,6 +97,7 @@
     "react-to-print": "2.14.11",
     "superjson": "1.12.2",
     "uuid": "9.0.0",
+    "write-excel-file": "^1.4.27",
     "yjs": "13.5.45",
     "zod": "3.21.4"
   },

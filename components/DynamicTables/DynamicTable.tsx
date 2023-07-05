@@ -64,12 +64,12 @@ export interface DynamicTableProps<T extends object> {
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;
     pageSize: number;
     setPageSize: React.Dispatch<React.SetStateAction<number>>;
-    count: number;
+    count?: number;
     sorting: SortingState;
     setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
     globalFilter?: boolean;
     colorRedKey?: string[];
-    rowOptions: RowOptionsType;
+    rowOptions?: RowOptionsType;
     enableColumnFilters?: boolean; // If enabled by default all columns will have a filter.
     whereFilterList?: any[];
     setWhereFilterList?: React.Dispatch<React.SetStateAction<any[]>>;
@@ -148,6 +148,7 @@ const DynamicTable = <T extends object>({
                     <Flex flexDirection={{ base: "column", md: "row" }} gap="10px">
                         <Flex flexDirection={"column"}>
                             <TableTitleMenu
+                                table={table}
                                 globalFilter={globalFilter}
                                 label={title}
                                 options={options}
@@ -172,56 +173,65 @@ const DynamicTable = <T extends object>({
                 backgroundColor={backgroundColor}
             >
                 <Thead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
-                                const meta: any = header.column.columnDef.meta;
-
-                                return (
-                                    <Th
-                                        cursor={
-                                            header.column.accessorFn?.length ? "pointer" : undefined
-                                        }
-                                        key={header.id}
-                                        onClick={() => handleToggleSorting(header)}
-                                        isNumeric={meta?.isNumeric}
-                                        color={
-                                            globalFilter && header.id === "no-global-sort"
-                                                ? "red.300"
-                                                : undefined
-                                        }
-                                    >
-                                        <Flex>
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-
-                                            <chakra.span pl="4">
-                                                {!globalFilter && header.column.getIsSorted() ? (
-                                                    header.column.getIsSorted() === "desc" ? (
-                                                        <TriangleDownIcon aria-label="sorted descending" />
-                                                    ) : (
-                                                        <TriangleUpIcon aria-label="sorted ascending" />
-                                                    )
-                                                ) : null}
-                                                {globalFilter &&
-                                                    sorting[0] &&
-                                                    sorting[0].id === header.column.id ? (
-                                                    sorting[0]?.desc ? (
-                                                        <TriangleDownIcon aria-label="sorted descending" />
-                                                    ) : (
-                                                        <TriangleUpIcon aria-label="sorted ascending" />
-                                                    )
-                                                ) : null}
-                                            </chakra.span>
-                                        </Flex>
-                                    </Th>
-                                );
-                            })}
+                    {!loading && !data?.length && (
+                        <Tr>
+                            <Th>
+                                <Text>Sin datos</Text>
+                            </Th>
                         </Tr>
-                    ))}
+                    )}
+                    {data &&
+                        data?.length > 0 &&
+                        table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
+                                    const meta: any = header.column.columnDef.meta;
+
+                                    return (
+                                        <Th
+                                            cursor={
+                                                header.column.accessorFn?.length ? "pointer" : undefined
+                                            }
+                                            key={header.id}
+                                            onClick={() => handleToggleSorting(header)}
+                                            isNumeric={meta?.isNumeric}
+                                            color={
+                                                globalFilter && header.id === "no-global-sort"
+                                                    ? "red.300"
+                                                    : undefined
+                                            }
+                                        >
+                                            <Flex>
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+
+                                                <chakra.span pl="4">
+                                                    {!globalFilter && header.column.getIsSorted() ? (
+                                                        header.column.getIsSorted() === "desc" ? (
+                                                            <TriangleDownIcon aria-label="sorted descending" />
+                                                        ) : (
+                                                            <TriangleUpIcon aria-label="sorted ascending" />
+                                                        )
+                                                    ) : null}
+                                                    {globalFilter &&
+                                                        sorting[0] &&
+                                                        sorting[0].id === header.column.id ? (
+                                                        sorting[0]?.desc ? (
+                                                            <TriangleDownIcon aria-label="sorted descending" />
+                                                        ) : (
+                                                            <TriangleUpIcon aria-label="sorted ascending" />
+                                                        )
+                                                    ) : null}
+                                                </chakra.span>
+                                            </Flex>
+                                        </Th>
+                                    );
+                                })}
+                            </Tr>
+                        ))}
                     {enableColumnFilters &&
                         whereFilterList &&
                         setWhereFilterList &&
@@ -254,10 +264,13 @@ const DynamicTable = <T extends object>({
                                         : undefined
                                 }
                                 key={row.id}
-                                _hover={{ backgroundColor: rowHoverColor, cursor: "pointer" }}
+                                _hover={
+                                    rowOptions
+                                        ? { backgroundColor: rowHoverColor, cursor: "pointer" }
+                                        : undefined
+                                }
                                 //Opens a menu at the clicked row.
                                 onClick={(e) => {
-
                                     // Limits on how far should the menu open to the right or left
                                     const handleX = () => {
                                         const limit = innerWidth - 300;
@@ -295,43 +308,63 @@ const DynamicTable = <T extends object>({
                     {/* Invisible cell to open the menu */}
                     {(!data || loading) && <SkeletonRows />}
                 </Tbody>
+                {<Thead>
+                    {table.getFooterGroups().map((footerGroup) => (
+                        <Tr key={footerGroup.id}>
+                            {footerGroup.headers.map((header) => (
+                                <Th key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.footer,
+                                            header.getContext()
+                                        )}
+                                </Th>
+                            ))}
+                        </Tr>
+                    ))}
+                </Thead>}
             </Table>
-            <Menu isOpen={menuData.rowData}>
-                <Portal>
-                    <MenuList
-                        //Close the menu when any item is clicked, NOT WORKING FOR PRINTING
-                        /* onClick={() => setMenuData({ ...menuData, index: null, rowData: null })} */
-                        position={"absolute"}
-                        top={menuData?.y}
-                        left={menuData?.x}
-                    >
-                        <MenuGroup>
-                            <MenuItem
-                                onClick={() =>
-                                    setMenuData((prev) => ({ ...prev, rowData: null }))
-                                }
-                                icon={<CloseIcon />}
-                            >
-                                Cerrar menú
-                            </MenuItem>
-                        </MenuGroup>
-                        <MenuDivider />
-                        <MenuGroup>
-                            {menuData.rowData
-                                ? rowOptions({ x: menuData.rowData, setMenuData })
-                                : []}
-                        </MenuGroup>
-                    </MenuList>
-                </Portal>
-            </Menu>
-            <TablePagination
-                pageIndex={pageIndex}
-                setPageIndex={setPageIndex}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                count={count}
-                data={data}
-            />
+            {rowOptions && (
+                <Menu isOpen={menuData.rowData}>
+                    <Portal>
+                        <MenuList
+                            //Close the menu when any item is clicked, NOT WORKING FOR PRINTING
+                            /* onClick={() => setMenuData({ ...menuData, index: null, rowData: null })} */
+                            position={"absolute"}
+                            top={menuData?.y}
+                            left={menuData?.x}
+                        >
+                            <MenuGroup>
+                                <MenuItem
+                                    onClick={() =>
+                                        setMenuData((prev) => ({ ...prev, rowData: null }))
+                                    }
+                                    icon={<CloseIcon />}
+                                >
+                                    Cerrar menú
+                                </MenuItem>
+                            </MenuGroup>
+                            <MenuDivider />
+                            <MenuGroup>
+                                {menuData.rowData
+                                    ? rowOptions({ x: menuData.rowData, setMenuData })
+                                    : []}
+                            </MenuGroup>
+                        </MenuList>
+                    </Portal>
+                </Menu>
+            )}
+            {!!count && (
+                <TablePagination
+                    pageIndex={pageIndex}
+                    setPageIndex={setPageIndex}
+                    pageSize={pageSize}
+                    setPageSize={setPageSize}
+                    count={count}
+                    data={data}
+                />
+            )}
         </Card>
     );
 };
