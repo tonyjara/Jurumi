@@ -17,11 +17,12 @@ export const projectImbursementsReportsColumns = ({
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
     header: "N.",
+    footer: () => <TextCell text="Total" />,
   }),
 
   columnHelper.accessor("createdAt", {
-    cell: (x) => <DateCell hideHours date={x.getValue()} />,
     header: "Fecha de Creación",
+    cell: (x) => <DateCell hideHours date={x.getValue()} />,
     sortingFn: "datetime",
   }),
   columnHelper.accessor("concept", {
@@ -29,6 +30,7 @@ export const projectImbursementsReportsColumns = ({
     header: "Concepto",
   }),
   columnHelper.display({
+    header: "Recibido en Dólares",
     cell: (x) => {
       const row = x.row.original;
       function receivedindolars() {
@@ -40,14 +42,30 @@ export const projectImbursementsReportsColumns = ({
 
       return <MoneyCell currency="USD" amount={receivedindolars()} />;
     },
-    header: "Recibido en Dólares",
+    footer: ({ table }) => {
+      const rows = table.getFilteredRowModel().rows;
+
+      const total = rows.reduce((acc, { original: row }) => {
+        function receivedindolars() {
+          if (row.otherCurrency == "PYG") {
+            return row.amountInOtherCurrency.dividedBy(row.exchangeRate);
+          }
+          return row.amountInOtherCurrency;
+        }
+
+        return acc.add(receivedindolars());
+      }, new Prisma.Decimal(0));
+
+      return <MoneyCell currency="USD" amount={total} />;
+    },
   }),
   columnHelper.accessor("exchangeRate", {
-    cell: (x) => <NumberCell value={x.getValue()} />,
     header: "Tasa de Cambio",
+    cell: (x) => <NumberCell value={x.getValue()} />,
   }),
 
   columnHelper.display({
+    header: "Recibido en Guaranies",
     cell: (x) => {
       const row = x.row.original;
       if (row.finalCurrency === "PYG" && row.wasConvertedToOtherCurrency) {
@@ -62,6 +80,24 @@ export const projectImbursementsReportsColumns = ({
 
       return <MoneyCell currency="PYG" amount={receivedInGs()} />;
     },
-    header: "Recibido en Guaranies",
+    footer: ({ table }) => {
+      const rows = table.getFilteredRowModel().rows;
+
+      const total = rows.reduce((acc, { original: row }) => {
+        if (row.finalCurrency === "PYG" && row.wasConvertedToOtherCurrency) {
+          return acc.add(row.finalAmount);
+        }
+        function receivedInGs() {
+          if (row.otherCurrency == "USD") {
+            return row.amountInOtherCurrency.times(row.exchangeRate);
+          }
+          return row.amountInOtherCurrency;
+        }
+
+        return acc.add(receivedInGs());
+      }, new Prisma.Decimal(0));
+
+      return <MoneyCell currency="PYG" amount={total} />;
+    },
   }),
 ];
