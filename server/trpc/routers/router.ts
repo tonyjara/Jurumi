@@ -21,6 +21,7 @@ import { notificationsRouter } from "./notifications.routes";
 import { membersRouter } from "./members.routes";
 import { galleryRouter } from "./gallery.routes";
 import { searchableImageRouter } from "./searchableImage.routes";
+import { reportsRouter } from "./reports.routes";
 
 export const appRouter = router({
   account: accountsRouter,
@@ -43,5 +44,6 @@ export const appRouter = router({
   members: membersRouter,
   gallery: galleryRouter,
   searchableImage: searchableImageRouter,
+  reports: reportsRouter,
 });
 export type AppRouter = typeof appRouter;
