@@ -1,7 +1,4 @@
-import DynamicTable, {
-  RowOptionsType,
-  TableOptions,
-} from "@/components/DynamicTables/DynamicTable";
+import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import React from "react";
@@ -14,8 +11,7 @@ const ProjectImbursementsReports = ({
   project: ProjectComplete | undefined;
 }) => {
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize } = dynamicTableProps;
 
   const { data, isLoading } =
     trpcClient.reports.getProjectImbursements.useQuery({
@@ -23,15 +19,14 @@ const ProjectImbursementsReports = ({
     });
 
   return (
-    <>
-      <DynamicTable
-        title={"Desembolsos"}
-        data={data ?? []}
-        loading={isLoading}
-        columns={projectImbursementsReportsColumns({ pageSize, pageIndex })}
-        {...dynamicTableProps}
-      />
-    </>
+    <DynamicTable
+      showFooter
+      title={"Desembolsos"}
+      data={data ?? []}
+      loading={isLoading}
+      columns={projectImbursementsReportsColumns({ pageSize, pageIndex })}
+      {...dynamicTableProps}
+    />
   );
 };
 
