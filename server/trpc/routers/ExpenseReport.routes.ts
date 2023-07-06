@@ -232,7 +232,7 @@ export const expenseReportsRouter = router({
                     txCtx,
                 });
                 return postExpenseReport;
-            });
+            }, { timeout: 30000 });
 
             await createReimbursementRequestBasedOnExpenseReport({
                 input,
