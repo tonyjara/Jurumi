@@ -11,23 +11,11 @@ import { Toaster } from "react-hot-toast";
 import RootLayout from "../layouts/RootLayout";
 import { theme } from "../styles/Theme";
 import BrowserNotificationsManager from "@/components/Notifications/BrowserNotificationsManager";
-import Tracker from "@openreplay/tracker";
-import { useEffect } from "react";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") return;
-    const tracker = new Tracker({
-      projectKey: process.env.NEXT_PUBLIC_OPEN_REPLAY_KEY,
-      ingestPoint: process.env.NEXT_PUBLIC_OPEN_REPLAY_INGEST_POINT,
-    });
-    tracker.start();
-    tracker.setUserID(session?.user.email ?? "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   return (
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
