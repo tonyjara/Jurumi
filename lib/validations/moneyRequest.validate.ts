@@ -17,7 +17,7 @@ export type moneyReqTaxPayer = {
 export type MoneyReqSearchableImage = {
     imageName: string;
     url: string;
-    facturaNumber: string;
+    facturaNumber: string | null;
     amount?: any;
     currency: Currency;
 };

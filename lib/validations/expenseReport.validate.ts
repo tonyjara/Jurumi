@@ -35,7 +35,7 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z
                 "Favor ingrese el número de factura",
                 13,
                 13
-            ),
+            ).nullable(),
             wasConvertedToOtherCurrency: z.boolean(),
             exchangeRate: z.number(),
             concept: z
