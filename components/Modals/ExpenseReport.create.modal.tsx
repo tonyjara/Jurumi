@@ -118,8 +118,11 @@ const CreateExpenseReportModal = ({
 
   const submitFunc = async (data: FormExpenseReport) => {
     if (amountSpentIsBiggerThanPending) {
-      data.pendingAmount = pendingAmount;
+      data.pendingAmount =
+        pendingAmount().toNumber() > 0 ? pendingAmount() : data.amountSpent;
+      data.spentAmountIsGraterThanMoneyRequest = true;
     }
+
     mutate(data);
   };
 

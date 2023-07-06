@@ -135,7 +135,11 @@ export const createReimbursementRequestBasedOnExpenseReport = async ({
 
   const pendingAmount = input.pendingAmount as Decimal;
   const formatedPendingAmount = decimalFormat(pendingAmount, input.currency);
-  const difference = input.amountSpent.sub(pendingAmount);
+  //Patch for when a expensereport exceeds the total of the money request
+  const difference =
+    input.amountSpent.sub(pendingAmount).toNumber() === 0
+      ? input.amountSpent
+      : input.amountSpent.sub(pendingAmount);
   const formattedDifference = decimalFormat(difference, input.currency);
   const formattedAmountSpent = decimalFormat(input.amountSpent, input.currency);
 
