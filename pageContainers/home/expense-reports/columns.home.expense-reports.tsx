@@ -25,7 +25,7 @@ export const expenseReportColums = ({
     sortingFn: "datetime",
   }),
   columnHelper.accessor("facturaNumber", {
-    cell: (x) => <FacturaNumberCell text={x.getValue()} />,
+    cell: (x) => <FacturaNumberCell text={x.getValue() ?? "-"} />,
     header: "Factura N.",
   }),
   columnHelper.accessor("comments", {

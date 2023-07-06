@@ -465,7 +465,7 @@ model ExpenseReport {
   id            String    @id @default(cuid())
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
-  facturaNumber String
+  facturaNumber String?
   amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
   currency      Currency
   comments      String

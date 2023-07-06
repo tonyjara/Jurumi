@@ -31,7 +31,7 @@ export const modExpenseReportsColumns = ({
     cell: (x) => <TextCell text={x.getValue()} />,
   }),
   columnHelper.accessor("facturaNumber", {
-    cell: (x) => <FacturaNumberCell text={x.getValue()} />,
+    cell: (x) => <FacturaNumberCell text={x.getValue() ?? "-"} />,
     header: "Factura N.",
   }),
   columnHelper.accessor("comments", {
