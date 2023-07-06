@@ -148,9 +148,7 @@ const RowOptionsModRequests = ({
                     <MenuItem
                         isDisabled={
                             !isAccepted ||
-                            x.wasCancelled ||
-                            isGreaterOrEqualToReportedAndReturnedTotal
-                        }
+                            x.wasCancelled}
                         onClick={() => {
                             setReqForReport(x);
                             onExpRepOpen();
@@ -165,7 +163,7 @@ const RowOptionsModRequests = ({
                 isDisabled={
                     !isAccepted ||
                     x.wasCancelled ||
-                    isGreaterOrEqualToReportedAndReturnedTotal ||
+                    /* isGreaterOrEqualToReportedAndReturnedTotal || */
                     x.moneyRequestType === "REIMBURSMENT_ORDER" ||
                     x.moneyRequestType === "MONEY_ORDER"
                 }
