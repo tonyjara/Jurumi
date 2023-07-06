@@ -99,11 +99,7 @@ const RowOptionsHomeRequests = ({
         {(x.moneyRequestType === "FUND_REQUEST" ||
           x.moneyRequestType === "MONEY_ORDER") && (
           <MenuItem
-            isDisabled={
-              !isAccepted ||
-              x.wasCancelled ||
-              isGreaterOrEqualToReportedAndReturnedTotal
-            }
+            isDisabled={!isAccepted || x.wasCancelled}
             onClick={() => {
               setReqForReport(x);
               onExpRepOpen();
@@ -117,7 +113,6 @@ const RowOptionsHomeRequests = ({
           isDisabled={
             !isAccepted ||
             x.wasCancelled ||
-            isGreaterOrEqualToReportedAndReturnedTotal ||
             x.moneyRequestType === "REIMBURSMENT_ORDER" ||
             x.moneyRequestType === "MONEY_ORDER"
           }
