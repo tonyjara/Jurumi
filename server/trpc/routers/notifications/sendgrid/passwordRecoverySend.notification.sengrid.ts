@@ -1,4 +1,4 @@
-import sgMail from '@sendgrid/mail';
+import sgMail from "@sendgrid/mail";
 export const sendPasswordRecoveryLinkOnSengrid = async ({
   email,
   displayName,
@@ -19,13 +19,13 @@ export const sendPasswordRecoveryLinkOnSengrid = async ({
     from: sengridFrom, // Change to your verified sender
     subject: `${displayName} resetea tu password.`,
     // text: 'and easy to do anywhere, even with Node.js',
-    html: `<div>Hemos recibido una solicitud para resetear su password a este correo. <br />
+    html: `<div>Hemos recibido una solicitud para reestablecer su contraseña. <br />
     <br />
     Si no has sido tu favor ignora este correo.
     <br />
     <br />
 
-    De lo contrario puedes resetear tu passord ingresando en este <a href="${link}" target="_blank">link</a>  <br />
+    De lo contrario puedes reestablecer tu contraseña ingresando en este <a href="${link}" target="_blank">link</a>  <br />
    
     </div>`,
   };

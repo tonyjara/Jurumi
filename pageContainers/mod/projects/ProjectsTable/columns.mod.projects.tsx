@@ -13,15 +13,9 @@ import {
 
 const columnHelper = createColumnHelper<ProjectForTable>();
 
-export const projectsColumn = ({
-  pageIndex,
-  pageSize,
-}: {
-  pageSize: number;
-  pageIndex: number;
-}) => [
+export const projectsColumn = () => [
   columnHelper.display({
-    cell: (x) => x.row.index + 1 + pageIndex * pageSize,
+    cell: (x) => x.row.index + 1,
     header: "N.",
   }),
   columnHelper.accessor("createdAt", {

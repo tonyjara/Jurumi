@@ -8,21 +8,21 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { projectMock } from '@/__tests__/mocks/Mocks';
-import ProjectForm from '../Forms/Project.form';
-import type { FormProject } from '@/lib/validations/project.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import SeedButton from "../DevTools/SeedButton";
+import { projectMock } from "@/__tests__/mocks/Mocks";
+import ProjectForm from "../Forms/Project.form";
+import type { FormProject } from "@/lib/validations/project.validate";
 import {
   defaultProjectData,
   validateProject,
-} from '@/lib/validations/project.validate';
+} from "@/lib/validations/project.validate";
 
 const CreateProjectModal = ({
   isOpen,
@@ -51,7 +51,7 @@ const CreateProjectModal = ({
 
   const { error, mutate, isLoading } = trpcClient.project.create.useMutation(
     handleUseMutationAlerts({
-      successText: 'Su proyecto ha sido creada! 🔥',
+      successText: "Su proyecto ha sido creado",
       callback: () => {
         handleOnClose();
         context.project.invalidate();
