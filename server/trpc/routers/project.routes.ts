@@ -39,8 +39,6 @@ export const projectRouter = router({
     getManyForTable: adminModObserverProcedure
         .input(
             z.object({
-                pageIndex: z.number().nullish(),
-                pageSize: z.number().min(1).max(100).nullish(),
                 sorting: z
                     .object({ id: z.string(), desc: z.boolean() })
                     .array()

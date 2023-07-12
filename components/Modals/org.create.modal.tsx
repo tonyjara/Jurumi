@@ -8,19 +8,19 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormOrganization } from '../../lib/validations/org.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "../../lib/dictionaries/knownErrors";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import type { FormOrganization } from "../../lib/validations/org.validate";
 import {
   defaultOrgData,
   validateOrganization,
-} from '../../lib/validations/org.validate';
-import OrgForm from '../Forms/Org.form';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
+} from "../../lib/validations/org.validate";
+import OrgForm from "../Forms/Org.form";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 
 const CreateOrgModal = ({
   isOpen,
@@ -49,7 +49,7 @@ const CreateOrgModal = ({
   };
   const { error, mutate, isLoading } = trpcClient.org.create.useMutation(
     handleUseMutationAlerts({
-      successText: 'Su organización ha sido creada! 🔥',
+      successText: "Su organización ha sido creada",
       callback: () => {
         handleOnClose();
         reset();

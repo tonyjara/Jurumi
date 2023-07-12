@@ -37,8 +37,7 @@ export type ProjectForTable = Project & {
 const ProjectsTable = () => {
   const [editProject, setEditProject] = useState<ProjectForTable | null>(null);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { setGlobalFilter, globalFilter, sorting } = dynamicTableProps;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -55,14 +54,12 @@ const ProjectsTable = () => {
     return () => {};
   }, [editProject, isEditOpen]);
 
-  const { data: count } = trpcClient.project.count.useQuery();
-
   const {
     data: projects,
     isLoading,
     isFetching,
   } = trpcClient.project.getManyForTable.useQuery(
-    { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
+    { sorting: globalFilter ? sorting : null },
     { keepPreviousData: globalFilter ? true : false }
   );
   trpcClient.project.getManyForTable.useQuery({});
@@ -106,15 +103,11 @@ const ProjectsTable = () => {
     <>
       <DynamicTable
         title={"Proyectos"}
-        columns={projectsColumn({
-          pageIndex,
-          pageSize,
-        })}
+        columns={projectsColumn()}
         rowOptions={rowOptionsFunction}
         loading={isFetching || isLoading}
         options={tableOptions}
         data={handleDataSource() ?? []}
-        count={count ?? 0}
         {...dynamicTableProps}
       />
 
