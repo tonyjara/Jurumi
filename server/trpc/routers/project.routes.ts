@@ -48,11 +48,7 @@ export const projectRouter = router({
             })
         )
         .query(async ({ input }) => {
-            const pageSize = input.pageSize ?? 10;
-            const pageIndex = input.pageIndex ?? 0;
             return await prisma?.project.findMany({
-                take: pageSize,
-                skip: pageIndex * pageSize,
                 orderBy: handleOrderBy({ input }),
                 include: {
                     _count: { select: { allowedUsers: true } },
