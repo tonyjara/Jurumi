@@ -210,10 +210,12 @@ const RowOptionsModRequests = ({
             {(x.moneyRequestType === "FUND_REQUEST" ||
                 x.moneyRequestType === "MONEY_ORDER") && (
                     <MenuItem
-                        isDisabled={!isGreaterOrEqualToReportedAndReturnedTotal}
+                        /* isDisabled={!isGreaterOrEqualToReportedAndReturnedTotal} */
                         onClick={handlePrintExpenseRepsAndRets}
                     >
-                        Imprimir rendición/es
+                        {isGreaterOrEqualToReportedAndReturnedTotal ?
+                            "Imprimir rendición/es" : "Imprimir rendición/es (Parcial)"
+                        }
                     </MenuItem>
                 )}
             <RowOptionCancelDialog
