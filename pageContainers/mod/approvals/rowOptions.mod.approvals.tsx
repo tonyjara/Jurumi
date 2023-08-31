@@ -2,7 +2,7 @@ import { MenuItem } from "@chakra-ui/react";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
-import type { MoneyRequestCompleteWithApproval } from "./PendingApprovalsPage.mod.approvals";
+import { MonyRequestCompleteWithApproval } from "./mod.approvals.types";
 
 export const RowOptionApprovals = ({
   x,
@@ -12,7 +12,7 @@ export const RowOptionApprovals = ({
   hasBeenRejected,
   setMenuData,
 }: {
-  x: MoneyRequestCompleteWithApproval;
+  x: MonyRequestCompleteWithApproval;
   hasBeenApproved: boolean;
   hasBeenRejected: boolean;
   needsApproval: boolean;

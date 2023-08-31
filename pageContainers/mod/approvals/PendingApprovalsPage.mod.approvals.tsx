@@ -5,16 +5,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import type {
-  Account,
-  ExpenseReport,
-  MoneyRequest,
-  MoneyRequestApproval,
-  MoneyResquestApprovalStatus,
-  Prisma,
-  Project,
-  Transaction,
-} from "@prisma/client";
+import type { MoneyResquestApprovalStatus, Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import type {
@@ -29,24 +20,6 @@ import { trpcClient } from "@/lib/utils/trpcClient";
 import { modApprovalsColumns } from "./columns.mod.approvals";
 import { RowOptionApprovals } from "./rowOptions.mod.approvals";
 import { ApprovalUtils } from "@/lib/utils/ApprovalUtilts";
-
-export type MoneyRequestCompleteWithApproval = MoneyRequest & {
-  expenseReports: ExpenseReport[];
-  transactions: Transaction[];
-  account: Account;
-  organization: {
-    moneyRequestApprovers: {
-      id: string;
-      displayName: string;
-    }[];
-    moneyAdministrators: {
-      id: string;
-      displayName: string;
-    }[];
-  };
-  project: Project | null;
-  moneyRequestApprovals: MoneyRequestApproval[];
-};
 
 const ApprovalsPage = () => {
   const session = useSession();

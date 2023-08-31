@@ -1,10 +1,10 @@
-import { Text, useDisclosure, Checkbox, Flex } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 import type { MoneyRequest, Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import type {
-  RowOptionsType,
-  TableOptions,
+    RowOptionsType,
+    TableOptions,
 } from "@/components/DynamicTables/DynamicTable";
 import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
@@ -23,207 +23,207 @@ import useDebounce from "@/lib/hooks/useDebounce";
 import MoneyRequestExtraFilters from "./MoneyRequestExtraFilters.mod.requests";
 
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
-  const session = useSession();
-  const user = session.data?.user;
-  const [searchValue, setSearchValue] = useState("");
-  const debouncedSearchValue = useDebounce(searchValue, 500);
-  const [filterValue, setFilterValue] = useState("id");
-  const [extraFilters, setExtraFilters] = useState<string[]>([]);
-  const [whereFilterList, setWhereFilterList] = useState<
-    Prisma.MoneyRequestScalarWhereInput[]
-  >([]);
-  const [selectedRows, setSelectedRows] = useState<MoneyRequestComplete[]>([]);
-  const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
-    null
-  );
-  const [reqForReport, setReqForReport] = useState<MoneyRequestComplete | null>(
-    null
-  );
-  const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
-
-  useEffect(() => {
-    if (query.moneyRequestId) {
-      setSearchValue(query.moneyRequestId);
-      setFilterValue("id");
-    }
-    return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isEditOpen,
-    onOpen: onEditOpen,
-    onClose: onEditClose,
-  } = useDisclosure();
-  const {
-    isOpen: isExpRepOpen,
-    onOpen: onExpRepOpen,
-    onClose: onExpRepClose,
-  } = useDisclosure();
-  const {
-    isOpen: isExpenseReturnOpen,
-    onOpen: onExpenseReturnOpen,
-    onClose: onExpenseReturnClose,
-  } = useDisclosure();
-
-  useEffect(() => {
-    if (!isEditOpen && editMoneyRequest) {
-      setEditMoneyRequest(null);
-    }
-    return () => {};
-  }, [editMoneyRequest, isEditOpen]);
-
-  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
-  const { data: count } = trpcClient.moneyRequest.count.useQuery({
-    extraFilters,
-    whereFilterList,
-  });
-
-  const { data: moneyRequests, isLoading } =
-    trpcClient.moneyRequest.getManyComplete.useQuery(
-      {
-        extraFilters,
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-      },
-      { keepPreviousData: globalFilter ? true : false }
+    const session = useSession();
+    const user = session.data?.user;
+    const [searchValue, setSearchValue] = useState("");
+    const debouncedSearchValue = useDebounce(searchValue, 500);
+    const [filterValue, setFilterValue] = useState("id");
+    const [extraFilters, setExtraFilters] = useState<string[]>([]);
+    const [whereFilterList, setWhereFilterList] = useState<
+        Prisma.MoneyRequestScalarWhereInput[]
+    >([]);
+    const [selectedRows, setSelectedRows] = useState<MoneyRequestComplete[]>([]);
+    const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
+        null
     );
+    const [reqForReport, setReqForReport] = useState<MoneyRequestComplete | null>(
+        null
+    );
+    const dynamicTableProps = useDynamicTable();
+    const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
+        dynamicTableProps;
 
-  const { data: findByIdData, isFetching } =
-    trpcClient.moneyRequest.findCompleteById.useQuery(
-      {
-        value: debouncedSearchValue,
-        filter: filterValue,
+    useEffect(() => {
+        if (query.moneyRequestId) {
+            setSearchValue(query.moneyRequestId);
+            setFilterValue("id");
+        }
+        return () => { };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const {
+        isOpen: isEditOpen,
+        onOpen: onEditOpen,
+        onClose: onEditClose,
+    } = useDisclosure();
+    const {
+        isOpen: isExpRepOpen,
+        onOpen: onExpRepOpen,
+        onClose: onExpRepClose,
+    } = useDisclosure();
+    const {
+        isOpen: isExpenseReturnOpen,
+        onOpen: onExpenseReturnOpen,
+        onClose: onExpenseReturnClose,
+    } = useDisclosure();
+
+    useEffect(() => {
+        if (!isEditOpen && editMoneyRequest) {
+            setEditMoneyRequest(null);
+        }
+        return () => { };
+    }, [editMoneyRequest, isEditOpen]);
+
+    const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
+    const { data: count } = trpcClient.moneyRequest.count.useQuery({
         extraFilters,
         whereFilterList,
-      },
-      {
-        enabled: debouncedSearchValue.length > 0,
-      }
-    );
+    });
 
-  const handleDataSource = () => {
-    if (findByIdData) return findByIdData;
-    return moneyRequests ?? [];
-  };
+    const { data: moneyRequests, isLoading } =
+        trpcClient.moneyRequest.getManyComplete.useQuery(
+            {
+                extraFilters,
+                pageIndex,
+                pageSize,
+                sorting: globalFilter ? sorting : null,
+                whereFilterList,
+            },
+            { keepPreviousData: globalFilter ? true : false }
+        );
 
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: onOpen,
-      label: "Crear solicitud",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
-    },
-  ];
+    const { data: findByIdData, isFetching } =
+        trpcClient.moneyRequest.findCompleteById.useQuery(
+            {
+                value: debouncedSearchValue,
+                filter: filterValue,
+                extraFilters,
+                whereFilterList,
+            },
+            {
+                enabled: debouncedSearchValue.length > 0,
+            }
+        );
 
-  const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
-    const { needsApproval, hasBeenApproved } = ApprovalUtils(x as any, user);
+    const handleDataSource = () => {
+        /* if (findByIdData) return findByIdData; */
+        return moneyRequests ?? [];
+    };
+
+    const tableOptions: TableOptions[] = [
+        {
+            onClick: onOpen,
+            label: "Crear solicitud",
+        },
+        {
+            onClick: () => setGlobalFilter(true),
+            label: `${globalFilter ? "✅" : "❌"} Filtro global`,
+        },
+        {
+            onClick: () => setGlobalFilter(false),
+            label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
+        },
+    ];
+
+    const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
+        const { needsApproval, hasBeenApproved } = ApprovalUtils(x as any, user);
+        return (
+            <RowOptionsModRequests
+                hasBeenApproved={hasBeenApproved()}
+                needsApproval={needsApproval()}
+                onEditOpen={onEditOpen}
+                onExpRepOpen={onExpRepOpen}
+                selectedRows={selectedRows}
+                setEditMoneyRequest={setEditMoneyRequest}
+                setReqForReport={setReqForReport}
+                x={x}
+                onExpReturnOpen={onExpenseReturnOpen}
+                setMenuData={setMenuData}
+            />
+        );
+    };
+
     return (
-      <RowOptionsModRequests
-        hasBeenApproved={hasBeenApproved()}
-        needsApproval={needsApproval()}
-        onEditOpen={onEditOpen}
-        onExpRepOpen={onExpRepOpen}
-        selectedRows={selectedRows}
-        setEditMoneyRequest={setEditMoneyRequest}
-        setReqForReport={setReqForReport}
-        x={x}
-        onExpReturnOpen={onExpenseReturnOpen}
-        setMenuData={setMenuData}
-      />
+        <>
+            <DynamicTable
+                title={"Solicitudes"}
+                enableColumnFilters={true}
+                whereFilterList={whereFilterList}
+                setWhereFilterList={setWhereFilterList}
+                searchBar={
+                    <TableSearchbar
+                        type="text"
+                        placeholder="Buscar por"
+                        searchValue={searchValue}
+                        setSearchValue={setSearchValue}
+                        filterValue={filterValue}
+                        setFilterValue={setFilterValue}
+                        filterOptions={[
+                            { value: "id", label: "Id" },
+                            {
+                                value: "amountRequested",
+                                label: "Igual o mayor al Monto solicitado",
+                            },
+                        ]}
+                    />
+                }
+                columns={moneyRequestsColumns({
+                    user,
+                    pageIndex,
+                    pageSize,
+                    selectedRows,
+                    setSelectedRows,
+                    rowsLength:
+                        (pageSize < (moneyRequests?.length ?? 0)
+                            ? pageSize
+                            : moneyRequests?.length) ?? 0,
+                })}
+                loading={isFetching || isLoading}
+                options={tableOptions}
+                data={handleDataSource() ?? []}
+                count={count ?? 0}
+                colorRedKey={["wasCancelled"]}
+                rowOptions={rowOptionsFunction}
+                headerComp={
+                    <MoneyRequestExtraFilters
+                        extraFilters={extraFilters}
+                        setExtraFilters={setExtraFilters}
+                    />
+                }
+                {...dynamicTableProps}
+            />
+            {prefs?.selectedOrganization && (
+                <CreateMoneyRequestModal
+                    orgId={prefs.selectedOrganization}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                />
+            )}
+            {reqForReport && (
+                <CreateExpenseReportModal
+                    moneyRequest={reqForReport}
+                    isOpen={isExpRepOpen}
+                    onClose={onExpRepClose}
+                />
+            )}
+            {reqForReport && (
+                <CreateExpenseReturnModal
+                    moneyRequest={reqForReport}
+                    isOpen={isExpenseReturnOpen}
+                    onClose={onExpenseReturnClose}
+                />
+            )}
+            {editMoneyRequest && (
+                <EditMoneyRequestModal
+                    moneyRequest={editMoneyRequest}
+                    isOpen={isEditOpen}
+                    onClose={onEditClose}
+                />
+            )}
+        </>
     );
-  };
-
-  return (
-    <>
-      <DynamicTable
-        title={"Solicitudes"}
-        enableColumnFilters={true}
-        whereFilterList={whereFilterList}
-        setWhereFilterList={setWhereFilterList}
-        searchBar={
-          <TableSearchbar
-            type="text"
-            placeholder="Buscar por"
-            searchValue={searchValue}
-            setSearchValue={setSearchValue}
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            filterOptions={[
-              { value: "id", label: "Id" },
-              {
-                value: "amountRequested",
-                label: "Igual o mayor al Monto solicitado",
-              },
-            ]}
-          />
-        }
-        columns={moneyRequestsColumns({
-          user,
-          pageIndex,
-          pageSize,
-          selectedRows,
-          setSelectedRows,
-          rowsLength:
-            (pageSize < (moneyRequests?.length ?? 0)
-              ? pageSize
-              : moneyRequests?.length) ?? 0,
-        })}
-        loading={isFetching || isLoading}
-        options={tableOptions}
-        data={handleDataSource() ?? []}
-        count={count ?? 0}
-        colorRedKey={["wasCancelled"]}
-        rowOptions={rowOptionsFunction}
-        headerComp={
-          <MoneyRequestExtraFilters
-            extraFilters={extraFilters}
-            setExtraFilters={setExtraFilters}
-          />
-        }
-        {...dynamicTableProps}
-      />
-      {prefs?.selectedOrganization && (
-        <CreateMoneyRequestModal
-          orgId={prefs.selectedOrganization}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      )}
-      {reqForReport && (
-        <CreateExpenseReportModal
-          moneyRequest={reqForReport}
-          isOpen={isExpRepOpen}
-          onClose={onExpRepClose}
-        />
-      )}
-      {reqForReport && (
-        <CreateExpenseReturnModal
-          moneyRequest={reqForReport}
-          isOpen={isExpenseReturnOpen}
-          onClose={onExpenseReturnClose}
-        />
-      )}
-      {editMoneyRequest && (
-        <EditMoneyRequestModal
-          moneyRequest={editMoneyRequest}
-          isOpen={isEditOpen}
-          onClose={onEditClose}
-        />
-      )}
-    </>
-  );
 };
 
 export default ModMoneyRequestsPage;

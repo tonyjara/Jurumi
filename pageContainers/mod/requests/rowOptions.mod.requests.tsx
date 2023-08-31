@@ -62,6 +62,7 @@ const RowOptionsModRequests = ({
             },
         })
     );
+
     const { mutate: cancelById } = trpcClient.moneyRequest.cancelById.useMutation(
         handleUseMutationAlerts({
             successText: "Se ha anulado la solicitud!",
