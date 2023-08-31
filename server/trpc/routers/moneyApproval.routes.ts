@@ -10,6 +10,7 @@ import { reqApprovalRejectionSlackNotification } from "./notifications/slack/req
 import { MoneyResquestApprovalStatus } from "@prisma/client";
 import { handleOrderBy } from "./utils/Sorting.routeUtils";
 import { handleWhereImApprover } from "./utils/MoneyRequest.routeUtils";
+import { completeMoneyRequestWithApprovalIncludeArgs } from "@/pageContainers/mod/approvals/mod.approvals.types";
 
 export const moneyApprovalRouter = router({
   getManyCompleteForApprovalPage: adminModObserverProcedure
@@ -41,40 +42,7 @@ export const moneyApprovalRouter = router({
             { wasCancelled: false },
           ],
         },
-        include: {
-          taxPayer: {
-            select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
-          },
-          account: true,
-          project: true,
-          costCategory: true,
-          transactions: {
-            where: {
-              cancellationId: null,
-              isCancellation: false,
-            },
-            include: {
-              searchableImage: {
-                select: { url: true, imageName: true },
-              },
-            },
-          },
-          searchableImages: true,
-          moneyRequestApprovals: { where: { wasCancelled: false } },
-          expenseReports: {
-            where: { wasCancelled: false },
-            include: { taxPayer: { select: { id: true, razonSocial: true } } },
-          },
-          expenseReturns: { where: { wasCancelled: false } },
-          organization: {
-            select: {
-              moneyRequestApprovers: {
-                select: { id: true, displayName: true },
-              },
-              moneyAdministrators: { select: { id: true, displayName: true } },
-            },
-          },
-        },
+        ...completeMoneyRequestWithApprovalIncludeArgs,
       });
     }),
 

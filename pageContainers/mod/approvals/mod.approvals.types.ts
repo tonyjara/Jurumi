@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export const completeMoneyRequestIncludeArgs =
+export const completeMoneyRequestWithApprovalIncludeArgs =
   Prisma.validator<Prisma.MoneyRequestArgs>()({
     include: {
       taxPayer: {
@@ -21,12 +21,7 @@ export const completeMoneyRequestIncludeArgs =
         },
       },
       searchableImages: true,
-      moneyRequestApprovals: {
-        where: { wasCancelled: false },
-        include: {
-          account: { select: { displayName: true } },
-        },
-      },
+      moneyRequestApprovals: { where: { wasCancelled: false } },
       expenseReports: {
         where: { wasCancelled: false },
         include: { taxPayer: { select: { id: true, razonSocial: true } } },
@@ -43,6 +38,6 @@ export const completeMoneyRequestIncludeArgs =
     },
   });
 
-export type MoneyRequestComplete = Prisma.MoneyRequestGetPayload<
-  typeof completeMoneyRequestIncludeArgs
+export type MonyRequestCompleteWithApproval = Prisma.MoneyRequestGetPayload<
+  typeof completeMoneyRequestWithApprovalIncludeArgs
 >;

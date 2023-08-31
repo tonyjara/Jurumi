@@ -416,12 +416,12 @@ model MoneyRequestApproval {
   updatedAt      DateTime?                   @updatedAt
   status         MoneyResquestApprovalStatus
   rejectMessage  String
-  accountId      String
-  moneyRequestId String
   wasCancelled   Boolean                     @default(false)
 
   account      Account      @relation(fields: [accountId], references: [id])
+  accountId      String
   moneyRequest MoneyRequest @relation(fields: [moneyRequestId], references: [id])
+  moneyRequestId String
 }
 
 model MoneyRequest {
