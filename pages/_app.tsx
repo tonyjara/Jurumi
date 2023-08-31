@@ -8,14 +8,17 @@ import { appWithTranslation } from "next-i18next";
 import NextNProgress from "nextjs-progressbar";
 import "../styles/globals.css";
 import { Toaster } from "react-hot-toast";
-import RootLayout from "../layouts/RootLayout";
 import { theme } from "../styles/Theme";
 import BrowserNotificationsManager from "@/components/Notifications/BrowserNotificationsManager";
+import RootLayout from "layouts/RootLayout";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  //RootLayout is 50kb on every page
+  // Progress bar and notifications are 30kb on every page
+  // Toaster is 1kb on every page
   return (
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>

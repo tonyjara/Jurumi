@@ -1,4 +1,5 @@
-import { faker } from "@faker-js/faker";
+//@ts-ignore
+const faker = (await import("@faker-js/faker")).faker;
 import type { BecomeMemberRequest } from "@prisma/client";
 import * as z from "zod";
 

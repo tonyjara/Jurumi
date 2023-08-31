@@ -1,43 +1,44 @@
-import { faker } from '@faker-js/faker';
-import type { Account, Membership } from '@prisma/client';
-import { MemberType } from '@prisma/client';
-import { Currency, Prisma } from '@prisma/client';
-import * as z from 'zod';
+//@ts-ignore
+const faker = (await import("@faker-js/faker")).faker;
+import type { Account, Membership } from "@prisma/client";
+import { MemberType } from "@prisma/client";
+import { Currency, Prisma } from "@prisma/client";
+import * as z from "zod";
 
 export type FormMember = Omit<
   Account,
-  | 'id'
-  | 'active'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'softDeleted'
-  | 'archived'
-  | 'password'
-  | 'isVerified'
-  | 'role'
+  | "id"
+  | "active"
+  | "createdAt"
+  | "updatedAt"
+  | "softDeleted"
+  | "archived"
+  | "password"
+  | "isVerified"
+  | "role"
 > &
   Omit<
     Membership,
-    | 'id'
-    | 'active'
-    | 'createdAt'
-    | 'updatedAt'
-    | 'softDeleted'
-    | 'archived'
-    | 'initialBalance'
-    | 'accountId'
+    | "id"
+    | "active"
+    | "createdAt"
+    | "updatedAt"
+    | "softDeleted"
+    | "archived"
+    | "initialBalance"
+    | "accountId"
   > & { initialBalance?: any };
 
 export const validateMember: z.ZodType<FormMember> = z.lazy(() =>
   z.object({
     displayName: z
-      .string({ required_error: 'Favor ingrese un nombre para el usuario.' })
-      .max(64, { message: 'Has excedido el límite de caractéres (64)' })
-      .min(2, { message: 'El nombre debe tener al menos (2) caractéres' }),
+      .string({ required_error: "Favor ingrese un nombre para el usuario." })
+      .max(64, { message: "Has excedido el límite de caractéres (64)" })
+      .min(2, { message: "El nombre debe tener al menos (2) caractéres" }),
     email: z
       .string()
-      .email('Favor ingrese un correo válido.')
-      .max(128, { message: 'Has excedido el límite de caractéres (128)' }),
+      .email("Favor ingrese un correo válido.")
+      .max(128, { message: "Has excedido el límite de caractéres (128)" }),
 
     initialBalance: z.any().transform((value) => new Prisma.Decimal(value)),
     memberSince: z.date(),
@@ -48,12 +49,12 @@ export const validateMember: z.ZodType<FormMember> = z.lazy(() =>
 );
 
 export const defaultMemberData: FormMember = {
-  email: '',
-  displayName: '',
+  email: "",
+  displayName: "",
   initialBalance: new Prisma.Decimal(0),
   memberSince: new Date(),
-  memberType: 'REGULAR',
-  currency: 'PYG',
+  memberType: "REGULAR",
+  currency: "PYG",
   expirationDate: new Date(),
 };
 export const mockFormMember: FormMember = {
@@ -61,7 +62,7 @@ export const mockFormMember: FormMember = {
   displayName: faker.name.fullName(),
   initialBalance: new Prisma.Decimal(faker.commerce.price(100000, 300000)),
   memberSince: faker.date.past(2),
-  memberType: 'REGULAR',
-  currency: 'PYG',
+  memberType: "REGULAR",
+  currency: "PYG",
   expirationDate: faker.date.future(1),
 };
