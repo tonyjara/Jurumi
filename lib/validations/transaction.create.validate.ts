@@ -1,4 +1,5 @@
-import { faker } from "@faker-js/faker";
+//@ts-ignore
+const faker = (await import("@faker-js/faker")).faker;
 import type { MoneyRequest, Transaction } from "@prisma/client";
 import { TransactionType } from "@prisma/client";
 import { Prisma } from "@prisma/client";

@@ -1,6 +1,5 @@
 import { BankNamesPy, Currency } from "@prisma/client";
 import { Prisma } from "@prisma/client";
-import { faker } from "@faker-js/faker";
 import { v4 as uuidV4 } from "uuid";
 import { randEnumValue } from "@/lib/utils/TypescriptUtils";
 import type { FormProject } from "@/lib/validations/project.validate";
@@ -13,6 +12,8 @@ import type { FormTransactionCreate } from "@/lib/validations/transaction.create
 import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
 import { FormMoneyAccounOffset } from "@/lib/validations/moneyAccountOffset.validate";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
+//@ts-ignore
+const faker = (await import("@faker-js/faker")).faker;
 
 const bankInfo: () => FormBankInfo = () => {
     const x: FormBankInfo = {
@@ -217,12 +218,12 @@ export const expenseReturnMock = ({
     moneyAccountId,
     moneyRequestId,
     amountReturned,
-    currency
+    currency,
 }: {
     moneyAccountId: string;
     moneyRequestId: string;
     amountReturned: Prisma.Decimal;
-    currency: Currency
+    currency: Currency;
 }) => {
     const imageName = uuidV4();
     const x: FormExpenseReturn = {

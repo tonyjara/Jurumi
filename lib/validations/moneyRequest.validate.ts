@@ -1,4 +1,5 @@
-import { faker } from "@faker-js/faker";
+//@ts-ignore
+const faker = (await import("@faker-js/faker")).faker;
 import type { MoneyRequest, TaxPayerBankInfo } from "@prisma/client";
 import { BankAccountType } from "@prisma/client";
 import { BankDocType, BankNamesPy } from "@prisma/client";

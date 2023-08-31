@@ -27,7 +27,6 @@ import { trpcClient } from "@/lib/utils/trpcClient";
 import TransactionsTable from "../transactions/TransactionsTable";
 import AccordionOptionsMoneyAccountsPage from "./accordionOptions.mod.money-accounts";
 import { customScrollbar } from "styles/CssUtils";
-import LoadingPlantLottie from "@/components/Spinners-Loading/LoadiingPlantLottie";
 import CreateMoneyAccountOffsetModal from "@/components/Modals/MoneyAccountOffset.create.modal";
 
 export type MoneyAccWithTransactions = MoneyAccount & {
@@ -94,7 +93,7 @@ const MoneyAccountsPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [editData]);
 
-    const { data, isFetching, isLoading } =
+    const { data, isFetching } =
         trpcClient.moneyAcc.getManyWithTransactions.useQuery();
 
     const bg = useColorModeValue("white", "gray.700");
@@ -205,7 +204,6 @@ const MoneyAccountsPage = () => {
                     onClose={onOffsetClose}
                 />
 
-                {(isLoading || isFetching) && <LoadingPlantLottie />}
             </CardBody>
         </Card>
     );

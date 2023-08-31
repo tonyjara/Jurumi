@@ -1,5 +1,4 @@
 import EditOrgModal from "@/components/Modals/org.edit.modal";
-import LoadingPlantLottie from "@/components/Spinners-Loading/LoadiingPlantLottie";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import type { FormOrganization } from "@/lib/validations/org.validate";
 import { EditIcon } from "@chakra-ui/icons";
@@ -143,7 +142,6 @@ const OrganizationPage = () => {
             <Text fontSize={"xl"}>Favor seleccione una organización</Text>
           </div>
         ))}
-      {loading && <LoadingPlantLottie />}
       {formOrg && (
         <EditOrgModal org={formOrg} isOpen={isEditOpen} onClose={onEditClose} />
       )}
