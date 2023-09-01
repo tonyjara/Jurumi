@@ -21,7 +21,10 @@ export const completeMoneyRequestWithApprovalIncludeArgs =
         },
       },
       searchableImages: true,
-      moneyRequestApprovals: { where: { wasCancelled: false } },
+      moneyRequestApprovals: {
+        where: { wasCancelled: false },
+        include: { account: { select: { displayName: true } } },
+      },
       expenseReports: {
         where: { wasCancelled: false },
         include: { taxPayer: { select: { id: true, razonSocial: true } } },
