@@ -49,7 +49,7 @@ const MoneyRequestForm = ({
   const { data: session } = useSession();
   const user = session?.user;
   const isAdminOrMod = user?.role === "ADMIN" || user?.role === "MODERATOR";
-
+  const isAdmin = user?.role === "ADMIN";
   const currency = useWatch({ control, name: "currency" });
   const status = useWatch({ control, name: "status" });
   const projectId = useWatch({ control, name: "projectId" });
@@ -207,7 +207,7 @@ const MoneyRequestForm = ({
       />
 
       {/* THIS INPUT ARE ONLY SHOWNED TO ADMINS AND MODS */}
-      {isAdminOrMod && (
+      {isAdmin && (
         <>
           <Divider pb={3} />
 
