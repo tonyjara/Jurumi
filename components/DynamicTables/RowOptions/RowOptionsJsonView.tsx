@@ -10,7 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import React from "react";
-import ReactJson from "react-json-view";
+import dynamic from "next/dynamic";
+const JsonView = dynamic(() => import("react-json-view"), { ssr: false });
 
 interface props {
   x: any;
@@ -30,7 +31,7 @@ export function RowOptionsJsonView({ x }: props) {
           <ModalHeader>{x?.id ?? ""}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <ReactJson src={x} theme="monokai" />
+            <JsonView src={x} theme="monokai" />
           </ModalBody>
         </ModalContent>
       </Modal>
