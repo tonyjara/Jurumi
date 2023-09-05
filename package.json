@@ -89,6 +89,7 @@
     "react-hot-toast": "2.4.0",
     "react-i18next": "12.1.5",
     "react-icons": "4.7.1",
+    "react-json-view": "^1.21.3",
     "react-number-format": "5.2.2",
     "react-query": "3.39.3",
     "react-share": "^4.4.1",
