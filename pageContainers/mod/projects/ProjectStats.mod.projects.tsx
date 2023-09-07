@@ -20,7 +20,7 @@ import {
 import { Prisma } from "@prisma/client";
 import React, { useState } from "react";
 import TransactionsTable from "../transactions/TransactionsTable";
-import type { ProjectComplete } from "./ProjectsPage.mod.projects";
+import { ProjectComplete } from "./project.types";
 import CostCategoryStats from "./ProjectsTable/CostCategoryStats.mod.projects";
 
 const ProjectStats = ({
@@ -42,6 +42,16 @@ const ProjectStats = ({
     trpcClient.project.getLastProjectTransaction.useQuery({
       projectId: project?.id,
     });
+  const { data: getProjectWithTransactions, isFetching } =
+    trpcClient.project.getProjectTransactions.useQuery(
+      {
+        pageIndex,
+        pageSize,
+        sorting: globalFilter ? sorting : null,
+        projectId: project?.id,
+      },
+      { keepPreviousData: globalFilter ? true : false, enabled: !!project }
+    );
 
   const imbursed = projectWithLastTx?.transactions[0]?.currentBalance
     ? projectWithLastTx?.transactions[0]?.currentBalance
@@ -61,17 +71,6 @@ const ProjectStats = ({
 
   const percentageExecuted =
     executedInGs.dividedBy(totalAsignedInGs).toNumber() * 100;
-
-  const { data: getProjectWTx, isFetching } =
-    trpcClient.project.getProjectTransactions.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        projectId: project?.id,
-      },
-      { keepPreviousData: globalFilter ? true : false, enabled: !!project }
-    );
 
   return (
     <div>
@@ -109,7 +108,7 @@ const ProjectStats = ({
       <Box my={"20px"}>
         <Text fontSize={"lg"} color={labelColor} mb={"10px"}>
           {isNaN(percentageExecuted) ? 0 : percentageExecuted.toFixed(0)}%
-          Ejecutado
+          Ejecutado{" "}
         </Text>
         <Progress
           borderRadius={"8px"}
@@ -124,8 +123,8 @@ const ProjectStats = ({
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}
         loading={isFetching}
-        data={getProjectWTx?.transactions ?? ([] as any)}
-        count={getProjectWTx?._count?.transactions}
+        data={getProjectWithTransactions?.transactions ?? []}
+        count={getProjectWithTransactions?._count?.transactions}
         dynamicTableProps={dynamicTableProps}
       />
     </div>

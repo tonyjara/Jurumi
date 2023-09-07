@@ -1,23 +1,25 @@
-import type { CostCategory } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
-import { z } from 'zod';
-import { validateProject } from '@/lib/validations/project.validate';
+import type { CostCategory } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { validateProject } from "@/lib/validations/project.validate";
 import {
     adminModObserverProcedure,
     adminModProcedure,
     adminProcedure,
     protectedProcedure,
     router,
-} from '../initTrpc';
-import prisma from '@/server/db/client';
-import { handleOrderBy } from './utils/Sorting.routeUtils';
-import { accountIsPartOfProjectBrowserNotifications } from './notifications/browser/accountIsPartOfProject.notifications.browser';
-import { accountIsPartOfProjectDbNotification } from './notifications/db/accountIsPartOfProject.notifications.db';
+} from "../initTrpc";
+import prisma from "@/server/db/client";
+import { handleOrderBy } from "./utils/Sorting.routeUtils";
+import { accountIsPartOfProjectBrowserNotifications } from "./notifications/browser/accountIsPartOfProject.notifications.browser";
+import { accountIsPartOfProjectDbNotification } from "./notifications/db/accountIsPartOfProject.notifications.db";
+import { completeTransactionsArgs } from "@/pageContainers/mod/transactions/transactions.types";
+import { completeProjectArgs } from "@/pageContainers/mod/projects/project.types";
 
 export const projectRouter = router({
     getMany: protectedProcedure.query(async ({ ctx }) => {
         const user = ctx.session.user;
-        const isModOrAdmin = user.role !== 'USER';
+        const isModOrAdmin = user.role !== "USER";
 
         return await prisma?.project.findMany({
             include: {
@@ -25,7 +27,7 @@ export const projectRouter = router({
                 allowedUsers: {
                     take: 20,
                     where: {
-                        role: 'USER',
+                        role: "USER",
                         isVerified: true,
                         active: true,
                         //if user is not admin or mod only return projects which user is member off.
@@ -48,40 +50,7 @@ export const projectRouter = router({
         .query(async ({ input }) => {
             return await prisma?.project.findMany({
                 orderBy: handleOrderBy({ input }),
-                include: {
-                    _count: { select: { allowedUsers: true } },
-                    costCategories: {
-                        include: {
-                            transactions: {
-                                where: { transactionType: 'COST_CATEGORY' },
-                                take: 1,
-                                orderBy: { id: 'desc' },
-                                select: {
-                                    openingBalance: true,
-                                    currency: true,
-                                    currentBalance: true,
-                                    transactionAmount: true,
-                                },
-                            },
-                        },
-                    },
-                    transactions: {
-                        where: { transactionType: 'PROJECT_IMBURSEMENT' },
-                        take: 1,
-                        orderBy: { id: 'desc' },
-                        select: {
-                            openingBalance: true,
-                            currency: true,
-                            currentBalance: true,
-                            transactionAmount: true,
-                        },
-                    },
-                    allowedUsers: {
-                        take: 20,
-                        where: { role: 'USER', active: true, isVerified: true },
-                        select: { id: true, displayName: true, email: true },
-                    },
-                },
+                ...completeProjectArgs,
             });
         }),
 
@@ -100,10 +69,11 @@ export const projectRouter = router({
                     transactions: {
                         where: {
                             projectId: input.projectId,
-                            transactionType: 'PROJECT_IMBURSEMENT',
+                            transactionType: "PROJECT_IMBURSEMENT",
+                            isCancellation: false,
                         },
                         take: 1,
-                        orderBy: { id: 'desc' },
+                        orderBy: { id: "desc" },
                         select: { currentBalance: true, currency: true },
                     },
                 },
@@ -135,15 +105,7 @@ export const projectRouter = router({
                         take: pageSize,
                         skip: pageIndex * pageSize,
                         orderBy: handleOrderBy({ input }),
-                        include: {
-                            account: { select: { displayName: true } },
-                            moneyAccount: { select: { displayName: true } },
-                            moneyRequest: { select: { description: true } },
-                            imbursement: { select: { concept: true } },
-                            searchableImage: {
-                                select: { id: true, url: true, imageName: true },
-                            },
-                        },
+                        ...completeTransactionsArgs,
                     },
                 },
             });
@@ -163,8 +125,8 @@ export const projectRouter = router({
         .mutation(async ({ input, ctx }) => {
             if (!ctx.session.user) {
                 throw new TRPCError({
-                    code: 'UNAUTHORIZED',
-                    message: 'No user session.',
+                    code: "UNAUTHORIZED",
+                    message: "No user session.",
                 });
             }
 
@@ -302,29 +264,27 @@ export const projectRouter = router({
         const user = ctx.session.user;
         const preferences = await prisma?.preferences.findFirstOrThrow({
             where: { accountId: user?.id },
-        })
+        });
 
         return await prisma?.project.findMany({
             where: { organizationId: preferences?.selectedOrganization },
             select: {
                 id: true,
                 displayName: true,
-            }
-        })
-
+            },
+        });
     }),
     getAllOrgCostCategories: adminModObserverProcedure.query(async ({ ctx }) => {
         const user = ctx.session.user;
         const preferences = await prisma?.preferences.findFirstOrThrow({
             where: { accountId: user?.id },
-        })
+        });
 
         return await prisma?.project.findMany({
             where: { organizationId: preferences?.selectedOrganization },
             select: {
-                costCategories: { select: { id: true, displayName: true } }
-            }
-        })
-
-    })
+                costCategories: { select: { id: true, displayName: true } },
+            },
+        });
+    }),
 });

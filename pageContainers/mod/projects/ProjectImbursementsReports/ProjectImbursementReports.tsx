@@ -2,7 +2,7 @@ import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import React from "react";
-import { ProjectComplete } from "../ProjectsPage.mod.projects";
+import { ProjectComplete } from "../project.types";
 import { projectImbursementsReportsColumns } from "./columns.mod.ProjectImbursementsReports";
 
 const ProjectImbursementsReports = ({

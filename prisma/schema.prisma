@@ -338,7 +338,7 @@ model CostCategory {
   currency              Currency
   projectId             String?
   assignedAmount        Decimal         @default(0) @db.Decimal(19, 4) //this can keep being edit
-  referenceExchangeRate Float           @default(0)
+  referenceExchangeRate Float           @default(1)
   project               Project?        @relation(fields: [projectId], references: [id])
   transactions          Transaction[]
   expenseReport         ExpenseReport[]

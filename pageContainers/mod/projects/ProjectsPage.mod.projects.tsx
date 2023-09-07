@@ -11,8 +11,6 @@ import {
   Tabs,
   useColorModeValue,
 } from "@chakra-ui/react";
-import type { CostCategory, Currency, Project } from "@prisma/client";
-import type { Decimal } from "@prisma/client/runtime";
 import React, { useState } from "react";
 import ProjectImbursementsReports from "./ProjectImbursementsReports/ProjectImbursementReports";
 import ProjectMembers from "./ProjectMembers.mod.projects";
@@ -20,31 +18,6 @@ import ProjectReportsTable from "./ProjectReports/ProjectReportsTable";
 import ProjectsTable from "./ProjectsTable/ProjectsTable.mod.projects";
 import ProjectStats from "./ProjectStats.mod.projects";
 import ProjectSelect from "./SelectProject.mod.projects";
-
-export type ProjectComplete = Project & {
-  costCategories: (CostCategory & {
-    transactions: {
-      openingBalance: Decimal;
-      currency: Currency;
-      currentBalance: Decimal;
-      transactionAmount: Decimal;
-    }[];
-  })[];
-  allowedUsers: {
-    id: string;
-    email: string;
-    displayName: string;
-  }[];
-  _count: {
-    allowedUsers: number;
-  };
-  transactions: {
-    openingBalance: Decimal;
-    currency: Currency;
-    currentBalance: Decimal;
-    transactionAmount: Decimal;
-  }[];
-};
 
 const ProjectsPage = () => {
   const [selectedProject, setSelectedProject] = useState<{
@@ -92,18 +65,22 @@ const ProjectsPage = () => {
             </TabList>
           </Stack>
         </CardHeader>
-        <TabPanels>
+        <TabPanels minH={"90vh"}>
           <TabPanel>
+            {/* Reportes */}
             <ProjectImbursementsReports project={project} />
             <ProjectReportsTable project={project} />
           </TabPanel>
           <TabPanel>
+            {/* Ejecución */}
             <ProjectStats project={project} />
           </TabPanel>
           <TabPanel>
+            {/* Miembros */}
             <ProjectMembers project={project} />
           </TabPanel>
           <TabPanel>
+            {/* Lista */}
             <ProjectsTable />
           </TabPanel>
         </TabPanels>

@@ -1,8 +1,9 @@
+import { RowOptionsJsonView } from "@/components/DynamicTables/RowOptions/RowOptionsJsonView";
 import { MenuItem } from "@chakra-ui/react";
 import type { Transaction } from "@prisma/client";
 import { useRouter } from "next/router";
 import React from "react";
-import type { TransactionComplete } from "./TransactionsPage.mod.transactions";
+import { TransactionComplete } from "./transactions.types";
 
 const RowOptionsModTransactions = ({
   x,
@@ -76,6 +77,8 @@ const RowOptionsModTransactions = ({
       {/* > */}
       {/*     Eliminar */}
       {/* </MenuItem> */}
+
+      <RowOptionsJsonView x={x} />
     </>
   );
 };

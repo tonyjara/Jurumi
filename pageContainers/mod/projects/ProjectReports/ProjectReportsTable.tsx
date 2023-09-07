@@ -2,7 +2,7 @@ import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import React from "react";
-import { ProjectComplete } from "../ProjectsPage.mod.projects";
+import { ProjectComplete } from "../project.types";
 import { projectReportsColumn } from "./colums.mod.ProjectReports";
 import { rawValuesProjectReportsTable } from "./rawValues.ProjectReportsTable";
 
@@ -14,9 +14,11 @@ const ProjectReportsTable = ({
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, pageSize } = dynamicTableProps;
 
-  const { data, isLoading } = trpcClient.reports.getProjectReport.useQuery({
-    projectId: project?.id,
-  });
+  const { data, isLoading } = trpcClient.reports.getCostCategoryReport.useQuery(
+    {
+      projectId: project?.id,
+    }
+  );
 
   return (
     <DynamicTable

@@ -2,9 +2,9 @@ import { MenuItem } from "@chakra-ui/react";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
-import type { MyExpenseReport } from "./ExpenseReportsPage.home.expense-reports";
 import { RowOptionDeleteDialog } from "@/components/Toasts & Alerts/RowOption.delete.dialog";
 import { RowOptionCancelDialog } from "@/components/Toasts & Alerts/RowOptions.cancel.dialog";
+import { HomeExpenseReportComplete } from "@/pageContainers/mod/requests/expenseReport.types";
 
 const RowOptionsHomeExpenseReports = ({
   x,
@@ -12,9 +12,9 @@ const RowOptionsHomeExpenseReports = ({
   onEditOpen,
   setMenuData,
 }: {
-  x: MyExpenseReport;
+  x: HomeExpenseReportComplete;
   setEditExpenseReport: React.Dispatch<
-    React.SetStateAction<MyExpenseReport | null>
+    React.SetStateAction<HomeExpenseReportComplete | null>
   >;
   onEditOpen: () => void;
   setMenuData: React.Dispatch<

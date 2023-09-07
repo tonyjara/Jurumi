@@ -1,11 +1,4 @@
-import type {
-  ExpenseReturn,
-  Imbursement,
-  MoneyAccountOffset,
-  MoneyRequest,
-  Prisma,
-  Transaction,
-} from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 
@@ -13,34 +6,7 @@ import TableSearchbar from "@/components/DynamicTables/Utils/TableSearchbar";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import type { TransactionsPageProps } from "pages/mod/transactions";
 import TransactionsTable from "./TransactionsTable";
-
-export type TransactionComplete = Transaction & {
-  account: {
-    id: string;
-    displayName: string;
-  };
-  moneyAccount: {
-    id: string;
-    displayName: string;
-  } | null;
-  project: {
-    id: string;
-    displayName: string;
-  } | null;
-  costCategory: {
-    id: string;
-    displayName: string;
-  } | null;
-  imbursement: Imbursement | null;
-  moneyRequest: MoneyRequest | null;
-  expenseReturn: ExpenseReturn | null;
-  moneyAccountOffset: MoneyAccountOffset | null;
-  searchableImage: {
-    id: string;
-    url: string;
-    imageName: string;
-  } | null;
-};
+import { TransactionComplete } from "./transactions.types";
 
 const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
   const [searchValue, setSearchValue] = useState("");

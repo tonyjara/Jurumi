@@ -1,8 +1,8 @@
-import SkeletonRows from '@/components/DynamicTables/Utils/SkeletonRows';
-import { handleUseMutationAlerts } from '@/components/Toasts & Alerts/MyToast';
-import useDebounce from '@/lib/hooks/useDebounce';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { AddIcon, CloseIcon, DeleteIcon, Search2Icon } from '@chakra-ui/icons';
+import SkeletonRows from "@/components/DynamicTables/Utils/SkeletonRows";
+import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import useDebounce from "@/lib/hooks/useDebounce";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { AddIcon, CloseIcon, DeleteIcon, Search2Icon } from "@chakra-ui/icons";
 import {
   Box,
   IconButton,
@@ -18,9 +18,9 @@ import {
   Th,
   Thead,
   Tr,
-} from '@chakra-ui/react';
-import React, { useState } from 'react';
-import type { ProjectComplete } from './ProjectsPage.mod.projects';
+} from "@chakra-ui/react";
+import React, { useState } from "react";
+import { ProjectComplete } from "./project.types";
 
 interface props {
   project?: ProjectComplete | null;
@@ -28,7 +28,7 @@ interface props {
 
 const ProjectMembers = ({ project }: props) => {
   const context = trpcClient.useContext();
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const hasLength = !!searchValue.length;
 
@@ -45,9 +45,9 @@ const ProjectMembers = ({ project }: props) => {
   const { mutate: addUserToProject } =
     trpcClient.project.addAccountToProject.useMutation(
       handleUseMutationAlerts({
-        successText: 'Se ha agregado el usuario al proyecto!',
+        successText: "Se ha agregado el usuario al proyecto!",
         callback: () => {
-          setSearchValue('');
+          setSearchValue("");
           context.account.invalidate();
           context.project.invalidate();
         },
@@ -56,7 +56,7 @@ const ProjectMembers = ({ project }: props) => {
   const { mutate: removeAccountFromProject } =
     trpcClient.project.removeAccountFromProject.useMutation(
       handleUseMutationAlerts({
-        successText: 'Se ha eliminado el usuario al proyecto!',
+        successText: "Se ha eliminado el usuario al proyecto!",
         callback: () => {
           context.account.invalidate();
           context.project.invalidate();
@@ -65,28 +65,28 @@ const ProjectMembers = ({ project }: props) => {
     );
 
   return (
-    <Box minH={'100vh'} justifyContent="center">
+    <Box minH={"100vh"} justifyContent="center">
       <Box>{!project && <Text>Favor seleccione un proyecto.</Text>}</Box>
 
       {project && (
         <Box>
-          <InputGroup mb={'20px'} maxW={'250px'} flexDir={'column'}>
+          <InputGroup mb={"20px"} maxW={"250px"} flexDir={"column"}>
             <Input
               value={searchValue}
               onChange={(x) => setSearchValue(x.target.value)}
-              variant={'flushed'}
-              placeholder={'Invite por correo electrónico.'}
+              variant={"flushed"}
+              placeholder={"Invite por correo electrónico."}
             />
             <InputRightElement
-              onClick={() => hasLength && setSearchValue('')}
-              cursor={hasLength ? 'pointer' : 'auto'}
+              onClick={() => hasLength && setSearchValue("")}
+              cursor={hasLength ? "pointer" : "auto"}
             >
               {hasLength ? <CloseIcon /> : <Search2Icon />}
             </InputRightElement>
           </InputGroup>
           <TableContainer>
             <Table variant="simple">
-              <TableCaption color={'gray.500'}>
+              <TableCaption color={"gray.500"}>
                 Los administradores o moderadores no necesitan ser miembros de
                 proyectos.
               </TableCaption>
@@ -94,7 +94,7 @@ const ProjectMembers = ({ project }: props) => {
                 <Tr>
                   <Th>Nombre</Th>
                   <Th>Correo</Th>
-                  <Th>{foundAccounts?.length ? 'Agregar' : 'Eliminar'}</Th>
+                  <Th>{foundAccounts?.length ? "Agregar" : "Eliminar"}</Th>
                 </Tr>
               </Thead>
               <Tbody>

@@ -16,11 +16,9 @@ import FormControlledImageUpload from "../FormControlled/FormControlledImageUplo
 import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
 import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
 import FormControlledSelect from "../FormControlled/FormControlledSelect";
-import { reduceExpenseReportsToSetCurrency } from "@/lib/utils/TransactionUtils";
 import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
 import type { Currency } from "@prisma/client";
-import { Prisma } from "@prisma/client";
 import { expenseReturnMock } from "@/__tests__/mocks/Mocks";
 import SeedButton from "../DevTools/SeedButton";
 import { Decimal } from "@prisma/client/runtime";
@@ -33,7 +31,6 @@ interface formProps<T extends FieldValues> {
   moneyRequest?: CompleteMoneyReqHome;
   reset: UseFormReset<FormExpenseReturn>;
   pendingAmount: () => Decimal;
-  isEdit?: boolean;
 }
 
 const ExpenseReturnForm = ({
@@ -43,7 +40,6 @@ const ExpenseReturnForm = ({
   setValue,
   reset,
   pendingAmount,
-  isEdit,
 }: formProps<FormExpenseReturn>) => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -95,7 +91,6 @@ const ExpenseReturnForm = ({
         label="Moneda"
         options={currencyOptions}
         onChangeMw={handleCurrencyChange}
-        disable={isEdit}
       />
       {wasConvertedToOtherCurrency && (
         <FormControlledNumberInput
@@ -104,7 +99,6 @@ const ExpenseReturnForm = ({
           name={"exchangeRate"}
           label="Tasa de cambio"
           helperText={"Un dolar equivale X guaranies"}
-          disable={isEdit}
         />
       )}
 
@@ -116,7 +110,6 @@ const ExpenseReturnForm = ({
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
         totalAmount={pendingAmount()}
-        disable={isEdit}
       />
 
       {user && (
@@ -139,7 +132,6 @@ const ExpenseReturnForm = ({
         label="Seleccione la cuenta que recibió la devolución"
         options={moneyAccOptions(currency) ?? []}
         isClearable={true}
-        disable={isEdit}
       />
     </VStack>
   );

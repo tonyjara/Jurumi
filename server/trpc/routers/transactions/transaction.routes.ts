@@ -8,6 +8,7 @@ import {
 import { handleOrderBy } from "../utils/Sorting.routeUtils";
 import prisma from "@/server/db/client";
 import { createManyTransactionsForMoneyRequests } from "./createMany.transaction.routes";
+import { completeTransactionsArgs } from "@/pageContainers/mod/transactions/transactions.types";
 
 export const transactionsRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
@@ -49,17 +50,7 @@ export const transactionsRouter = router({
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
-        include: {
-          moneyAccountOffset: true,
-          moneyAccount: { select: { displayName: true, id: true } },
-          account: { select: { displayName: true, id: true } },
-          moneyRequest: true,
-          costCategory: { select: { displayName: true, id: true } },
-          imbursement: true,
-          expenseReturn: true,
-          project: { select: { displayName: true, id: true } },
-          searchableImage: { select: { id: true, url: true, imageName: true } },
-        },
+        ...completeTransactionsArgs,
       });
     }),
   findManyCompleteById: adminModObserverProcedure
@@ -68,17 +59,7 @@ export const transactionsRouter = router({
       if (!input.ids.length) return null;
       return await prisma?.transaction.findMany({
         where: { id: { in: input.ids } },
-        include: {
-          moneyAccountOffset: true,
-          moneyAccount: { select: { displayName: true, id: true } },
-          account: { select: { displayName: true, id: true } },
-          moneyRequest: true,
-          costCategory: { select: { displayName: true, id: true } },
-          imbursement: true,
-          expenseReturn: true,
-          project: { select: { displayName: true, id: true } },
-          searchableImage: { select: { id: true, url: true, imageName: true } },
-        },
+        ...completeTransactionsArgs,
       });
     }),
 

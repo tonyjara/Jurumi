@@ -1,14 +1,12 @@
-import type { Transaction } from "@prisma/client";
 import type { CellContext } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import DateCell from "@/components/DynamicTables/DynamicCells/DateCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
-import RowOptionsModTransactions from "./rowOptions.mod.transactions";
-import type { TransactionComplete } from "./TransactionsPage.mod.transactions";
 import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCell";
 import EnumTextCell from "@/components/DynamicTables/DynamicCells/EnumTextCell";
 import { translateTransactionType } from "@/lib/utils/TranslatedEnums";
+import { TransactionComplete } from "./transactions.types";
 
 const columnHelper = createColumnHelper<TransactionComplete>();
 

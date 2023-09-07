@@ -1,6 +1,6 @@
-import type { CostCategory, Currency } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import type { Decimal } from '@prisma/client/runtime';
+import type { CostCategory, Currency } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { Decimal } from "@prisma/client/runtime";
 
 export const projectExecutedAmount = ({
   costCats,
@@ -20,8 +20,8 @@ export const projectExecutedAmount = ({
     const lastTx = costCat.transactions[0];
     // if (!costCat.transactions.length || !lastTx) continue;
 
-    if (lastTx?.currency === 'PYG') gs = gs.add(lastTx.currentBalance);
-    if (lastTx?.currency === 'USD') usd = usd.add(lastTx.currentBalance);
+    if (lastTx?.currency === "PYG") gs = gs.add(lastTx.currentBalance);
+    if (lastTx?.currency === "USD") usd = usd.add(lastTx.currentBalance);
   }
 
   return { gs, usd };
