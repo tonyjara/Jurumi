@@ -7,10 +7,9 @@ export const upsertTaxPayer = async ({
   input,
   userId,
 }: {
-  input: moneyReqTaxPayer | null;
+  input: moneyReqTaxPayer;
   userId: string;
-}): Promise<TaxPayer | null> => {
-  if (!input || !input.razonSocial.length || !input.razonSocial) return null;
+}): Promise<TaxPayer> => {
   const taxPayer = await prisma?.taxPayer.upsert({
     where: {
       ruc: input.ruc,

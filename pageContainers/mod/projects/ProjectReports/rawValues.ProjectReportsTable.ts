@@ -1,11 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
-import { ProjectReportsColumnType } from "./colums.mod.ProjectReports";
+import { CostCategoryReport } from "../project.types";
 
 export const rawValuesProjectReportsTable = ({
   table,
 }: {
-  table: Table<ProjectReportsColumnType>;
+  table: Table<CostCategoryReport>;
 }) => {
   return table.getRowModel().rows.map((Row, rowIndex) => {
     return Row.getVisibleCells().map((cell) => {

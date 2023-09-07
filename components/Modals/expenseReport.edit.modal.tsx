@@ -21,9 +21,11 @@ import {
 } from "@/lib/validations/expenseReport.validate";
 import ExpenseReportForm from "../Forms/ExpenseReport.form";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
-import { ExpenseReportComplete } from "@/pageContainers/mod/expense-reports/ModExpenseReportsPage.mod.expense-reports";
-import { MyExpenseReport } from "@/pageContainers/home/expense-reports/ExpenseReportsPage.home.expense-reports";
 import { Prisma } from "@prisma/client";
+import {
+  HomeExpenseReportComplete,
+  ModExpenseReportComplete,
+} from "@/pageContainers/mod/requests/expenseReport.types";
 
 const EditExpenseReportModal = ({
   isOpen,
@@ -32,7 +34,7 @@ const EditExpenseReportModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  expenseReport: ExpenseReportComplete | MyExpenseReport;
+  expenseReport: ModExpenseReportComplete | HomeExpenseReportComplete;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -48,6 +50,7 @@ const EditExpenseReportModal = ({
 
   useEffect(() => {
     if (isOpen) {
+      if (!expenseReport.searchableImage) return;
       const editExpenseReport: FormExpenseReport = {
         searchableImage: expenseReport.searchableImage,
         taxPayer: {
@@ -123,8 +126,6 @@ const EditExpenseReportModal = ({
               setValue={setValue}
               control={control}
               errors={errors as any}
-              isEdit={true}
-              // This data is not editable, it should be edited in the reimbursement request
               amountSpentIsBiggerThanPending={false}
               pendingAmount={() => new Prisma.Decimal(0)}
             />

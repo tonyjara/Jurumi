@@ -74,11 +74,11 @@ export async function createCostCategoryTransactions({
   });
 }
 
-export const createExpenseReportProof = async ({
+export const upsertExpenseReportSearchableImage = async ({
   input,
 }: {
   input: FormExpenseReport;
-}) => {
+}): Promise<searchableImage | never> => {
   if (!input.searchableImage) {
     throw new TRPCError({
       code: "PRECONDITION_FAILED",

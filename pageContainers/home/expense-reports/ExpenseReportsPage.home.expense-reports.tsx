@@ -1,5 +1,5 @@
 import { useDisclosure } from "@chakra-ui/react";
-import type { ExpenseReport, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import type {
   RowOptionsType,
@@ -11,30 +11,11 @@ import EditExpenseReportModal from "@/components/Modals/expenseReport.edit.modal
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { expenseReportColums } from "./columns.home.expense-reports";
 import RowOptionsHomeExpenseReports from "./rowOptions.home.expense-reports";
-
-export type MyExpenseReport = ExpenseReport & {
-  project: {
-    id: string;
-    displayName: string;
-  } | null;
-  costCategory: {
-    id: string;
-    displayName: string;
-  } | null;
-  taxPayer: {
-    fantasyName: string | null;
-    razonSocial: string;
-    ruc: string;
-  };
-  searchableImage: {
-    url: string;
-    imageName: string;
-  } | null;
-};
+import { HomeExpenseReportComplete } from "@/pageContainers/mod/requests/expenseReport.types";
 
 const MyExpenseReportsPage = () => {
   const [editExpenseReport, setEditExpenseReport] =
-    useState<MyExpenseReport | null>(null);
+    useState<HomeExpenseReportComplete | null>(null);
   const [whereFilterList, setWhereFilterList] = useState<
     Prisma.MoneyRequestScalarWhereInput[]
   >([]);

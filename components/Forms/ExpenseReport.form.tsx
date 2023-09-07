@@ -1,6 +1,6 @@
 import { Box, VStack, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
-import React, { useEffect } from "react";
+import React from "react";
 import type {
   FieldValues,
   Control,
@@ -35,7 +35,7 @@ interface formProps<T extends FieldValues> {
   setValue: UseFormSetValue<T>;
   moneyRequest?: CompleteMoneyReqHome;
   reset: UseFormReset<FormExpenseReport>;
-  isEdit?: boolean;
+  /* isEdit?: boolean; */
   amountSpentIsBiggerThanPending: boolean;
   pendingAmount: () => Decimal;
 }
@@ -46,7 +46,6 @@ const ExpenseReportForm = ({
   moneyRequest,
   setValue,
   reset,
-  isEdit,
   amountSpentIsBiggerThanPending,
   pendingAmount,
 }: formProps<FormExpenseReport>) => {
@@ -113,7 +112,7 @@ const ExpenseReportForm = ({
         name="currency"
         label="Moneda"
         options={currencyOptions}
-        disable={isEdit}
+        /* disable={isEdit} */
         onChangeMw={handleCurrencyChange}
       />
 
@@ -124,11 +123,11 @@ const ExpenseReportForm = ({
           name={"exchangeRate"}
           label="Tasa de cambio"
           helperText={"Un dolar equivale X guaranies"}
-          disable={isEdit}
+          /* disable={isEdit} */
         />
       )}
       <FormControlledMoneyInput
-        disable={isEdit}
+        /* disable={isEdit} */
         control={control}
         errors={errors}
         name={"amountSpent"}
@@ -198,7 +197,7 @@ const ExpenseReportForm = ({
         label="Seleccione un proyecto"
         options={projectOptions ?? []}
         isClearable
-        disable={isEdit}
+        /* disable={isEdit} */
       />
       {costCatOptions()?.length && (
         <FormControlledSelect
@@ -208,7 +207,7 @@ const ExpenseReportForm = ({
           label="Linea presupuestaria"
           options={costCatOptions() ?? []}
           isClearable
-          disable={isEdit}
+          /* disable={isEdit} */
         />
       )}
 

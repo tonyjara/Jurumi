@@ -51,7 +51,7 @@ const EditExpenseReturnModal = ({
         id: expenseReturn.id,
         createdAt: expenseReturn.createdAt,
         updatedAt: null,
-        currency: "USD",
+        currency: expenseReturn.currency,
         wasConvertedToOtherCurrency: expenseReturn.wasConvertedToOtherCurrency,
         exchangeRate: expenseReturn.exchangeRate,
         accountId: expenseReturn.accountId,
@@ -78,7 +78,7 @@ const EditExpenseReturnModal = ({
         callback: () => {
           onClose();
           reset();
-          context.expenseReport.invalidate();
+          context.invalidate();
         },
       })
     );
@@ -103,7 +103,6 @@ const EditExpenseReturnModal = ({
               control={control}
               errors={errors as any}
               pendingAmount={() => new Prisma.Decimal(0)}
-              isEdit={true}
             />
           </ModalBody>
 

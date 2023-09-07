@@ -1,5 +1,5 @@
 import { useDisclosure } from "@chakra-ui/react";
-import type { ExpenseReport, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import type {
   RowOptionsType,
@@ -14,30 +14,10 @@ import { modExpenseReportsColumns } from "./columns.mod.expense-reports";
 import RowOptionsHomeExpenseReports from "./rowOptions.mod.expense-reports";
 import { ExpenseReportsPageProps } from "@/pages/mod/expense-reports";
 import useDebounce from "@/lib/hooks/useDebounce";
-
-export type ExpenseReportComplete = ExpenseReport & {
-  project: {
-    id: string;
-    displayName: string;
-  } | null;
-  account: {
-    id: string;
-    displayName: string;
-  };
-  searchableImage: {
-    url: string;
-    imageName: string;
-  } | null;
-  costCategory: {
-    id: string;
-    displayName: string;
-  } | null;
-  taxPayer: {
-    fantasyName: string | null;
-    razonSocial: string;
-    ruc: string;
-  };
-};
+import {
+  HomeExpenseReportComplete,
+  ModExpenseReportComplete,
+} from "../requests/expenseReport.types";
 
 const ModExpenseReportsPage = ({
   query,
@@ -50,8 +30,9 @@ const ModExpenseReportsPage = ({
   >([]);
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const [filterValue, setFilterValue] = useState("id");
-  const [editExpenseReport, setEditExpenseReport] =
-    useState<ExpenseReportComplete | null>(null);
+  const [editExpenseReport, setEditExpenseReport] = useState<
+    ModExpenseReportComplete | HomeExpenseReportComplete | null
+  >(null);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
@@ -90,7 +71,7 @@ const ModExpenseReportsPage = ({
     );
 
   const { data: findByIdData, isFetching: isFetchingById } =
-    trpcClient.expenseReport.findCompleteById.useQuery(
+    trpcClient.expenseReport.findCompleteModById.useQuery(
       { ids: searchValue.split(","), whereFilterList },
       { enabled: searchValue.length > 0 }
     );

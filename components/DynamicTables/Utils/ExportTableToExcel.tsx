@@ -2,7 +2,7 @@ import { Button } from "@chakra-ui/react";
 import writeXlsxFile from "write-excel-file";
 import { Table } from "@tanstack/react-table";
 import React from "react";
-import { BsFillFileExcelFill } from "react-icons/bs";
+import { FaRegFileExcel } from "react-icons/fa";
 
 const ExportTableToExcel = <T extends object>({
   table,
@@ -22,11 +22,7 @@ const ExportTableToExcel = <T extends object>({
     return await writeXlsxFile(data, { fileName: "asdf" });
   }
   return (
-    <Button
-      onClick={exportToExcel}
-      rightIcon={<BsFillFileExcelFill />}
-      size="sm"
-    >
+    <Button onClick={exportToExcel} rightIcon={<FaRegFileExcel />} size="sm">
       Exportar
     </Button>
   );

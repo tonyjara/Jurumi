@@ -9,8 +9,8 @@ import type {
 import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import EditTransactionModal from "@/components/Modals/Transaction.edit.modal";
 import { modTransactionsColumns } from "./columns.mod.transactions";
-import type { TransactionComplete } from "./TransactionsPage.mod.transactions";
 import RowOptionsModTransactions from "./rowOptions.mod.transactions";
+import { TransactionComplete } from "./transactions.types";
 
 const TransactionsTable = ({
   data,

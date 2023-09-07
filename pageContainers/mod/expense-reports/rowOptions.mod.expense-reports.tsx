@@ -4,7 +4,10 @@ import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { RowOptionDeleteDialog } from "@/components/Toasts & Alerts/RowOption.delete.dialog";
 import { RowOptionCancelDialog } from "@/components/Toasts & Alerts/RowOptions.cancel.dialog";
-import type { ExpenseReportComplete } from "./ModExpenseReportsPage.mod.expense-reports";
+import {
+  HomeExpenseReportComplete,
+  ModExpenseReportComplete,
+} from "../requests/expenseReport.types";
 
 const RowOptionsHomeExpenseReports = ({
   x,
@@ -12,9 +15,11 @@ const RowOptionsHomeExpenseReports = ({
   onEditOpen,
   setMenuData,
 }: {
-  x: ExpenseReportComplete;
+  x: HomeExpenseReportComplete;
   setEditExpenseReport: React.Dispatch<
-    React.SetStateAction<ExpenseReportComplete | null>
+    React.SetStateAction<
+      HomeExpenseReportComplete | ModExpenseReportComplete | null
+    >
   >;
   onEditOpen: () => void;
 

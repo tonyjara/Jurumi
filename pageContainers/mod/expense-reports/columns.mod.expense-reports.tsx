@@ -4,11 +4,10 @@ import FacturaNumberCell from "@/components/DynamicTables/DynamicCells/FacturaNu
 import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
-import type { ExpenseReportComplete } from "./ModExpenseReportsPage.mod.expense-reports";
-import { Prisma } from "@prisma/client";
 import NumberCell from "@/components/DynamicTables/DynamicCells/NumberCell";
+import { ModExpenseReportComplete } from "../requests/expenseReport.types";
 
-const columnHelper = createColumnHelper<ExpenseReportComplete>();
+const columnHelper = createColumnHelper<ModExpenseReportComplete>();
 
 export const modExpenseReportsColumns = ({
   pageIndex,
