@@ -7,9 +7,13 @@ export const upsertTaxPayer = async ({
   input,
   userId,
 }: {
-  input: moneyReqTaxPayer;
+  input: moneyReqTaxPayer | null;
   userId: string;
-}): Promise<TaxPayer> => {
+}): Promise<TaxPayer | null> => {
+  if (!input || !input.bankInfo?.accountNumber.length) return null;
+
+  const bankInfo = input.bankInfo?.accountNumber.length ? input.bankInfo : null;
+
   const taxPayer = await prisma?.taxPayer.upsert({
     where: {
       ruc: input.ruc,
@@ -18,39 +22,39 @@ export const upsertTaxPayer = async ({
       createdById: userId,
       razonSocial: input.razonSocial,
       ruc: input.ruc,
-      bankInfo: input.bankInfo
+      bankInfo: bankInfo
         ? {
             create: {
-              bankName: input.bankInfo?.bankName,
-              accountNumber: input.bankInfo?.accountNumber,
-              ownerName: input.bankInfo?.ownerName,
-              ownerDocType: input.bankInfo?.ownerDocType,
-              ownerDoc: input.bankInfo?.ownerDoc,
-              type: input.bankInfo?.type,
+              bankName: bankInfo.bankName,
+              accountNumber: bankInfo.accountNumber,
+              ownerName: bankInfo.ownerName,
+              ownerDocType: bankInfo.ownerDocType,
+              ownerDoc: bankInfo.ownerDoc,
+              type: bankInfo.type,
             },
           }
         : undefined,
     },
     update: {
-      bankInfo: input.bankInfo
+      bankInfo: bankInfo
         ? {
             upsert: {
               create: {
-                bankName: input.bankInfo?.bankName ?? "BANCOP",
-                accountNumber: input.bankInfo?.accountNumber ?? "",
-                ownerName: input.bankInfo?.ownerName ?? "",
-                ownerDocType: input.bankInfo?.ownerDocType ?? "CI",
-                ownerDoc: input.bankInfo?.ownerDoc ?? "",
-                type: input.bankInfo?.type ?? "CURRENT",
+                bankName: bankInfo.bankName ?? "BANCOP",
+                accountNumber: bankInfo.accountNumber,
+                ownerName: bankInfo.ownerName ?? "",
+                ownerDocType: bankInfo.ownerDocType ?? "CI",
+                ownerDoc: bankInfo.ownerDoc ?? "",
+                type: bankInfo.type ?? "CURRENT",
               },
 
               update: {
-                bankName: input.bankInfo?.bankName,
-                accountNumber: input.bankInfo?.accountNumber,
-                ownerName: input.bankInfo?.ownerName,
-                ownerDocType: input.bankInfo?.ownerDocType,
-                ownerDoc: input.bankInfo?.ownerDoc,
-                type: input.bankInfo?.type,
+                bankName: bankInfo.bankName,
+                accountNumber: bankInfo.accountNumber,
+                ownerName: bankInfo.ownerName,
+                ownerDocType: bankInfo.ownerDocType,
+                ownerDoc: bankInfo.ownerDoc,
+                type: bankInfo.type,
               },
             },
           }
