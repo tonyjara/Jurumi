@@ -245,15 +245,12 @@ export const moneyRequestRouter = router({
       const user = ctx.session.user;
       input.accountId = user.id;
 
-      const handleTaxPater = async () => {
-        if (!input.taxPayer) return null;
-
-        return await upsertTaxPayer({
-          input: input.taxPayer,
-          userId: user.id,
-        });
-      };
-      const taxPayer = await handleTaxPater();
+      const taxPayer = input.taxPayer
+        ? await upsertTaxPayer({
+            input: input.taxPayer,
+            userId: user.id,
+          })
+        : null;
 
       const uploadedImages = await reimbursementOrderImageGuard({
         input,
@@ -298,14 +295,12 @@ export const moneyRequestRouter = router({
       const user = ctx.session.user;
       input.accountId = user.id;
 
-      const handleTaxPater = async () => {
-        if (!input.taxPayer) return null;
-        return await upsertTaxPayer({
-          input: input.taxPayer,
-          userId: user.id,
-        });
-      };
-      const taxPayer = await handleTaxPater();
+      const taxPayer = input.taxPayer
+        ? await upsertTaxPayer({
+            input: input.taxPayer,
+            userId: user.id,
+          })
+        : null;
 
       const uploadedImages = await reimbursementOrderImageGuard({
         input,
