@@ -7,11 +7,9 @@ export const upsertTaxPayer = async ({
   input,
   userId,
 }: {
-  input: moneyReqTaxPayer | null;
+  input: moneyReqTaxPayer;
   userId: string;
-}): Promise<TaxPayer | null> => {
-  if (!input || !input.bankInfo?.accountNumber.length) return null;
-
+}): Promise<TaxPayer> => {
   const bankInfo = input.bankInfo?.accountNumber.length ? input.bankInfo : null;
 
   const taxPayer = await prisma?.taxPayer.upsert({

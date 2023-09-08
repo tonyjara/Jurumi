@@ -183,7 +183,7 @@ export const expenseReportsRouter = router({
                             currency: input.currency,
                             costCategoryId: input.costCategoryId,
                             moneyRequestId: input.moneyRequestId,
-                            taxPayerId: taxPayer.id,
+                            taxPayerId: taxPayer?.id,
                             projectId: input.projectId,
                             exchangeRate: input.exchangeRate,
                             wasConvertedToOtherCurrency: input.wasConvertedToOtherCurrency,
