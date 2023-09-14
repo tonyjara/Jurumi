@@ -21,6 +21,7 @@ import { ApprovalUtils } from "@/lib/utils/ApprovalUtilts";
 import { MoneyRequestComplete } from "./mod.requests.types";
 import useDebounce from "@/lib/hooks/useDebounce";
 import MoneyRequestExtraFilters from "./MoneyRequestExtraFilters.mod.requests";
+import { rawValuesModMoneyRequests } from "./rawValues.mod.MoneyRequests";
 
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const session = useSession();
@@ -34,10 +35,10 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   >([]);
   const [selectedRows, setSelectedRows] = useState<MoneyRequestComplete[]>([]);
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
-    null
+    null,
   );
   const [reqForReport, setReqForReport] = useState<MoneyRequestComplete | null>(
-    null
+    null,
   );
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
@@ -91,7 +92,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         sorting: globalFilter ? sorting : null,
         whereFilterList,
       },
-      { keepPreviousData: globalFilter ? true : false }
+      { keepPreviousData: globalFilter ? true : false },
     );
 
   const { data: findByIdData, isFetching } =
@@ -104,7 +105,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
       },
       {
         enabled: debouncedSearchValue.length > 0,
-      }
+      },
     );
 
   const handleDataSource = () => {
@@ -128,7 +129,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   ];
 
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
-    const { needsApproval, hasBeenApproved } = ApprovalUtils(x as any, user);
+    const { needsApproval, hasBeenApproved } = ApprovalUtils(x as any);
     return (
       <RowOptionsModRequests
         hasBeenApproved={hasBeenApproved()}
@@ -152,6 +153,7 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
         enableColumnFilters={true}
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}
+        rawValuesDictionary={rawValuesModMoneyRequests}
         searchBar={
           <TableSearchbar
             type="text"
@@ -170,7 +172,6 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
           />
         }
         columns={moneyRequestsColumns({
-          user,
           pageIndex,
           pageSize,
           selectedRows,

@@ -1,4 +1,3 @@
-import type { Account } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import DateCell from "@/components/DynamicTables/DynamicCells/DateCell";
 import EnumTextCell from "@/components/DynamicTables/DynamicCells/EnumTextCell";
@@ -12,11 +11,9 @@ import MoneyRequestOperationDateChangeCell from "@/components/DynamicTables/Dyna
 const columnHelper = createColumnHelper<MonyRequestCompleteWithApproval>();
 
 export const modApprovalsColumns = ({
-  user,
   pageIndex,
   pageSize,
 }: {
-  user: Omit<Account, "password"> | undefined;
   pageSize: number;
   pageIndex: number;
 }) => [
@@ -45,7 +42,6 @@ export const modApprovalsColumns = ({
     cell: (x) => {
       const { needsApproval, approverNames, approvalText } = ApprovalUtils(
         x.row.original as any,
-        user
       );
       return (
         <TextCell

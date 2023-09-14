@@ -1,30 +1,33 @@
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 import { VStack } from "@chakra-ui/react";
 import isEqual from "lodash.isequal";
-import type { Account } from "next-auth";
-
 // if it was approved show approvers, if it is pending show based on current org approvers
 
 export const ApprovalUtils = (
   request: MoneyRequestComplete | null,
-  user: Omit<Account, "password"> | undefined
+  /* user: Omit<Account, "password"> | undefined */
 ) => {
   const moneyReqApprovers = request?.moneyRequestApprovals.map((x) => x.id);
   const approverIds = request?.organization?.moneyRequestApprovers.map(
-    (x) => x.id
+    (x) => x.id,
   );
   const approvedIds = request?.moneyRequestApprovals.map(
-    (x) => x.status === "ACCEPTED" && x.accountId
+    (x) => x.status === "ACCEPTED" && x.accountId,
   );
   const rejectedIds = request?.moneyRequestApprovals.map(
-    (x) => x.status === "REJECTED" && x.accountId
+    (x) => x.status === "REJECTED" && x.accountId,
   );
 
+  /* const hasBeenRejected = !!( */
+  /*   (user && */
+  /*     request?.moneyRequestApprovals.some( */
+  /*       (x) => x.accountId === user.id && x.status === "REJECTED" */
+  /*     )) || */
+  /*   request?.status === "REJECTED" */
+  /* ); */
+
   const hasBeenRejected = !!(
-    (user &&
-      request?.moneyRequestApprovals.some(
-        (x) => x.accountId === user.id && x.status === "REJECTED"
-      )) ||
+    request?.moneyRequestApprovals.some((x) => x.status === "REJECTED") ||
     request?.status === "REJECTED"
   );
   const needsApproval = () => {
@@ -81,7 +84,7 @@ export const ApprovalUtils = (
                   ❌ {x.displayName}. Rechazo:{" "}
                   {
                     request.moneyRequestApprovals.find(
-                      (y) => y.accountId === x.id
+                      (y) => y.accountId === x.id,
                     )?.rejectMessage
                   }{" "}
                 </span>
