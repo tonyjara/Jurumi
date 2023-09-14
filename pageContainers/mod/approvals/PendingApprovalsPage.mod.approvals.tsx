@@ -6,7 +6,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import type { MoneyResquestApprovalStatus, Prisma } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import type {
   RowOptionsType,
@@ -22,8 +21,6 @@ import { RowOptionApprovals } from "./rowOptions.mod.approvals";
 import { ApprovalUtils } from "@/lib/utils/ApprovalUtilts";
 
 const ApprovalsPage = () => {
-  const session = useSession();
-  const user = session.data?.user;
   const statusArray: MoneyResquestApprovalStatus[] = [
     "ACCEPTED",
     "PENDING",
@@ -62,7 +59,7 @@ const ApprovalsPage = () => {
       sorting: globalFilter ? sorting : null,
       whereFilterList,
     },
-    { keepPreviousData: globalFilter ? true : false }
+    { keepPreviousData: globalFilter ? true : false },
   );
   const { data: count } = trpcClient.moneyApprovals.countWhereStatus.useQuery({
     status: statusState,
@@ -83,7 +80,6 @@ const ApprovalsPage = () => {
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     const { needsApproval, hasBeenApproved, hasBeenRejected } = ApprovalUtils(
       x as any,
-      user
     );
 
     return (
@@ -133,7 +129,6 @@ const ApprovalsPage = () => {
         loading={pendingRequestsFetching || isLoading}
         rowOptions={rowOptionsFunction}
         columns={modApprovalsColumns({
-          user,
           pageIndex,
           pageSize,
         })}

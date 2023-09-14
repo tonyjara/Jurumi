@@ -21,15 +21,10 @@ import {
   validateExpenseReport,
 } from "@/lib/validations/expenseReport.validate";
 import ExpenseReportForm from "../Forms/ExpenseReport.form";
-import {
-  calculateMoneyReqPendingAmount,
-  reduceExpenseReportsToSetCurrency,
-  reduceExpenseReturnsToSetCurrency,
-} from "@/lib/utils/TransactionUtils";
+import { calculateMoneyReqPendingAmount } from "@/lib/utils/TransactionUtils";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import { Decimal } from "@prisma/client/runtime";
-import { Prisma } from "@prisma/client";
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -79,7 +74,7 @@ const CreateExpenseReportModal = ({
           handleOnClose();
           context.moneyRequest.invalidate();
         },
-      })
+      }),
     );
 
   const currency = useWatch({ control, name: "currency" });
