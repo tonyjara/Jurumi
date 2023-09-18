@@ -1,15 +1,13 @@
-import * as z from 'zod';
-import type { CustomTFunction } from '@/@types/I18n.types';
+import * as z from "zod";
 
-export const signinValidation = (t: CustomTFunction<'validation'>) =>
-  z.object({
-    email: z
-      .string({ required_error: t('validation:invalidEmail') })
-      .email(t('validation:invalidEmail')),
-    password: z
-      .string({ required_error: t('validation:requiredPassword') })
-      .min(6, t('validation:minPassword')),
-  });
+export const signinValidation = z.object({
+  email: z
+    .string({ required_error: "Favor ingrese un correo" })
+    .email("Su correo no es valido"),
+  password: z
+    .string({ required_error: "Favor ingrese una contraseña" })
+    .min(6, "Su contraseña debe tener al menos 6 caracteres"),
+});
 
-export type FormSignin = z.infer<ReturnType<typeof signinValidation>>;
-export const defaultSigninData: FormSignin = { email: '', password: '' };
+export type FormSignin = z.infer<typeof signinValidation>;
+export const defaultSigninData: FormSignin = { email: "", password: "" };

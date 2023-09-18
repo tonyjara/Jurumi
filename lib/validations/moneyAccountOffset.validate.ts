@@ -25,11 +25,12 @@ export const validateMoneyAccountOffset: z.ZodType<FormMoneyAccounOffset> =
         .string()
         .min(
           10,
-          "Favor justificar el motivo del ajuste con al menos 10 caractéres."
+          "Favor justificar el motivo del ajuste con al menos 10 caractéres.",
         ),
       moneyAccountId: z.string().min(2),
       accountId: z.string(),
-    })
+      isSubstraction: z.boolean(),
+    }),
   );
 
 export const defaultMoneyAccountOffset: FormMoneyAccounOffset = {
@@ -43,4 +44,5 @@ export const defaultMoneyAccountOffset: FormMoneyAccounOffset = {
   accountId: "",
   wasCancelled: false,
   previousBalance: new Prisma.Decimal(0),
+  isSubstraction: true,
 };

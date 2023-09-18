@@ -11,6 +11,7 @@ import FormControlledSelect from "../FormControlled/FormControlledSelect";
 import type { Currency, MoneyAccount } from "@prisma/client";
 import type { FormMoneyAccounOffset } from "@/lib/validations/moneyAccountOffset.validate";
 import FormControlledText from "../FormControlled/FormControlledText";
+import FormControlledSwitch from "../FormControlled/FormControlledSwitch";
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -58,9 +59,12 @@ const MoneyAccountOffsetForm = ({
         label="Monto para ajustar"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
-        helperText={
-          "Para montos negativos adherir el signo '-' al comienzo del campo."
-        }
+      />
+      <FormControlledSwitch
+        control={control}
+        errors={errors}
+        name="isSubstraction"
+        label="Este valor debe ser  substraido del monto de la cuenta? NO - SI"
       />
 
       <FormControlledSelect

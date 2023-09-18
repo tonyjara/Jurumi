@@ -4,7 +4,6 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { trpcClient } from "../lib/utils/trpcClient";
-import { appWithTranslation } from "next-i18next";
 import NextNProgress from "nextjs-progressbar";
 import "../styles/globals.css";
 import { Toaster } from "react-hot-toast";
@@ -33,4 +32,4 @@ const MyApp: AppType<{ session: Session | null }> = ({
   );
 };
 
-export default trpcClient.withTRPC(appWithTranslation(MyApp));
+export default trpcClient.withTRPC(MyApp);

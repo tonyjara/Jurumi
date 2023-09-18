@@ -1,9 +1,9 @@
-import ApprovalsPage from '@/pageContainers/mod/approvals/PendingApprovalsPage.mod.approvals';
-import type { GetServerSideProps } from 'next';
+import ApprovalsPage from "@/pageContainers/mod/approvals/PendingApprovalsPage.mod.approvals";
+import type { GetServerSideProps } from "next";
 
-import { getServerAuthSession } from '@/server/common/get-server-auth-session';
-import { getSelectedOrganizationId } from '@/server/trpc/routers/utils/Preferences.routeUtils';
-import prisma from '@/server/db/client';
+import { getServerAuthSession } from "@/server/common/get-server-auth-session";
+import { getSelectedOrganizationId } from "@/server/trpc/routers/utils/Preferences.routeUtils";
+import prisma from "@/server/db/client";
 export default ApprovalsPage;
 
 export interface MoneyRequestsPageProps {
@@ -23,15 +23,20 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       notFound: true,
     };
 
-  const org = await prisma?.organization.findUnique({
+  const org = await prisma?.organization.findUniqueOrThrow({
     where: { id: getPrefs.selectedOrganization },
     include: { moneyRequestApprovers: { select: { id: true } } },
   });
 
-  if (!org || !org.moneyRequestApprovers.some((x) => x.id === user.id)) {
+  if (user.role === "ADMIN")
+    return {
+      props: {},
+    };
+
+  if (!org.moneyRequestApprovers.some((x) => x.id === user.id)) {
     return {
       redirect: {
-        destination: '/unauthorized',
+        destination: "/unauthorized",
         permanent: false,
       },
       props: {},

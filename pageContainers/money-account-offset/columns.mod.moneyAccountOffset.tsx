@@ -41,6 +41,17 @@ export const modMoneyAccountOffsetColumn = ({
     ),
     header: "Comentarios",
   }),
+
+  columnHelper.accessor("isSubstraction", {
+    cell: (x) => (
+      <TextCell
+        shortenString
+        hover={x.getValue()}
+        text={x.getValue() ? "Substracción" : "Adición"}
+      />
+    ),
+    header: "Tipo de ajuste",
+  }),
   columnHelper.accessor("offsettedAmount", {
     cell: (x) => (
       <MoneyCell amount={x.getValue()} currency={x.row.original.currency} />
@@ -59,7 +70,7 @@ export const modMoneyAccountOffsetColumn = ({
     cell: (x) => (
       <MoneyCell
         amount={x.row.original.previousBalance.add(
-          x.row.original.offsettedAmount
+          x.row.original.offsettedAmount,
         )}
         currency={x.row.original.currency}
       />

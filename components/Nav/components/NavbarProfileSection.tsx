@@ -1,4 +1,4 @@
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import {
   HStack,
   IconButton,
@@ -13,16 +13,15 @@ import {
   Box,
   Text,
   useColorMode,
-  Button,
   Divider,
   Portal,
-} from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import React from 'react';
-import { FiChevronDown } from 'react-icons/fi';
-import { signOut } from 'next-auth/react';
-import NotificationIcon from './NotificationIcon';
+} from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React from "react";
+import { FiChevronDown } from "react-icons/fi";
+import { signOut } from "next-auth/react";
+import NotificationIcon from "./NotificationIcon";
 
 const NavbarProfileSection = () => {
   const router = useRouter();
@@ -30,49 +29,32 @@ const NavbarProfileSection = () => {
 
   const { data } = useSession();
 
-  const onToggleLanguageClick = (newLocale: string) => {
-    const { pathname, asPath, query } = router;
-    router.push({ pathname, query }, asPath, { locale: newLocale });
-  };
-  const changeTo = router.locale === 'en' ? 'es' : 'en';
-
-  const flagIcon = () => (router.locale === 'en' ? '🇺🇲' : '🇪🇸');
-
   return (
-    <Flex gap={{ base: '0', md: '1' }}>
+    <Flex gap={{ base: "0", md: "1" }}>
       <IconButton
         size="lg"
         variant="ghost"
         onClick={toggleColorMode}
         aria-label="change color theme"
-        icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+        icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
       />
-      <Button
-        w={'48px'}
-        h="48px"
-        variant="ghost"
-        fontSize={'2xl'}
-        onClick={() => onToggleLanguageClick(changeTo)}
-      >
-        {flagIcon()}
-      </Button>
 
       <NotificationIcon />
-      <Flex pl={'10px'} alignItems={'center'}>
+      <Flex pl={"10px"} alignItems={"center"}>
         <Menu>
           {data && (
             <MenuButton
               py={2}
               transition="all 0.3s"
-              _focus={{ boxShadow: 'none' }}
+              _focus={{ boxShadow: "none" }}
             >
               <HStack>
                 <Avatar
-                  size={'sm'}
+                  size={"sm"}
                   src={data?.user.profile?.avatarUrl ?? undefined}
                 />
                 <Box
-                  display={{ base: 'none', md: 'flex' }}
+                  display={{ base: "none", md: "flex" }}
                   // alignItems="flex-start"
                   // spacing="1px"
                   flexDir="column"
@@ -84,7 +66,7 @@ const NavbarProfileSection = () => {
                     {data.user.role}
                   </Text>
                 </Box>
-                <Box display={{ base: 'none', md: 'flex' }}>
+                <Box display={{ base: "none", md: "flex" }}>
                   <FiChevronDown />
                 </Box>
               </HStack>
@@ -93,7 +75,7 @@ const NavbarProfileSection = () => {
           <Portal>
             <MenuList>
               <VStack
-                display={{ base: 'flex', md: 'none' }}
+                display={{ base: "flex", md: "none" }}
                 alignItems="flex-start"
                 spacing="1px"
                 ml="2"
@@ -103,8 +85,8 @@ const NavbarProfileSection = () => {
                   {data?.user.role}
                 </Text>
               </VStack>
-              <Divider mt={'10px'} />
-              <MenuItem onClick={() => router.push('/home/settings')}>
+              <Divider mt={"10px"} />
+              <MenuItem onClick={() => router.push("/home/settings")}>
                 Mi cuenta
               </MenuItem>
 

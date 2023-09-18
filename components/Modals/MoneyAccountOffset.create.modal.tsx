@@ -81,7 +81,7 @@ const CreateMoneyAccountOffsetModal = ({
           handleOnClose();
           context.invalidate();
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: FormMoneyAccounOffset) => {
@@ -89,6 +89,7 @@ const CreateMoneyAccountOffsetModal = ({
   };
 
   const offsettedAmount = useWatch({ control, name: "offsettedAmount" });
+  const isSubstraction = useWatch({ control, name: "isSubstraction" });
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit(submitFunc)} noValidate>
@@ -117,7 +118,7 @@ const CreateMoneyAccountOffsetModal = ({
             )}
 
             {moneyAccount && (
-              <Text fontSize={"large"}>
+              <Text mb={"20px"} fontSize={"2xl"}>
                 Balance actual:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {formatedAccountBalance(moneyAccount)}
@@ -125,12 +126,21 @@ const CreateMoneyAccountOffsetModal = ({
                 <br /> Balance despues del ajuste:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {" "}
-                  {moneyAccount.transactions[0]?.currentBalance &&
+                  {isSubstraction &&
+                    moneyAccount.transactions[0]?.currentBalance &&
+                    decimalFormat(
+                      moneyAccount?.transactions[0].currentBalance.sub(
+                        offsettedAmount ?? new Prisma.Decimal(0),
+                      ),
+                      moneyAccount?.currency,
+                    )}
+                  {!isSubstraction &&
+                    moneyAccount.transactions[0]?.currentBalance &&
                     decimalFormat(
                       moneyAccount?.transactions[0].currentBalance.add(
-                        offsettedAmount ?? new Prisma.Decimal(0)
+                        offsettedAmount ?? new Prisma.Decimal(0),
                       ),
-                      moneyAccount?.currency
+                      moneyAccount?.currency,
                     )}
                 </span>
               </Text>

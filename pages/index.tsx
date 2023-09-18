@@ -20,8 +20,6 @@ import {
   signinValidation,
 } from "../lib/validations/auth.signin.validate";
 import { signIn } from "next-auth/react";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
 import type { GetServerSideProps } from "next";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { myToast } from "../components/Toasts & Alerts/MyToast";
@@ -29,7 +27,6 @@ import Link from "next/link";
 
 export default function Signin({ onSubmit }: { onSubmit?: any }) {
   const router = useRouter();
-  const { t } = useTranslation(["signin", "common", "validation", "forms"]);
 
   const {
     handleSubmit,
@@ -37,7 +34,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
     formState: { errors, isSubmitting },
   } = useForm<FormSignin>({
     defaultValues: defaultSigninData,
-    resolver: zodResolver(signinValidation(t)),
+    resolver: zodResolver(signinValidation),
   });
 
   const submitSigning = async ({ email, password }: FormSignin) => {
@@ -86,7 +83,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
             py={{ base: 0, md: 5 }}
             fontSize={{ base: "2xl", md: "4xl" }}
           >
-            {t("signin:heading")}
+            Iniciar Sesión
           </Heading>
 
           <Box
@@ -102,22 +99,20 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
           >
             <Stack spacing={2}>
               <FormControlledText
-                label={t("forms:email")}
+                label={"Email"}
                 errors={errors}
                 control={control}
                 autoFocus={true}
                 name="email"
                 type="email"
-                helperText={t("forms:emailHelper")}
-                data-testid="forms:email"
+                helperText={"Favor ingrese su email."}
               />
               <FormControlledText
-                label={t("forms:password")}
+                label={"Contraseña"}
                 errors={errors}
                 control={control}
                 name="password"
                 type="password"
-                data-testid="forms:password"
               />
 
               <Button
@@ -129,7 +124,7 @@ export default function Signin({ onSubmit }: { onSubmit?: any }) {
                   bg: "blue.500",
                 }}
               >
-                {t("common:buttons.save")}
+                Iniciar Sesión
               </Button>
               <Link href={"forgot-my-password"}>
                 <Text color={"gray.500"} pt={"10px"}>
@@ -165,14 +160,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   return {
-    props: {
-      ...(await serverSideTranslations(ctx.locale ?? "es", [
-        "signin",
-        "common",
-        "validation",
-        "forms",
-      ])),
-      // Will be passed to the page component as props
-    },
+    props: {},
   };
 };

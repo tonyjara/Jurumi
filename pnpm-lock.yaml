@@ -131,12 +131,6 @@ dependencies:
   framer-motion:
     specifier: 9.0.2
     version: 9.0.2(react-dom@18.2.0)(react@18.2.0)
-  i18next:
-    specifier: 22.4.9
-    version: 22.4.9
-  i18next-browser-languagedetector:
-    specifier: 7.0.1
-    version: 7.0.1
   jsonwebtoken:
     specifier: 9.0.0
     version: 9.0.0
@@ -152,9 +146,6 @@ dependencies:
   next-auth:
     specifier: 4.22.1
     version: 4.22.1(next@13.4.7)(react-dom@18.2.0)(react@18.2.0)
-  next-i18next:
-    specifier: 13.1.5
-    version: 13.1.5(i18next@22.4.9)(next@13.4.7)(react-i18next@12.1.5)(react@18.2.0)
   next-superjson-plugin:
     specifier: 0.5.8
     version: 0.5.8(next@13.4.7)(superjson@1.12.2)
@@ -194,9 +185,6 @@ dependencies:
   react-hot-toast:
     specifier: 2.4.0
     version: 2.4.0(csstype@3.1.1)(react-dom@18.2.0)(react@18.2.0)
-  react-i18next:
-    specifier: 12.1.5
-    version: 12.1.5(i18next@22.4.9)(react-dom@18.2.0)(react@18.2.0)
   react-icons:
     specifier: 4.7.1
     version: 4.7.1(react@18.2.0)
@@ -307,9 +295,6 @@ devDependencies:
   eslint-config-next:
     specifier: 13.1.6
     version: 13.1.6(eslint@8.33.0)(typescript@4.9.5)
-  i18next-hmr:
-    specifier: 1.11.1
-    version: 1.11.1
   jest:
     specifier: 29.4.2
     version: 29.4.2(@types/node@18.13.0)(ts-node@10.9.1)
@@ -4115,13 +4100,6 @@ packages:
       '@types/node': 18.13.0
     dev: true
 
-  /@types/hoist-non-react-statics@3.3.1:
-    resolution: {integrity: sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==}
-    dependencies:
-      '@types/react': 18.0.27
-      hoist-non-react-statics: 3.3.2
-    dev: false
-
   /@types/http-cache-semantics@4.0.1:
     resolution: {integrity: sha512-SZs7ekbP8CN0txVG2xVRH6EgKmEm31BOxA07vkFaETzZz1xh+cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn+iRPQ==}
     dev: true
@@ -5303,11 +5281,6 @@ packages:
     resolution: {integrity: sha512-i13qo6kIHTTpCm8/Wup+0b1mVWETvu2kIMzKoK8FpkLkFxlt0znUAHcMzox+T8sPlqtZXq3CulEjQHsYiGFJUw==}
     dependencies:
       toggle-selection: 1.0.6
-    dev: false
-
-  /core-js@3.31.0:
-    resolution: {integrity: sha512-NIp2TQSGfR6ba5aalZD+ZQ1fSxGhDo/s1w0nx3RYzf2pnJxt7YynxFlFScP6eV7+GZsKO95NSjGxyJsU3DZgeQ==}
-    requiresBuild: true
     dev: false
 
   /core-util-is@1.0.3:
@@ -6716,12 +6689,6 @@ packages:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
     dev: true
 
-  /html-parse-stringify@3.0.1:
-    resolution: {integrity: sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==}
-    dependencies:
-      void-elements: 3.1.0
-    dev: false
-
   /http-cache-semantics@4.1.1:
     resolution: {integrity: sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==}
     dev: true
@@ -6768,26 +6735,6 @@ packages:
     resolution: {integrity: sha512-nZXjEF2nbo7lIw3mgYjItAfgQXog3OjJogSbKa2CQIIvSGWcKgeJnQlNXip6NglNzYH45nSRiEVimMvYL8DDqQ==}
     engines: {node: '>=14.18.0'}
     dev: true
-
-  /i18next-browser-languagedetector@7.0.1:
-    resolution: {integrity: sha512-Pa5kFwaczXJAeHE56CHG2aWzFBMJNUNghf0Pm4SwSrEMps/PTKqW90EYWlIvhuYStf3Sn1K0vw+gH3+TLdkH1g==}
-    dependencies:
-      '@babel/runtime': 7.22.6
-    dev: false
-
-  /i18next-fs-backend@2.1.5:
-    resolution: {integrity: sha512-7fgSH8nVhXSBYPHR/W3tEXXhcnwHwNiND4Dfx9knzPzdsWTUTL/TdDVV+DY0dL0asHKLbdoJaXS4LdVW6R8MVQ==}
-    dev: false
-
-  /i18next-hmr@1.11.1:
-    resolution: {integrity: sha512-C2EJ2fPYD+x6A8cTOk4fFnYCOWVhfDuZwUvWpOp4Ioziy4Nqn0nBJJpZ0JQOdJuo68nobdCvoE3clPuoG0WWkw==}
-    dev: true
-
-  /i18next@22.4.9:
-    resolution: {integrity: sha512-8gWMmUz460KJDQp/ob3MNUX84cVuDRY9PLFPnV8d+Qezz/6dkjxwOaH70xjrCNDO+JrUL25iXfAIN9wUkInNZw==}
-    dependencies:
-      '@babel/runtime': 7.22.6
-    dev: false
 
   /iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -8111,26 +8058,6 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /next-i18next@13.1.5(i18next@22.4.9)(next@13.4.7)(react-i18next@12.1.5)(react@18.2.0):
-    resolution: {integrity: sha512-gULKQNQmFYIW6C45cb5ZOHa+sw8XUkibFHTqRqrcfbAa1fcBCh3TgX1KtzA0vzeh9R93BkkvFhm+FuhO3kR9jQ==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      i18next: ^22.0.6
-      next: '>= 12.0.0'
-      react: '>= 17.0.2'
-      react-i18next: ^12.1.5
-    dependencies:
-      '@babel/runtime': 7.22.6
-      '@types/hoist-non-react-statics': 3.3.1
-      core-js: 3.31.0
-      hoist-non-react-statics: 3.3.2
-      i18next: 22.4.9
-      i18next-fs-backend: 2.1.5
-      next: 13.4.7(@babel/core@7.20.12)(react-dom@18.2.0)(react@18.2.0)
-      react: 18.2.0
-      react-i18next: 12.1.5(i18next@22.4.9)(react-dom@18.2.0)(react@18.2.0)
-    dev: false
-
   /next-superjson-plugin@0.5.8(next@13.4.7)(superjson@1.12.2):
     resolution: {integrity: sha512-a6znMUzHWRAaxmQNHkgANJORdI0gjSC0JvsxRRKba6vb4BJRs/i2KpwEg/s91JYDhHsnZS+tkeb3MDCJWXJY4w==}
     peerDependencies:
@@ -8895,26 +8822,6 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
       - csstype
-    dev: false
-
-  /react-i18next@12.1.5(i18next@22.4.9)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-7PQAv6DA0TcStG96fle+8RfTwxVbHVlZZJPoEszwUNvDuWpGldJmNWa3ZPesEsZQZGF6GkzwvEh6p57qpFD2gQ==}
-    peerDependencies:
-      i18next: '>= 19.0.0'
-      react: '>= 16.8.0'
-      react-dom: '*'
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.22.6
-      html-parse-stringify: 3.0.1
-      i18next: 22.4.9
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react-icons@4.7.1(react@18.2.0):
@@ -10285,11 +10192,6 @@ packages:
       - supports-color
       - terser
     dev: true
-
-  /void-elements@3.1.0:
-    resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
-    engines: {node: '>=0.10.0'}
-    dev: false
 
   /w3c-xmlserializer@4.0.0:
     resolution: {integrity: sha512-d+BFHzbiCx6zGfz0HyQ6Rg69w9k19nviJspaj4yNscGjrHu94sVP+aRm75yEbCh+r2/yR+7q6hux9LVtbuTGBw==}
