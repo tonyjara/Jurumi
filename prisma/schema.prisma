@@ -1,713 +1,714 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
-  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+    provider        = "prisma-client-js"
+    previewFeatures = ["fullTextSearch"]
+    binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Account {
-  id          String    @id @default(cuid())
-  active      Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  email       String    @unique
-  displayName String
-  password    String
-  role        Role      @default(USER)
-  isVerified  Boolean   @default(false)
+    id          String    @id @default(cuid())
+    active      Boolean   @default(true)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime? @updatedAt
+    email       String    @unique
+    displayName String
+    password    String
+    role        Role      @default(USER)
+    isVerified  Boolean   @default(false)
 
-  preferences          Preferences?
-  profile              Profile?
-  notificationSettings NotificationSettings?
-  taxPayerInfo         TaxPayer?
-  membership           Membership?
+    preferences          Preferences?
+    profile              Profile?
+    notificationSettings NotificationSettings?
+    taxPayerInfo         TaxPayer?
+    membership           Membership?
 
-  emails                   Emails[]
-  accountVerificationLinks AccountVerificationLinks[]
-  expenseReports           ExpenseReport[]
-  moneyRequests            MoneyRequest[]
-  moneyApprovals           MoneyRequestApproval[]
-  transactions             Transaction[]
-  searchableImage          searchableImage[]
-  allowedOnProjects        Project[]                  @relation("AccountToProject")
-  organizations            Organization[]             @relation("members")
-  moneyAdminOrgs           Organization[]             @relation("moneyAdministrators")
-  moneyApproverOrgs        Organization[]             @relation("moneyRequestApprovers")
-  imbursement              Imbursement[]
-  expenseReturn            ExpenseReturn[]
-  fcmNotificationTokens    FcmNotificationTokens[]
-  notifications            Notifications[]
-  passwordRecoveryLinks    PasswordRecoveryLinks[]
-  moneyAccountOffset       MoneyAccountOffset[]
-  supportTickets           SupportTicket[]
+    emails                   Emails[]
+    accountVerificationLinks AccountVerificationLinks[]
+    expenseReports           ExpenseReport[]
+    moneyRequests            MoneyRequest[]
+    moneyApprovals           MoneyRequestApproval[]
+    transactions             Transaction[]
+    searchableImage          searchableImage[]
+    allowedOnProjects        Project[]                  @relation("AccountToProject")
+    organizations            Organization[]             @relation("members")
+    moneyAdminOrgs           Organization[]             @relation("moneyAdministrators")
+    moneyApproverOrgs        Organization[]             @relation("moneyRequestApprovers")
+    imbursement              Imbursement[]
+    expenseReturn            ExpenseReturn[]
+    fcmNotificationTokens    FcmNotificationTokens[]
+    notifications            Notifications[]
+    passwordRecoveryLinks    PasswordRecoveryLinks[]
+    moneyAccountOffset       MoneyAccountOffset[]
+    supportTickets           SupportTicket[]
 }
 
 model Membership {
-  id                       String                     @id @default(cuid())
-  active                   Boolean                    @default(false)
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime?                  @updatedAt
-  memberSince              DateTime
-  memberType               MemberType
-  expirationDate           DateTime
-  currency                 Currency                   @default(PYG)
-  initialBalance           Decimal                    @default(0) @db.Decimal(19, 4)
-  accountId                String                     @unique
-  account                  Account                    @relation(fields: [accountId], references: [id])
-  transactions             Transaction[]
-  membershipPamentRequests MembershipPaymentRequest[]
+    id                       String                     @id @default(cuid())
+    active                   Boolean                    @default(false)
+    createdAt                DateTime                   @default(now())
+    updatedAt                DateTime?                  @updatedAt
+    memberSince              DateTime
+    memberType               MemberType
+    expirationDate           DateTime
+    currency                 Currency                   @default(PYG)
+    initialBalance           Decimal                    @default(0) @db.Decimal(19, 4)
+    accountId                String                     @unique
+    account                  Account                    @relation(fields: [accountId], references: [id])
+    transactions             Transaction[]
+    membershipPamentRequests MembershipPaymentRequest[]
 }
 
 model MembershipPaymentRequest {
-  id               String             @id @default(cuid())
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime?          @updatedAt
-  description      String
-  status           MoneyRequestStatus
-  currency         Currency
-  amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
-  rejectionMessage String
-  archived         Boolean            @default(false)
-  softDeleted      Boolean            @default(false)
-  wasCancelled     Boolean            @default(false)
+    id               String             @id @default(cuid())
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime?          @updatedAt
+    description      String
+    status           MoneyRequestStatus
+    currency         Currency
+    amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
+    rejectionMessage String
+    archived         Boolean            @default(false)
+    softDeleted      Boolean            @default(false)
+    wasCancelled     Boolean            @default(false)
 
-  paymentProof   searchableImage? @relation("paymentProof", fields: [paymentProofId], references: [id])
-  paymentProofId String?          @unique
-  invoiceId      String?          @unique
-  invoice        searchableImage? @relation("invoice", fields: [invoiceId], references: [id])
-  organizationId String
-  organization   Organization     @relation(fields: [organizationId], references: [id])
-  moneyAccountId String?
-  moneyAccount   MoneyAccount?    @relation(fields: [moneyAccountId], references: [id])
-  membershipId   String?
-  membership     Membership?      @relation(fields: [membershipId], references: [id])
+    paymentProof   searchableImage? @relation("paymentProof", fields: [paymentProofId], references: [id])
+    paymentProofId String?          @unique
+    invoiceId      String?          @unique
+    invoice        searchableImage? @relation("invoice", fields: [invoiceId], references: [id])
+    organizationId String
+    organization   Organization     @relation(fields: [organizationId], references: [id])
+    moneyAccountId String?
+    moneyAccount   MoneyAccount?    @relation(fields: [moneyAccountId], references: [id])
+    membershipId   String?
+    membership     Membership?      @relation(fields: [membershipId], references: [id])
 
-  transactions Transaction[]
+    transactions Transaction[]
 }
 
 model BecomeMemberRequest {
-  id          String                    @id @default(cuid())
-  createdAt   DateTime                  @default(now())
-  updatedAt   DateTime?                 @updatedAt
-  fullName    String
-  documentId  String // cedula o pasaporte                       @unique
-  phoneNumber String
-  email       String                    @unique
-  birthDate   DateTime
-  nationality String
-  address     String
-  occupation  String
-  // areaOfWork            String
-  // company               String
-  // currentRole           String
-  // workPhone             String
-  // professionalReference String
-  // requestReason         String
-  // howCanYouContribute   String
-  // referenceMemberName   String
-  // agreesToOrgTerms      Boolean
-  status      BecomeMemberRequestStatus
+    id          String                    @id @default(cuid())
+    createdAt   DateTime                  @default(now())
+    updatedAt   DateTime?                 @updatedAt
+    fullName    String
+    documentId  String // cedula o pasaporte                       @unique
+    phoneNumber String
+    email       String                    @unique
+    birthDate   DateTime
+    nationality String
+    address     String
+    occupation  String
+    // areaOfWork            String
+    // company               String
+    // currentRole           String
+    // workPhone             String
+    // professionalReference String
+    // requestReason         String
+    // howCanYouContribute   String
+    // referenceMemberName   String
+    // agreesToOrgTerms      Boolean
+    status      BecomeMemberRequestStatus
 
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
 model NotificationSettings {
-  id               String    @id @default(cuid())
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime? @updatedAt
-  notifyViaEmail   Boolean   @default(true)
-  notifyViaSlack   Boolean   @default(true)
-  notifyViaBrowser Boolean   @default(true)
-  accountId        String    @unique
-  account          Account   @relation(fields: [accountId], references: [id])
+    id               String    @id @default(cuid())
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime? @updatedAt
+    notifyViaEmail   Boolean   @default(true)
+    notifyViaSlack   Boolean   @default(true)
+    notifyViaBrowser Boolean   @default(true)
+    accountId        String    @unique
+    account          Account   @relation(fields: [accountId], references: [id])
 }
 
 model FcmNotificationTokens {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  token     String    @unique
-  Account   Account   @relation(fields: [accountId], references: [id])
-  accountId String
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    token     String    @unique
+    Account   Account   @relation(fields: [accountId], references: [id])
+    accountId String
 }
 
 model Notifications {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  title     String
-  message   String
-  url       String
-  seen      Boolean   @default(false)
-  clicked   Boolean   @default(false)
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    title     String
+    message   String
+    url       String
+    seen      Boolean   @default(false)
+    clicked   Boolean   @default(false)
 
-  Account   Account @relation(fields: [accountId], references: [id])
-  accountId String
+    Account   Account @relation(fields: [accountId], references: [id])
+    accountId String
 }
 
 model Profile {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  avatarUrl String
-  accountId String    @unique
-  account   Account   @relation(fields: [accountId], references: [id])
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    avatarUrl String
+    accountId String    @unique
+    account   Account   @relation(fields: [accountId], references: [id])
 }
 
 model Preferences {
-  id                        String    @id @default(cuid())
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime? @updatedAt
-  accountId                 String    @unique
-  selectedOrganization      String
-  account                   Account   @relation(fields: [accountId], references: [id])
-  receiveEmailNotifications Boolean   @default(true)
-  hasSeenWelcomeScreen      Boolean   @default(false)
+    id                        String    @id @default(cuid())
+    createdAt                 DateTime  @default(now())
+    updatedAt                 DateTime? @updatedAt
+    accountId                 String    @unique
+    selectedOrganization      String
+    account                   Account   @relation(fields: [accountId], references: [id])
+    receiveEmailNotifications Boolean   @default(true)
+    hasSeenWelcomeScreen      Boolean   @default(false)
 }
 
 model AccountVerificationLinks {
-  id               String   @id @default(cuid())
-  createdAt        DateTime @default(now())
-  createdById      String
-  verificationLink String
-  email            String
-  hasBeenUsed      Boolean  @default(false)
-  accountId        String
-  account          Account  @relation(fields: [accountId], references: [id])
+    id               String   @id @default(cuid())
+    createdAt        DateTime @default(now())
+    createdById      String
+    verificationLink String
+    email            String
+    hasBeenUsed      Boolean  @default(false)
+    accountId        String
+    account          Account  @relation(fields: [accountId], references: [id])
 }
 
 model PasswordRecoveryLinks {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  recoveryLink String
-  email        String
-  hasBeenUsed  Boolean  @default(false)
-  accountId    String
-  account      Account  @relation(fields: [accountId], references: [id])
+    id           String   @id @default(cuid())
+    createdAt    DateTime @default(now())
+    recoveryLink String
+    email        String
+    hasBeenUsed  Boolean  @default(false)
+    accountId    String
+    account      Account  @relation(fields: [accountId], references: [id])
 }
 
 model Organization {
-  id                      String                   @id @default(cuid())
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime?                @updatedAt
-  createdById             String
-  updatedById             String?
-  displayName             String                   @unique
-  archived                Boolean                  @default(false)
-  softDeleted             Boolean                  @default(false)
-  orgNotificationSettings OrgNotificationSettings?
+    id                      String                   @id @default(cuid())
+    createdAt               DateTime                 @default(now())
+    updatedAt               DateTime?                @updatedAt
+    createdById             String
+    updatedById             String?
+    displayName             String                   @unique
+    archived                Boolean                  @default(false)
+    softDeleted             Boolean                  @default(false)
+    orgNotificationSettings OrgNotificationSettings?
 
-  moneyRequests            MoneyRequest[]
-  projects                 Project[]
-  moneyAccounts            MoneyAccount[]             @relation("MoneyAccountToOrganization")
-  members                  Account[]                  @relation("members")
-  moneyAdministrators      Account[]                  @relation("moneyAdministrators")
-  moneyRequestApprovers    Account[]                  @relation("moneyRequestApprovers")
-  searchableImageId        String?
-  imageLogo                searchableImage?           @relation(fields: [searchableImageId], references: [id])
-  membershipPaymentRequest MembershipPaymentRequest[]
-  becomeMemberRequests     BecomeMemberRequest[]
-  OrgMembershipPreferences OrgMembershipPreferences?
-  dolarToGuaraniExchangeRate      Float                     @default(0)
+    moneyRequests              MoneyRequest[]
+    projects                   Project[]
+    moneyAccounts              MoneyAccount[]             @relation("MoneyAccountToOrganization")
+    members                    Account[]                  @relation("members")
+    moneyAdministrators        Account[]                  @relation("moneyAdministrators")
+    moneyRequestApprovers      Account[]                  @relation("moneyRequestApprovers")
+    searchableImageId          String?
+    imageLogo                  searchableImage?           @relation(fields: [searchableImageId], references: [id])
+    membershipPaymentRequest   MembershipPaymentRequest[]
+    becomeMemberRequests       BecomeMemberRequest[]
+    OrgMembershipPreferences   OrgMembershipPreferences?
+    dolarToGuaraniExchangeRate Float                      @default(0)
 }
 
-
 model OrgMembershipPreferences {
-  id                                  String    @id @default(cuid())
-  createdAt                           DateTime  @default(now())
-  updatedAt                           DateTime? @updatedAt
-  membershipApprovalEmail             String
-  supportTicketsEmail                 String
-  becomeMemberRequestReceivedMessage  String
-  becomeMemberRequestRejectionMessage String
-  becomeMemberRequestAcceptedMessage  String
-  bankAccountTransferData             String
+    id                                  String    @id @default(cuid())
+    createdAt                           DateTime  @default(now())
+    updatedAt                           DateTime? @updatedAt
+    membershipApprovalEmail             String
+    supportTicketsEmail                 String
+    becomeMemberRequestReceivedMessage  String
+    becomeMemberRequestRejectionMessage String
+    becomeMemberRequestAcceptedMessage  String
+    bankAccountTransferData             String
 
-  orgId String       @unique
-  org   Organization @relation(fields: [orgId], references: [id])
+    orgId String       @unique
+    org   Organization @relation(fields: [orgId], references: [id])
 }
 
 model SupportTicket {
-  id              String    @id @default(cuid())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime? @updatedAt
-  title           String
-  message         String
-  supportImageUrl String
-  supportImageId  String
+    id              String    @id @default(cuid())
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime? @updatedAt
+    title           String
+    message         String
+    supportImageUrl String
+    supportImageId  String
 
-  accountId String
-  account   Account @relation(fields: [accountId], references: [id])
+    accountId String
+    account   Account @relation(fields: [accountId], references: [id])
 }
 
 model OrganizationMember {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  memberSince DateTime? @updatedAt
+    id          String    @id @default(cuid())
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime? @updatedAt
+    memberSince DateTime? @updatedAt
 }
 
 model OrgNotificationSettings {
-  id                           String       @id @default(cuid())
-  createdAt                    DateTime     @default(now())
-  updatedAt                    DateTime?    @updatedAt
-  allowNotifications           Boolean      @default(true)
-  approversSlackChannelId      String
-  administratorsSlackChannelId String
-  annoncementsSlackChannelId   String       @default("")
-  orgId                        String       @unique
-  org                          Organization @relation(fields: [orgId], references: [id])
+    id                           String       @id @default(cuid())
+    createdAt                    DateTime     @default(now())
+    updatedAt                    DateTime?    @updatedAt
+    allowNotifications           Boolean      @default(true)
+    approversSlackChannelId      String
+    administratorsSlackChannelId String
+    annoncementsSlackChannelId   String       @default("")
+    orgId                        String       @unique
+    org                          Organization @relation(fields: [orgId], references: [id])
 }
 
 model MoneyAccount {
-  id                       String                     @id @default(cuid())
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime?                  @updatedAt
-  createdById              String
-  updatedById              String?
-  displayName              String
-  isCashAccount            Boolean
-  currency                 Currency                   @default(PYG)
-  initialBalance           Decimal                    @default(0) @db.Decimal(19, 4)
-  archived                 Boolean                    @default(false)
-  softDeleted              Boolean                    @default(false)
-  bankInfo                 BankInfo?
-  imbursements             Imbursement[]
-  transactions             Transaction[]
-  organization             Organization[]             @relation("MoneyAccountToOrganization")
-  expenseReturn            ExpenseReturn[]
-  membershipPaymentRequest MembershipPaymentRequest[]
-  moneyAccountOffset       MoneyAccountOffset[]
+    id                       String                     @id @default(cuid())
+    createdAt                DateTime                   @default(now())
+    updatedAt                DateTime?                  @updatedAt
+    createdById              String
+    updatedById              String?
+    displayName              String
+    isCashAccount            Boolean
+    currency                 Currency                   @default(PYG)
+    initialBalance           Decimal                    @default(0) @db.Decimal(19, 4)
+    archived                 Boolean                    @default(false)
+    softDeleted              Boolean                    @default(false)
+    bankInfo                 BankInfo?
+    imbursements             Imbursement[]
+    transactions             Transaction[]
+    organization             Organization[]             @relation("MoneyAccountToOrganization")
+    expenseReturn            ExpenseReturn[]
+    membershipPaymentRequest MembershipPaymentRequest[]
+    moneyAccountOffset       MoneyAccountOffset[]
 }
 
 model BankInfo {
-  bankName           BankNamesPy
-  accountNumber      String          @unique
-  ownerName          String
-  ownerDocType       BankDocType     @default(RUC)
-  ownerDoc           String
-  ownerContactNumber String?
-  country            String
-  city               String
-  type               BankAccountType @default(SAVINGS)
-  moneyAccountId     String          @unique
-  moneyAccount       MoneyAccount    @relation(fields: [moneyAccountId], references: [id], onDelete: Cascade)
+    bankName           BankNamesPy
+    accountNumber      String          @unique
+    ownerName          String
+    ownerDocType       BankDocType     @default(RUC)
+    ownerDoc           String
+    ownerContactNumber String?
+    country            String
+    city               String
+    type               BankAccountType @default(SAVINGS)
+    moneyAccountId     String          @unique
+    moneyAccount       MoneyAccount    @relation(fields: [moneyAccountId], references: [id], onDelete: Cascade)
 
-  @@unique([bankName, accountNumber])
+    @@unique([bankName, accountNumber])
 }
 
 model Project {
-  id           String      @id @default(cuid())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime?   @updatedAt
-  createdById  String
-  endDate      DateTime?
-  updatedById  String?
-  displayName  String      @unique
-  description  String
-  financerName String      @default("")
-  archived     Boolean     @default(false)
-  softDeleted  Boolean     @default(false)
-  projectType  ProjectType @default(SUBSIDY)
+    id           String      @id @default(cuid())
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime?   @updatedAt
+    createdById  String
+    endDate      DateTime?
+    updatedById  String?
+    displayName  String      @unique
+    description  String
+    financerName String      @default("")
+    archived     Boolean     @default(false)
+    softDeleted  Boolean     @default(false)
+    projectType  ProjectType @default(SUBSIDY)
 
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id])
 
-  costCategories CostCategory[]
-  expenseReports ExpenseReport[]
-  imbursements   Imbursement[]
-  moneyRequest   MoneyRequest[]
+    costCategories CostCategory[]
+    expenseReports ExpenseReport[]
+    imbursements   Imbursement[]
+    moneyRequest   MoneyRequest[]
 
-  allowedUsers Account[]     @relation("AccountToProject")
-  taxPayer     TaxPayer[]    @relation("ProjectToTaxPayer")
-  transactions Transaction[]
+    allowedUsers Account[]     @relation("AccountToProject")
+    taxPayer     TaxPayer[]    @relation("ProjectToTaxPayer")
+    transactions Transaction[]
 }
 
 model CostCategory {
-  id                    String          @id @default(cuid())
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime?       @updatedAt
-  createdById           String
-  updatedById           String?
-  displayName           String
-  currency              Currency
-  projectId             String?
-  assignedAmount        Decimal         @default(0) @db.Decimal(19, 4) //this can keep being edit
-  referenceExchangeRate Float           @default(1)
-  project               Project?        @relation(fields: [projectId], references: [id])
-  transactions          Transaction[]
-  expenseReport         ExpenseReport[]
-  moneyRequest          MoneyRequest[]
+    id                    String          @id @default(cuid())
+    createdAt             DateTime        @default(now())
+    updatedAt             DateTime?       @updatedAt
+    createdById           String
+    updatedById           String?
+    displayName           String
+    currency              Currency
+    projectId             String?
+    assignedAmount        Decimal         @default(0) @db.Decimal(19, 4) //this can keep being edit
+    referenceExchangeRate Float           @default(1)
+    project               Project?        @relation(fields: [projectId], references: [id])
+    transactions          Transaction[]
+    expenseReport         ExpenseReport[]
+    moneyRequest          MoneyRequest[]
 }
 
 model Imbursement {
-  id                          String    @id @default(cuid())
-  wasCancelled                Boolean   @default(false)
-  createdAt                   DateTime  @default(now())
-  updatedAt                   DateTime? @updatedAt
-  updatedById                 String?
-  concept                     String
-  wasConvertedToOtherCurrency Boolean   @default(false)
-  exchangeRate                Float
-  otherCurrency               Currency
-  finalCurrency               Currency  @default(PYG)
-  amountInOtherCurrency       Decimal   @default(0) @db.Decimal(19, 4)
-  finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
-  archived                    Boolean   @default(false)
-  softDeleted                 Boolean   @default(false)
+    id                          String    @id @default(cuid())
+    wasCancelled                Boolean   @default(false)
+    createdAt                   DateTime  @default(now())
+    updatedAt                   DateTime? @updatedAt
+    updatedById                 String?
+    concept                     String
+    wasConvertedToOtherCurrency Boolean   @default(false)
+    exchangeRate                Float
+    otherCurrency               Currency
+    finalCurrency               Currency  @default(PYG)
+    amountInOtherCurrency       Decimal   @default(0) @db.Decimal(19, 4)
+    finalAmount                 Decimal   @default(0) @db.Decimal(19, 4)
+    archived                    Boolean   @default(false)
+    softDeleted                 Boolean   @default(false)
 
-  imbursementProofId String?          @unique
-  imbursementProof   searchableImage? @relation("imbursementProof", fields: [imbursementProofId], references: [id])
+    imbursementProofId String?          @unique
+    imbursementProof   searchableImage? @relation("imbursementProof", fields: [imbursementProofId], references: [id])
 
-  invoiceFromOrgId String?          @unique
-  invoiceFromOrg   searchableImage? @relation("invoiceFromOrg", fields: [invoiceFromOrgId], references: [id])
+    invoiceFromOrgId String?          @unique
+    invoiceFromOrg   searchableImage? @relation("invoiceFromOrg", fields: [invoiceFromOrgId], references: [id])
 
-  accountId      String
-  account        Account       @relation(fields: [accountId], references: [id])
-  moneyAccountId String?
-  moneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
-  projectId      String?
-  project        Project?      @relation(fields: [projectId], references: [id])
+    accountId      String
+    account        Account       @relation(fields: [accountId], references: [id])
+    moneyAccountId String?
+    moneyAccount   MoneyAccount? @relation(fields: [moneyAccountId], references: [id])
+    projectId      String?
+    project        Project?      @relation(fields: [projectId], references: [id])
 
-  taxPayerId   String
-  taxPayer     TaxPayer      @relation(fields: [taxPayerId], references: [id])
-  transactions Transaction[]
+    taxPayerId   String
+    taxPayer     TaxPayer      @relation(fields: [taxPayerId], references: [id])
+    transactions Transaction[]
 }
 
 model TaxPayer {
-  id            String            @id @default(cuid())
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime?         @updatedAt
-  createdById   String
-  updatedById   String?
-  razonSocial   String            @unique
-  ruc           String            @unique
-  fantasyName   String?
-  archived      Boolean           @default(false)
-  softDeleted   Boolean           @default(false)
-  bankInfo      TaxPayerBankInfo?
-  expenseReport ExpenseReport[]
-  imbursements  Imbursement[]
-  project       Project[]         @relation("ProjectToTaxPayer")
-  moneyRequest  MoneyRequest[]
-  accountId     String?           @unique
-  account       Account?          @relation(fields: [accountId], references: [id])
+    id            String            @id @default(cuid())
+    createdAt     DateTime          @default(now())
+    updatedAt     DateTime?         @updatedAt
+    createdById   String
+    updatedById   String?
+    razonSocial   String            @unique
+    ruc           String            @unique
+    fantasyName   String?
+    archived      Boolean           @default(false)
+    softDeleted   Boolean           @default(false)
+    bankInfo      TaxPayerBankInfo?
+    expenseReport ExpenseReport[]
+    imbursements  Imbursement[]
+    project       Project[]         @relation("ProjectToTaxPayer")
+    moneyRequest  MoneyRequest[]
+    accountId     String?           @unique
+    account       Account?          @relation(fields: [accountId], references: [id])
 }
 
 model TaxPayerBankInfo {
-  bankName      BankNamesPy
-  accountNumber String          @unique
-  ownerName     String
-  ownerDocType  BankDocType     @default(RUC)
-  ownerDoc      String
-  type          BankAccountType @default(SAVINGS)
-  taxPayerId    String          @unique
-  taxPayer      TaxPayer        @relation(fields: [taxPayerId], references: [id])
+    bankName      BankNamesPy
+    accountNumber String          @unique
+    ownerName     String
+    ownerDocType  BankDocType     @default(RUC)
+    ownerDoc      String
+    type          BankAccountType @default(SAVINGS)
+    taxPayerId    String          @unique
+    taxPayer      TaxPayer        @relation(fields: [taxPayerId], references: [id])
 }
 
 model MoneyRequestApproval {
-  id             String                      @id @default(cuid())
-  createdAt      DateTime                    @default(now())
-  updatedAt      DateTime?                   @updatedAt
-  status         MoneyResquestApprovalStatus
-  rejectMessage  String
-  wasCancelled   Boolean                     @default(false)
+    id            String                      @id @default(cuid())
+    createdAt     DateTime                    @default(now())
+    updatedAt     DateTime?                   @updatedAt
+    status        MoneyResquestApprovalStatus
+    rejectMessage String
+    wasCancelled  Boolean                     @default(false)
 
-  account      Account      @relation(fields: [accountId], references: [id])
-  accountId      String
-  moneyRequest MoneyRequest @relation(fields: [moneyRequestId], references: [id])
-  moneyRequestId String
+    account        Account      @relation(fields: [accountId], references: [id])
+    accountId      String
+    moneyRequest   MoneyRequest @relation(fields: [moneyRequestId], references: [id])
+    moneyRequestId String
 }
 
 model MoneyRequest {
-  id               String             @id @default(cuid())
-  createdAt        DateTime           @default(now())
-  operationDate    DateTime?          
-  updatedAt        DateTime?          @updatedAt
-  description      String
-  comments         String             @default("")
-  status           MoneyRequestStatus
-  moneyRequestType MoneyRequestType
-  currency         Currency
-  amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
-  rejectionMessage String
-  archived         Boolean            @default(false)
-  softDeleted      Boolean            @default(false)
-  wasCancelled     Boolean            @default(false)
+    id               String             @id @default(cuid())
+    createdAt        DateTime           @default(now())
+    operationDate    DateTime?
+    updatedAt        DateTime?          @updatedAt
+    description      String
+    comments         String             @default("")
+    status           MoneyRequestStatus
+    moneyRequestType MoneyRequestType
+    currency         Currency
+    amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
+    rejectionMessage String
+    archived         Boolean            @default(false)
+    softDeleted      Boolean            @default(false)
+    wasCancelled     Boolean            @default(false)
 
-  accountId      String
-  account        Account       @relation(fields: [accountId], references: [id])
-  organizationId String
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  projectId      String?
-  project        Project?      @relation(fields: [projectId], references: [id])
-  costCategoryId String?
-  costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
-  taxPayerId     String?
-  taxPayer       TaxPayer?     @relation(fields: [taxPayerId], references: [id])
+    accountId      String
+    account        Account       @relation(fields: [accountId], references: [id])
+    organizationId String
+    organization   Organization  @relation(fields: [organizationId], references: [id])
+    projectId      String?
+    project        Project?      @relation(fields: [projectId], references: [id])
+    costCategoryId String?
+    costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
+    taxPayerId     String?
+    taxPayer       TaxPayer?     @relation(fields: [taxPayerId], references: [id])
 
-  //For reimbursement orders
-  facturaNumber    String?
-  searchableImages searchableImage[]
+    //For reimbursement orders
+    facturaNumber    String?
+    searchableImages searchableImage[]
 
-  expenseReports        ExpenseReport[]
-  expenseReturns        ExpenseReturn[]
-  moneyRequestApprovals MoneyRequestApproval[]
-  transactions          Transaction[]
+    expenseReports        ExpenseReport[]
+    expenseReturns        ExpenseReturn[]
+    moneyRequestApprovals MoneyRequestApproval[]
+    transactions          Transaction[]
 }
 
 model ExpenseReport {
-  id            String    @id @default(cuid())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  facturaNumber String?
-  amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
-  currency      Currency
-  comments      String
-  concept       String    @default("")
-  wasCancelled  Boolean   @default(false)
+    id            String    @id @default(cuid())
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime? @updatedAt
+    facturaNumber String?
+    amountSpent   Decimal   @default(0) @db.Decimal(19, 4)
+    currency      Currency
+    comments      String
+    concept       String    @default("")
+    wasCancelled  Boolean   @default(false)
 
-  wasConvertedToOtherCurrency Boolean   @default(false)
-  exchangeRate                Float     @default(0)
+    wasConvertedToOtherCurrency Boolean @default(false)
+    exchangeRate                Float   @default(0)
 
-  accountId       String
-  account         Account          @relation(fields: [accountId], references: [id])
-  moneyRequestId  String
-  moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
-  projectId       String?
-  project         Project?         @relation(fields: [projectId], references: [id])
-  taxPayerId      String
-  taxPayer        TaxPayer         @relation(fields: [taxPayerId], references: [id])
-  searchableImage searchableImage?
+    accountId       String
+    account         Account          @relation(fields: [accountId], references: [id])
+    moneyRequestId  String
+    moneyRequest    MoneyRequest     @relation(fields: [moneyRequestId], references: [id])
+    projectId       String?
+    project         Project?         @relation(fields: [projectId], references: [id])
+    taxPayerId      String
+    taxPayer        TaxPayer         @relation(fields: [taxPayerId], references: [id])
+    searchableImage searchableImage?
 
-  costCategoryId String?
-  costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
-  transactions   Transaction[]
+    costCategoryId String?
+    costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
+    transactions   Transaction[]
 
-  @@unique([taxPayerId, facturaNumber])
+    @@unique([taxPayerId, facturaNumber])
 }
 
 model ExpenseReturn {
-  id              String           @id @default(cuid())
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime?        @updatedAt
-  wasCancelled    Boolean          @default(false)
-  currency        Currency
-  amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
-  searchableImage searchableImage?
+    id              String           @id @default(cuid())
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime?        @updatedAt
+    wasCancelled    Boolean          @default(false)
+    currency        Currency
+    amountReturned  Decimal          @default(0) @db.Decimal(19, 4)
+    searchableImage searchableImage?
 
-  wasConvertedToOtherCurrency Boolean   @default(false)
-  exchangeRate                Float     @default(0)
+    wasConvertedToOtherCurrency Boolean @default(false)
+    exchangeRate                Float   @default(0)
 
-  transactions Transaction[]
+    transactions Transaction[]
 
-  moneyAccountId String
-  moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
-  moneyRequestId String
-  moneyRequest   MoneyRequest @relation(fields: [moneyRequestId], references: [id])
-  accountId      String
-  account        Account      @relation(fields: [accountId], references: [id])
+    moneyAccountId String
+    moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
+    moneyRequestId String
+    moneyRequest   MoneyRequest @relation(fields: [moneyRequestId], references: [id])
+    accountId      String
+    account        Account      @relation(fields: [accountId], references: [id])
 }
 
 model MoneyAccountOffset {
-  id                  String    @id @default(cuid())
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime? @updatedAt
-  wasCancelled        Boolean   @default(false)
-  currency            Currency
-  offsettedAmount     Decimal   @default(0) @db.Decimal(19, 4)
-  previousBalance     Decimal   @default(0) @db.Decimal(19, 4)
-  offsetJustification String
+    id                  String    @id @default(cuid())
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime? @updatedAt
+    wasCancelled        Boolean   @default(false)
+    currency            Currency
+    offsettedAmount     Decimal   @default(0) @db.Decimal(19, 4)
+    previousBalance     Decimal   @default(0) @db.Decimal(19, 4)
+    offsetJustification String
+    isSubstraction      Boolean   @default(true)
 
-  moneyAccountId String
-  moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
-  accountId      String
-  account        Account      @relation(fields: [accountId], references: [id])
+    moneyAccountId String
+    moneyAccount   MoneyAccount @relation(fields: [moneyAccountId], references: [id])
+    accountId      String
+    account        Account      @relation(fields: [accountId], references: [id])
 
-  transactions Transaction[]
+    transactions Transaction[]
 }
 
 //A transaction can be linked to a moneyAccount or to a CostCategory, everytime a transaction history is required it needs specific transactions
 model Transaction {
-  id                Int              @id @default(autoincrement())
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime?        @updatedAt
-  updatedById       String?
-  currency          Currency
-  openingBalance    Decimal          @default(0) @db.Decimal(19, 4)
-  currentBalance    Decimal          @default(0) @db.Decimal(19, 4)
-  transactionAmount Decimal          @default(0) @db.Decimal(19, 4)
-  isCancellation    Boolean          @default(false)
-  transactionType   TransactionType  @default(MONEY_ACCOUNT)
-  searchableImage   searchableImage?
+    id                Int              @id @default(autoincrement())
+    createdAt         DateTime         @default(now())
+    updatedAt         DateTime?        @updatedAt
+    updatedById       String?
+    currency          Currency
+    openingBalance    Decimal          @default(0) @db.Decimal(19, 4)
+    currentBalance    Decimal          @default(0) @db.Decimal(19, 4)
+    transactionAmount Decimal          @default(0) @db.Decimal(19, 4)
+    isCancellation    Boolean          @default(false)
+    transactionType   TransactionType  @default(MONEY_ACCOUNT)
+    searchableImage   searchableImage?
 
-  wasConvertedToOtherCurrency Boolean   @default(false)
-  exchangeRate                Float     @default(0)
+    wasConvertedToOtherCurrency Boolean @default(false)
+    exchangeRate                Float   @default(0)
 
-  cancellationId Int?         @unique
-  cancellation   Transaction? @relation("cancellation", fields: [cancellationId], references: [id])
-  transactions   Transaction? @relation("cancellation")
+    // Id present on both the cancellation and the transaction that was cancelled. They are linked together.
+    cancellationId Int?         @unique
+    cancellation   Transaction? @relation("cancellation", fields: [cancellationId], references: [id])
+    transactions   Transaction? @relation("cancellation")
 
-  accountId                  String
-  account                    Account                   @relation(fields: [accountId], references: [id])
-  expenseReturnId            String?
-  expenseReturn              ExpenseReturn?            @relation(fields: [expenseReturnId], references: [id])
-  imbursementId              String?
-  imbursement                Imbursement?              @relation(fields: [imbursementId], references: [id])
-  moneyAccountId             String?
-  moneyAccount               MoneyAccount?             @relation(fields: [moneyAccountId], references: [id])
-  moneyRequestId             String?
-  moneyRequest               MoneyRequest?             @relation(fields: [moneyRequestId], references: [id])
-  projectId                  String?
-  project                    Project?                  @relation(fields: [projectId], references: [id])
-  costCategoryId             String?
-  costCategory               CostCategory?             @relation(fields: [costCategoryId], references: [id])
-  expenseReportId            String?
-  expenseReport              ExpenseReport?            @relation(fields: [expenseReportId], references: [id])
-  membershipId               String?
-  membership                 Membership?               @relation(fields: [membershipId], references: [id])
-  membershipPaymentRequestId String?
-  membershipPaymentRequest   MembershipPaymentRequest? @relation(fields: [membershipPaymentRequestId], references: [id])
-  moneyAccountOffsetId       String?
-  moneyAccountOffset         MoneyAccountOffset?       @relation(fields: [moneyAccountOffsetId], references: [id])
+    accountId                  String
+    account                    Account                   @relation(fields: [accountId], references: [id])
+    expenseReturnId            String?
+    expenseReturn              ExpenseReturn?            @relation(fields: [expenseReturnId], references: [id])
+    imbursementId              String?
+    imbursement                Imbursement?              @relation(fields: [imbursementId], references: [id])
+    moneyAccountId             String?
+    moneyAccount               MoneyAccount?             @relation(fields: [moneyAccountId], references: [id])
+    moneyRequestId             String?
+    moneyRequest               MoneyRequest?             @relation(fields: [moneyRequestId], references: [id])
+    projectId                  String?
+    project                    Project?                  @relation(fields: [projectId], references: [id])
+    costCategoryId             String?
+    costCategory               CostCategory?             @relation(fields: [costCategoryId], references: [id])
+    expenseReportId            String?
+    expenseReport              ExpenseReport?            @relation(fields: [expenseReportId], references: [id])
+    membershipId               String?
+    membership                 Membership?               @relation(fields: [membershipId], references: [id])
+    membershipPaymentRequestId String?
+    membershipPaymentRequest   MembershipPaymentRequest? @relation(fields: [membershipPaymentRequestId], references: [id])
+    moneyAccountOffsetId       String?
+    moneyAccountOffset         MoneyAccountOffset?       @relation(fields: [moneyAccountOffsetId], references: [id])
 }
 
 model searchableImage {
-  id            String    @id @default(cuid())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  url           String
-  text          String
-  imageName     String    @unique
-  facturaNumber String    @default("")
+    id            String    @id @default(cuid())
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime? @updatedAt
+    url           String
+    text          String
+    imageName     String    @unique
+    facturaNumber String    @default("")
 
-  currency Currency @default(PYG)
-  amount   Decimal  @default(0) @db.Decimal(19, 4)
+    currency Currency @default(PYG)
+    amount   Decimal  @default(0) @db.Decimal(19, 4)
 
-  accounts        Account?       @relation(fields: [accountId], references: [id])
-  accountId       String?
-  expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
-  expenseReportId String?        @unique
-  moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
-  moneyRequestId  String?
-  expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
-  expenseReturnId String?        @unique
-  transaction     Transaction?   @relation(fields: [transactionId], references: [id])
-  transactionId   Int?           @unique
+    accounts        Account?       @relation(fields: [accountId], references: [id])
+    accountId       String?
+    expenseReport   ExpenseReport? @relation(fields: [expenseReportId], references: [id])
+    expenseReportId String?        @unique
+    moneyRequest    MoneyRequest?  @relation(fields: [moneyRequestId], references: [id])
+    moneyRequestId  String?
+    expenseReturn   ExpenseReturn? @relation(fields: [expenseReturnId], references: [id])
+    expenseReturnId String?        @unique
+    transaction     Transaction?   @relation(fields: [transactionId], references: [id])
+    transactionId   Int?           @unique
 
-  invoicesFromOrgs              Imbursement?              @relation("invoiceFromOrg")
-  imbursementProofs             Imbursement?              @relation("imbursementProof")
-  imbursementId                 String?                   @unique
-  organization                  Organization[]
-  membershipPaymentRequestProof MembershipPaymentRequest? @relation("paymentProof")
-  membershipPaymentInvoice      MembershipPaymentRequest? @relation("invoice")
+    invoicesFromOrgs              Imbursement?              @relation("invoiceFromOrg")
+    imbursementProofs             Imbursement?              @relation("imbursementProof")
+    imbursementId                 String?                   @unique
+    organization                  Organization[]
+    membershipPaymentRequestProof MembershipPaymentRequest? @relation("paymentProof")
+    membershipPaymentInvoice      MembershipPaymentRequest? @relation("invoice")
 }
 
 model Emails {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  to        String
-  from      String
-  subject   String
-  html      String
-  tag       String
-  account   Account?  @relation(fields: [accountId], references: [id])
-  accountId String?
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    to        String
+    from      String
+    subject   String
+    html      String
+    tag       String
+    account   Account?  @relation(fields: [accountId], references: [id])
+    accountId String?
 }
 
 enum Role {
-  ADMIN
-  MODERATOR
-  USER
-  OBSERVER
-  MEMBER
+    ADMIN
+    MODERATOR
+    USER
+    OBSERVER
+    MEMBER
 }
 
 enum BankAccountType {
-  SAVINGS
-  CURRENT
+    SAVINGS
+    CURRENT
 }
 
 enum BankNamesPy {
-  ITAU
-  BANCO_GNB
-  BANCO_CONTINENTAL
-  BANCO_ATLAS
-  BANCO_REGIONAL
-  BANCO_FAMILIAR
-  VISION_BANCO
-  BANCO_NACIONAL_DE_FOMENTO
-  SUDAMERIS
-  BANCO_BASA
-  INTERFISA_BANCO
-  BANCOP
-  BANCO_RIO
-  CITIBANK
-  BANCO_DO_BRASIL
-  BANCO_DE_LA_NACION_ARGENTINA
-  UENO
-  COOMECIPAR
+    ITAU
+    BANCO_GNB
+    BANCO_CONTINENTAL
+    BANCO_ATLAS
+    BANCO_REGIONAL
+    BANCO_FAMILIAR
+    VISION_BANCO
+    BANCO_NACIONAL_DE_FOMENTO
+    SUDAMERIS
+    BANCO_BASA
+    INTERFISA_BANCO
+    BANCOP
+    BANCO_RIO
+    CITIBANK
+    BANCO_DO_BRASIL
+    BANCO_DE_LA_NACION_ARGENTINA
+    UENO
+    COOMECIPAR
 }
 
 enum BankDocType {
-  CI
-  CRC
-  PASSPORT
-  RUC
+    CI
+    CRC
+    PASSPORT
+    RUC
 }
 
 enum ProjectType {
-  SUBSIDY
-  CONSULTING
+    SUBSIDY
+    CONSULTING
 }
 
 enum MemberType {
-  REGULAR
-  FOUNDER
-  VIP
+    REGULAR
+    FOUNDER
+    VIP
 }
 
 enum Currency {
-  USD
-  PYG
+    USD
+    PYG
 }
 
 enum MoneyRequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
+    PENDING
+    ACCEPTED
+    REJECTED
 }
 
 enum BecomeMemberRequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
+    PENDING
+    ACCEPTED
+    REJECTED
 }
 
 enum MoneyRequestType {
-  FUND_REQUEST
-  MONEY_ORDER
-  REIMBURSMENT_ORDER
+    FUND_REQUEST
+    MONEY_ORDER
+    REIMBURSMENT_ORDER
 }
 
 enum MoneyResquestApprovalStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
+    PENDING
+    ACCEPTED
+    REJECTED
 }
 
 enum TransactionType {
-  MEMBERSHIP_PAYMENT
-  MONEY_ACCOUNT_IMBURSEMENT
-  PROJECT_IMBURSEMENT
-  EXPENSE_RETURN
-  COST_CATEGORY
-  MONEY_ACCOUNT
-  OFFSET
+    MEMBERSHIP_PAYMENT
+    MONEY_ACCOUNT_IMBURSEMENT
+    PROJECT_IMBURSEMENT
+    EXPENSE_RETURN
+    COST_CATEGORY
+    MONEY_ACCOUNT
+    OFFSET
 }

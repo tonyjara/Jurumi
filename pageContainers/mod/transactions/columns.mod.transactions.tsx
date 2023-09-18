@@ -11,7 +11,7 @@ import { TransactionComplete } from "./transactions.types";
 const columnHelper = createColumnHelper<TransactionComplete>();
 
 const handleTransactionConcept = (
-  ctx: CellContext<TransactionComplete, unknown>
+  ctx: CellContext<TransactionComplete, unknown>,
 ) => {
   const x = ctx.row.original;
 
@@ -72,12 +72,7 @@ export const modTransactionsColumns = ({
     cell: (x) => {
       const arrowDir = () => {
         const tx = x.row.original;
-        const txType = tx.transactionType;
-        if (txType === "MONEY_ACCOUNT") {
-          return tx.isCancellation ? "up" : "down";
-        }
-
-        return tx.isCancellation ? "down" : "up";
+        return tx.currentBalance.gt(tx.openingBalance) ? "up" : "down";
       };
 
       return (

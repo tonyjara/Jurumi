@@ -22,16 +22,16 @@ const RowOptionsMoneyAccountOffset = ({
     setMenuData((prev) => ({ ...prev, rowData: null }));
   };
 
-  const { mutate: deleteById } =
-    trpcClient.moneyAcc.deleteMoneyAccountOffsetById.useMutation(
-      handleUseMutationAlerts({
-        successText: "Se ha eliminado la el ajuste!",
-        callback: () => {
-          context.invalidate();
-          closeMenu();
-        },
-      })
-    );
+  /* const { mutate: deleteById } = */
+  /*   trpcClient.moneyAcc.deleteMoneyAccountOffsetById.useMutation( */
+  /*     handleUseMutationAlerts({ */
+  /*       successText: "Se ha eliminado la el ajuste!", */
+  /*       callback: () => { */
+  /*         context.invalidate(); */
+  /*         closeMenu(); */
+  /*       }, */
+  /*     }), */
+  /*   ); */
   const { mutate: cancelById } =
     trpcClient.moneyAcc.cancelMoneyAccountOffsetById.useMutation(
       handleUseMutationAlerts({
@@ -40,7 +40,7 @@ const RowOptionsMoneyAccountOffset = ({
           context.invalidate();
           closeMenu();
         },
-      })
+      }),
     );
 
   return (
@@ -53,14 +53,14 @@ const RowOptionsMoneyAccountOffset = ({
         Anular
       </MenuItem>
 
-      <MenuItem
-        onClick={() => {
-          if (!x.transactions[0]) return;
-          deleteById({ transactionId: x.transactions[0].id, id: x.id });
-        }}
-      >
-        Eliminar
-      </MenuItem>
+      {/* <MenuItem */}
+      {/*   onClick={() => { */}
+      {/*     if (!x.transactions[0]) return; */}
+      {/*     deleteById({ transactionId: x.transactions[0].id, id: x.id }); */}
+      {/*   }} */}
+      {/* > */}
+      {/*   Eliminar */}
+      {/* </MenuItem> */}
     </div>
   );
 };

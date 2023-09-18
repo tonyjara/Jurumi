@@ -13,6 +13,7 @@ import prisma from "@/server/db/client";
 import { validateMoneyAccountOffset } from "@/lib/validations/moneyAccountOffset.validate";
 import { handleOrderBy } from "./utils/Sorting.routeUtils";
 import { cancelTransactionsAndRevertBalance } from "./utils/Cancelations.routeUtils";
+import { TRPCError } from "@trpc/server";
 
 export const moneyAccRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
@@ -42,8 +43,8 @@ export const moneyAccRouter = router({
     });
   }),
 
-  countccountOffsets: adminModObserverProcedure.query(async () =>
-    prisma?.moneyAccountOffset.count()
+  countccountOffsets: adminModObserverProcedure.query(
+    async () => prisma?.moneyAccountOffset.count(),
   ),
   getManyAccountOffsets: adminModObserverProcedure
     .input(
@@ -54,7 +55,7 @@ export const moneyAccRouter = router({
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
@@ -181,9 +182,15 @@ export const moneyAccRouter = router({
         };
 
         const lastMoneyAccWithTx = await getMoneyAccWithLastTx();
+        //If there's no prev balance use the initial one
         const previousBalance = lastMoneyAccWithTx.transactions[0]
           ? lastMoneyAccWithTx.transactions[0].currentBalance
           : lastMoneyAccWithTx.initialBalance;
+
+        //calculate current balance based on the offset type
+        const currentBalance = i.isSubstraction
+          ? previousBalance.sub(i.offsettedAmount)
+          : previousBalance.add(i.offsettedAmount);
 
         await txCtx.moneyAccountOffset.create({
           data: {
@@ -192,11 +199,12 @@ export const moneyAccRouter = router({
             offsettedAmount: i.offsettedAmount,
             offsetJustification: i.offsetJustification,
             previousBalance,
+            isSubstraction: i.isSubstraction,
             accountId: userId,
             transactions: {
               create: {
                 openingBalance: previousBalance,
-                currentBalance: previousBalance.add(i.offsettedAmount),
+                currentBalance: currentBalance,
                 transactionAmount: i.offsettedAmount,
                 transactionType: "OFFSET",
                 moneyAccountId: i.moneyAccountId,
@@ -212,7 +220,7 @@ export const moneyAccRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const x = await prisma?.moneyAccount.delete({
@@ -225,7 +233,7 @@ export const moneyAccRouter = router({
       z.object({
         id: z.string(),
         transactionId: z.number(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       await prisma?.transaction.delete({
@@ -241,11 +249,26 @@ export const moneyAccRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
+      /* await prisma.$transaction(async (txCtx) => { */
+      /*   const moneyAccOffset = await txCtx?.moneyAccountOffset.update({ */
+      /*     where: { id: input.id }, */
+      /*     data: { wasCancelled: true }, */
+      /*     include: { */
+      /*       //Account offsets only have one transaction */
+      /*       transactions: true, */
+      /*     }, */
+      /*   }); */
+      /*   await cancelTransactionsAndRevertBalance({ */
+      /*     txCtx, */
+      /*     transactions: moneyAccOffset.transactions, */
+      /*   }); */
+      /* }); */
+
       await prisma.$transaction(async (txCtx) => {
-        const moneyAccOffset = await txCtx?.moneyAccountOffset.update({
+        const offset = await txCtx?.moneyAccountOffset.update({
           where: { id: input.id },
           data: { wasCancelled: true },
           include: {
@@ -253,9 +276,67 @@ export const moneyAccRouter = router({
             transactions: true,
           },
         });
-        await cancelTransactionsAndRevertBalance({
-          txCtx,
-          transactions: moneyAccOffset.transactions,
+        const offsetTx = offset.transactions[0];
+        if (!offsetTx) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Offset transaction not found",
+          });
+        }
+
+        const getMoneyAccWithLastTx = async () => {
+          return await txCtx.moneyAccount.findUniqueOrThrow({
+            where: { id: offset.moneyAccountId },
+            include: {
+              transactions: {
+                where: {
+                  NOT: {
+                    transactionType: {
+                      in: ["COST_CATEGORY", "PROJECT_IMBURSEMENT"],
+                    },
+                  },
+                },
+                take: 1,
+                orderBy: { id: "desc" },
+              },
+            },
+          });
+        };
+
+        const lastMoneyAccWithTx = await getMoneyAccWithLastTx();
+
+        //If there's no prev balance use the initial one
+        const previousBalance = lastMoneyAccWithTx.transactions[0]
+          ? lastMoneyAccWithTx.transactions[0].currentBalance
+          : lastMoneyAccWithTx.initialBalance;
+
+        //Restore offseted amount
+        const currentBalance = offset.isSubstraction
+          ? previousBalance.add(offset.offsettedAmount)
+          : previousBalance.sub(offset.offsettedAmount);
+
+        const cancellation = await txCtx.transaction.create({
+          data: {
+            isCancellation: true,
+            accountId: offset.accountId,
+            currency: offset.currency,
+            cancellationId: offsetTx.id,
+            transactionAmount: offset.offsettedAmount,
+            openingBalance: previousBalance,
+            currentBalance,
+            moneyAccountId: offset.moneyAccountId,
+            transactionType: "OFFSET",
+            moneyAccountOffsetId: offset.id,
+            // do not need searchable image in a cancellation.
+          },
+        });
+
+        // attach id to cancelled transaction
+        await txCtx.transaction.update({
+          where: { id: offsetTx.id },
+          data: {
+            cancellationId: cancellation.id,
+          },
         });
       });
     }),
