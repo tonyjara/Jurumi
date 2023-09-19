@@ -21,7 +21,7 @@ export const transactionsRouter = router({
     .input(
       z.object({
         whereFilterList: z.any().array().optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       return await prisma?.transaction.count({
@@ -32,13 +32,13 @@ export const transactionsRouter = router({
     .input(
       z.object({
         pageIndex: z.number().nullish(),
-        pageSize: z.number().min(1).max(100).nullish(),
+        pageSize: z.number().min(1).nullish(),
         whereFilterList: z.any().array().optional(),
         sorting: z
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
@@ -96,7 +96,7 @@ export const transactionsRouter = router({
       z.object({
         moneyAccountId: z.string().nullable(),
         transactionId: z.number(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       if (!input.moneyAccountId) return false;

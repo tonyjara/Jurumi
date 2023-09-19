@@ -1,6 +1,7 @@
 import type { BankAccsWithLastTx } from "@/components/OrgCharts/CardGroups/BankAcc.cardGroup";
 import type { CashAccsWithLastTx } from "@/components/OrgCharts/CardGroups/PettyCash.cardGroup";
 import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import { TransactionComplete } from "@/pageContainers/mod/transactions/transactions.types";
 import {
   Currency,
   ExpenseReport,
@@ -75,7 +76,7 @@ export const reduceExpenseReturnsToSetCurrency = ({
 
 export const reduceTransactionFieldsToSetCurrency = (
   x: TransactionField[],
-  y: Currency
+  y: Currency,
 ) => {
   return x.reduce((acc, t) => {
     if (!t.transactionAmount.isInt) return acc;
@@ -94,7 +95,7 @@ export const reduceTransactionFieldsToSetCurrency = (
 };
 
 export const formatedAccountBalance = (
-  acc: BankAccsWithLastTx | CashAccsWithLastTx
+  acc: BankAccsWithLastTx | CashAccsWithLastTx,
 ) => {
   if (acc?.transactions?.length) {
     const lastT = acc.transactions[0];
@@ -125,7 +126,7 @@ export function calculateMoneyReqPendingAmount({
     reduceExpenseReturnsToSetCurrency({
       expenseReturns: moneyRequest.expenseReturns,
       currency: moneyRequest.currency,
-    })
+    }),
   );
 
   if (currency !== moneyRequest.currency) {
@@ -146,3 +147,20 @@ export function calculateMoneyReqPendingAmount({
     ? totalAmountRequested.sub(totalAmountReportedOrReturned).toDecimalPlaces(2)
     : totalAmountRequested.sub(totalAmountReportedOrReturned).floor();
 }
+
+export const handleTransactionConcept = (x: TransactionComplete) => {
+  if (x.moneyAccountOffset?.offsetJustification) {
+    return x.moneyAccountOffset.offsetJustification;
+  }
+
+  if (x.moneyRequest?.description) {
+    return x.moneyRequest.description;
+  }
+
+  if (x.imbursement?.concept) {
+    return x.imbursement.concept;
+  }
+  // if(x.im)
+
+  return "-";
+};

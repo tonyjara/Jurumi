@@ -1,4 +1,3 @@
-import type { CellContext } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import DateCell from "@/components/DynamicTables/DynamicCells/DateCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
@@ -7,29 +6,10 @@ import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCe
 import EnumTextCell from "@/components/DynamicTables/DynamicCells/EnumTextCell";
 import { translateTransactionType } from "@/lib/utils/TranslatedEnums";
 import { TransactionComplete } from "./transactions.types";
+import { handleTransactionConcept } from "@/lib/utils/TransactionUtils";
+import FacturaNumberCell from "@/components/DynamicTables/DynamicCells/FacturaNumberCell";
 
 const columnHelper = createColumnHelper<TransactionComplete>();
-
-const handleTransactionConcept = (
-  ctx: CellContext<TransactionComplete, unknown>,
-) => {
-  const x = ctx.row.original;
-
-  if (x.moneyAccountOffset?.offsetJustification) {
-    return x.moneyAccountOffset.offsetJustification;
-  }
-
-  if (x.moneyRequest?.description) {
-    return x.moneyRequest.description;
-  }
-
-  if (x.imbursement?.concept) {
-    return x.imbursement.concept;
-  }
-  // if(x.im)
-
-  return "-";
-};
 
 export const modTransactionsColumns = ({
   pageIndex,
@@ -42,9 +22,9 @@ export const modTransactionsColumns = ({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
     header: "N.",
   }),
-  columnHelper.accessor("id", {
-    cell: (x) => <TextCell text={x.getValue().toString()} />,
-    header: "ID.",
+  columnHelper.display({
+    cell: (x) => <TextCell text={x.row.original.id.toString()} />,
+    header: "Num",
   }),
   columnHelper.accessor("createdAt", {
     cell: (x) => <DateCell date={x.getValue()} />,
@@ -54,9 +34,9 @@ export const modTransactionsColumns = ({
   columnHelper.display({
     cell: (x) => (
       <TextCell
-        text={handleTransactionConcept(x)}
+        text={handleTransactionConcept(x.row.original)}
         shortenString
-        hover={handleTransactionConcept(x)}
+        hover={handleTransactionConcept(x.row.original)}
       />
     ),
     header: "Concepto",
@@ -123,6 +103,23 @@ export const modTransactionsColumns = ({
     ),
   }),
 
+  columnHelper.display({
+    header: "A la orden de",
+    cell: (x) => (
+      <TextCell
+        text={x.row.original.expenseReport?.taxPayer.razonSocial ?? "-"}
+      />
+    ),
+  }),
+
+  columnHelper.display({
+    header: "Factura Num",
+    cell: (x) => (
+      <FacturaNumberCell
+        text={x.row.original.expenseReport?.facturaNumber ?? "-"}
+      />
+    ),
+  }),
   columnHelper.display({
     cell: (x) => (
       <ImageModalCell

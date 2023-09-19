@@ -31,6 +31,7 @@ export async function createCostCategoryTransactions({
   expenseReport: CreateCostCategoryTransactionsType;
   txCtx: Prisma.TransactionClient;
 }) {
+  //If it doesn't have a project or cost category, don't create a transaction
   if (!expenseReport.projectId || !expenseReport.costCategoryId) return;
 
   const costCategoryId = expenseReport.costCategoryId;

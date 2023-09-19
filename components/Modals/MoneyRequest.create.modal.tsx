@@ -15,11 +15,7 @@ import { useForm } from "react-hook-form";
 import { knownErrors } from "@/lib/dictionaries/knownErrors";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
-import SeedButton from "../DevTools/SeedButton";
-import {
-  FormMoneyRequest,
-  MockMoneyRequest,
-} from "@/lib/validations/moneyRequest.validate";
+import { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
 import {
   defaultMoneyRequestData,
   validateMoneyRequest,
@@ -69,7 +65,7 @@ const CreateMoneyRequestModal = ({
           handleOnClose();
           context.moneyRequest.invalidate();
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: FormMoneyRequest) => {

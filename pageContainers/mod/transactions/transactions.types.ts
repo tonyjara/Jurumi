@@ -10,6 +10,7 @@ export const completeTransactionsArgs =
       costCategory: { select: { displayName: true, id: true } },
       imbursement: true,
       expenseReturn: true,
+      expenseReport: { select: { taxPayer: true, facturaNumber: true } },
       project: { select: { displayName: true, id: true } },
       searchableImage: { select: { id: true, url: true, imageName: true } },
     },

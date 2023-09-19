@@ -99,11 +99,15 @@ const TablePagination = <T extends object>({
           w={32}
           value={pageSize}
           onChange={(e) => {
+            if (e.target.value === `todo ( ${count} )`) {
+              setPageSize(count);
+              return;
+            }
             setPageSize(Number(e.target.value));
           }}
           // minW="130px"
         >
-          {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+          {[10, 20, 30, 40, 50, 100, `todo ( ${count} )`].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
               Mostrar {pageSize}
             </option>
