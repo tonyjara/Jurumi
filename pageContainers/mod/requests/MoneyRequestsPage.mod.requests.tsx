@@ -1,6 +1,5 @@
 import { useDisclosure } from "@chakra-ui/react";
 import type { MoneyRequest, Prisma } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import type {
   RowOptionsType,
@@ -24,8 +23,6 @@ import MoneyRequestExtraFilters from "./MoneyRequestExtraFilters.mod.requests";
 import { rawValuesModMoneyRequests } from "./rawValues.mod.MoneyRequests";
 
 const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
-  const session = useSession();
-  const user = session.data?.user;
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const [filterValue, setFilterValue] = useState("id");

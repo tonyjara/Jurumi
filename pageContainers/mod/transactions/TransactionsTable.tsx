@@ -11,6 +11,7 @@ import EditTransactionModal from "@/components/Modals/Transaction.edit.modal";
 import { modTransactionsColumns } from "./columns.mod.transactions";
 import RowOptionsModTransactions from "./rowOptions.mod.transactions";
 import { TransactionComplete } from "./transactions.types";
+import { rawValuesTransactions } from "./rawValues.transactions";
 
 const TransactionsTable = ({
   data,
@@ -41,7 +42,7 @@ const TransactionsTable = ({
   };
 }) => {
   const [editTransaction, setEditTransaction] = useState<Transaction | null>(
-    null
+    null,
   );
 
   const { pageIndex, setGlobalFilter, globalFilter, pageSize } =
@@ -87,6 +88,7 @@ const TransactionsTable = ({
       <DynamicTable
         title={"Transacciones"}
         enableColumnFilters={true}
+        rawValuesDictionary={rawValuesTransactions}
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}
         searchBar={searchBar}

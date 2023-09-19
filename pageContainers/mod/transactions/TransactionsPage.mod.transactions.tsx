@@ -25,14 +25,18 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data } = trpcClient.transaction.getManyComplete.useQuery(
+  const {
+    data,
+    isLoading: isLoaingTxs,
+    isFetching: isFetchingTxs,
+  } = trpcClient.transaction.getManyComplete.useQuery(
     {
       whereFilterList,
       pageIndex,
       pageSize,
       sorting: globalFilter ? sorting : null,
     },
-    { keepPreviousData: globalFilter ? true : false }
+    { keepPreviousData: globalFilter ? true : false },
   );
   const { data: count } = trpcClient.transaction.count.useQuery({
     whereFilterList,
@@ -40,7 +44,7 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
   const { data: findByIdData, isFetching } =
     trpcClient.transaction.findManyCompleteById.useQuery(
       { ids: searchValue.split(",").map(Number) },
-      { enabled: searchValue.length > 0 }
+      { enabled: searchValue.length > 0 },
     );
 
   const handleDataSource: () => TransactionComplete[] = () => {
@@ -49,12 +53,14 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
     return [];
   };
 
+  const loading = isFetchingTxs || isLoaingTxs || isFetching;
+
   return (
     <TransactionsTable
       data={handleDataSource()}
       whereFilterList={whereFilterList}
       setWhereFilterList={setWhereFilterList}
-      loading={isFetching}
+      loading={loading}
       count={count}
       dynamicTableProps={dynamicTableProps}
       searchBar={

@@ -8,6 +8,7 @@ const InputContainsColumnFilter = ({
   setWhereFilterList,
   whereFilterList,
   keyName,
+  isNumber,
 }: ColumnFilterProps) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -27,16 +28,28 @@ const InputContainsColumnFilter = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterListValue]);
 
-  const whereBuilder = (val: string) =>
-    //@ts-ignore
-    Prisma.validator<Prisma.MoneyRequestScalarWhereInput>()({
-      [keyName as string]: { contains: val, mode: "insensitive" },
+  const whereBuilder = (val: string) => {
+    if (isNumber) {
+      return Prisma.validator<Prisma.MoneyRequestScalarWhereInput>()({
+        [keyName as string]: {
+          /* contains: isNumber ? parseInt(val) : val, */
+          equals: parseInt(val),
+        },
+      });
+    }
+    return Prisma.validator<Prisma.MoneyRequestScalarWhereInput>()({
+      [keyName as string]: {
+        /* contains: isNumber ? parseInt(val) : val, */
+        contains: val,
+        mode: "insensitive",
+      },
     });
+  };
 
   useEffect(() => {
     if (!setWhereFilterList) return;
     setWhereFilterList((prev) =>
-      prev.filter((x) => (keyName ? !x[keyName] : true))
+      prev.filter((x) => (keyName ? !x[keyName] : true)),
     );
     if (!debouncedSearchValue.length) return;
 

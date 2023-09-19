@@ -43,8 +43,8 @@ const ProjectsPage = () => {
       <Tabs overflow={"auto"}>
         <CardHeader>
           <Stack
-            flexDir={{ base: "column", md: "row" }}
-            alignItems={{ base: "start", md: "center" }}
+            flexDir={{ base: "column", lg: "row" }}
+            alignItems={{ base: "start", lg: "center" }}
             justifyContent="space-between"
           >
             <Text fontWeight={"bold"} fontSize={{ base: "2xl", md: "3xl" }}>
