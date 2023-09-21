@@ -72,17 +72,19 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
             required_error: "Favor ingrese el documento del contribuyente.",
             invalid_type_error: "Favor ingrese el documento del contribuyente.",
           }),
-          bankInfo: z.object({
-            bankName: z.nativeEnum(BankNamesPy, {
-              invalid_type_error: "Favor ingrese el banco.",
-            }),
-            accountNumber: z.string(),
-            ownerName: z.string(),
-            ownerDocType: z.nativeEnum(BankDocType),
-            ownerDoc: z.string(),
-            taxPayerId: z.string(),
-            type: z.nativeEnum(BankAccountType),
-          }),
+          bankInfo: z
+            .object({
+              bankName: z.nativeEnum(BankNamesPy, {
+                invalid_type_error: "Favor ingrese el banco.",
+              }),
+              accountNumber: z.string(),
+              ownerName: z.string(),
+              ownerDocType: z.nativeEnum(BankDocType),
+              ownerDoc: z.string(),
+              taxPayerId: z.string(),
+              type: z.nativeEnum(BankAccountType),
+            })
+            .nullable(),
         })
         .nullable(),
       // For reimbursement order creation.
@@ -120,7 +122,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
         }
 
         if (
-          !val.taxPayer?.bankInfo.accountNumber.length ||
+          !val.taxPayer?.bankInfo?.accountNumber.length ||
           val.taxPayer.bankInfo.accountNumber.length < 3
         ) {
           ctx.addIssue({
@@ -130,7 +132,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           });
         }
         if (
-          !val.taxPayer?.bankInfo.ownerName.length ||
+          !val.taxPayer?.bankInfo?.ownerName.length ||
           val.taxPayer.bankInfo.ownerName.length < 3
         ) {
           ctx.addIssue({
@@ -140,7 +142,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           });
         }
         if (
-          !val.taxPayer?.bankInfo.ownerDoc.length ||
+          !val.taxPayer?.bankInfo?.ownerDoc.length ||
           val.taxPayer.bankInfo.ownerDoc.length < 3
         ) {
           ctx.addIssue({
