@@ -24,11 +24,11 @@ import {
   MockExpenseReport,
 } from "../../lib/validations/expenseReport.validate";
 
-import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import SeedButton from "../DevTools/SeedButton";
 import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
 import { Currency } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
@@ -68,7 +68,7 @@ const ExpenseReportForm = ({
 
   const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
     { projectId: projectId ?? "" },
-    { enabled: !!projectId?.length }
+    { enabled: !!projectId?.length },
   );
 
   const costCatOptions = () =>

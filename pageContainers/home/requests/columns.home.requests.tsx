@@ -12,9 +12,9 @@ import {
   translatedMoneyReqStatus,
   translatedMoneyReqType,
 } from "@/lib/utils/TranslatedEnums";
-import type { CompleteMoneyReqHome } from "./HomeRequestsPage.home.requests";
 import { Center } from "@chakra-ui/react";
 import SearchableImageModalCell from "@/components/DynamicTables/DynamicCells/SearchableImagesModalCell";
+import { CompleteMoneyReqHome } from "./home.requests.types";
 
 const columnHelper = createColumnHelper<CompleteMoneyReqHome>();
 
@@ -96,7 +96,7 @@ export const homeRequestsColumns = ({
               reduceExpenseReturnsToSetCurrency({
                 expenseReturns: x.row.original.expenseReturns,
                 currency: x.row.original.currency,
-              })
+              }),
             )}
             currency={x.row.original.currency}
           />

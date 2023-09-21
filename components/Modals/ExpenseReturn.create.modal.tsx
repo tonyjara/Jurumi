@@ -15,20 +15,15 @@ import { useForm, useWatch } from "react-hook-form";
 import { knownErrors } from "@/lib/dictionaries/knownErrors";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
-import {
-  calculateMoneyReqPendingAmount,
-  reduceExpenseReportsToSetCurrency,
-  reduceExpenseReturnsToSetCurrency,
-} from "@/lib/utils/TransactionUtils";
-import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import { calculateMoneyReqPendingAmount } from "@/lib/utils/TransactionUtils";
 import ExpenseReturnForm from "../Forms/ExpenseReturn.form";
 import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
 import {
   defaultExpenseReturn,
   validateExpenseReturn,
 } from "@/lib/validations/expenseReturn.validate";
-import { Prisma } from "@prisma/client";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
 
 const CreateExpenseReturnModal = ({
   isOpen,
@@ -77,7 +72,7 @@ const CreateExpenseReturnModal = ({
           handleOnClose();
           context.moneyRequest.invalidate();
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: FormExpenseReturn) => {

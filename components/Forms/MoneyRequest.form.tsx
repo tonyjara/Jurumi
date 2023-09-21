@@ -61,14 +61,14 @@ const MoneyRequestForm = ({
       if (val.currency !== "PYG") return acc;
       return acc.add(val.amount);
     }, new Prisma.Decimal(0)),
-    "PYG"
+    "PYG",
   );
   const totalInUSD = decimalFormat(
     searchableImages.reduce((acc, val) => {
       if (val.currency !== "USD") return acc;
       return acc.add(val.amount);
     }, new Prisma.Decimal(0)),
-    "USD"
+    "USD",
   );
 
   const { data: projects } = trpcClient.project.getMany.useQuery();
@@ -85,7 +85,7 @@ const MoneyRequestForm = ({
 
   const { data: costCats } = trpcClient.project.getCostCatsForProject.useQuery(
     { projectId: projectId ?? "" },
-    { enabled: !!projectId?.length }
+    { enabled: !!projectId?.length },
   );
 
   const costCatOptions = () =>

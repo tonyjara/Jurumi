@@ -16,13 +16,13 @@ import FormControlledImageUpload from "../FormControlled/FormControlledImageUplo
 import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
 import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
 import FormControlledSelect from "../FormControlled/FormControlledSelect";
-import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
 import type { Currency } from "@prisma/client";
 import { expenseReturnMock } from "@/__tests__/mocks/Mocks";
 import SeedButton from "../DevTools/SeedButton";
 import { Decimal } from "@prisma/client/runtime";
 import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;

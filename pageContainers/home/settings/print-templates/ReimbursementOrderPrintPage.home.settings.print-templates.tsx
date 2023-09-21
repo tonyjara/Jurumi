@@ -22,9 +22,9 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import React from "react";
 import SignatureBox from "@/components/Print/SignatureBox";
-import type { CompleteMoneyReqHome } from "../../requests/HomeRequestsPage.home.requests";
 import { formatedFacturaNumber } from "@/lib/utils/FacturaUtils";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
+import { CompleteMoneyReqHome } from "../../requests/home.requests.types";
 
 const ReimbursementOrderPrintPage = ({
   moneyRequest,
@@ -39,7 +39,7 @@ const ReimbursementOrderPrintPage = ({
 
   const headerColor = useColorModeValue(
     "black",
-    moneyRequest ? "black" : "white"
+    moneyRequest ? "black" : "white",
   );
   return (
     <Box

@@ -61,7 +61,7 @@ const RowOptionsModRequests = ({
       callback: () => {
         context.invalidate();
       },
-    })
+    }),
   );
 
   const { mutate: cancelById } = trpcClient.moneyRequest.cancelById.useMutation(
@@ -70,7 +70,7 @@ const RowOptionsModRequests = ({
       callback: () => {
         context.invalidate();
       },
-    })
+    }),
   );
   const isAccepted = x.status === "ACCEPTED";
   const isCancelled = x.wasCancelled;
@@ -90,7 +90,7 @@ const RowOptionsModRequests = ({
         reduceExpenseReturnsToSetCurrency({
           expenseReturns: x.expenseReturns,
           currency: x.currency,
-        })
+        }),
       )
       // RONDING BY 1 TO AVOID FLOATING POINT ERRORS
       .greaterThanOrEqualTo(x.amountRequested.sub(new Prisma.Decimal(1)));
@@ -152,7 +152,6 @@ const RowOptionsModRequests = ({
           onClick={() => {
             setReqForReport(x);
             onExpRepOpen();
-
             closeMenu();
           }}
         >

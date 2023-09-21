@@ -27,7 +27,7 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import React from "react";
 import SignatureBox from "../../../../components/Print/SignatureBox";
-import type { CompleteMoneyReqHome } from "../../requests/HomeRequestsPage.home.requests";
+import { CompleteMoneyReqHome } from "../../requests/home.requests.types";
 
 const ExpenseRepAndRetPringPage = ({
   moneyRequest,
@@ -40,7 +40,7 @@ const ExpenseRepAndRetPringPage = ({
   // React to print doesnt like theme changing
   const headerColor = useColorModeValue(
     "black",
-    moneyRequest ? "black" : "white"
+    moneyRequest ? "black" : "white",
   );
 
   const req = moneyRequest ?? moneyReqCompleteMock(user?.id);
@@ -148,7 +148,7 @@ const ExpenseRepAndRetPringPage = ({
                       expenseReports: req?.expenseReports,
                       currency: req.currency,
                     }),
-                    req?.currency
+                    req?.currency,
                   )}
                 </Td>
               </Tr>
@@ -176,7 +176,7 @@ const ExpenseRepAndRetPringPage = ({
                       expenseReturns: req.expenseReturns,
                       currency: req.currency,
                     }),
-                    req.currency
+                    req.currency,
                   )}
                 </Td>
               </Tr>

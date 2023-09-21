@@ -1,14 +1,5 @@
 import { useDisclosure } from "@chakra-ui/react";
-import type {
-  BankDocType,
-  BankNamesPy,
-  ExpenseReport,
-  ExpenseReturn,
-  MoneyRequest,
-  Project,
-  searchableImage,
-  Transaction,
-} from "@prisma/client";
+import type { MoneyRequest } from "@prisma/client";
 import React, { useState } from "react";
 import type {
   RowOptionsType,
@@ -24,39 +15,16 @@ import { homeRequestsColumns } from "./columns.home.requests";
 import CreateExpenseReturnModal from "@/components/Modals/ExpenseReturn.create.modal";
 import RowOptionsHomeRequests from "./rowOptions.home.requests";
 import HomeRequestsExtraFilters from "./HomeRequestsExtraFilters.home.requests";
+import { CompleteMoneyReqHome } from "./home.requests.types";
 
-export type CompleteMoneyReqHome = MoneyRequest & {
-  account: {
-    displayName: string;
-  };
-  project: Project | null;
-  taxPayer: {
-    bankInfo: {
-      bankName: BankNamesPy;
-      accountNumber: string;
-      ownerName: string;
-      ownerDocType: BankDocType;
-      ownerDoc: string;
-    } | null;
-    razonSocial: string;
-  } | null;
-  transactions: Transaction[];
-  expenseReports: (ExpenseReport & {
-    taxPayer: {
-      razonSocial: string;
-    };
-  })[];
-  searchableImages: searchableImage[];
-  expenseReturns: ExpenseReturn[];
-};
 const MoneyRequestsPage = () => {
   const [whereFilterList, setWhereFilterList] = useState<string[]>([]);
   const [extraFilters, setExtraFilters] = useState<string[]>([]);
   const [editMoneyRequest, setEditMoneyRequest] = useState<MoneyRequest | null>(
-    null
+    null,
   );
   const [reqForReport, setReqForReport] = useState<CompleteMoneyReqHome | null>(
-    null
+    null,
   );
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
@@ -90,7 +58,7 @@ const MoneyRequestsPage = () => {
         whereFilterList,
         extraFilters,
       },
-      { keepPreviousData: globalFilter ? true : false }
+      { keepPreviousData: globalFilter ? true : false },
     );
 
   const { data: count } = trpcClient.moneyRequest.countMyOwn.useQuery({
