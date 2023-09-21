@@ -29,6 +29,7 @@ import {
 } from "@/server/db/raw-sql";
 import { moneyRequestCreatedApproversEmailNotification } from "./notifications/sendgrid/emailApproversOnRequest.sendgrid";
 import { completeMoneyRequestIncludeArgs } from "@/pageContainers/mod/requests/mod.requests.types";
+import { completeHomeMoneyRequestIncludeArgs } from "@/pageContainers/home/requests/home.requests.types";
 
 export const moneyRequestRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
@@ -62,7 +63,7 @@ export const moneyRequestRouter = router({
           .array()
           .nullish(),
         whereFilterList: z.any().array().optional(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       const user = ctx.session.user;
@@ -82,32 +83,7 @@ export const moneyRequestRouter = router({
             ...(input?.whereFilterList ?? []),
           ],
         },
-
-        include: {
-          project: true,
-          transactions: true,
-          account: { select: { displayName: true } },
-          taxPayer: {
-            select: {
-              razonSocial: true,
-              bankInfo: {
-                select: {
-                  ownerName: true,
-                  accountNumber: true,
-                  bankName: true,
-                  ownerDocType: true,
-                  ownerDoc: true,
-                },
-              },
-            },
-          },
-          expenseReports: {
-            where: { wasCancelled: false },
-            include: { taxPayer: { select: { razonSocial: true } } },
-          },
-          expenseReturns: { where: { wasCancelled: false } },
-          searchableImages: true,
-        },
+        ...completeHomeMoneyRequestIncludeArgs,
       });
     }),
   count: protectedProcedure
@@ -115,7 +91,7 @@ export const moneyRequestRouter = router({
       z.object({
         extraFilters: z.string().array(),
         whereFilterList: z.any().array().optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const getHasBeingReportedIds = await beingReportedRawSqlShort();
@@ -141,7 +117,7 @@ export const moneyRequestRouter = router({
       z.object({
         extraFilters: z.string().array(),
         whereFilterList: z.any().array().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const user = ctx.session.user;
@@ -169,7 +145,7 @@ export const moneyRequestRouter = router({
           .array()
           .nullish(),
         whereFilterList: z.any().array().optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
@@ -204,7 +180,7 @@ export const moneyRequestRouter = router({
         filter: z.string(),
         extraFilters: z.string().array(),
         whereFilterList: z.any().array().optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       if (!input.value.length || !input.filter.length) return null;
@@ -334,7 +310,7 @@ export const moneyRequestRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       await prisma.$transaction(async (txCtx) => {
@@ -371,7 +347,7 @@ export const moneyRequestRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       await prisma.$transaction(async (txCtx) => {
@@ -423,7 +399,7 @@ export const moneyRequestRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       await prisma.moneyRequestApproval.deleteMany({

@@ -67,7 +67,7 @@ const EditMoneyRequestModal = ({
         handleOnClose();
         context.moneyRequest.invalidate();
       },
-    })
+    }),
   );
 
   const submitFunc = async (data: FormMoneyRequest) => {

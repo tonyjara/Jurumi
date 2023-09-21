@@ -1,4 +1,4 @@
-import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
 import ExpenseRepAndRetPringPage from "@/pageContainers/home/settings/print-templates/ExpenseRepAndRetPrintPage.home.print.tsx";
 import FundRequestPrintPage from "@/pageContainers/home/settings/print-templates/FundRequestPrintPage.home.print";
 import MoneyOrderPrintPage from "@/pageContainers/home/settings/print-templates/MoneyOrderPrintPage.home.setting.print-templates";

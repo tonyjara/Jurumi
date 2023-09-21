@@ -1,6 +1,6 @@
 import type { BankAccsWithLastTx } from "@/components/OrgCharts/CardGroups/BankAcc.cardGroup";
 import type { CashAccsWithLastTx } from "@/components/OrgCharts/CardGroups/PettyCash.cardGroup";
-import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
 import { TransactionComplete } from "@/pageContainers/mod/transactions/transactions.types";
 import {
   Currency,

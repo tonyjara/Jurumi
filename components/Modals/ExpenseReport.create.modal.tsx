@@ -23,8 +23,8 @@ import {
 import ExpenseReportForm from "../Forms/ExpenseReport.form";
 import { calculateMoneyReqPendingAmount } from "@/lib/utils/TransactionUtils";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
-import type { CompleteMoneyReqHome } from "@/pageContainers/home/requests/HomeRequestsPage.home.requests";
 import { Decimal } from "@prisma/client/runtime";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
 
 const CreateExpenseReportModal = ({
   isOpen,

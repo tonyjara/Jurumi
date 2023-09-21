@@ -19,8 +19,8 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import React from "react";
 import SignatureBox from "@/components/Print/SignatureBox";
-import type { CompleteMoneyReqHome } from "../../requests/HomeRequestsPage.home.requests";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
+import { CompleteMoneyReqHome } from "../../requests/home.requests.types";
 
 const FundRequestPrintPage = ({
   moneyRequest,
