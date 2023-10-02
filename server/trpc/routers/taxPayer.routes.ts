@@ -1,8 +1,8 @@
-import { z } from 'zod';
-import { validateTaxPayer } from '@/lib/validations/taxtPayer.validate';
-import { adminProcedure, router, protectedProcedure } from '../initTrpc';
-import { handleOrderBy } from './utils/Sorting.routeUtils';
-import prisma from '@/server/db/client';
+import { z } from "zod";
+import { validateTaxPayer } from "@/lib/validations/taxtPayer.validate";
+import { adminProcedure, router, protectedProcedure } from "../initTrpc";
+import { handleOrderBy } from "./utils/Sorting.routeUtils";
+import prisma from "@/server/db/client";
 
 export const taxPayerRouter = router({
   count: protectedProcedure.query(async () => {
@@ -17,7 +17,7 @@ export const taxPayerRouter = router({
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
@@ -35,11 +35,11 @@ export const taxPayerRouter = router({
     .query(async ({ input }) => {
       return await prisma?.taxPayer.findMany({
         take: 20,
-        orderBy: { razonSocial: 'asc' },
+        orderBy: { razonSocial: "asc" },
         include: { bankInfo: true },
         where: {
           ruc: {
-            search: input.ruc,
+            contains: input.ruc,
           },
         },
       });
@@ -107,12 +107,12 @@ export const taxPayerRouter = router({
           bankInfo: {
             upsert: {
               create: {
-                bankName: input.bankInfo?.bankName ?? 'BANCOP',
-                accountNumber: input.bankInfo?.accountNumber ?? '',
-                ownerName: input.bankInfo?.ownerName ?? '',
-                ownerDocType: input.bankInfo?.ownerDocType ?? 'CI',
-                ownerDoc: input.bankInfo?.ownerDoc ?? '',
-                type: input.bankInfo?.type ?? 'CURRENT',
+                bankName: input.bankInfo?.bankName ?? "BANCOP",
+                accountNumber: input.bankInfo?.accountNumber ?? "",
+                ownerName: input.bankInfo?.ownerName ?? "",
+                ownerDocType: input.bankInfo?.ownerDocType ?? "CI",
+                ownerDoc: input.bankInfo?.ownerDoc ?? "",
+                type: input.bankInfo?.type ?? "CURRENT",
               },
 
               update: {
@@ -133,7 +133,7 @@ export const taxPayerRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const org = await prisma?.taxPayer.delete({
