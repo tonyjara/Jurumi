@@ -454,6 +454,8 @@ model MoneyRequest {
     facturaNumber    String?
     searchableImages searchableImage[]
 
+    moneyOrderNumber Int? //By insistance from the team, this will auto increment only in the case of money orders
+
     expenseReports        ExpenseReport[]
     expenseReturns        ExpenseReturn[]
     moneyRequestApprovals MoneyRequestApproval[]
@@ -488,7 +490,8 @@ model ExpenseReport {
     costCategory   CostCategory? @relation(fields: [costCategoryId], references: [id])
     transactions   Transaction[]
 
-    @@unique([taxPayerId, facturaNumber])
+    // NOTE: This was causing a lot of problems
+    // @@unique([taxPayerId, facturaNumber]) 
 }
 
 model ExpenseReturn {

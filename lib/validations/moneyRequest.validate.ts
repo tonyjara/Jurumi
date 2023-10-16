@@ -59,6 +59,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       rejectionMessage: z.string(),
       organizationId: z.string().min(1, "Favor seleccione una organización."),
       wasCancelled: z.boolean(),
+      moneyOrderNumber: z.number().nullable(),
       taxPayer: z
         .object({
           //Only make required through superRefine
@@ -230,6 +231,7 @@ export const defaultMoneyRequestData: FormMoneyRequest = {
   softDeleted: false,
   rejectionMessage: "",
   organizationId: "",
+  moneyOrderNumber: null,
   wasCancelled: false,
   taxPayer: {
     razonSocial: "",
@@ -262,6 +264,7 @@ export const MockMoneyRequest = ({
   const x: FormMoneyRequest = {
     id: "",
     comments: faker.commerce.productDescription().substring(0, 200),
+    moneyOrderNumber: null,
     createdAt: new Date(),
     operationDate: new Date(),
     updatedAt: null,

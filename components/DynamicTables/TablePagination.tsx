@@ -39,6 +39,7 @@ const TablePagination = <T extends object>({
   const canPreviousPage = pageIndex > 0;
   const gotoPage = (x: number) => setPageIndex(x);
   const lastPage = Math.ceil(count / pageSize);
+
   return (
     <Flex
       w={"100%"}

@@ -232,6 +232,20 @@ export const moneyRequestRouter = router({
         input,
       });
 
+      //When creating money orders, get the last money order number and add 1
+      //This starts from 1000 to avoid previous money order history collisions
+      if (input.moneyRequestType === "MONEY_ORDER") {
+        const lastMoneyOrder = await prisma.moneyRequest.findFirst({
+          where: { moneyOrderNumber: { not: null } },
+          orderBy: { moneyOrderNumber: "desc" },
+        });
+        const nextMoneyOrderNumber = lastMoneyOrder?.moneyOrderNumber
+          ? lastMoneyOrder?.moneyOrderNumber + 1
+          : 1000;
+
+        input.moneyOrderNumber = nextMoneyOrderNumber;
+      }
+
       const MoneyReq = await prisma?.moneyRequest.create({
         data: {
           accountId: user.id,
@@ -247,6 +261,7 @@ export const moneyRequestRouter = router({
           comments: input.comments,
           taxPayerId: taxPayer?.id,
           costCategoryId: input.costCategoryId,
+          moneyOrderNumber: input.moneyOrderNumber,
           facturaNumber: input.facturaNumber,
           searchableImages: uploadedImages?.length
             ? {
