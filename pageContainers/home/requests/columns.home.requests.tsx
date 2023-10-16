@@ -15,6 +15,7 @@ import {
 import { Center } from "@chakra-ui/react";
 import SearchableImageModalCell from "@/components/DynamicTables/DynamicCells/SearchableImagesModalCell";
 import { CompleteMoneyReqHome } from "./home.requests.types";
+import NumberCell from "@/components/DynamicTables/DynamicCells/NumberCell";
 
 const columnHelper = createColumnHelper<CompleteMoneyReqHome>();
 
@@ -27,7 +28,12 @@ export const homeRequestsColumns = ({
 }) => [
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
-    header: "N.",
+    header: "N°",
+  }),
+  columnHelper.accessor("moneyOrderNumber", {
+    cell: (x) =>
+      x.getValue() ? <NumberCell value={x.getValue() ?? 0} /> : "-",
+    header: "O.P. N°",
   }),
   columnHelper.accessor("createdAt", {
     cell: (x) => <DateCell date={x.getValue()} />,

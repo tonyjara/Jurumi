@@ -61,7 +61,7 @@ export const moneyRequestsColumns = ({
 
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
-    header: "N.",
+    header: "N°",
   }),
   columnHelper.accessor("moneyOrderNumber", {
     cell: (x) => (x.getValue() ? <NumberCell value={x.getValue()} /> : "-"),
