@@ -252,6 +252,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
   const imageName2 = uuidV4();
   const x: MoneyRequestComplete = {
     id: "cldagi67k005qpftt2ssd67m9",
+    moneyOrderNumber: null,
     comments: faker.commerce.productDescription().substring(0, 100),
     taxPayer: {
       id: "",

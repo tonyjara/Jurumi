@@ -22,6 +22,7 @@ import SelectCheckBoxCell from "@/components/DynamicTables/DynamicCells/SelectCh
 import HeaderSelectCheckBox from "@/components/DynamicTables/DynamicCells/HeaderSelectCheckBox";
 import { MoneyRequestComplete } from "./mod.requests.types";
 import MoneyRequestOperationDateChangeCell from "@/components/DynamicTables/DynamicCells/MoneyRequestOperationDateChangeCell";
+import NumberCell from "@/components/DynamicTables/DynamicCells/NumberCell";
 
 const columnHelper = createColumnHelper<MoneyRequestComplete>();
 
@@ -60,7 +61,11 @@ export const moneyRequestsColumns = ({
 
   columnHelper.display({
     cell: (x) => x.row.index + 1 + pageIndex * pageSize,
-    header: "N.",
+    header: "N°",
+  }),
+  columnHelper.accessor("moneyOrderNumber", {
+    cell: (x) => (x.getValue() ? <NumberCell value={x.getValue()} /> : "-"),
+    header: "O.P. N°",
   }),
   columnHelper.accessor("createdAt", {
     cell: (x) => <DateCell date={x.getValue()} />,

@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import SignatureBox from "@/components/Print/SignatureBox";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 import { CompleteMoneyReqHome } from "../../requests/home.requests.types";
@@ -32,7 +32,9 @@ const MoneyOrderPrintPage = ({
   const user = useSession().data?.user;
   const borderColor = useColorModeValue("gray.700", "gray.300");
 
-  const req = moneyRequest ?? moneyReqCompleteMock(user?.id);
+  const cbReq = useCallback(() => moneyReqCompleteMock(user?.id), [user?.id]);
+
+  const req = moneyRequest ?? cbReq();
   return (
     <Box
       justifyContent={"center"}
@@ -53,7 +55,10 @@ const MoneyOrderPrintPage = ({
           )}
           <Text fontSize={"6xl"}>{org?.displayName}</Text>
         </Flex>
-        <Text fontSize={"2xl"}>ORDEN DE PAGO</Text>
+        <Text fontSize={"2xl"}>
+          ORDEN DE PAGO N°
+          {req?.moneyOrderNumber ? req.moneyOrderNumber : "-"}
+        </Text>
         <TableContainer
           borderColor={borderColor}
           borderWidth="1px"

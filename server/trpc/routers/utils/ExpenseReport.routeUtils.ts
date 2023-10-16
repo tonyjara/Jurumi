@@ -163,6 +163,7 @@ export const createReimbursementRequestBasedOnExpenseReport = async ({
     moneyRequestType: "REIMBURSMENT_ORDER",
     currency: "PYG",
     amountRequested: difference,
+    moneyOrderNumber: null,
     costCategoryId: input.costCategoryId,
     accountId: "",
     projectId: input.projectId,

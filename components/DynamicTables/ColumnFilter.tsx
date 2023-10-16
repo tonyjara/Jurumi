@@ -70,6 +70,13 @@ const ColumnFilter = (props: ColumnFilterProps) => {
       {column.id === "comments" && (
         <InputContainsColumnFilter keyName="comments" {...props} />
       )}{" "}
+      {column.id === "moneyOrderNumber" && (
+        <InputContainsColumnFilter
+          keyName="moneyOrderNumber"
+          isNumber
+          {...props}
+        />
+      )}{" "}
       {column.id === "facturaNumber" && (
         <InputContainsColumnFilter keyName="facturaNumber" {...props} />
       )}{" "}

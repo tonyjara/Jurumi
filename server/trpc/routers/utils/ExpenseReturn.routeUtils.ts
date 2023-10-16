@@ -1,7 +1,6 @@
 import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
 import type { ExpenseReturn, Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import prisma from "@/server/db/client";
 
 const createMoneyAccountTx = async ({
   txCtx,

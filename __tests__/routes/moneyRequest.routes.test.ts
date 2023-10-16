@@ -17,6 +17,7 @@ const mockOutPut: MoneyRequest = {
   operationDate: new Date(),
   updatedAt: null,
   description: "",
+  moneyOrderNumber: null,
   status: "PENDING",
   moneyRequestType: "FUND_REQUEST",
   currency: "USD",
@@ -34,10 +35,10 @@ const mockOutPut: MoneyRequest = {
   comments: "",
 };
 const userCaller = appRouter.createCaller(
-  createInnerTRPCContext({ session: userSessionMock, prisma: prismaMock })
+  createInnerTRPCContext({ session: userSessionMock, prisma: prismaMock }),
 );
 const adminCaller = appRouter.createCaller(
-  createInnerTRPCContext({ session: adminSessionMock, prisma: prismaMock })
+  createInnerTRPCContext({ session: adminSessionMock, prisma: prismaMock }),
 );
 export {};
 
