@@ -1,8 +1,7 @@
 import React from "react";
 import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react";
-import type { Decimal } from "@prisma/client/runtime";
-import { decimalFormat } from "../../../lib/utils/DecimalHelpers";
 import type { Currency } from "@prisma/client";
+import Decimal from "decimal.js";
 
 export const percentageCellUtil = (executed: Decimal, total: Decimal) =>
   executed.dividedBy(total).times(100).toFixed(0);
@@ -10,7 +9,6 @@ export const percentageCellUtil = (executed: Decimal, total: Decimal) =>
 const PercentageCell = ({
   total,
   executed,
-  currency,
 }: {
   total: Decimal;
   executed: Decimal;

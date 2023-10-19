@@ -1,6 +1,6 @@
-import type { CostCategory, Currency } from "@prisma/client";
-import { Prisma } from "@prisma/client";
-import type { Decimal } from "@prisma/client/runtime";
+import type { CostCategory, Currency } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import Decimal from 'decimal.js';
 
 export const projectExecutedAmount = ({
   costCats,
@@ -20,8 +20,8 @@ export const projectExecutedAmount = ({
     const lastTx = costCat.transactions[0];
     // if (!costCat.transactions.length || !lastTx) continue;
 
-    if (lastTx?.currency === "PYG") gs = gs.add(lastTx.currentBalance);
-    if (lastTx?.currency === "USD") usd = usd.add(lastTx.currentBalance);
+    if (lastTx?.currency === 'PYG') gs = gs.add(lastTx.currentBalance);
+    if (lastTx?.currency === 'USD') usd = usd.add(lastTx.currentBalance);
   }
 
   return { gs, usd };
@@ -41,3 +41,9 @@ export const projectDisbursedAmount = ({
 
   return lastTx ? lastTx.currentBalance : new Prisma.Decimal(0);
 };
+
+export const generateAcronym = (name: string) =>
+  name
+    .split(' ')
+    .map((x) => x[0]?.toUpperCase())
+    .join('');

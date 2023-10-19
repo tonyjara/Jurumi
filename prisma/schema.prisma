@@ -308,6 +308,7 @@ model Project {
     endDate      DateTime?
     updatedById  String?
     displayName  String      @unique
+    acronym      String?     @unique
     description  String
     financerName String      @default("")
     archived     Boolean     @default(false)

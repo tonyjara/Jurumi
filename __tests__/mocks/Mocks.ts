@@ -12,6 +12,7 @@ import type { FormTransactionCreate } from "@/lib/validations/transaction.create
 import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
 import { FormMoneyAccounOffset } from "@/lib/validations/moneyAccountOffset.validate";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
+import { generateAcronym } from "@/lib/utils/ProjectUtils";
 //@ts-ignore
 const faker = (await import("@faker-js/faker")).faker;
 
@@ -19,10 +20,10 @@ const bankInfo: () => FormBankInfo = () => {
   const x: FormBankInfo = {
     bankName: randEnumValue(BankNamesPy),
     type: "SAVINGS",
-    accountNumber: faker.finance.account(),
-    ownerName: faker.name.fullName(),
+    accountNumber: faker.finance.accountNumber(),
+    ownerName: faker.person.fullName(),
     ownerDocType: "CI",
-    ownerDoc: faker.finance.account(5),
+    ownerDoc: faker.finance.accountNumber(5),
     country: "Asuncion",
     city: "Paraguay",
     ownerContactNumber: "0981 999 111",
@@ -43,7 +44,9 @@ export const moneyAccMock = ({
     updatedById: null,
     isCashAccount: false,
     currency: "PYG",
-    initialBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+    initialBalance: new Prisma.Decimal(
+      faker.commerce.price({ min: 1000000, max: 3000000 }),
+    ),
     displayName: faker.commerce.department(),
     archived: false,
     softDeleted: false,
@@ -54,16 +57,19 @@ export const moneyAccMock = ({
 };
 
 export const projectMock: () => FormProject = () => {
+  const name =
+    faker.commerce.productAdjective() + " " + faker.company.buzzVerb();
+  const acronym = generateAcronym(name);
   const x: FormProject = {
     id: "",
     createdAt: new Date(),
     updatedAt: null,
+    acronym,
     createdById: "",
     updatedById: null,
     endDate: null,
-    financerName: faker.name.fullName(),
-    displayName:
-      faker.commerce.productAdjective() + " " + faker.company.bsBuzz(),
+    financerName: faker.person.fullName(),
+    displayName: name,
     organizationId: "",
     archived: false,
     softDeleted: false,
@@ -78,7 +84,7 @@ export const projectMock: () => FormProject = () => {
         displayName: faker.commerce.product(),
         currency: "PYG",
         assignedAmount: new Prisma.Decimal(
-          faker.commerce.price(1000000, 3000000),
+          faker.commerce.price({ min: 1000000, max: 3000000 }),
         ),
         referenceExchangeRate: 7000,
         projectId: null,
@@ -93,7 +99,7 @@ export const projectMock: () => FormProject = () => {
         referenceExchangeRate: 7000,
         currency: "PYG",
         assignedAmount: new Prisma.Decimal(
-          faker.commerce.price(1000000, 3000000),
+          faker.commerce.price({ min: 1000000, max: 3000000 }),
         ),
         projectId: null,
       },
@@ -118,7 +124,7 @@ export const imbursementMock: (
     | undefined,
 ) => FormImbursement = (moneyAccOptions, projectOptions) => {
   const amountInOtherCurrency = new Prisma.Decimal(
-    faker.commerce.price(500, 2000),
+    faker.commerce.price({ min: 500, max: 2000 }),
   );
   const exchangeRate = 6500;
   const imageName = uuidV4();
@@ -202,7 +208,9 @@ export const moneyAccountOffsetMock = ({
     id: "",
     createdAt: new Date(),
     updatedAt: null,
-    offsettedAmount: new Prisma.Decimal(faker.commerce.price(100000, 300000)),
+    offsettedAmount: new Prisma.Decimal(
+      faker.commerce.price({ min: 100000, max: 300000 }),
+    ),
     offsetJustification: faker.commerce.productDescription().substring(0, 12),
     moneyAccountId: moneyAccountId ?? "",
     currency: currency ?? "PYG",
@@ -256,14 +264,14 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
     comments: faker.commerce.productDescription().substring(0, 100),
     taxPayer: {
       id: "",
-      razonSocial: faker.name.fullName(),
-      ruc: faker.random.numeric(6),
+      razonSocial: faker.person.fullName(),
+      ruc: faker.string.numeric(6),
       bankInfo: {
         bankName: "ITAU",
-        accountNumber: faker.finance.account(),
-        ownerName: faker.name.fullName(),
+        accountNumber: faker.finance.accountNumber(),
+        ownerName: faker.person.fullName(),
         ownerDocType: "CI",
-        ownerDoc: faker.finance.account(5),
+        ownerDoc: faker.finance.accountNumber(5),
         taxPayerId: "",
         type: "CURRENT",
       },
@@ -349,6 +357,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
       softDeleted: false,
       projectType: "SUBSIDY",
       organizationId: "clcqw4lz10008pf5s711y5uwx",
+      acronym: "PAVAP",
     },
     transactions: [
       {

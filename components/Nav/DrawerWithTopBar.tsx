@@ -21,7 +21,7 @@ export default function DrawerWithTopBar({
 
   useEffect(() => {
     const isMinimized = JSON.parse(
-      localStorage.getItem("sidebarToggle") ?? "false"
+      localStorage.getItem("sidebarToggle") ?? "false",
     );
     setMinimized(isMinimized);
 
@@ -49,22 +49,7 @@ export default function DrawerWithTopBar({
       <MyTopBar authenticated={authenticated} onOpen={onOpen} />
 
       <Box
-        //MOBILE
-        display={{ base: "block", md: "none" }}
-        overflow="hidden"
-        transition="0.2s ease"
-        pt={"75px"}
-        px={"10px"}
-      >
-        {children}
-      </Box>
-
-      <Box
-        //DESKTOP
-        display={{ base: "none", md: "block" }}
-        transition="0.2s ease"
-        pt={"75px"}
-        px={"10px"}
+        pt={"65px"}
         ml={!authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }}
       >
         {children}

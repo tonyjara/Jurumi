@@ -1,28 +1,28 @@
-import { VStack } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import React from "react";
+import { VStack } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import React from 'react';
 import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
   UseFormReset,
-} from "react-hook-form";
-import { useWatch } from "react-hook-form";
-import { currencyOptions } from "../../lib/utils/SelectOptions";
-import { translateCurrencyPrefix } from "../../lib/utils/TranslatedEnums";
-import { trpcClient } from "../../lib/utils/trpcClient";
-import FormControlledImageUpload from "../FormControlled/FormControlledImageUpload";
-import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
-import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
-import FormControlledSelect from "../FormControlled/FormControlledSelect";
-import type { FormExpenseReturn } from "@/lib/validations/expenseReturn.validate";
-import type { Currency } from "@prisma/client";
-import { expenseReturnMock } from "@/__tests__/mocks/Mocks";
-import SeedButton from "../DevTools/SeedButton";
-import { Decimal } from "@prisma/client/runtime";
-import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
-import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
+} from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
+import { currencyOptions } from '../../lib/utils/SelectOptions';
+import { translateCurrencyPrefix } from '../../lib/utils/TranslatedEnums';
+import { trpcClient } from '../../lib/utils/trpcClient';
+import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
+import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
+import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
+import FormControlledSelect from '../FormControlled/FormControlledSelect';
+import type { FormExpenseReturn } from '@/lib/validations/expenseReturn.validate';
+import type { Currency } from '@prisma/client';
+import { expenseReturnMock } from '@/__tests__/mocks/Mocks';
+import SeedButton from '../DevTools/SeedButton';
+import FormControlledNumberInput from '../FormControlled/FormControlledNumberInput';
+import { CompleteMoneyReqHome } from '@/pageContainers/home/requests/home.requests.types';
+import Decimal from 'decimal.js';
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -44,18 +44,18 @@ const ExpenseReturnForm = ({
   const { data: session } = useSession();
   const user = session?.user;
 
-  const currency = useWatch({ control, name: "currency" });
+  const currency = useWatch({ control, name: 'currency' });
   const wasConvertedToOtherCurrency = useWatch({
     control,
-    name: "wasConvertedToOtherCurrency",
+    name: 'wasConvertedToOtherCurrency',
   });
 
   const handleCurrencyChange = (e: Currency) => {
-    setValue("moneyAccountId", "");
+    setValue('moneyAccountId', '');
     if (e !== moneyRequest?.currency) {
-      return setValue("wasConvertedToOtherCurrency", true);
+      return setValue('wasConvertedToOtherCurrency', true);
     }
-    return setValue("wasConvertedToOtherCurrency", false);
+    return setValue('wasConvertedToOtherCurrency', false);
   };
 
   const { data: moneyAccs } = trpcClient.moneyAcc.getManyPublic.useQuery();
@@ -77,7 +77,7 @@ const ExpenseReturnForm = ({
           mock={() =>
             expenseReturnMock({
               moneyRequestId: moneyRequest.id,
-              moneyAccountId: accOptions[0]?.value ?? "",
+              moneyAccountId: accOptions[0]?.value ?? '',
               amountReturned: pendingAmount(),
               currency,
             })
@@ -96,16 +96,16 @@ const ExpenseReturnForm = ({
         <FormControlledNumberInput
           control={control}
           errors={errors}
-          name={"exchangeRate"}
+          name={'exchangeRate'}
           label="Tasa de cambio"
-          helperText={"Un dolar equivale X guaranies"}
+          helperText={'Un dolar equivale X guaranies'}
         />
       )}
 
       <FormControlledMoneyInput
         control={control}
         errors={errors}
-        name={"amountReturned"}
+        name={'amountReturned'}
         label="Monto devuelto"
         prefix={translateCurrencyPrefix(currency)}
         currency={currency}
@@ -128,7 +128,7 @@ const ExpenseReturnForm = ({
       <FormControlledSelect
         control={control}
         errors={errors}
-        name={"moneyAccountId"}
+        name={'moneyAccountId'}
         label="Seleccione la cuenta que recibió la devolución"
         options={moneyAccOptions(currency) ?? []}
         isClearable={true}

@@ -7,7 +7,7 @@ export const handleWhereImApprover = (
   input: {
     status?: "PENDING" | "ACCEPTED" | "REJECTED" | undefined;
   },
-  userId: string
+  userId: string,
 ) => {
   if (input.status === "PENDING") {
     return {
@@ -96,23 +96,36 @@ export const handleMoneyRequestExtraFilters = ({
   extraFilters: string[];
 }) => {
   const hasBeingReportedIds = getHasBeingReportedIds.map((r: any) => r.id);
-
   const executionPendingIds = getExecutionPendingIds.map((r: any) => r.id);
-  const beingReportedFilter = extraFilters.includes("beingReported")
-    ? { id: { in: hasBeingReportedIds } }
-    : undefined;
-  const pendingExecutionFilter = extraFilters.includes("pendingExecution")
-    ? { id: { in: executionPendingIds } }
-    : undefined;
-  const removeWasCancelledFilter = extraFilters.includes("removeWasCancelled")
-    ? { wasCancelled: false }
-    : undefined;
 
-  return [
-    beingReportedFilter,
-    pendingExecutionFilter,
-    removeWasCancelledFilter,
-  ];
+  /* const beingReportedFilter = extraFilters.includes("beingReported") */
+  /*   ? { id: { in: hasBeingReportedIds } } */
+  /*   : null; */
+  /* const pendingExecutionFilter = extraFilters.includes("pendingExecution") */
+  /*   ? { id: { in: executionPendingIds } } */
+  /*   : null; */
+  /* const removeWasCancelledFilter = extraFilters.includes("removeWasCancelled") */
+  /*   ? { wasCancelled: false } */
+  /*   : null; */
+  /**/
+  /* return [ */
+  /*   beingReportedFilter, */
+  /*   pendingExecutionFilter, */
+  /*   removeWasCancelledFilter, */
+  /* ]; */
+
+  let extraFiltersArray: any[] = [];
+  if (extraFilters.includes("beingReported")) {
+    extraFiltersArray.push({ id: { in: hasBeingReportedIds } });
+  }
+  if (extraFilters.includes("pendingExecution")) {
+    extraFiltersArray.push({ id: { in: executionPendingIds } });
+  }
+  if (extraFilters.includes("removeWasCancelled")) {
+    extraFiltersArray.push({ wasCancelled: false });
+  }
+
+  return extraFiltersArray;
 };
 export const handleHomeRequestsExtraFilters = ({
   extraFilters,

@@ -44,11 +44,42 @@ const FromToDateColumnFilter = ({
   const filterListValue = whereFilterList.filter((x) => x.createdAt)[0];
   const from = filterListValue?.createdAt.gte;
   const to = filterListValue?.createdAt.lte;
-  const clearPreviouseValues = () => {
+
+  const clearFrom = (e: any) => {
+    e.stopPropagation();
     if (!setWhereFilterList) return;
+
+    const prevToDate = filterListValue?.createdAt.lte;
+
     setWhereFilterList((prev) => prev.filter((x) => !x.createdAt));
+
+    //If both empty clear key
+    if (!prevToDate)
+      return setWhereFilterList((prev) => prev.filter((x) => !x.createdAt));
+
+    setWhereFilterList((prev) => [
+      ...prev,
+      whereBuilder(null, prevToDate ?? null),
+    ]);
   };
 
+  const clearTo = (e: any) => {
+    e.stopPropagation();
+    if (!setWhereFilterList) return;
+
+    const prevFromDate = filterListValue?.createdAt.gte;
+
+    setWhereFilterList((prev) => prev.filter((x) => !x.createdAt));
+
+    //If both empty clear key
+    if (!prevFromDate)
+      return setWhereFilterList((prev) => prev.filter((x) => !x.createdAt));
+
+    setWhereFilterList((prev) => [
+      ...prev,
+      whereBuilder(prevFromDate ?? null, null),
+    ]);
+  };
   return (
     <Flex onClick={(e) => e.stopPropagation()}>
       <Popover isOpen={fromOpen}>
@@ -58,21 +89,7 @@ const FromToDateColumnFilter = ({
             onClick={() => setFromOpen(!fromOpen)}
             rightIcon={
               from ? (
-                <CloseIcon
-                  _hover={{ color: "red.500" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const prevToDate = filterListValue?.createdAt.lte;
-
-                    clearPreviouseValues();
-
-                    setWhereFilterList &&
-                      setWhereFilterList((prev) => [
-                        ...prev,
-                        whereBuilder(null, prevToDate ?? null),
-                      ]);
-                  }}
-                />
+                <CloseIcon _hover={{ color: "red.500" }} onClick={clearFrom} />
               ) : (
                 <CalendarIcon />
               )
@@ -91,20 +108,20 @@ const FromToDateColumnFilter = ({
               selected={from ?? new Date()}
               disabled={to ? [{ after: to }] : undefined}
               onDayClick={(e: Date | undefined) => {
+                if (!setWhereFilterList) return;
+
                 e?.setHours(0, 0, 0, 0);
+                setWhereFilterList((prev) => prev.filter((x) => !x.createdAt));
 
                 const filterListValue = whereFilterList.filter(
-                  (x) => x.createdAt
+                  (x) => x.createdAt,
                 )[0];
                 const prevToDate = filterListValue?.createdAt.lte;
 
-                clearPreviouseValues();
-
-                setWhereFilterList &&
-                  setWhereFilterList((prev) => [
-                    ...prev,
-                    whereBuilder(e ?? null, prevToDate ?? null),
-                  ]);
+                setWhereFilterList((prev) => [
+                  ...prev,
+                  whereBuilder(e ?? null, prevToDate ?? null),
+                ]);
 
                 setFromOpen(false);
               }}
@@ -123,24 +140,7 @@ const FromToDateColumnFilter = ({
             onClick={() => setToOpen(true)}
             rightIcon={
               to ? (
-                <CloseIcon
-                  _hover={{ color: "red.500" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const filterListValue = whereFilterList.filter(
-                      (x) => x.createdAt
-                    )[0];
-                    const prevFromDate = filterListValue?.createdAt.gte;
-
-                    clearPreviouseValues();
-
-                    setWhereFilterList &&
-                      setWhereFilterList((prev) => [
-                        ...prev,
-                        whereBuilder(prevFromDate ?? null, null),
-                      ]);
-                  }}
-                />
+                <CloseIcon _hover={{ color: "red.500" }} onClick={clearTo} />
               ) : (
                 <CalendarIcon />
               )
@@ -158,20 +158,21 @@ const FromToDateColumnFilter = ({
               defaultMonth={to ?? new Date()}
               selected={to ?? new Date()}
               onDayClick={(e: Date | undefined) => {
+                if (!setWhereFilterList) return;
+
                 e?.setHours(23, 59, 59, 59);
 
                 const filterListValue = whereFilterList.filter(
-                  (x) => x.createdAt
+                  (x) => x.createdAt,
                 )[0];
                 const prevFromDate = filterListValue?.createdAt.gte;
 
-                clearPreviouseValues();
+                setWhereFilterList((prev) => prev.filter((x) => !x.createdAt));
 
-                setWhereFilterList &&
-                  setWhereFilterList((prev) => [
-                    ...prev,
-                    whereBuilder(prevFromDate ?? null, e ?? null),
-                  ]);
+                setWhereFilterList((prev) => [
+                  ...prev,
+                  whereBuilder(prevFromDate ?? null, e ?? null),
+                ]);
 
                 setToOpen(false);
               }}

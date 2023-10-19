@@ -50,11 +50,11 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
               })
               .min(
                 2,
-                "Favor seleccione una cuenta de donde extraer el dinero."
+                "Favor seleccione una cuenta de donde extraer el dinero.",
               ),
             wasConvertedToOtherCurrency: z.boolean(),
             exchangeRate: z.number(),
-          })
+          }),
         ),
         id: z.number().int(),
         createdAt: z.date(),
@@ -111,7 +111,7 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
             });
           }
         });
-      })
+      }),
   );
 
 export const defaultTransactionCreateData: FormTransactionCreate = {
@@ -154,10 +154,10 @@ export const transactionMock: (
         value: string;
         label: string;
       }[]
-    | undefined
+    | undefined,
 ) => FormTransactionCreate = (
   { projectId, accountId, currency, id, costCategoryId, amountRequested },
-  moneyAccOptions
+  moneyAccOptions,
 ) => {
   const imageName = uuidV4();
   const x: FormTransactionCreate = {
@@ -177,7 +177,9 @@ export const transactionMock: (
     accountId,
     updatedById: null,
     moneyAccountOffsetId: null,
-    openingBalance: new Prisma.Decimal(faker.commerce.price(1000000, 3000000)),
+    openingBalance: new Prisma.Decimal(
+      faker.commerce.price({ min: 1000000, max: 3000000 }),
+    ),
     currentBalance: new Prisma.Decimal(0),
     isCancellation: false,
     moneyRequestId: id,

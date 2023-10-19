@@ -86,31 +86,6 @@ export const moneyRequestRouter = router({
         ...completeHomeMoneyRequestIncludeArgs,
       });
     }),
-  count: protectedProcedure
-    .input(
-      z.object({
-        extraFilters: z.string().array(),
-        whereFilterList: z.any().array().optional(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const getHasBeingReportedIds = await beingReportedRawSqlShort();
-      const getExecutionPendingIds = await executionPengingRawSql();
-
-      return prisma?.moneyRequest.count({
-        where: {
-          AND: [
-            ...handleMoneyRequestExtraFilters({
-              extraFilters: input.extraFilters,
-              getHasBeingReportedIds,
-              getExecutionPendingIds,
-            }),
-            ,
-            ...(input?.whereFilterList ?? []),
-          ],
-        },
-      });
-    }),
 
   countMyOwn: protectedProcedure
     .input(
@@ -134,6 +109,30 @@ export const moneyRequestRouter = router({
       });
     }),
 
+  count: protectedProcedure
+    .input(
+      z.object({
+        extraFilters: z.string().array(),
+        whereFilterList: z.any().array().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const getHasBeingReportedIds = await beingReportedRawSqlShort();
+      const getExecutionPendingIds = await executionPengingRawSql();
+
+      return prisma?.moneyRequest.count({
+        where: {
+          AND: [
+            ...handleMoneyRequestExtraFilters({
+              extraFilters: input.extraFilters,
+              getHasBeingReportedIds,
+              getExecutionPendingIds,
+            }),
+            ...(input?.whereFilterList ?? []),
+          ],
+        },
+      });
+    }),
   getManyComplete: adminModObserverProcedure
     .input(
       z.object({
@@ -235,34 +234,52 @@ export const moneyRequestRouter = router({
       //When creating money orders, get the last money order number and add 1
       //This starts from 1000 to avoid previous money order history collisions
       if (input.moneyRequestType === "MONEY_ORDER") {
-        const lastMoneyOrder = await prisma.moneyRequest.findFirst({
-          where: { moneyOrderNumber: { not: null } },
-          orderBy: { moneyOrderNumber: "desc" },
-        });
-        const nextMoneyOrderNumber = lastMoneyOrder?.moneyOrderNumber
-          ? lastMoneyOrder?.moneyOrderNumber + 1
-          : 1000;
+        //With no project, maintain the last money order number
+        if (input.projectId) {
+          const lastMoneyOrder = await prisma.moneyRequest.findFirst({
+            where: {
+              moneyOrderNumber: { not: null },
+              projectId: input.projectId,
+            },
+            orderBy: { moneyOrderNumber: "desc" },
+          });
+          const nextMoneyOrderNumber = lastMoneyOrder?.moneyOrderNumber
+            ? lastMoneyOrder?.moneyOrderNumber + 1
+            : 1000;
 
-        input.moneyOrderNumber = nextMoneyOrderNumber;
+          input.moneyOrderNumber = nextMoneyOrderNumber;
+        }
+        //With no project, maintain the last money order number
+        if (!input.projectId) {
+          const lastMoneyOrder = await prisma.moneyRequest.findFirst({
+            where: { moneyOrderNumber: { not: null }, projectId: null },
+            orderBy: { moneyOrderNumber: "desc" },
+          });
+          const nextMoneyOrderNumber = lastMoneyOrder?.moneyOrderNumber
+            ? lastMoneyOrder?.moneyOrderNumber + 1
+            : 1000;
+
+          input.moneyOrderNumber = nextMoneyOrderNumber;
+        }
       }
 
       const MoneyReq = await prisma?.moneyRequest.create({
         data: {
           accountId: user.id,
-          operationDate: new Date(),
           amountRequested: new Prisma.Decimal(input.amountRequested),
+          comments: input.comments,
+          costCategoryId: input.costCategoryId,
           currency: input.currency,
           description: input.description,
-          moneyRequestType: input.moneyRequestType,
-          projectId: input.projectId,
-          status: input.status,
-          rejectionMessage: input.rejectionMessage,
-          organizationId: input.organizationId,
-          comments: input.comments,
-          taxPayerId: taxPayer?.id,
-          costCategoryId: input.costCategoryId,
-          moneyOrderNumber: input.moneyOrderNumber,
           facturaNumber: input.facturaNumber,
+          moneyOrderNumber: input.moneyOrderNumber,
+          moneyRequestType: input.moneyRequestType,
+          operationDate: new Date(),
+          organizationId: input.organizationId,
+          projectId: input.projectId,
+          rejectionMessage: input.rejectionMessage,
+          status: input.status,
+          taxPayerId: taxPayer?.id,
           searchableImages: uploadedImages?.length
             ? {
                 connect: input.searchableImages.map((x) => ({
@@ -306,6 +323,7 @@ export const moneyRequestRouter = router({
           comments: input.comments,
           description: input.description,
           moneyRequestType: input.moneyRequestType,
+          moneyOrderNumber: input.moneyOrderNumber,
           projectId: input.projectId,
           status: input.status,
           rejectionMessage: input.rejectionMessage,
