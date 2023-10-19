@@ -10,6 +10,7 @@ import MoneyRequestCostCategoriesColumnFilter from "./ColumnFilters/MoneyRequest
 import MoneyRequestProjectsColumnFilter from "./ColumnFilters/MoneyRequestProjects.columnFilter";
 import MoneyRequestStatusColumnFilter from "./ColumnFilters/MoneyRequestStatus.ColumnFilter";
 import MoneyRequestTypeColumnFilter from "./ColumnFilters/MoneyRequestType.columnFilter";
+import MoneyOrderNumberColumnFilter from "./ColumnFilters/MonyOrderNumber.columnfilter";
 import TransactionTypeColumnFilter from "./ColumnFilters/TransactionType.columnFilter";
 
 export interface ColumnFilterProps {
@@ -71,11 +72,7 @@ const ColumnFilter = (props: ColumnFilterProps) => {
         <InputContainsColumnFilter keyName="comments" {...props} />
       )}{" "}
       {column.id === "moneyOrderNumber" && (
-        <InputContainsColumnFilter
-          keyName="moneyOrderNumber"
-          isNumber
-          {...props}
-        />
+        <MoneyOrderNumberColumnFilter keyName="moneyOrderNumber" {...props} />
       )}{" "}
       {column.id === "facturaNumber" && (
         <InputContainsColumnFilter keyName="facturaNumber" {...props} />
@@ -83,6 +80,7 @@ const ColumnFilter = (props: ColumnFilterProps) => {
       {column.id === "moneyRequestId" && (
         <InputContainsColumnFilter keyName="moneyRequestId" {...props} />
       )}{" "}
+      {/* separator */}
       {/* {column.id === "Concepto" && ( can't filter concepto in transaction becuase it varies depending on relation */}
       {/*   <InputContainsColumnFilter keyName="description" {...props} /> */}
       {/* )}{" "} */}

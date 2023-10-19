@@ -1,16 +1,16 @@
-import { projectTypeOptions } from '@/lib/utils/SelectOptions';
-import { VStack } from '@chakra-ui/react';
-import React from 'react';
+import { projectTypeOptions } from "@/lib/utils/SelectOptions";
+import { VStack } from "@chakra-ui/react";
+import React from "react";
 import type {
   FieldValues,
   Control,
   FieldErrorsImpl,
   UseFormSetValue,
-} from 'react-hook-form';
-import type { FormProject } from '../../lib/validations/project.validate';
-import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
-import FormControlledText from '../FormControlled/FormControlledText';
-import CostCategoryForm from './CostCategory.form';
+} from "react-hook-form";
+import type { FormProject } from "../../lib/validations/project.validate";
+import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
+import FormControlledText from "../FormControlled/FormControlledText";
+import CostCategoryForm from "./CostCategory.form";
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -27,6 +27,13 @@ const ProjectForm = ({ control, errors, setValue }: formProps<FormProject>) => {
           errors={errors}
           name="displayName"
           label="Nombre de su proyecto"
+        />
+        <FormControlledText
+          control={control}
+          errors={errors}
+          name="acronym"
+          label="Siglas"
+          helperText='Las siglas son las letras que representan el nombre de su proyecto. Por ejemplo: "Proyecto de Agua Potable" se puede representar como "PAP"'
         />
         <FormControlledText
           control={control}

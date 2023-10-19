@@ -23,6 +23,7 @@ import HeaderSelectCheckBox from "@/components/DynamicTables/DynamicCells/Header
 import { MoneyRequestComplete } from "./mod.requests.types";
 import MoneyRequestOperationDateChangeCell from "@/components/DynamicTables/DynamicCells/MoneyRequestOperationDateChangeCell";
 import NumberCell from "@/components/DynamicTables/DynamicCells/NumberCell";
+import OpNumberCell from "@/components/DynamicTables/DynamicCells/OpNumberCell";
 
 const columnHelper = createColumnHelper<MoneyRequestComplete>();
 
@@ -64,7 +65,7 @@ export const moneyRequestsColumns = ({
     header: "N°",
   }),
   columnHelper.accessor("moneyOrderNumber", {
-    cell: (x) => (x.getValue() ? <NumberCell value={x.getValue()} /> : "-"),
+    cell: (x) => (x.getValue() ? <OpNumberCell row={x.row.original} /> : "-"),
     header: "O.P. N°",
   }),
   columnHelper.accessor("createdAt", {

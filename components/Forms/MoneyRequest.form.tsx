@@ -24,6 +24,7 @@ import {
 } from "../../lib/validations/moneyRequest.validate";
 import SeedButton from "../DevTools/SeedButton";
 import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
+import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
 import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
 import FormControlledSelect from "../FormControlled/FormControlledSelect";
 import FormControlledTaxPayerId from "../FormControlled/FormControlledTaxPayerId";
@@ -131,6 +132,14 @@ const MoneyRequestForm = ({
             helperText="Ingresar ruc o C.I."
             showBankInfo={true}
           />
+          {isEdit && isAdmin && (
+            <FormControlledNumberInput
+              control={control}
+              errors={errors}
+              name="moneyOrderNumber"
+              label="Número de orden de pago"
+            />
+          )}
           {moneyRequestType === "REIMBURSMENT_ORDER" && (
             <>
               <ReimbursementOrderImagesForm

@@ -45,7 +45,7 @@ export const validateMember: z.ZodType<FormMember> = z.lazy(() =>
     expirationDate: z.date(),
     currency: z.nativeEnum(Currency),
     memberType: z.nativeEnum(MemberType),
-  })
+  }),
 );
 
 export const defaultMemberData: FormMember = {
@@ -59,10 +59,12 @@ export const defaultMemberData: FormMember = {
 };
 export const mockFormMember: FormMember = {
   email: faker.internet.email(),
-  displayName: faker.name.fullName(),
-  initialBalance: new Prisma.Decimal(faker.commerce.price(100000, 300000)),
-  memberSince: faker.date.past(2),
+  displayName: faker.person.fullName(),
+  initialBalance: new Prisma.Decimal(
+    faker.commerce.price({ min: 100000, max: 300000 }),
+  ),
+  memberSince: faker.date.past({ years: 2 }),
   memberType: "REGULAR",
   currency: "PYG",
-  expirationDate: faker.date.future(1),
+  expirationDate: faker.date.future({ years: 2 }),
 };

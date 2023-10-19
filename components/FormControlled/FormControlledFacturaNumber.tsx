@@ -30,7 +30,7 @@ interface InputProps<T extends FieldValues> {
 }
 
 const FormControlledFacturaNumber = <T extends FieldValues>(
-  props: InputProps<T>
+  props: InputProps<T>,
 ) => {
   const { control, name, errors, label, helperText, hidden, autoFocus, error } =
     props;
@@ -51,9 +51,10 @@ const FormControlledFacturaNumber = <T extends FieldValues>(
               </InputRightElement>
               <PatternFormat
                 value={field.value}
-                label={label}
-                error={errors.facturaNumber?.message ?? undefined}
                 customInput={Input}
+                //TODO: CHECK THIS
+                /* label={label} */
+                /* error={errors.facturaNumber?.message ?? undefined} */
                 allowEmptyFormatting
                 onValueChange={({ value }) => {
                   field.onChange(value as any);

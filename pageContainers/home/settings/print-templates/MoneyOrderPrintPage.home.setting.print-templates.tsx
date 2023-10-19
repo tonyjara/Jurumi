@@ -17,8 +17,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import SignatureBox from "@/components/Print/SignatureBox";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 import { CompleteMoneyReqHome } from "../../requests/home.requests.types";
@@ -28,14 +27,32 @@ const MoneyOrderPrintPage = ({
 }: {
   moneyRequest: MoneyRequestComplete | CompleteMoneyReqHome | null;
 }) => {
-  const { data: org } = trpcClient.org.getCurrent.useQuery();
-  const user = useSession().data?.user;
+  const [isMounted, setIsMounted] = useState(false);
+  const isDev = process.env.NODE_ENV === "development";
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { data: org } = trpcClient.org.getCurrent.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const memoMock = useCallback(() => {
+    const mock = moneyReqCompleteMock("");
+
+    mock.moneyOrderNumber = 1900;
+    return mock;
+  }, []);
+
   const borderColor = useColorModeValue("gray.700", "gray.300");
 
-  const cbReq = useCallback(() => moneyReqCompleteMock(user?.id), [user?.id]);
+  const req = moneyRequest ?? memoMock();
 
-  const req = moneyRequest ?? cbReq();
-  return (
+  return !isMounted && isDev ? (
+    <></>
+  ) : (
     <Box
       justifyContent={"center"}
       alignContent="center"
@@ -43,8 +60,10 @@ const MoneyOrderPrintPage = ({
       display={"block"}
       w="100%"
       // h="150vh"
+      marginTop={"-80px"}
+      transform={"scale(0.8)"}
     >
-      <Box mx="40px" mt={"40px"}>
+      <Box mx="40px" mt={"0px"}>
         <Flex gap={5}>
           {org?.imageLogo?.url && (
             <Image
@@ -55,10 +74,17 @@ const MoneyOrderPrintPage = ({
           )}
           <Text fontSize={"6xl"}>{org?.displayName}</Text>
         </Flex>
-        <Text fontSize={"2xl"}>
-          ORDEN DE PAGO N°
-          {req?.moneyOrderNumber ? req.moneyOrderNumber : "-"}
-        </Text>
+        <Flex>
+          <Text fontSize={"2xl"}>
+            ORDEN DE PAGO: &quot;
+            {req.project
+              ? req.project.acronym
+                ? req.project.acronym
+                : "SS"
+              : "SP"}
+            -{req?.moneyOrderNumber?.toLocaleString("en-US") ?? ""}&quot;
+          </Text>
+        </Flex>
         <TableContainer
           borderColor={borderColor}
           borderWidth="1px"
@@ -99,12 +125,10 @@ const MoneyOrderPrintPage = ({
                 <Td>
                   Denominación: {req.taxPayer?.bankInfo?.ownerName} <br />
                   {req.taxPayer?.bankInfo?.ownerDocType}:{" "}
-                  {req.taxPayer?.bankInfo?.ownerDoc}
-                  <br />
+                  {req.taxPayer?.bankInfo?.ownerDoc} <br />
                   Cta: {req.taxPayer?.bankInfo?.accountNumber}
-                  <br />
-                  Banco: {translateBankNames(req.taxPayer?.bankInfo?.bankName)}
-                  <br />
+                  <br /> Banco:{" "}
+                  {translateBankNames(req.taxPayer?.bankInfo?.bankName)}
                 </Td>
               </Tr>
               <Tr>
@@ -115,7 +139,6 @@ const MoneyOrderPrintPage = ({
           </Table>
         </TableContainer>
         <Grid
-          // minW={'1000px'}
           mt={"40px"}
           h="200px"
           templateRows="repeat(4, 1fr)"
@@ -131,13 +154,13 @@ const MoneyOrderPrintPage = ({
           <GridItem colSpan={2}>
             <SignatureBox
               title="V° B° Director Ejecutivo:
-"
+      "
             />
           </GridItem>
           <GridItem colSpan={2}>
             <SignatureBox
               title="V° B°  Administracion:
-"
+      "
             />
           </GridItem>
         </Grid>
