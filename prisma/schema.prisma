@@ -455,7 +455,9 @@ model MoneyRequest {
     facturaNumber    String?
     searchableImages searchableImage[]
 
-    moneyOrderNumber Int? //By insistance from the team, this will auto increment only in the case of money orders
+    //By insistance from the team, this will auto increment only in the case of money orders
+    //And because they later told me they want this for all requests it's going to keep it's name to avoid breaking things
+    moneyOrderNumber Int?
 
     expenseReports        ExpenseReport[]
     expenseReturns        ExpenseReturn[]

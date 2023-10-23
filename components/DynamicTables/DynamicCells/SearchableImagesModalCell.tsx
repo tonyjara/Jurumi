@@ -13,10 +13,7 @@ import {
   Text,
   Button,
 } from "@chakra-ui/react";
-import {
-  TransformWrapper,
-  TransformComponent,
-} from "@pronestor/react-zoom-pan-pinch";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import type { searchableImage } from "@prisma/client";
 import { IoChevronForwardOutline, IoChevronBackSharp } from "react-icons/io5";

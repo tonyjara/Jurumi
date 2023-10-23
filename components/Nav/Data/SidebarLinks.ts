@@ -1,5 +1,5 @@
 import type { IconType } from "react-icons";
-import { FiHome, FiSettings, FiUsers, FiGlobe } from "react-icons/fi";
+import { FiHome, FiSettings, FiUsers } from "react-icons/fi";
 import { BsCash, BsCashStack, BsLink45Deg } from "react-icons/bs";
 import { TbReceiptTax, TbSeeding } from "react-icons/tb";
 import { CgOrganisation } from "react-icons/cg";
@@ -34,7 +34,7 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
     : [];
 };
 const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
-  isAdminOrMod
+  isAdminOrMod,
 ) => {
   return isAdminOrMod
     ? [
@@ -48,7 +48,6 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               icon: AiOutlineProject,
               dest: "/mod/projects",
             },
-            { name: "Vistas", icon: FiGlobe, dest: "/mod/views" },
             {
               name: "Desembolsos",
               icon: FaDonate,
@@ -122,7 +121,7 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
 
 export const SidebarLinks: (
   isAdminOrMod: boolean,
-  isAdmin: boolean
+  isAdmin: boolean,
 ) => Array<LinkItemProps> = (isAdminModOrObserver, isAdmin) => {
   return [
     { name: "Inicio", icon: FiHome, dest: "/home" },

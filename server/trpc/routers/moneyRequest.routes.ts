@@ -231,36 +231,34 @@ export const moneyRequestRouter = router({
         input,
       });
 
-      //When creating money orders, get the last money order number and add 1
+      //When creating requests, get the last number and add 1
       //This starts from 1000 to avoid previous money order history collisions
-      if (input.moneyRequestType === "MONEY_ORDER") {
-        //With no project, maintain the last money order number
-        if (input.projectId) {
-          const lastMoneyOrder = await prisma.moneyRequest.findFirst({
-            where: {
-              moneyOrderNumber: { not: null },
-              projectId: input.projectId,
-            },
-            orderBy: { moneyOrderNumber: "desc" },
-          });
-          const nextMoneyOrderNumber = lastMoneyOrder?.moneyOrderNumber
-            ? lastMoneyOrder?.moneyOrderNumber + 1
-            : 1000;
+      //With no project, maintain the last money order number
+      if (input.projectId) {
+        const lastProjectRequest = await prisma.moneyRequest.findFirst({
+          where: {
+            moneyOrderNumber: { not: null },
+            projectId: input.projectId,
+          },
+          orderBy: { moneyOrderNumber: "desc" },
+        });
+        const nextMoneyOrderNumber = lastProjectRequest?.moneyOrderNumber
+          ? lastProjectRequest?.moneyOrderNumber + 1
+          : 1000;
 
-          input.moneyOrderNumber = nextMoneyOrderNumber;
-        }
-        //With no project, maintain the last money order number
-        if (!input.projectId) {
-          const lastMoneyOrder = await prisma.moneyRequest.findFirst({
-            where: { moneyOrderNumber: { not: null }, projectId: null },
-            orderBy: { moneyOrderNumber: "desc" },
-          });
-          const nextMoneyOrderNumber = lastMoneyOrder?.moneyOrderNumber
-            ? lastMoneyOrder?.moneyOrderNumber + 1
-            : 1000;
+        input.moneyOrderNumber = nextMoneyOrderNumber;
+      }
+      //With no project, maintain the last money order number
+      if (!input.projectId) {
+        const lastRequest = await prisma.moneyRequest.findFirst({
+          where: { moneyOrderNumber: { not: null }, projectId: null },
+          orderBy: { moneyOrderNumber: "desc" },
+        });
+        const nextMoneyOrderNumber = lastRequest?.moneyOrderNumber
+          ? lastRequest?.moneyOrderNumber + 1
+          : 1000;
 
-          input.moneyOrderNumber = nextMoneyOrderNumber;
-        }
+        input.moneyOrderNumber = nextMoneyOrderNumber;
       }
 
       const MoneyReq = await prisma?.moneyRequest.create({
