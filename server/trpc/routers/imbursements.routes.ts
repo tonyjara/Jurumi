@@ -33,11 +33,12 @@ export const imbursementsRouter = router({
       z.object({
         pageIndex: z.number().nullish(),
         pageSize: z.number().min(1).max(100).nullish(),
+        whereFilterList: z.any().array().optional(),
         sorting: z
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
@@ -47,6 +48,7 @@ export const imbursementsRouter = router({
         take: pageSize,
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
+        where: { AND: [...(input?.whereFilterList ?? [])] },
         include: {
           transactions: { select: { id: true } },
           taxPayer: { select: { razonSocial: true, ruc: true, id: true } },
@@ -58,9 +60,20 @@ export const imbursementsRouter = router({
         },
       });
     }),
-  count: adminModObserverProcedure.query(async () =>
-    prisma?.imbursement.count()
-  ),
+  count: adminModObserverProcedure
+    .input(
+      z.object({
+        whereFilterList: z.any().array().optional(),
+      }),
+    )
+    .query(
+      async ({ input }) =>
+        prisma?.imbursement.count({
+          where: {
+            AND: [...(input?.whereFilterList ?? [])],
+          },
+        }),
+    ),
 
   create: adminModProcedure
     .input(validateImbursement)
@@ -199,7 +212,7 @@ export const imbursementsRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       return await prisma.$transaction(async (txCtx) => {
@@ -224,7 +237,7 @@ export const imbursementsRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       //TODO check if it can be deleted

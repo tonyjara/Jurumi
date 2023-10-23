@@ -380,23 +380,25 @@ model Imbursement {
 }
 
 model TaxPayer {
-    id            String            @id @default(cuid())
-    createdAt     DateTime          @default(now())
-    updatedAt     DateTime?         @updatedAt
-    createdById   String
-    updatedById   String?
-    razonSocial   String            @unique
-    ruc           String            @unique
-    fantasyName   String?
-    archived      Boolean           @default(false)
-    softDeleted   Boolean           @default(false)
-    bankInfo      TaxPayerBankInfo?
+    id          String            @id @default(cuid())
+    createdAt   DateTime          @default(now())
+    updatedAt   DateTime?         @updatedAt
+    createdById String
+    updatedById String?
+    razonSocial String            @unique
+    ruc         String            @unique
+    fantasyName String?
+    archived    Boolean           @default(false)
+    softDeleted Boolean           @default(false)
+    bankInfo    TaxPayerBankInfo?
+
     expenseReport ExpenseReport[]
     imbursements  Imbursement[]
-    project       Project[]         @relation("ProjectToTaxPayer")
     moneyRequest  MoneyRequest[]
-    accountId     String?           @unique
-    account       Account?          @relation(fields: [accountId], references: [id])
+    project       Project[]       @relation("ProjectToTaxPayer")
+
+    accountId String?  @unique
+    account   Account? @relation(fields: [accountId], references: [id])
 }
 
 model TaxPayerBankInfo {

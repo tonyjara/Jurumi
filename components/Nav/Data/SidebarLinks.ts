@@ -58,11 +58,6 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               icon: IoIosPeople,
               dest: "/mod/members",
             },
-            {
-              name: "Contribuyentes",
-              icon: TbReceiptTax,
-              dest: "/mod/taxpayers",
-            },
           ],
         },
         {
@@ -79,6 +74,18 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               name: "Ajustes de cuenta",
               icon: ImPageBreak,
               dest: "/mod/money-account-offset",
+            },
+          ],
+        },
+        {
+          name: "Contribuyentes",
+          icon: TbReceiptTax,
+          dest: "/mod/taxpayers",
+          children: [
+            {
+              name: "Movimientos",
+              icon: FaExchangeAlt,
+              dest: "/mod/movimientos",
             },
           ],
         },

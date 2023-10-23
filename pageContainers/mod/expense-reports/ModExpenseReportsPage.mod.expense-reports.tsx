@@ -21,8 +21,10 @@ import {
 
 const ModExpenseReportsPage = ({
   query,
+  taxPayerId,
 }: {
-  query: ExpenseReportsPageProps;
+  query?: ExpenseReportsPageProps;
+  taxPayerId?: string;
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [whereFilterList, setWhereFilterList] = useState<
@@ -37,8 +39,18 @@ const ModExpenseReportsPage = ({
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
 
+  //Used when selecting a taxPayer in movimientosPage
   useEffect(() => {
-    if (query.expenseReportsIds) {
+    if (taxPayerId === undefined) return;
+    setWhereFilterList((prev) => prev.filter((x) => !x.taxPayerId));
+    if (taxPayerId === "") return;
+    setWhereFilterList((prev) => [...prev, { taxPayerId }]);
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taxPayerId]);
+
+  useEffect(() => {
+    if (query?.expenseReportsIds) {
       setSearchValue(String(query.expenseReportsIds) ?? "");
     }
 
@@ -67,13 +79,13 @@ const ModExpenseReportsPage = ({
         sorting: globalFilter ? sorting : null,
         whereFilterList,
       },
-      { keepPreviousData: globalFilter ? true : false }
+      { keepPreviousData: globalFilter ? true : false },
     );
 
   const { data: findByIdData, isFetching: isFetchingById } =
     trpcClient.expenseReport.findCompleteModById.useQuery(
       { ids: searchValue.split(","), whereFilterList },
-      { enabled: searchValue.length > 0 }
+      { enabled: searchValue.length > 0 },
     );
 
   const { data: count } = trpcClient.expenseReport.count.useQuery({
