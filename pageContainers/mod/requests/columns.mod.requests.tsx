@@ -22,7 +22,6 @@ import SelectCheckBoxCell from "@/components/DynamicTables/DynamicCells/SelectCh
 import HeaderSelectCheckBox from "@/components/DynamicTables/DynamicCells/HeaderSelectCheckBox";
 import { MoneyRequestComplete } from "./mod.requests.types";
 import MoneyRequestOperationDateChangeCell from "@/components/DynamicTables/DynamicCells/MoneyRequestOperationDateChangeCell";
-import NumberCell from "@/components/DynamicTables/DynamicCells/NumberCell";
 import OpNumberCell from "@/components/DynamicTables/DynamicCells/OpNumberCell";
 
 const columnHelper = createColumnHelper<MoneyRequestComplete>();

@@ -14,10 +14,7 @@ import {
   useClipboard,
 } from "@chakra-ui/react";
 
-import {
-  TransformWrapper,
-  TransformComponent,
-} from "@pronestor/react-zoom-pan-pinch";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 import type { searchableImage } from "@prisma/client";
@@ -43,7 +40,7 @@ const ImageEnlargeModal = ({
     handleUseMutationAlerts({
       successText: "Enviado al servidor 🤖 podria tardar un minuto 🕰️",
       callback: () => {},
-    })
+    }),
   );
   const { data: fetchedSearchableImage } =
     trpcClient.searchableImage.getById.useQuery({ id: searchableImage.id });
@@ -127,7 +124,7 @@ const ImageEnlargeModal = ({
                     {fetchedSearchableImage &&
                       decimalFormat(
                         fetchedSearchableImage.amount,
-                        fetchedSearchableImage.currency
+                        fetchedSearchableImage.currency,
                       )}
                   </Text>
 
