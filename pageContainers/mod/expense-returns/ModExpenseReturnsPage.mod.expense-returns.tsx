@@ -29,7 +29,7 @@ export type ExpenseReturnComplete = ExpenseReturn & {
 const ModExpenseReturnsPage = ({
   query,
 }: {
-  query: ExpenseReturnsPageProps;
+  query?: ExpenseReturnsPageProps;
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [whereFilterList, setWhereFilterList] = useState<
@@ -39,12 +39,13 @@ const ModExpenseReturnsPage = ({
   const [filterValue, setFilterValue] = useState("id");
   const [editExpenseReturn, setEditExpenseReturn] =
     useState<ExpenseReturnComplete | null>(null);
+
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
 
   useEffect(() => {
-    if (query.expenseReturnsIds) {
+    if (query?.expenseReturnsIds) {
       setSearchValue(String(query.expenseReturnsIds) ?? "");
     }
 
@@ -76,13 +77,13 @@ const ModExpenseReturnsPage = ({
         sorting: globalFilter ? sorting : null,
         whereFilterList,
       },
-      { keepPreviousData: globalFilter ? true : false }
+      { keepPreviousData: globalFilter ? true : false },
     );
 
   const { data: findByIdData, isFetching: isFetchingById } =
     trpcClient.expenseReturn.findCompleteById.useQuery(
       { ids: searchValue.split(","), whereFilterList },
-      { enabled: searchValue.length > 0 }
+      { enabled: searchValue.length > 0 },
     );
 
   const handleDataSource = () => {

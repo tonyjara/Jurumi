@@ -1,6 +1,6 @@
 import ImbursementCreateModal from "@/components/Modals/imbursement.create.modal";
 import { useDisclosure } from "@chakra-ui/react";
-import type { Imbursement } from "@prisma/client";
+import type { Imbursement, Prisma } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import type {
   RowOptionsType,
@@ -44,10 +44,13 @@ export type imbursementComplete = Imbursement & {
   } | null;
 };
 
-const ImbursementsPage = () => {
+const ImbursementsPage = ({ taxPayerId }: { taxPayerId?: string }) => {
   const [editImbursement, setEditImbursement] =
     useState<FormImbursement | null>(null);
   const dynamicTableProps = useDynamicTable();
+  const [whereFilterList, setWhereFilterList] = useState<
+    Prisma.ImbursementScalarWhereInput[]
+  >([]);
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
 
@@ -58,6 +61,16 @@ const ImbursementsPage = () => {
     onClose: onEditClose,
   } = useDisclosure();
 
+  //Used when selecting a taxPayer in movimientosPage
+  useEffect(() => {
+    if (taxPayerId === undefined) return;
+    setWhereFilterList((prev) => prev.filter((x) => !x.taxPayerId));
+    if (taxPayerId === "") return;
+    setWhereFilterList((prev) => [...prev, { taxPayerId }]);
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taxPayerId]);
+
   useEffect(() => {
     if (!isEditOpen && editImbursement) {
       setEditImbursement(null);
@@ -67,15 +80,17 @@ const ImbursementsPage = () => {
 
   const { data: imbursements, isFetching } =
     trpcClient.imbursement.getManyComplete.useQuery(
-      { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
-      { keepPreviousData: globalFilter ? true : false }
+      {
+        pageIndex,
+        pageSize,
+        sorting: globalFilter ? sorting : null,
+        whereFilterList,
+      },
+      { keepPreviousData: globalFilter ? true : false },
     );
-  const { data: count } = trpcClient.imbursement.count.useQuery();
-
-  const handleDataSource = () => {
-    if (imbursements) return imbursements;
-    return [];
-  };
+  const { data: count } = trpcClient.imbursement.count.useQuery({
+    whereFilterList,
+  });
 
   const tableOptions: TableOptions[] = [
     {
@@ -106,6 +121,9 @@ const ImbursementsPage = () => {
     <>
       <DynamicTable
         title={"Desembolsos"}
+        enableColumnFilters={true}
+        whereFilterList={whereFilterList}
+        setWhereFilterList={setWhereFilterList}
         loading={isFetching}
         options={tableOptions}
         rowOptions={rowOptionsFunction}
@@ -113,7 +131,7 @@ const ImbursementsPage = () => {
           pageIndex,
           pageSize,
         })}
-        data={handleDataSource()}
+        data={imbursements ?? []}
         count={count ?? 0}
         colorRedKey={["wasCancelled"]}
         {...dynamicTableProps}

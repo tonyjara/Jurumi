@@ -1,6 +1,5 @@
 import React from "react";
 import { Text } from "@chakra-ui/react";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 
 interface props {

@@ -16,6 +16,7 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
   >([]);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, globalFilter, pageSize, sorting } = dynamicTableProps;
+
   useEffect(() => {
     if (query.transactionIds) {
       setSearchValue(String(query.transactionIds) ?? "");

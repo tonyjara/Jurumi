@@ -35,7 +35,7 @@ const ExportTableToExcel = <T extends object>({
         fileName: `Jurumi ${format(new Date(), "dd/MM/yyy")}`,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
   return (

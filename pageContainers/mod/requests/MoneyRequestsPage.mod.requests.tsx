@@ -22,7 +22,13 @@ import useDebounce from "@/lib/hooks/useDebounce";
 import MoneyRequestExtraFilters from "./MoneyRequestExtraFilters.mod.requests";
 import { rawValuesModMoneyRequests } from "./rawValues.mod.MoneyRequests";
 
-const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
+const ModMoneyRequestsPage = ({
+  query,
+  taxPayerId,
+}: {
+  query?: MoneyRequestsPageProps;
+  taxPayerId?: string;
+}) => {
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const [filterValue, setFilterValue] = useState("id");
@@ -41,8 +47,18 @@ const ModMoneyRequestsPage = ({ query }: { query: MoneyRequestsPageProps }) => {
   const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
     dynamicTableProps;
 
+  //Used when selecting a taxPayer in movimientosPage
   useEffect(() => {
-    if (query.moneyRequestId) {
+    if (taxPayerId === undefined) return;
+    setWhereFilterList((prev) => prev.filter((x) => !x.taxPayerId));
+    if (taxPayerId === "") return;
+    setWhereFilterList((prev) => [...prev, { taxPayerId }]);
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taxPayerId]);
+
+  useEffect(() => {
+    if (query?.moneyRequestId) {
       setSearchValue(query.moneyRequestId);
       setFilterValue("id");
     }
