@@ -92,7 +92,10 @@ const CreateExpenseReturnModal = ({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            Crear una devolución. <br /> Pendiente: {formatedPendingAmount()}
+            Crear una devolución. <br />{" "}
+            <span style={{ fontSize: "30px", color: "orange" }}>
+              Pendiente: {formatedPendingAmount()}
+            </span>
           </ModalHeader>
 
           <ModalCloseButton />
