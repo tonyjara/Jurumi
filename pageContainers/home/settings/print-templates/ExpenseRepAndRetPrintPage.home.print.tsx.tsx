@@ -45,6 +45,19 @@ const ExpenseRepAndRetPringPage = ({
 
   const req = moneyRequest ?? moneyReqCompleteMock(user?.id);
 
+  const isFullyExecuted = () => {
+    const expRepTotal = reduceExpenseReportsToSetCurrency({
+      expenseReports: req?.expenseReports,
+      currency: req.currency,
+    });
+    const expRetTotal = reduceExpenseReturnsToSetCurrency({
+      expenseReturns: req?.expenseReturns,
+      currency: req.currency,
+    });
+    const diff = expRepTotal.add(expRetTotal).sub(req.amountRequested);
+    return diff.isZero();
+  };
+
   return (
     <Box
       justifyContent={"center"}
@@ -65,6 +78,12 @@ const ExpenseRepAndRetPringPage = ({
           <Text fontSize={"6xl"}>{org?.displayName}</Text>
         </Flex>
         <Text fontSize={"2xl"}>RENDICIÓN DE FONDOS</Text>
+        {!isFullyExecuted() && (
+          <Text fontWeight={"bold"} fontSize={"xl"}>
+            Observación: Esta es una rendición PARCIAL. Hay rendiciones o
+            devoluciones pendientes.
+          </Text>
+        )}
         <TableContainer
           borderColor={borderColor}
           borderWidth="1px"
@@ -169,7 +188,19 @@ const ExpenseRepAndRetPringPage = ({
                 <Td>{decimalFormat(req.amountRequested, req.currency)}</Td>
               </Tr>
               <Tr>
-                <Td fontWeight={"bold"}>Total devuelto:</Td>
+                <Td fontWeight={"bold"}>Total en rendiciones:</Td>
+                <Td>
+                  {decimalFormat(
+                    reduceExpenseReportsToSetCurrency({
+                      expenseReports: req.expenseReports,
+                      currency: req.currency,
+                    }),
+                    req.currency,
+                  )}
+                </Td>
+              </Tr>
+              <Tr>
+                <Td fontWeight={"bold"}>Total en devoluciones:</Td>
                 <Td>
                   {decimalFormat(
                     reduceExpenseReturnsToSetCurrency({
