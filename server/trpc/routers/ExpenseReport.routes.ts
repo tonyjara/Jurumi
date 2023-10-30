@@ -188,11 +188,9 @@ export const expenseReportsRouter = router({
               projectId: input.projectId,
               exchangeRate: input.exchangeRate,
               wasConvertedToOtherCurrency: input.wasConvertedToOtherCurrency,
-              searchableImage: upsertSearchableImage
-                ? {
-                    connect: { id: upsertSearchableImage.id },
-                  }
-                : undefined,
+              searchableImage: {
+                connect: { id: upsertSearchableImage.id },
+              },
             },
             include: {
               account: { select: { id: true } },

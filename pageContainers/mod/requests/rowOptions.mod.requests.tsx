@@ -148,7 +148,11 @@ const RowOptionsModRequests = ({
       {(x.moneyRequestType === "FUND_REQUEST" ||
         x.moneyRequestType === "MONEY_ORDER") && (
         <MenuItem
-          isDisabled={!isAccepted || x.wasCancelled}
+          isDisabled={
+            /* NOTE: Asked to change this into not required to be accepted */
+            /* !isAccepted  */
+            x.wasCancelled
+          }
           onClick={() => {
             setReqForReport(x);
             onExpRepOpen();
@@ -160,7 +164,8 @@ const RowOptionsModRequests = ({
       )}
       <MenuItem
         isDisabled={
-          !isAccepted ||
+          /* NOTE: Asked to change this into not required to be accepted */
+          /* !isAccepted || */
           x.wasCancelled ||
           /* isGreaterOrEqualToReportedAndReturnedTotal || */
           x.moneyRequestType === "REIMBURSMENT_ORDER" ||

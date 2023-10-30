@@ -18,7 +18,7 @@ type withMoney = Omit<ExpenseReport, "amountSpent" | "taxPayerId"> & {
 };
 
 export interface FormExpenseReport extends withMoney {
-  searchableImage: { imageName: string; url: string } | null;
+  searchableImage: { imageName: string; url: string };
   taxPayer: { razonSocial: string; ruc: string };
   //If present it will create a reimbursement req based on this expense report
   reimburseTo?: moneyReqTaxPayer | null;
@@ -54,15 +54,10 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z
       projectId: z
         .string({ invalid_type_error: "Favor seleccione un proyecto" })
         .min(2, "Favor seleccione un proyecto"),
-      searchableImage: z
-        .object({
-          /* imageName: z.string().min(1, "Favor suba la imágen de su comprobante"), */
-          /* url: z.string().min(1, "Favor suba la imágen de su comprobante"), */
-          //NOTE: It was decided that this is too strict. So expense reports can be created without an image.
-          imageName: z.string(),
-          url: z.string(),
-        })
-        .nullable(),
+      searchableImage: z.object({
+        imageName: z.string().min(1, "Favor suba la imágen de su comprobante"),
+        url: z.string().min(1, "Favor suba la imágen de su comprobante"),
+      }),
       /* .nullable(), */
       costCategoryId: z.string().nullable(),
       taxPayer: z.object({
