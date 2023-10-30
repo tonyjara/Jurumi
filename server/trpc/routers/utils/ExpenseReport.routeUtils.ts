@@ -79,15 +79,12 @@ export const upsertExpenseReportSearchableImage = async ({
   input,
 }: {
   input: FormExpenseReport;
-}): Promise<searchableImage | null> => {
+}): Promise<searchableImage | never> => {
   if (!input.searchableImage) {
-    //NOTE: It is no longer required to have an image for an expense report.
-
-    /* throw new TRPCError({ */
-    /*   code: "PRECONDITION_FAILED", */
-    /*   message: "no imbursement proof", */
-    /* }); */
-    return null;
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message: "no imbursement proof",
+    });
   }
   const imbursementProof = await prisma?.searchableImage.upsert({
     where: {
