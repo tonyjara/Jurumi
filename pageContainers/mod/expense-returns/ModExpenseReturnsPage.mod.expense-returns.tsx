@@ -41,8 +41,7 @@ const ModExpenseReturnsPage = ({
     useState<ExpenseReturnComplete | null>(null);
 
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   useEffect(() => {
     if (query?.expenseReturnsIds) {
@@ -70,15 +69,12 @@ const ModExpenseReturnsPage = ({
     whereFilterList,
   });
   const { data: expenseReturns, isFetching } =
-    trpcClient.expenseReturn.getManyComplete.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-      },
-      { keepPreviousData: globalFilter ? true : false },
-    );
+    trpcClient.expenseReturn.getManyComplete.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+      whereFilterList,
+    });
 
   const { data: findByIdData, isFetching: isFetchingById } =
     trpcClient.expenseReturn.findCompleteById.useQuery(
@@ -90,17 +86,6 @@ const ModExpenseReturnsPage = ({
     if (findByIdData) return findByIdData;
     return expenseReturns ?? [];
   };
-
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
-    },
-  ];
 
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
@@ -131,7 +116,6 @@ const ModExpenseReturnsPage = ({
           />
         }
         rowOptions={rowOptionsFunction}
-        options={tableOptions}
         loading={isFetching || isFetchingById}
         columns={modExpenseReturnsColumns({
           pageIndex,

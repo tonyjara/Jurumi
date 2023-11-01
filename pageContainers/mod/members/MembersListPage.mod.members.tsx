@@ -19,13 +19,13 @@ export type CompleteMember = Membership & {
 const MembersListPage = () => {
   const [editMember, setEditMember] = useState<CompleteMember | null>(null);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
-  const { data, isFetching, isLoading } = trpcClient.members.getMany.useQuery(
-    { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
-    { keepPreviousData: globalFilter ? true : false }
-  );
+  const { data, isFetching, isLoading } = trpcClient.members.getMany.useQuery({
+    pageIndex,
+    pageSize,
+    sorting,
+  });
   const { data: count } = trpcClient.members.count.useQuery();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,14 +46,6 @@ const MembersListPage = () => {
     {
       onClick: onOpen,
       label: "Crear socio",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
 

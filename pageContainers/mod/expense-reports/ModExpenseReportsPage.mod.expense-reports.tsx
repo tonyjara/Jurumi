@@ -36,8 +36,7 @@ const ModExpenseReportsPage = ({
     ModExpenseReportComplete | HomeExpenseReportComplete | null
   >(null);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   //Used when selecting a taxPayer in movimientosPage
   useEffect(() => {
@@ -72,15 +71,12 @@ const ModExpenseReportsPage = ({
   }, [editExpenseReport, isEditOpen]);
 
   const { data: expenseReports, isFetching } =
-    trpcClient.expenseReport.getManyComplete.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-      },
-      { keepPreviousData: globalFilter ? true : false },
-    );
+    trpcClient.expenseReport.getManyComplete.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+      whereFilterList,
+    });
 
   const { data: findByIdData, isFetching: isFetchingById } =
     trpcClient.expenseReport.findCompleteModById.useQuery(
@@ -98,17 +94,6 @@ const ModExpenseReportsPage = ({
     if (expenseReports) return expenseReports;
     return [];
   };
-
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
-    },
-  ];
 
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
@@ -139,7 +124,6 @@ const ModExpenseReportsPage = ({
           />
         }
         rowOptions={rowOptionsFunction}
-        options={tableOptions}
         loading={isFetching || isFetchingById}
         columns={modExpenseReportsColumns({
           pageIndex,

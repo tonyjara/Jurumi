@@ -34,7 +34,7 @@ const ProjectStats = ({
     Prisma.TransactionScalarWhereInput[]
   >([]);
 
-  const { pageIndex, globalFilter, pageSize, sorting } = dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   //! Should have own trpc req
 
@@ -43,15 +43,12 @@ const ProjectStats = ({
       projectId: project?.id,
     });
   const { data: getProjectWithTransactions, isFetching } =
-    trpcClient.project.getProjectTransactions.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        projectId: project?.id,
-      },
-      { keepPreviousData: globalFilter ? true : false, enabled: !!project }
-    );
+    trpcClient.project.getProjectTransactions.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+      projectId: project?.id,
+    });
 
   const imbursed = projectWithLastTx?.transactions[0]?.currentBalance
     ? projectWithLastTx?.transactions[0]?.currentBalance
@@ -66,7 +63,7 @@ const ProjectStats = ({
   });
 
   const totalAsignedInGs = reduceCostCatAsignedAmountsInGs(
-    project?.costCategories ?? []
+    project?.costCategories ?? [],
   );
 
   const percentageExecuted =
@@ -96,7 +93,7 @@ const ProjectStats = ({
           label="Desembolsado"
           value={decimalFormat(
             imbursed,
-            projectWithLastTx?.transactions[0]?.currency ?? "PYG"
+            projectWithLastTx?.transactions[0]?.currency ?? "PYG",
           )}
         />
         <SmallStat

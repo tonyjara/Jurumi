@@ -34,6 +34,7 @@ import TableTitleMenu from "./Utils/TableTitleMenu";
 import ColumnFilter from "./ColumnFilter";
 import ExportTableToExcel from "./Utils/ExportTableToExcel";
 import SkeletonRows from "./Utils/SkeletonRows";
+import ExportUnpaginatedMoneyRequestsMod from "../ExcelExporters/ExportMoneyRequests.mod";
 
 export interface TableOptions {
   onClick: () => void;
@@ -51,58 +52,60 @@ export type RowOptionsType = (props: {
 }) => JSX.Element;
 
 export interface DynamicTableProps<T extends object> {
-  title?: string;
-  showFooter?: boolean;
+  colorRedKey?: string[];
+  columns?: ColumnDef<T, any>[];
+  count?: number;
+  data?: T[];
+  enableColumnFilters?: boolean; // If enabled by default all columns will have a filter.
+  exportEverythingToExcel?: boolean; // Enables button that will export everthing from query, for the moment only used in MoneyRequestsPage.mod.requests.tsx
+  extraFilters?: string[]; // For excel export.
+  h?: string;
   headerComp?: React.ReactNode;
-  subTitle?: string;
-  options?: TableOptions[]; // enables three dot menu
-  searchBar?: React.ReactNode;
   loading?: boolean;
   noHeader?: boolean;
-  rawValuesDictionary?: any;
-  data?: T[];
-  h?: string;
-  columns?: ColumnDef<T, any>[];
+  options?: TableOptions[]; // enables three dot menu
   pageIndex: number;
-  setPageIndex: React.Dispatch<React.SetStateAction<number>>;
   pageSize: number;
-  setPageSize: React.Dispatch<React.SetStateAction<number>>;
-  count?: number;
-  sorting: SortingState;
-  setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
-  globalFilter?: boolean;
-  colorRedKey?: string[];
+  rawValuesDictionary?: any; //enables export button
   rowOptions?: RowOptionsType;
-  enableColumnFilters?: boolean; // If enabled by default all columns will have a filter.
-  whereFilterList?: any[];
+  searchBar?: React.ReactNode;
+  setPageIndex: React.Dispatch<React.SetStateAction<number>>;
+  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
   setWhereFilterList?: React.Dispatch<React.SetStateAction<any[]>>;
+  showFooter?: boolean;
+  sorting: SortingState;
+  subTitle?: string;
+  title?: string;
+  whereFilterList?: any[];
 }
 
 const DynamicTable = <T extends object>({
-  title,
-  showFooter,
-  options,
-  subTitle,
-  searchBar,
+  colorRedKey,
+  columns,
+  count,
+  data,
+  enableColumnFilters,
+  headerComp,
   loading,
   noHeader,
-  rawValuesDictionary,
-  data,
-  columns,
+  options,
   pageIndex,
-  setPageIndex,
   pageSize,
-  setPageSize,
-  count,
-  sorting,
-  setSorting,
-  globalFilter,
-  headerComp,
-  colorRedKey,
+  rawValuesDictionary,
   rowOptions,
-  enableColumnFilters,
-  whereFilterList,
+  searchBar,
+  setPageIndex,
+  setPageSize,
+  setSorting,
   setWhereFilterList,
+  showFooter,
+  sorting,
+  subTitle,
+  title,
+  whereFilterList,
+  extraFilters,
+  exportEverythingToExcel,
 }: DynamicTableProps<T>) => {
   const [menuData, setMenuData] = useState<{
     x: number;
@@ -116,8 +119,8 @@ const DynamicTable = <T extends object>({
     columns: columns ?? [],
     data: data ?? [],
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: !globalFilter ? setSorting : undefined,
-    getSortedRowModel: !globalFilter ? getSortedRowModel() : undefined,
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: { sorting },
     enableColumnFilters: !!enableColumnFilters,
   });
@@ -153,17 +156,24 @@ const DynamicTable = <T extends object>({
           <Flex flexDirection={{ base: "column", md: "row" }} gap="10px">
             <Flex flexDirection={"column"}>
               <Flex alignItems={"center"} gap="20px" flexDirection={"row"}>
-                <TableTitleMenu
-                  globalFilter={globalFilter}
-                  label={title}
-                  options={options}
-                />
-                {rawValuesDictionary && (
+                <TableTitleMenu label={title} options={options} />
+                {rawValuesDictionary && !exportEverythingToExcel && (
                   <ExportTableToExcel
                     table={table}
                     rawValuesDictionary={rawValuesDictionary}
                   />
                 )}
+                {whereFilterList &&
+                  extraFilters &&
+                  sorting &&
+                  exportEverythingToExcel && (
+                    <ExportUnpaginatedMoneyRequestsMod
+                      sorting={sorting}
+                      whereFilterList={whereFilterList}
+                      extraFilters={extraFilters}
+                      table={table}
+                    />
+                  )}
               </Flex>
               {subTitle && (
                 <Text as="em" py="10px" px="5px">
@@ -207,11 +217,6 @@ const DynamicTable = <T extends object>({
                       key={header.id}
                       onClick={() => handleToggleSorting(header)}
                       isNumeric={meta?.isNumeric}
-                      color={
-                        globalFilter && header.id === "no-global-sort"
-                          ? "red.300"
-                          : undefined
-                      }
                     >
                       <Flex>
                         {flexRender(
@@ -220,17 +225,8 @@ const DynamicTable = <T extends object>({
                         )}
 
                         <chakra.span pl="4">
-                          {!globalFilter && header.column.getIsSorted() ? (
+                          {header.column.getIsSorted() ? (
                             header.column.getIsSorted() === "desc" ? (
-                              <TriangleDownIcon aria-label="sorted descending" />
-                            ) : (
-                              <TriangleUpIcon aria-label="sorted ascending" />
-                            )
-                          ) : null}
-                          {globalFilter &&
-                          sorting[0] &&
-                          sorting[0].id === header.column.id ? (
-                            sorting[0]?.desc ? (
                               <TriangleDownIcon aria-label="sorted descending" />
                             ) : (
                               <TriangleUpIcon aria-label="sorted ascending" />

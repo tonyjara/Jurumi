@@ -6,7 +6,7 @@ export default function ExportToExcelMenuItem({ data }: { data: any[] }) {
   return (
     <MenuItem isDisabled={data.length === 0}>
       <CSVLink filename={fileName} data={data}>
-        Exportar a Excel
+        Exportar selección a Excel
       </CSVLink>
     </MenuItem>
   );

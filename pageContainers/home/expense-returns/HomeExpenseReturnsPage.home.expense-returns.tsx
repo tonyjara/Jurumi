@@ -30,8 +30,7 @@ const HomeExpenseReturnsPage = () => {
   const [editExpenseReturn, setEditExpenseReturn] =
     useState<ExpenseReturnComplete | null>(null);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   const {
     isOpen: isEditOpen,
@@ -50,26 +49,12 @@ const HomeExpenseReturnsPage = () => {
     whereFilterList,
   });
   const { data: expenseReturns, isFetching } =
-    trpcClient.expenseReturn.getMyOwnComplete.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-      },
-      { keepPreviousData: globalFilter ? true : false }
-    );
-
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
-    },
-  ];
+    trpcClient.expenseReturn.getMyOwnComplete.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+      whereFilterList,
+    });
 
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
@@ -90,7 +75,6 @@ const HomeExpenseReturnsPage = () => {
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}
         rowOptions={rowOptionsFunction}
-        options={tableOptions}
         loading={isFetching}
         columns={homeExpenseReturnsColumns({
           pageIndex,

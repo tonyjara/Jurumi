@@ -27,8 +27,7 @@ const MoneyRequestsPage = () => {
     null,
   );
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -50,16 +49,13 @@ const MoneyRequestsPage = () => {
   const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
 
   const { data: moneyRequests, isFetching } =
-    trpcClient.moneyRequest.getMyOwnComplete.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-        extraFilters,
-      },
-      { keepPreviousData: globalFilter ? true : false },
-    );
+    trpcClient.moneyRequest.getMyOwnComplete.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+      whereFilterList,
+      extraFilters,
+    });
 
   const { data: count } = trpcClient.moneyRequest.countMyOwn.useQuery({
     extraFilters,
@@ -70,14 +66,6 @@ const MoneyRequestsPage = () => {
     {
       onClick: onOpen,
       label: "Crear solicitud",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
 

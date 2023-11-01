@@ -11,19 +11,18 @@ import EditAccountModal from "@/components/Modals/account.edit.modal";
 import { trpcClient } from "@/lib/utils/trpcClient";
 import type { FormAccount } from "@/lib/validations/account.validate";
 import { modUsersColumns } from "./columns.mod.users";
-import { Account } from "@prisma/client";
 import RowOptionsModUsers from "./rowOptions.mod.users";
 
 const UsersPage = () => {
   const [editAccount, setEditAccount] = useState<FormAccount | null>(null);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
-  const { data, isFetching, isLoading } = trpcClient.account.getMany.useQuery(
-    { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
-    { keepPreviousData: globalFilter ? true : false }
-  );
+  const { data, isFetching, isLoading } = trpcClient.account.getMany.useQuery({
+    pageIndex,
+    pageSize,
+    sorting,
+  });
   const { data: count } = trpcClient.account.count.useQuery();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,14 +43,6 @@ const UsersPage = () => {
     {
       onClick: onOpen,
       label: "Crear usuario",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
 

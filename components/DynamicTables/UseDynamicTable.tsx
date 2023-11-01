@@ -7,7 +7,6 @@ export const useDynamicTable = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(30);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState(false);
   return {
     pageIndex,
     setPageIndex,
@@ -15,7 +14,5 @@ export const useDynamicTable = () => {
     setPageSize,
     sorting,
     setSorting,
-    globalFilter,
-    setGlobalFilter,
   };
 };

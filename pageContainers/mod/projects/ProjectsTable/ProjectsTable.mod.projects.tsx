@@ -37,7 +37,7 @@ export type ProjectForTable = Project & {
 const ProjectsTable = () => {
   const [editProject, setEditProject] = useState<ProjectForTable | null>(null);
   const dynamicTableProps = useDynamicTable();
-  const { setGlobalFilter, globalFilter, sorting } = dynamicTableProps;
+  const { sorting } = dynamicTableProps;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -58,10 +58,7 @@ const ProjectsTable = () => {
     data: projects,
     isLoading,
     isFetching,
-  } = trpcClient.project.getManyForTable.useQuery(
-    { sorting: globalFilter ? sorting : null },
-    { keepPreviousData: globalFilter ? true : false }
-  );
+  } = trpcClient.project.getManyForTable.useQuery({ sorting });
   trpcClient.project.getManyForTable.useQuery({});
   const { data: preferences } =
     trpcClient.preferences.getMyPreferences.useQuery();
@@ -77,14 +74,6 @@ const ProjectsTable = () => {
           ? onOpen()
           : myToast.error("Favor seleccione una organización"),
       label: "Crear proyecto",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
 

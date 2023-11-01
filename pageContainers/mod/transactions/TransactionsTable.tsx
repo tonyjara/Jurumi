@@ -37,16 +37,13 @@ const TransactionsTable = ({
     setPageSize: React.Dispatch<React.SetStateAction<number>>;
     sorting: SortingState;
     setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
-    globalFilter: boolean;
-    setGlobalFilter: React.Dispatch<React.SetStateAction<boolean>>;
   };
 }) => {
   const [editTransaction, setEditTransaction] = useState<Transaction | null>(
     null,
   );
 
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize } =
-    dynamicTableProps;
+  const { pageIndex, pageSize } = dynamicTableProps;
 
   const {
     isOpen: isEditOpen,
@@ -62,16 +59,6 @@ const TransactionsTable = ({
     return () => {};
   }, [editTransaction, isEditOpen]);
 
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
-    },
-  ];
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
       <RowOptionsModTransactions
@@ -98,7 +85,6 @@ const TransactionsTable = ({
           pageSize,
         })}
         rowOptions={rowOptionsFunction}
-        options={tableOptions}
         data={data}
         count={count ?? 0}
         {...dynamicTableProps}

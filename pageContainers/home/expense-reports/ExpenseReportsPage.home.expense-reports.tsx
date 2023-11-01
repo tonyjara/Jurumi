@@ -1,10 +1,7 @@
 import { useDisclosure } from "@chakra-ui/react";
 import type { Prisma } from "@prisma/client";
 import React, { useEffect, useState } from "react";
-import type {
-  RowOptionsType,
-  TableOptions,
-} from "@/components/DynamicTables/DynamicTable";
+import type { RowOptionsType } from "@/components/DynamicTables/DynamicTable";
 import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import EditExpenseReportModal from "@/components/Modals/expenseReport.edit.modal";
@@ -20,8 +17,7 @@ const MyExpenseReportsPage = () => {
     Prisma.MoneyRequestScalarWhereInput[]
   >([]);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   const {
     isOpen: isEditOpen,
@@ -37,15 +33,12 @@ const MyExpenseReportsPage = () => {
   }, [editExpenseReport, isEditOpen]);
 
   const { data: expenseReports, isFetching } =
-    trpcClient.expenseReport.getMyOwnComplete.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-      },
-      { keepPreviousData: globalFilter ? true : false }
-    );
+    trpcClient.expenseReport.getMyOwnComplete.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+      whereFilterList,
+    });
   const { data: count } = trpcClient.expenseReport.count.useQuery({
     whereFilterList,
   });
@@ -55,16 +48,6 @@ const MyExpenseReportsPage = () => {
     return expenseReports ?? [];
   };
 
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
-    },
-  ];
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
       <RowOptionsHomeExpenseReports
@@ -84,7 +67,6 @@ const MyExpenseReportsPage = () => {
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}
         rowOptions={rowOptionsFunction}
-        options={tableOptions}
         loading={isFetching}
         columns={expenseReportColums({
           pageIndex,

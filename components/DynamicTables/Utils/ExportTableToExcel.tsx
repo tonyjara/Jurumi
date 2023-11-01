@@ -29,6 +29,7 @@ const ExportTableToExcel = <T extends object>({
       }));
 
       const data: SheetData[] = [headers, ...values];
+      console.log(data);
 
       return await writeXlsxFile(data, {
         columns,
@@ -39,7 +40,7 @@ const ExportTableToExcel = <T extends object>({
     }
   }
   return (
-    <Button onClick={exportToExcel} rightIcon={<FaRegFileExcel />} size="sm">
+    <Button onClick={exportToExcel} rightIcon={<FaRegFileExcel />}>
       Exportar
     </Button>
   );

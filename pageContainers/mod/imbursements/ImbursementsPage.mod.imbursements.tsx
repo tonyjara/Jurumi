@@ -51,8 +51,7 @@ const ImbursementsPage = ({ taxPayerId }: { taxPayerId?: string }) => {
   const [whereFilterList, setWhereFilterList] = useState<
     Prisma.ImbursementScalarWhereInput[]
   >([]);
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -79,15 +78,12 @@ const ImbursementsPage = ({ taxPayerId }: { taxPayerId?: string }) => {
   }, [editImbursement, isEditOpen]);
 
   const { data: imbursements, isFetching } =
-    trpcClient.imbursement.getManyComplete.useQuery(
-      {
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-      },
-      { keepPreviousData: globalFilter ? true : false },
-    );
+    trpcClient.imbursement.getManyComplete.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+      whereFilterList,
+    });
   const { data: count } = trpcClient.imbursement.count.useQuery({
     whereFilterList,
   });
@@ -96,14 +92,6 @@ const ImbursementsPage = ({ taxPayerId }: { taxPayerId?: string }) => {
     {
       onClick: onOpen,
       label: "Crear desembolso",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {

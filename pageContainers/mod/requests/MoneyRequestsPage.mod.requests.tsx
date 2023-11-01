@@ -44,8 +44,7 @@ const ModMoneyRequestsPage = ({
     null,
   );
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   //Used when selecting a taxPayer in movimientosPage
   useEffect(() => {
@@ -97,16 +96,13 @@ const ModMoneyRequestsPage = ({
   });
 
   const { data: moneyRequests, isLoading } =
-    trpcClient.moneyRequest.getManyComplete.useQuery(
-      {
-        extraFilters,
-        pageIndex,
-        pageSize,
-        sorting: globalFilter ? sorting : null,
-        whereFilterList,
-      },
-      { keepPreviousData: globalFilter ? true : false },
-    );
+    trpcClient.moneyRequest.getManyComplete.useQuery({
+      extraFilters,
+      pageIndex,
+      pageSize,
+      sorting: sorting,
+      whereFilterList,
+    });
 
   const { data: findByIdData, isFetching } =
     trpcClient.moneyRequest.findCompleteById.useQuery(
@@ -130,14 +126,6 @@ const ModMoneyRequestsPage = ({
     {
       onClick: onOpen,
       label: "Crear solicitud",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
 
@@ -166,7 +154,9 @@ const ModMoneyRequestsPage = ({
         enableColumnFilters={true}
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}
+        extraFilters={extraFilters}
         rawValuesDictionary={rawValuesModMoneyRequests}
+        exportEverythingToExcel
         searchBar={
           <TableSearchbar
             type="text"
@@ -201,10 +191,12 @@ const ModMoneyRequestsPage = ({
         colorRedKey={["wasCancelled"]}
         rowOptions={rowOptionsFunction}
         headerComp={
-          <MoneyRequestExtraFilters
-            extraFilters={extraFilters}
-            setExtraFilters={setExtraFilters}
-          />
+          <>
+            <MoneyRequestExtraFilters
+              extraFilters={extraFilters}
+              setExtraFilters={setExtraFilters}
+            />
+          </>
         }
         {...dynamicTableProps}
       />

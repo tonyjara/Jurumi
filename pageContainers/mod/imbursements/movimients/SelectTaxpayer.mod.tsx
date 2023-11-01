@@ -1,27 +1,27 @@
-import { datosPyResponse } from "@/components/FormControlled/FormControlledTaxPayerId";
 import useDebounce from "@/lib/hooks/useDebounce";
-import { startCase } from "@/lib/utils/MyLodash";
 import { trpcClient } from "@/lib/utils/trpcClient";
-import { Search2Icon } from "@chakra-ui/icons";
-import { Spinner } from "@chakra-ui/react";
-import type { TaxPayer, TaxPayerBankInfo } from "@prisma/client";
-import axios from "axios";
+import { ChevronDownIcon, Search2Icon } from "@chakra-ui/icons";
+import {
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Spinner,
+} from "@chakra-ui/react";
 import type { DropdownIndicatorProps, GroupBase } from "chakra-react-select";
 import { Select, components } from "chakra-react-select";
-import React, { useEffect, useState } from "react";
-
-type FetctchedTaxPayers = (TaxPayer & {
-  bankInfo: TaxPayerBankInfo | null;
-})[];
+import React, { useState } from "react";
 
 const SelectTaxpayer = ({
-  taxPayerId,
   setTaxPayerId,
 }: {
   setTaxPayerId: React.Dispatch<React.SetStateAction<string>>;
   taxPayerId: string;
 }) => {
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [filterValue, setFilterValue] = useState("ruc");
   const [selectInput, setSelectInput] = useState("");
   const [selectOptions, setSelectOptions] = useState<
     { id: string; value: string; label: string }[] | null
@@ -31,7 +31,7 @@ const SelectTaxpayer = ({
   //Full text search of the users ruc inside DB.
   const { isFetching: isFetchingFindData } =
     trpcClient.taxPayer.findFullTextSearch.useQuery(
-      { ruc: debouncedSearchValue },
+      { searchValue: debouncedSearchValue, filterValue },
       {
         refetchOnWindowFocus: false,
         enabled: debouncedSearchValue.length > 4,
@@ -73,8 +73,13 @@ const SelectTaxpayer = ({
     setTaxPayerId(e?.id ?? "");
   };
 
+  const filterOptions: { value: string; label: string }[] = [
+    { value: "ruc", label: "Ruc" },
+    { value: "razonSocial", label: "Razón Social" },
+  ];
+
   return (
-    <div style={{ width: "100%", maxWidth: "400px" }}>
+    <Flex style={{ width: "100%", maxWidth: "500px", gap: "10px" }}>
       <Select
         menuIsOpen={openDropdown}
         components={{
@@ -88,13 +93,37 @@ const SelectTaxpayer = ({
         noOptionsMessage={() => "No hay opciones."}
         placeholder={
           <span>
-            <Search2Icon h={"30px"} fontSize="lg" /> Ingrese un ruc y aguarde la
-            busqueda
+            <Search2Icon h={"30px"} fontSize="lg" /> Busque por RUC o Razón
           </span>
         }
         isClearable
       />
-    </div>
+
+      {filterOptions?.length && (
+        <Menu>
+          <MenuButton
+            maxW={"250px"}
+            minW={"150px"}
+            whiteSpace={"normal"}
+            height={"auto"}
+            textAlign={"left"}
+            py={{ base: "5px", md: "0px" }}
+            as={Button}
+            rightIcon={<ChevronDownIcon />}
+          >
+            Filtro:{" "}
+            {filterOptions?.find((x) => x.value === filterValue)?.label ?? ""}
+          </MenuButton>
+          <MenuList>
+            {filterOptions?.map((x) => (
+              <MenuItem onClick={() => setFilterValue(x.value)} key={x.value}>
+                {x.label}
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
+      )}
+    </Flex>
   );
 };
 

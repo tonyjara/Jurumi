@@ -9,16 +9,13 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import type { TableOptions } from "../DynamicTable";
-import { BiWorld } from "react-icons/bi";
 
 const TableTitleMenu = ({
   options,
   label,
-  globalFilter,
 }: {
   options?: TableOptions[];
   label: string | undefined;
-  globalFilter?: boolean;
 }) => {
   return (
     <>
@@ -41,7 +38,6 @@ const TableTitleMenu = ({
                 gap: "10px",
               }}
             >
-              {globalFilter && <BiWorld color="green" />}
               {label}
             </div>
           </MenuButton>

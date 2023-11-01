@@ -171,6 +171,39 @@ export const moneyRequestRouter = router({
         ...completeMoneyRequestIncludeArgs,
       });
     }),
+  //Same as getManyComplete but without pagination or limits
+  //It's a mutation to only be loaded once
+  getManyCompleteUnpaginated: adminModObserverProcedure
+    .input(
+      z.object({
+        extraFilters: z.string().array(),
+        sorting: z
+          .object({ id: z.string(), desc: z.boolean() })
+          .array()
+          .nullish(),
+        whereFilterList: z.any().array().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      //This handles raw sql queries
+      const getHasBeingReportedIds = await beingReportedRawSqlShort();
+      const getExecutionPendingIds = await executionPengingRawSql();
+
+      return await prisma?.moneyRequest.findMany({
+        orderBy: handleOrderBy({ input }),
+        where: {
+          AND: [
+            ...handleMoneyRequestExtraFilters({
+              extraFilters: input.extraFilters,
+              getHasBeingReportedIds,
+              getExecutionPendingIds,
+            }),
+            ...(input?.whereFilterList ?? []),
+          ],
+        },
+        ...completeMoneyRequestIncludeArgs,
+      });
+    }),
 
   findCompleteById: adminModObserverProcedure
     .input(

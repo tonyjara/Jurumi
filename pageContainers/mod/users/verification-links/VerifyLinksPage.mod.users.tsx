@@ -23,14 +23,14 @@ export interface VerificationLinksWithAccountName
 const VerificationLinksPage = () => {
   const user = useSession().data?.user;
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   const { data, isFetching, isLoading } =
-    trpcClient.magicLinks.getVerificationLinks.useQuery(
-      { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
-      { keepPreviousData: globalFilter ? true : false }
-    );
+    trpcClient.magicLinks.getVerificationLinks.useQuery({
+      pageIndex,
+      pageSize,
+      sorting,
+    });
   const { data: count } = trpcClient.magicLinks.count.useQuery();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,14 +39,6 @@ const VerificationLinksPage = () => {
     {
       onClick: onOpen,
       label: "Crear usuarios",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
 

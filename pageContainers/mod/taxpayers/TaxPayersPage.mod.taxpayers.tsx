@@ -21,8 +21,7 @@ const TaxPayersPage = () => {
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const [editTaxPayer, setEditTaxPayer] = useState<FormTaxPayer | null>(null);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isEditOpen,
@@ -31,15 +30,12 @@ const TaxPayersPage = () => {
   } = useDisclosure();
 
   const { data: taxPayers, isFetching: isFetchingTaxPayers } =
-    trpcClient.taxPayer.getMany.useQuery(
-      { pageIndex, pageSize, sorting: globalFilter ? sorting : null },
-      { keepPreviousData: globalFilter ? true : false }
-    );
+    trpcClient.taxPayer.getMany.useQuery({ pageIndex, pageSize, sorting });
   const { data: count } = trpcClient.taxPayer.count.useQuery();
   const { data: findByIdData, isFetching: isFetchingFindData } =
     trpcClient.taxPayer.findFullTextSearch.useQuery(
-      { ruc: debouncedSearchValue },
-      { enabled: debouncedSearchValue.length > 4 }
+      { searchValue: debouncedSearchValue, filterValue: filterValue },
+      { enabled: debouncedSearchValue.length > 4 },
     );
 
   const handleDataSource = () => {
@@ -52,14 +48,6 @@ const TaxPayersPage = () => {
     {
       onClick: onOpen,
       label: "Agregar contribuyente",
-    },
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
     },
   ];
 
@@ -85,7 +73,10 @@ const TaxPayersPage = () => {
             setSearchValue={setSearchValue}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
-            filterOptions={[{ value: "ruc", label: "Ruc" }]}
+            filterOptions={[
+              { value: "ruc", label: "Ruc" },
+              { value: "razonSocial", label: "Razón Social" },
+            ]}
           />
         }
         loading={isFetchingTaxPayers || isFetchingFindData}
