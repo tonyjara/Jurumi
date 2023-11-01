@@ -66,7 +66,7 @@ type FetctchedTaxPayers = (TaxPayer & {
 })[];
 
 const FormControlledTaxPayerId = <T extends FieldValues>(
-  props: InputProps<T>
+  props: InputProps<T>,
 ) => {
   const {
     control,
@@ -87,7 +87,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     { value: string; label: string }[] | null
   >([]);
   const [fetchedTaxPayers, setFetchedTaxPayers] = useState<FetctchedTaxPayers>(
-    []
+    [],
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isFadeOpen, onToggle: onFadeToggle } = useDisclosure({
@@ -99,7 +99,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
   //Full text search of the users ruc inside DB.
   const { isFetching: isFetchingFindData } =
     trpcClient.taxPayer.findFullTextSearch.useQuery(
-      { ruc: debouncedSearchValue },
+      { searchValue: debouncedSearchValue, filterValue: "ruc" },
       {
         refetchOnWindowFocus: false,
         enabled: debouncedSearchValue.length > 4,
@@ -117,7 +117,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
           setSelectOptions(convertToSelect);
           setOpenDropdown(true);
         },
-      }
+      },
     );
 
   //Fetches contribuyentes from datospy, if req is ok, list is disoplayed as options on select.
@@ -129,7 +129,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
         {
           timeout: 5000,
           signal: controller.signal,
-        }
+        },
       );
       if (status !== 200) throw "not 200";
       const datosFrompy = data as datosPyResponse[];
@@ -157,7 +157,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
 
   const DropdownIndicator = (
     props: JSX.IntrinsicAttributes &
-      DropdownIndicatorProps<unknown, boolean, GroupBase<unknown>>
+      DropdownIndicatorProps<unknown, boolean, GroupBase<unknown>>,
   ) => {
     return (
       <components.DropdownIndicator {...props}>
@@ -168,19 +168,18 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
 
   const handleOnSelect = (
     e: any | { value: string; label: string } | undefined,
-    field: ControllerRenderProps<T, Path<T>>
+    field: ControllerRenderProps<T, Path<T>>,
   ) => {
     field.onChange(e?.value ?? "");
     setValue(razonSocialName, e?.label ?? "");
     if (showBankInfo && fetchedTaxPayers.length && e?.value) {
-      const foundBankInfo = fetchedTaxPayers.find(
-        (x) => x.ruc === e.value
-      )?.bankInfo;
+      const foundBankInfo = fetchedTaxPayers.find((x) => x.ruc === e.value)
+        ?.bankInfo;
 
       if (!foundBankInfo) return;
       setValue(
         bankInfoName ? `${bankInfoName}.bankInfo` : "taxPayer.bankInfo",
-        foundBankInfo
+        foundBankInfo,
       );
     }
   };

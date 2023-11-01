@@ -36,8 +36,7 @@ const ApprovalsPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, setGlobalFilter, globalFilter, pageSize, sorting } =
-    dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   useEffect(() => {
     if (requestId && !isOpen) {
@@ -51,31 +50,17 @@ const ApprovalsPage = () => {
     data,
     isFetching: pendingRequestsFetching,
     isLoading,
-  } = trpcClient.moneyApprovals.getManyCompleteForApprovalPage.useQuery(
-    {
-      status: statusState,
-      pageIndex,
-      pageSize,
-      sorting: globalFilter ? sorting : null,
-      whereFilterList,
-    },
-    { keepPreviousData: globalFilter ? true : false },
-  );
+  } = trpcClient.moneyApprovals.getManyCompleteForApprovalPage.useQuery({
+    status: statusState,
+    pageIndex,
+    pageSize,
+    sorting,
+    whereFilterList,
+  });
   const { data: count } = trpcClient.moneyApprovals.countWhereStatus.useQuery({
     status: statusState,
     whereFilterList,
   });
-
-  const tableOptions: TableOptions[] = [
-    {
-      onClick: () => setGlobalFilter(true),
-      label: `${globalFilter ? "✅" : "❌"} Filtro global`,
-    },
-    {
-      onClick: () => setGlobalFilter(false),
-      label: `${!globalFilter ? "✅" : "❌"} Filtro local`,
-    },
-  ];
 
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     const { needsApproval, hasBeenApproved, hasBeenRejected } = ApprovalUtils(
@@ -132,7 +117,6 @@ const ApprovalsPage = () => {
           pageIndex,
           pageSize,
         })}
-        options={tableOptions}
         data={data ?? []}
         count={count ?? 0}
         {...dynamicTableProps}

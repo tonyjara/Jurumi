@@ -31,16 +31,19 @@ export const taxPayerRouter = router({
       });
     }),
   findFullTextSearch: protectedProcedure
-    .input(z.object({ ruc: z.string() }))
+    .input(z.object({ searchValue: z.string(), filterValue: z.string() }))
     .query(async ({ input }) => {
       return await prisma?.taxPayer.findMany({
         take: 20,
         orderBy: { razonSocial: "asc" },
         include: { bankInfo: true },
         where: {
-          ruc: {
-            contains: input.ruc,
-          },
+          ruc:
+            input.filterValue === "ruc" ? { contains: input.searchValue } : {},
+          razonSocial:
+            input.filterValue === "razonSocial"
+              ? { contains: input.searchValue, mode: "insensitive" }
+              : {},
         },
       });
     }),

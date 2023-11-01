@@ -15,7 +15,7 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
     Prisma.TransactionScalarWhereInput[]
   >([]);
   const dynamicTableProps = useDynamicTable();
-  const { pageIndex, globalFilter, pageSize, sorting } = dynamicTableProps;
+  const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
   useEffect(() => {
     if (query.transactionIds) {
@@ -30,15 +30,12 @@ const TransactionsPage = ({ query }: { query: TransactionsPageProps }) => {
     data,
     isLoading: isLoaingTxs,
     isFetching: isFetchingTxs,
-  } = trpcClient.transaction.getManyComplete.useQuery(
-    {
-      whereFilterList,
-      pageIndex,
-      pageSize,
-      sorting: globalFilter ? sorting : null,
-    },
-    { keepPreviousData: globalFilter ? true : false },
-  );
+  } = trpcClient.transaction.getManyComplete.useQuery({
+    whereFilterList,
+    pageIndex,
+    pageSize,
+    sorting,
+  });
   const { data: count } = trpcClient.transaction.count.useQuery({
     whereFilterList,
   });

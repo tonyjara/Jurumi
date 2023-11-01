@@ -1,6 +1,17 @@
 import { ApprovalUtils } from "@/lib/utils/ApprovalUtilts";
 import { Table } from "@tanstack/react-table";
 import { MoneyRequestComplete } from "./mod.requests.types";
+import { Cell, Row, SheetData } from "write-excel-file";
+import {
+  translatedMoneyReqStatus,
+  translatedMoneyReqType,
+} from "@/lib/utils/TranslatedEnums";
+import { decimalFormat } from "@/lib/utils/DecimalHelpers";
+import {
+  reduceExpenseReportsToSetCurrency,
+  reduceExpenseReturnsToSetCurrency,
+} from "@/lib/utils/TransactionUtils";
+import { percentageCellUtil } from "@/components/DynamicTables/DynamicCells/PercentageCell";
 
 export const rawValuesModMoneyRequests = ({
   table,
@@ -12,7 +23,7 @@ export const rawValuesModMoneyRequests = ({
     return Row.getVisibleCells().map((cell) => {
       const header = cell.column.columnDef.header;
       const row = Row.original as MoneyRequestComplete;
-      if (header == "N.") {
+      if (header == "N°") {
         return {
           type: Number,
           value: rowIndex + 1,
@@ -74,3 +85,170 @@ export const rawValuesModMoneyRequests = ({
     });
   });
 };
+
+export const rawValuesModMoneyRequestsUnpaginated = <T extends object>({
+  data,
+  table,
+}: {
+  data: MoneyRequestComplete[];
+  table: Table<T>;
+}) => {
+  /* Fecha, nombre del proveedor concepto e importe */
+  return data.map((row, index) => {
+    let sheet: Cell[] = [];
+
+    table.getFlatHeaders().map((h) => {
+      const header = h.column.columnDef.header as string;
+
+      /* if (header?.includes("function")) { */
+      /*   sheet.push({ */
+      /*     type: Number, */
+      /*     value: index + 1, */
+      /*   }); */
+      /* } */
+
+      if (header == "N°") {
+        return sheet.push({
+          type: Number,
+          value: index + 1,
+        });
+      }
+
+      if (header === "O.P. N°") {
+        return sheet.push({
+          type: String,
+          value: `${
+            row.project
+              ? row.project.acronym
+                ? row.project.acronym
+                : "SS"
+              : "SP"
+          }-${row?.moneyOrderNumber?.toLocaleString("en-US") ?? ""}`,
+        });
+      }
+      if (header === "Fecha de Creación") {
+        return sheet.push({
+          type: Date,
+          value: row.createdAt,
+          format: "dd/mm/yyyy",
+        });
+      }
+      if (header === "Fecha de Operación" && row.operationDate) {
+        return sheet.push({
+          type: Date,
+          value: row.operationDate,
+          format: "dd/mm/yyyy",
+        });
+      }
+
+      if (header === "Aprobación") {
+        const { approvalText } = ApprovalUtils(row as any);
+        return sheet.push({
+          type: String,
+          value: approvalText,
+        });
+      }
+      if (header === "Estado") {
+        return sheet.push({
+          type: String,
+          value: translatedMoneyReqStatus(row.status),
+        });
+      }
+      if (header === "Tipo") {
+        return sheet.push({
+          type: String,
+          value: translatedMoneyReqType(row.moneyRequestType),
+        });
+      }
+      if (header === "Monto") {
+        return sheet.push({
+          type: String,
+          value: decimalFormat(row.amountRequested, row.currency),
+        });
+      }
+      if (header === "Creador") {
+        return sheet.push({
+          type: String,
+          value: row.account.displayName,
+        });
+      }
+      if (header === "Proyecto") {
+        return sheet.push({
+          type: String,
+          value: row.project?.displayName,
+        });
+      }
+      if (header === "Linea Presupuestaria") {
+        return sheet.push({
+          type: String,
+          value: row.costCategory?.displayName,
+        });
+      }
+      if (header === "Concepto") {
+        return sheet.push({
+          type: String,
+          value: row.description,
+        });
+      }
+      if (header === "Comentarios") {
+        return sheet.push({
+          type: String,
+          value: row.comments,
+        });
+      }
+      if (header === "Ejecutado") {
+        const total = row.amountRequested;
+        const executed = reduceExpenseReportsToSetCurrency({
+          expenseReports: row.expenseReports,
+          currency: row.currency,
+        }).add(
+          reduceExpenseReturnsToSetCurrency({
+            expenseReturns: row.expenseReturns,
+            currency: row.currency,
+          }),
+        );
+        return sheet.push({
+          type: String,
+          value: `${percentageCellUtil(executed, total)}%`,
+        });
+      }
+      if (header === "Rendido") {
+        const total = row.amountRequested;
+        const executed = reduceExpenseReportsToSetCurrency({
+          expenseReports: row.expenseReports,
+          currency: row.currency,
+        }).add(
+          reduceExpenseReturnsToSetCurrency({
+            expenseReturns: row.expenseReturns,
+            currency: row.currency,
+          }),
+        );
+        return sheet.push({
+          type: String,
+          value:
+            row.moneyRequestType === "REIMBURSMENT_ORDER"
+              ? "-"
+              : `${percentageCellUtil(executed, total)}%`,
+        });
+      }
+
+      if (header === "ID") {
+        return sheet.push({
+          type: String,
+          value: row.id,
+        });
+      }
+
+      // Header that wasn't catched
+      return sheet.push({
+        type: String,
+        value: "-",
+      });
+    });
+    return sheet;
+  });
+};
+/* const headers = [ */
+/**/
+/* "Fecha de Creación",	"Fecha de Operación",	"Aprobación"	Estado	Tipo	Monto	Creador	Proyecto	Linea Presupuestaria	Concepto	Comentarios	Ejecutado	Rendido	ID */
+/* ] */

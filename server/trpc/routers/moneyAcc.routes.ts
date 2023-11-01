@@ -77,6 +77,7 @@ export const moneyAccRouter = router({
         displayName: true,
         id: true,
         currency: true,
+        bankInfo: true,
         // bankInfo: true,
       },
     });
