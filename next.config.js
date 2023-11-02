@@ -1,18 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  /* swcMinify: true, */
-  // output: 'standalone', only for docker deploy
-  /* experimental: { */
-  /*   swcPlugins: [ */
-  /*     [ */
-  /*       "next-superjson-plugin", */
-  /*       { */
-  /*         excluded: [], */
-  /*       }, */
-  /*     ], */
-  /*   ], */
-  /* }, */
 };
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
@@ -20,4 +8,3 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 module.exports = withBundleAnalyzer(nextConfig);
-/* module.exports = nextConfig; */

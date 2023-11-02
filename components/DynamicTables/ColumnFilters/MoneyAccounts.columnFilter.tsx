@@ -5,6 +5,7 @@ import type { ChakraStylesConfig } from "chakra-react-select";
 import { useColorModeValue } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { trpcClient } from "@/lib/utils/trpcClient";
+import NoSsr from "@/components/NoSsr";
 
 const MoneyAccountsColumnFilter = ({
   column,
@@ -49,18 +50,20 @@ const MoneyAccountsColumnFilter = ({
 
   return (
     <div style={{ minWidth: "130px" }} onClick={(e) => e.stopPropagation()}>
-      <Select
-        instanceId={column.id}
-        options={options}
-        onChange={handleChange}
-        chakraStyles={chakraStyles}
-        value={options.find((option: any) => option.value === selectValue)}
-        noOptionsMessage={() => "No hay opciones."}
-        size="sm"
-        placeholder=""
-        isClearable={true}
-        classNamePrefix="myDropDown"
-      />
+      <NoSsr>
+        <Select
+          instanceId={column.id}
+          options={options}
+          onChange={handleChange}
+          chakraStyles={chakraStyles}
+          value={options.find((option: any) => option.value === selectValue)}
+          noOptionsMessage={() => "No hay opciones."}
+          size="sm"
+          placeholder=""
+          isClearable={true}
+          classNamePrefix="myDropDown"
+        />
+      </NoSsr>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import type { ChakraStylesConfig } from "chakra-react-select";
 import { useColorModeValue } from "@chakra-ui/react";
 import { MoneyRequestType, Prisma } from "@prisma/client";
 import { moneyRequestTypeOptions } from "@/lib/utils/SelectOptions";
+import NoSsr from "@/components/NoSsr";
 
 const MoneyRequestTypeColumnFilter = ({
   column,
@@ -43,19 +44,23 @@ const MoneyRequestTypeColumnFilter = ({
 
   return (
     <div style={{ minWidth: "130px" }} onClick={(e) => e.stopPropagation()}>
-      <Select
-        instanceId={column.id}
-        options={options}
-        onChange={handleChange}
-        chakraStyles={chakraStyles}
-        //Empty string celars the select placeholder
-        value={options.find((option) => option.value === filterListValue) ?? ""}
-        noOptionsMessage={() => "No hay opciones."}
-        size="sm"
-        placeholder=""
-        isClearable={true}
-        classNamePrefix="myDropDown"
-      />
+      <NoSsr>
+        <Select
+          instanceId={column.id}
+          options={options}
+          onChange={handleChange}
+          chakraStyles={chakraStyles}
+          //Empty string celars the select placeholder
+          value={
+            options.find((option) => option.value === filterListValue) ?? ""
+          }
+          noOptionsMessage={() => "No hay opciones."}
+          size="sm"
+          placeholder=""
+          isClearable={true}
+          classNamePrefix="myDropDown"
+        />
+      </NoSsr>
     </div>
   );
 };

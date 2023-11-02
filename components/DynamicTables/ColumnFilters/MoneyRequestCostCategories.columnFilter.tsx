@@ -5,6 +5,7 @@ import type { ChakraStylesConfig } from "chakra-react-select";
 import { useColorModeValue } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import { trpcClient } from "@/lib/utils/trpcClient";
+import NoSsr from "@/components/NoSsr";
 
 const MoneyRequestCostCategoriesColumnFilter = ({
   column,
@@ -17,7 +18,7 @@ const MoneyRequestCostCategoriesColumnFilter = ({
   const options = data
     ? data.reduce((acc: any, val) => {
         val.costCategories.forEach((x) =>
-          acc.push({ label: x.displayName, value: x.id })
+          acc.push({ label: x.displayName, value: x.id }),
         );
         return [...acc];
       }, [])
@@ -42,7 +43,7 @@ const MoneyRequestCostCategoriesColumnFilter = ({
     if (!setWhereFilterList) return;
 
     setWhereFilterList((prev) =>
-      prev.filter((x) => x.costCategoryId !== selectValue)
+      prev.filter((x) => x.costCategoryId !== selectValue),
     );
     if (!e?.value) {
       return setSelectValue(e?.value ?? null);
@@ -54,18 +55,20 @@ const MoneyRequestCostCategoriesColumnFilter = ({
 
   return (
     <div style={{ minWidth: "130px" }} onClick={(e) => e.stopPropagation()}>
-      <Select
-        instanceId={column.id}
-        options={options}
-        onChange={handleChange}
-        chakraStyles={chakraStyles}
-        value={options.find((option: any) => option.value === selectValue)}
-        noOptionsMessage={() => "No hay opciones."}
-        size="sm"
-        placeholder=""
-        isClearable={true}
-        classNamePrefix="myDropDown"
-      />
+      <NoSsr>
+        <Select
+          instanceId={column.id}
+          options={options}
+          onChange={handleChange}
+          chakraStyles={chakraStyles}
+          value={options.find((option: any) => option.value === selectValue)}
+          noOptionsMessage={() => "No hay opciones."}
+          size="sm"
+          placeholder=""
+          isClearable={true}
+          classNamePrefix="myDropDown"
+        />
+      </NoSsr>
     </div>
   );
 };

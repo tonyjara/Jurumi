@@ -100,13 +100,6 @@ export const rawValuesModMoneyRequestsUnpaginated = <T extends object>({
     table.getFlatHeaders().map((h) => {
       const header = h.column.columnDef.header as string;
 
-      /* if (header?.includes("function")) { */
-      /*   sheet.push({ */
-      /*     type: Number, */
-      /*     value: index + 1, */
-      /*   }); */
-      /* } */
-
       if (header == "N°") {
         return sheet.push({
           type: Number,
@@ -162,8 +155,8 @@ export const rawValuesModMoneyRequestsUnpaginated = <T extends object>({
       }
       if (header === "Monto") {
         return sheet.push({
-          type: String,
-          value: decimalFormat(row.amountRequested, row.currency),
+          type: Number,
+          value: row.amountRequested.toNumber(),
         });
       }
       if (header === "Creador") {
