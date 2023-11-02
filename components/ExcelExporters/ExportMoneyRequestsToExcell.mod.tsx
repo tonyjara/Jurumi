@@ -10,7 +10,7 @@ import { Prisma } from "@prisma/client";
 import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 
-const ExportUnpaginatedMoneyRequestsMod = <T extends object>({
+const ExportMoneyRequestsToExcell = <T extends object>({
   whereFilterList,
   extraFilters,
   sorting,
@@ -27,7 +27,6 @@ const ExportUnpaginatedMoneyRequestsMod = <T extends object>({
         value: header.column.columnDef.header as string,
         fontWeight: "bold",
       })) as { value: string; fontWeight: string }[];
-      console.log(headers);
 
       const values = rawValuesModMoneyRequestsUnpaginated({
         table,
@@ -70,11 +69,10 @@ const ExportUnpaginatedMoneyRequestsMod = <T extends object>({
     <Button
       onClick={handleGetUnPaginatedMoneyRequests}
       rightIcon={<FaRegFileExcel />}
-      /* size="sm" */
     >
       Exportar todo
     </Button>
   );
 };
 
-export default ExportUnpaginatedMoneyRequestsMod;
+export default ExportMoneyRequestsToExcell;

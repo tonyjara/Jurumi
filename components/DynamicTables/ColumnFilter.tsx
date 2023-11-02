@@ -80,12 +80,13 @@ const ColumnFilter = (props: ColumnFilterProps) => {
       {column.id === "moneyRequestId" && (
         <InputContainsColumnFilter keyName="moneyRequestId" {...props} />
       )}{" "}
-      {/* separator */}
-      {/* {column.id === "Concepto" && ( can't filter concepto in transaction becuase it varies depending on relation */}
-      {/*   <InputContainsColumnFilter keyName="description" {...props} /> */}
-      {/* )}{" "} */}
     </div>
   );
 };
+
+/* separator */
+/* {column.id === "Concepto" && ( can't filter concepto in transaction becuase it varies depending on relation */
+/*   <InputContainsColumnFilter keyName="description" {...props} /> */
+/* )}{" "} */
 
 export default ColumnFilter;

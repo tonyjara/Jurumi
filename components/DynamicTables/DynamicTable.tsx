@@ -34,7 +34,7 @@ import TableTitleMenu from "./Utils/TableTitleMenu";
 import ColumnFilter from "./ColumnFilter";
 import ExportTableToExcel from "./Utils/ExportTableToExcel";
 import SkeletonRows from "./Utils/SkeletonRows";
-import ExportUnpaginatedMoneyRequestsMod from "../ExcelExporters/ExportMoneyRequests.mod";
+import ExportMoneyRequestsToExcell from "../ExcelExporters/ExportMoneyRequestsToExcell.mod";
 
 export interface TableOptions {
   onClick: () => void;
@@ -167,7 +167,7 @@ const DynamicTable = <T extends object>({
                   extraFilters &&
                   sorting &&
                   exportEverythingToExcel && (
-                    <ExportUnpaginatedMoneyRequestsMod
+                    <ExportMoneyRequestsToExcell
                       sorting={sorting}
                       whereFilterList={whereFilterList}
                       extraFilters={extraFilters}
