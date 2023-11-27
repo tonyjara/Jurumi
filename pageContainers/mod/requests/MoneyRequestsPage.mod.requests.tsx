@@ -32,7 +32,9 @@ const ModMoneyRequestsPage = ({
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const [filterValue, setFilterValue] = useState("id");
-  const [extraFilters, setExtraFilters] = useState<string[]>([]);
+  const [extraFilters, setExtraFilters] = useState<string[]>([
+    "removeWasCancelled",
+  ]);
   const [whereFilterList, setWhereFilterList] = useState<
     Prisma.MoneyRequestScalarWhereInput[]
   >([]);
@@ -46,7 +48,7 @@ const ModMoneyRequestsPage = ({
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
-  //Used when selecting a taxPayer in movimientosPage
+  //NOTE: Used when selecting a taxPayer in movimientosPage
   useEffect(() => {
     if (taxPayerId === undefined) return;
     setWhereFilterList((prev) => prev.filter((x) => !x.taxPayerId));
@@ -65,6 +67,7 @@ const ModMoneyRequestsPage = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /* NOTE: Open modals */
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isEditOpen,

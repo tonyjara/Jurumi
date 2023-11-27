@@ -6,7 +6,6 @@ import {
   translatedMoneyReqStatus,
   translatedMoneyReqType,
 } from "@/lib/utils/TranslatedEnums";
-import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 import {
   reduceExpenseReportsToSetCurrency,
   reduceExpenseReturnsToSetCurrency,
@@ -18,7 +17,6 @@ export const rawValuesModMoneyRequests = ({
 }: {
   table: Table<MoneyRequestComplete>;
 }) => {
-  /* Fecha, nombre del proveedor concepto e importe */
   return table.getRowModel().rows.map((Row, rowIndex) => {
     return Row.getVisibleCells().map((cell) => {
       const header = cell.column.columnDef.header;
@@ -93,7 +91,6 @@ export const rawValuesModMoneyRequestsUnpaginated = <T extends object>({
   data: MoneyRequestComplete[];
   table: Table<T>;
 }) => {
-  /* Fecha, nombre del proveedor concepto e importe */
   return data.map((row, index) => {
     let sheet: Cell[] = [];
 
@@ -102,8 +99,8 @@ export const rawValuesModMoneyRequestsUnpaginated = <T extends object>({
 
       if (header == "N°") {
         return sheet.push({
-          type: Number,
-          value: index + 1,
+          type: String,
+          value: row.wasCancelled ? "ANULADO" : (index + 1).toString(),
         });
       }
 
