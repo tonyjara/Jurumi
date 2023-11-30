@@ -26,11 +26,14 @@ const CreateMoneyRequestModal = ({
   isOpen,
   onClose,
   orgId,
+  incomingMoneyRequest,
 }: {
   isOpen: boolean;
   onClose: () => void;
   projectId?: string;
   orgId: string | null;
+  //To be able to hook in with contracts, we need to pass the incomingMoneyRequest
+  incomingMoneyRequest?: FormMoneyRequest;
 }) => {
   const context = trpcClient.useContext();
   const {
@@ -40,7 +43,7 @@ const CreateMoneyRequestModal = ({
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormMoneyRequest>({
-    defaultValues: defaultMoneyRequestData,
+    defaultValues: incomingMoneyRequest ?? defaultMoneyRequestData,
     resolver: zodResolver(validateMoneyRequest),
   });
 
@@ -63,7 +66,7 @@ const CreateMoneyRequestModal = ({
         successText: "Su solicitud ha sido creada!",
         callback: () => {
           handleOnClose();
-          context.moneyRequest.invalidate();
+          context.invalidate();
         },
       }),
     );
@@ -82,6 +85,7 @@ const CreateMoneyRequestModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm
+              incomingMoneyRequest={incomingMoneyRequest}
               setValue={setValue}
               control={control}
               errors={errors as any}

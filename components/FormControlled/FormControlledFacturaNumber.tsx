@@ -37,7 +37,11 @@ const FormControlledFacturaNumber = <T extends FieldValues>(
 
   return (
     <FormControl hidden={hidden} isInvalid={!!errors[name] || !!error}>
-      <FormLabel fontSize={"md"} color={"gray.500"}>
+      <FormLabel
+        fontSize={"md"}
+        color={"gray.600"}
+        _dark={{ color: "gray.400" }}
+      >
         {label}
       </FormLabel>
       <Controller

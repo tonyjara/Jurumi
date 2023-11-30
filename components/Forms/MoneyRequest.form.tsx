@@ -37,6 +37,8 @@ interface formProps<T extends FieldValues> {
   isEdit?: boolean;
   orgId: string | null;
   reset: UseFormReset<T>;
+  //To be able to hook in with contracts, we need to pass the incomingMoneyRequest
+  incomingMoneyRequest?: FormMoneyRequest;
 }
 
 const MoneyRequestForm = ({
@@ -46,6 +48,7 @@ const MoneyRequestForm = ({
   isEdit,
   orgId,
   reset,
+  incomingMoneyRequest,
 }: formProps<FormMoneyRequest>) => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -107,6 +110,7 @@ const MoneyRequestForm = ({
               organizationId: orgId,
               moneyRequestType: "FUND_REQUEST",
               projectId: randomProject?.id ?? null,
+              contractsId: incomingMoneyRequest?.contractsId,
             });
           }}
         />

@@ -100,7 +100,7 @@ export const accountsRouter = router({
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
@@ -208,4 +208,14 @@ export const accountsRouter = router({
         select: { displayName: true, email: true, id: true, role: true },
       });
     }),
+  getManyForSelect: adminModObserverProcedure.query(async () => {
+    return await prisma?.account.findMany({
+      orderBy: { displayName: "asc" },
+      where: {
+        isVerified: true,
+        active: true,
+      },
+      select: { displayName: true, id: true },
+    });
+  }),
 });

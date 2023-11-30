@@ -20,7 +20,7 @@ interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
   name: Path<T>;
-  label: string;
+  label?: string;
   helperText?: string;
   options: { value: string; label: string }[] | any[];
   isClearable?: boolean;
@@ -31,6 +31,7 @@ interface InputProps<T extends FieldValues> {
   optionValue?: string;
   disable?: boolean;
   value?: any;
+  hidden?: boolean;
 }
 
 const FormControlledSelect = <T extends FieldValues>({
@@ -48,6 +49,7 @@ const FormControlledSelect = <T extends FieldValues>({
   optionLabel,
   optionValue,
   disable,
+  hidden,
 }: InputProps<T>) => {
   const handleOnChange = (e: any, field: ControllerRenderProps<T, Path<T>>) => {
     if (!isMulti) {
@@ -85,8 +87,15 @@ const FormControlledSelect = <T extends FieldValues>({
   };
 
   return (
-    <FormControl isInvalid={!!errors[name] || !!error}>
-      <FormLabel fontSize={"md"} color={"gray.500"}>
+    <FormControl
+      display={hidden ? "none" : undefined}
+      isInvalid={!!errors[name] || !!error}
+    >
+      <FormLabel
+        fontSize={"md"}
+        color={"gray.600"}
+        _dark={{ color: "gray.400" }}
+      >
         {label}
       </FormLabel>
       <Controller

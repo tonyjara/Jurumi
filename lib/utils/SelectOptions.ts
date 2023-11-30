@@ -1,4 +1,6 @@
 import type {
+  ContractFrequency,
+  DaysOfTheWeek,
   MoneyRequestStatus,
   MoneyRequestType,
   TransactionType,
@@ -73,4 +75,29 @@ export const transactionTypeOptions: {
   /* { value: 'MEMBERSHIP_PAYMENT', label: 'Cuota de socio' }, */
   { value: "PROJECT_IMBURSEMENT", label: "Desembolso en proyecto" },
   { value: "MONEY_ACCOUNT_IMBURSEMENT", label: "Desembolso en cuenta" },
+];
+
+export const contractFrequencyOptions: {
+  value: ContractFrequency;
+  label: string;
+}[] = [
+  { value: "MONTHLY", label: "Mensual" },
+  { value: "WEEKLY", label: "Semanal" },
+  { value: "BIWEEKLY", label: "Bi-semanal" },
+  { value: "YEARLY", label: "Anual" },
+  { value: "ONCE", label: "Único pago" },
+  { value: "VARIABLE", label: "Monto Variable" },
+];
+
+export const daysOfTheWeekOptions: {
+  value: DaysOfTheWeek;
+  label: string;
+}[] = [
+  { value: "MONDAY", label: "Lunes" },
+  { value: "TUESDAY", label: "Martes" },
+  { value: "WEDNESDAY", label: "Miércoles" },
+  { value: "THURSDAY", label: "Jueves" },
+  { value: "FRIDAY", label: "Viernes" },
+  { value: "SATURDAY", label: "Sábado" },
+  { value: "SUNDAY", label: "Domingo" },
 ];

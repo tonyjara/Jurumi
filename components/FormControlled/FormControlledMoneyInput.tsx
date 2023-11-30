@@ -7,23 +7,18 @@ import {
   InputGroup,
   InputRightElement,
   Button,
-} from '@chakra-ui/react';
-import type { Currency } from '@prisma/client';
-import { Prisma } from '@prisma/client';
-import Decimal from 'decimal.js';
-import React from 'react';
-import CurrencyInput from 'react-currency-input-field';
-import type {
-  Control,
-  FieldErrorsImpl,
-  FieldValues,
-  Path,
-} from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+} from "@chakra-ui/react";
+import type { Currency } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import Decimal from "decimal.js";
+import React from "react";
+import CurrencyInput from "react-currency-input-field";
+import type { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
-  errors: FieldErrorsImpl<any>;
+  errors: FieldErrors<T>;
   name: Path<T>;
   label: string;
   helperText?: string;
@@ -49,7 +44,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
   totalAmount,
   disable,
 }: InputProps<T>) => {
-  const splitName = name.split('.');
+  const splitName = name.split(".");
   const reduceErrors = splitName.reduce((acc: any, curr: any) => {
     if (!acc[curr]) return acc;
     if (isNaN(curr)) {
@@ -59,10 +54,15 @@ const FormControlledMoneyInput = <T extends FieldValues>({
   }, errors);
   return (
     <FormControl
-      display={hidden ? 'none' : 'block'}
+      display={hidden ? "none" : "block"}
       isInvalid={!!reduceErrors.message}
     >
-      <FormLabel whiteSpace={'nowrap'} fontSize={'md'} color={'gray.500'}>
+      <FormLabel
+        whiteSpace={"nowrap"}
+        fontSize={"md"}
+        color={"gray.600"}
+        _dark={{ color: "gray.400" }}
+      >
         {label}
       </FormLabel>
       <Controller
@@ -76,15 +76,15 @@ const FormControlledMoneyInput = <T extends FieldValues>({
               customInput={Input}
               name={name}
               value={field.value}
-              decimalScale={currency === 'PYG' ? 0 : 2} // precision
+              decimalScale={currency === "PYG" ? 0 : 2} // precision
               //This makes the input crash have errors
               // fixedDecimalLength={currency === 'PYG' ? 0 : 2}
               groupSeparator=","
               allowNegativeValue={allowNegativeValue}
               decimalSeparator="."
-              prefix={prefix ?? 'Gs. '}
+              prefix={prefix ?? "Gs. "}
               onValueChange={(value) => {
-                if (value?.endsWith('.') && currency === 'USD') {
+                if (value?.endsWith(".") && currency === "USD") {
                   return field.onChange(value as any);
                 }
                 return value
@@ -103,7 +103,7 @@ const FormControlledMoneyInput = <T extends FieldValues>({
         )}
       />
       {!reduceErrors.message ? (
-        <FormHelperText color={'gray.500'}>{helperText}</FormHelperText>
+        <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
         <FormErrorMessage>{reduceErrors.message}</FormErrorMessage>
       )}

@@ -33,6 +33,7 @@ const mockOutPut: MoneyRequest = {
   taxPayerId: null,
   facturaNumber: null,
   comments: "",
+  contractsId: null,
 };
 const userCaller = appRouter.createCaller(
   createInnerTRPCContext({ session: userSessionMock, prisma: prismaMock }),
