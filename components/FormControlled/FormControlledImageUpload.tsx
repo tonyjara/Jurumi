@@ -42,7 +42,7 @@ interface InputProps<T extends FieldValues> {
 }
 
 const FormControlledImageUpload = <T extends FieldValues>(
-  props: InputProps<T>
+  props: InputProps<T>,
 ) => {
   const {
     control,
@@ -119,7 +119,11 @@ const FormControlledImageUpload = <T extends FieldValues>(
 
   return (
     <FormControl hidden={hidden} isInvalid={!!imageError}>
-      <FormLabel fontSize={"md"} color={"gray.500"}>
+      <FormLabel
+        fontSize={"md"}
+        color={"gray.600"}
+        _dark={{ color: "gray.400" }}
+      >
         {label}
       </FormLabel>
       <HStack>

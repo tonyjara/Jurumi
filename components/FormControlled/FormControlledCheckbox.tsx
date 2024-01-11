@@ -5,10 +5,10 @@ import {
   FormErrorMessage,
   Checkbox,
   Flex,
-} from '@chakra-ui/react';
-import React from 'react';
-import type { Control, FieldErrors, FieldValues, Path } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+} from "@chakra-ui/react";
+import React from "react";
+import type { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
+import { Controller } from "react-hook-form";
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrors<T>;
@@ -28,15 +28,17 @@ const FormControlledCheckbox = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name]}>
-      <Flex alignItems={'center'}>
-        <FormLabel>{label}</FormLabel>
+      <Flex alignItems={"center"}>
+        <FormLabel color={"gray.600"} _dark={{ color: "gray.400" }}>
+          {label}
+        </FormLabel>
         <Controller
           control={control}
           name={name}
           render={({ field }) => (
             <Checkbox
               marginTop={-2}
-              size={'lg'}
+              size={"lg"}
               checked={field.value}
               onChange={field.onChange}
             />

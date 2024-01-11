@@ -86,6 +86,8 @@ const DynamicTable = <T extends object>({
   count,
   data,
   enableColumnFilters,
+  exportEverythingToExcel,
+  extraFilters,
   headerComp,
   loading,
   noHeader,
@@ -104,8 +106,6 @@ const DynamicTable = <T extends object>({
   subTitle,
   title,
   whereFilterList,
-  extraFilters,
-  exportEverythingToExcel,
 }: DynamicTableProps<T>) => {
   const [menuData, setMenuData] = useState<{
     x: number;

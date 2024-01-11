@@ -26,24 +26,25 @@ model Account {
     taxPayerInfo         TaxPayer?
     membership           Membership?
 
-    emails                   Emails[]
     accountVerificationLinks AccountVerificationLinks[]
-    expenseReports           ExpenseReport[]
-    moneyRequests            MoneyRequest[]
-    moneyApprovals           MoneyRequestApproval[]
-    transactions             Transaction[]
-    searchableImage          searchableImage[]
     allowedOnProjects        Project[]                  @relation("AccountToProject")
-    organizations            Organization[]             @relation("members")
-    moneyAdminOrgs           Organization[]             @relation("moneyAdministrators")
-    moneyApproverOrgs        Organization[]             @relation("moneyRequestApprovers")
-    imbursement              Imbursement[]
+    contracts                Contracts[]
+    emails                   Emails[]
+    expenseReports           ExpenseReport[]
     expenseReturn            ExpenseReturn[]
     fcmNotificationTokens    FcmNotificationTokens[]
-    notifications            Notifications[]
-    passwordRecoveryLinks    PasswordRecoveryLinks[]
+    imbursement              Imbursement[]
     moneyAccountOffset       MoneyAccountOffset[]
+    moneyAdminOrgs           Organization[]             @relation("moneyAdministrators")
+    moneyApprovals           MoneyRequestApproval[]
+    moneyApproverOrgs        Organization[]             @relation("moneyRequestApprovers")
+    moneyRequests            MoneyRequest[]
+    notifications            Notifications[]
+    organizations            Organization[]             @relation("members")
+    passwordRecoveryLinks    PasswordRecoveryLinks[]
+    searchableImage          searchableImage[]
     supportTickets           SupportTicket[]
+    transactions             Transaction[]
 }
 
 model Membership {
@@ -322,6 +323,7 @@ model Project {
     expenseReports ExpenseReport[]
     imbursements   Imbursement[]
     moneyRequest   MoneyRequest[]
+    contracts      Contracts[]
 
     allowedUsers Account[]     @relation("AccountToProject")
     taxPayer     TaxPayer[]    @relation("ProjectToTaxPayer")
@@ -343,6 +345,7 @@ model CostCategory {
     transactions          Transaction[]
     expenseReport         ExpenseReport[]
     moneyRequest          MoneyRequest[]
+    contracts             Contracts[]
 }
 
 model Imbursement {
@@ -465,6 +468,9 @@ model MoneyRequest {
     expenseReturns        ExpenseReturn[]
     moneyRequestApprovals MoneyRequestApproval[]
     transactions          Transaction[]
+    contracts             Contracts?             @relation(fields: [contractsId], references: [id])
+    contractsId           Int?
+    contractsPaymentId    ContractPayments[]
 }
 
 model ExpenseReport {
@@ -630,6 +636,80 @@ model Emails {
     accountId String?
 }
 
+model Contracts {
+    id                Int               @id @default(autoincrement())
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime?         @updatedAt
+    contractStartDate DateTime          @default(now())
+    frequency         ContractFrequency
+
+    payments          ContractPayments[] //For VARIABLE
+    paymentDate       DateTime? //For ONCE
+    monthlyPaymentDay Int?
+    yearlyPaymentDate DateTime?
+    weeklyPaymentDay  DaysOfTheWeek?
+
+    remindDaysBefore Int @default(0)
+
+    endDate          DateTime?
+    wasCancelledAt   DateTime?
+    name             String
+    description      String
+    amount           Decimal          @default(0) @db.Decimal(19, 4)
+    currency         Currency
+    moneyRequestType MoneyRequestType
+    contractUrl      String?
+
+    archived     Boolean @default(false)
+    softDeleted  Boolean @default(false)
+    wasCancelled Boolean @default(false)
+    wasFinalized Boolean @default(false)
+
+    moneyRequests MoneyRequest[]
+
+    project             Project?           @relation(fields: [projectId], references: [id])
+    projectId           String?
+    costCategory        CostCategory?      @relation(fields: [costCategoryId], references: [id])
+    costCategoryId      String?
+    contratCategories   ContratCategories? @relation(fields: [contratCategoriesId], references: [id])
+    contratCategoriesId Int?
+    account             Account?           @relation(fields: [accountId], references: [id])
+    accountId           String?
+}
+
+//Cuotas
+model ContractPayments {
+    id          Int        @id @default(autoincrement())
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime?  @updatedAt
+    name        String
+    amount      Decimal    @default(0) @db.Decimal(19, 4)
+    currency    Currency
+    dateDue     DateTime
+    contracts   Contracts? @relation(fields: [contractsId], references: [id])
+    contractsId Int?
+
+    moneyRequest   MoneyRequest? @relation(fields: [moneyRequestId], references: [id])
+    moneyRequestId String?
+}
+
+model ContratCategories {
+    id        Int         @id @default(autoincrement())
+    createdAt DateTime    @default(now())
+    updatedAt DateTime?   @updatedAt
+    name      String
+    contracts Contracts[]
+}
+
+enum ContractFrequency {
+    ONCE
+    VARIABLE
+    WEEKLY
+    BIWEEKLY
+    MONTHLY
+    YEARLY
+}
+
 enum Role {
     ADMIN
     MODERATOR
@@ -719,4 +799,14 @@ enum TransactionType {
     COST_CATEGORY
     MONEY_ACCOUNT
     OFFSET
+}
+
+enum DaysOfTheWeek {
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+    SUNDAY
 }

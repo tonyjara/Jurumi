@@ -147,7 +147,7 @@ export const orgRouter = router({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const org = await prisma?.organization.delete({

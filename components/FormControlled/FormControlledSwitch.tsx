@@ -5,10 +5,10 @@ import {
   FormErrorMessage,
   Flex,
   Switch,
-} from '@chakra-ui/react';
-import React from 'react';
-import type { Control, FieldErrors, FieldValues, Path } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+} from "@chakra-ui/react";
+import React from "react";
+import type { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -31,8 +31,10 @@ const FormControlledSwitch = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name]}>
-      <Flex alignItems={'center'} justifyContent="space-between">
-        <FormLabel color={'gray.500'}>{label}</FormLabel>
+      <Flex alignItems={"center"} justifyContent="space-between">
+        <FormLabel color={"gray.600"} _dark={{ color: "gray.400" }}>
+          {label}
+        </FormLabel>
         <Controller
           control={control}
           name={name}
@@ -40,7 +42,7 @@ const FormControlledSwitch = <T extends FieldValues>({
             <Switch
               isDisabled={disable}
               marginTop={-2}
-              size={'lg'}
+              size={"lg"}
               isChecked={field.value}
               onChange={field.onChange}
             />

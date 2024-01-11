@@ -6,20 +6,20 @@ import {
   Spinner,
   Avatar,
   Box,
-} from '@chakra-ui/react';
-import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+} from "@chakra-ui/react";
+import React, { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import type {
   Control,
   FieldValues,
   Path,
   SetFieldValue,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import uploadFileToBlob from '../../lib/utils/azure-storage-blob';
-import { compressCoverPhoto } from '../../lib/utils/ImageCompressor';
-import { myToast } from '../Toasts & Alerts/MyToast';
-import axios from 'axios';
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import uploadFileToBlob from "../../lib/utils/azure-storage-blob";
+import { compressCoverPhoto } from "../../lib/utils/ImageCompressor";
+import { myToast } from "../Toasts & Alerts/MyToast";
+import axios from "axios";
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
@@ -32,7 +32,7 @@ interface InputProps<T extends FieldValues> {
 }
 
 const FormControlledAvatarUpload = <T extends FieldValues>(
-  props: InputProps<T>
+  props: InputProps<T>,
 ) => {
   const { control, urlName, label, hidden, setValue, userId } = props;
   const [uploading, setUploading] = useState(false);
@@ -51,13 +51,13 @@ const FormControlledAvatarUpload = <T extends FieldValues>(
 
       const getFile: File = files[0];
       //This way avatarurl is always the same
-      const file = new File([getFile], 'avatarUrl', {
+      const file = new File([getFile], "avatarUrl", {
         type: getFile.type,
         lastModified: getFile.lastModified,
       });
       const compressed = await compressCoverPhoto(file);
 
-      const req = await axios('/api/get-connection-string');
+      const req = await axios("/api/get-connection-string");
       const { connectionString } = req.data;
 
       const url = await uploadFileToBlob(compressed, userId, connectionString);
@@ -77,24 +77,28 @@ const FormControlledAvatarUpload = <T extends FieldValues>(
     maxFiles: 1,
     multiple: false,
     accept: {
-      'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
+      "image/*": [".png", ".gif", ".jpeg", ".jpg"],
     },
   });
-  const activeBg = useColorModeValue('gray.100', 'gray.600');
+  const activeBg = useColorModeValue("gray.100", "gray.600");
 
   return (
     <FormControl px={6} py="5px" hidden={hidden}>
-      <FormLabel fontSize={'md'} color={'gray.500'}>
+      <FormLabel
+        fontSize={"md"}
+        color={"gray.600"}
+        _dark={{ color: "gray.400" }}
+      >
         {label}
       </FormLabel>
 
-      <Box cursor={'pointer'} {...getRootProps()}>
+      <Box cursor={"pointer"} {...getRootProps()}>
         <Avatar
           src={pictureUrl?.length ? pictureUrl : undefined}
           width={100}
           height={100}
           _hover={{ bg: activeBg }}
-          bg={isDragActive ? activeBg : 'teal'}
+          bg={isDragActive ? activeBg : "teal"}
         />
       </Box>
       {uploading && (

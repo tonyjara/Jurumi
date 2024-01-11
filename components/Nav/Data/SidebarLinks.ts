@@ -10,6 +10,7 @@ import { TbReportMoney } from "react-icons/tb";
 import { IoIosPeople } from "react-icons/io";
 import { VscOrganization } from "react-icons/vsc";
 import { TfiGallery } from "react-icons/tfi";
+import { LiaFileContractSolid } from "react-icons/lia";
 import { ImPageBreak } from "react-icons/im";
 export interface LinkItemProps {
   name: string;
@@ -52,6 +53,11 @@ const AdminModLinks: (isAdminOrMod: boolean) => Array<LinkItemProps> = (
               name: "Desembolsos",
               icon: FaDonate,
               dest: "/mod/imbursements",
+            },
+            {
+              name: "Contratos",
+              icon: LiaFileContractSolid,
+              dest: "/mod/contracts",
             },
             {
               name: "Socios",

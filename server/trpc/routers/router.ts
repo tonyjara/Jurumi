@@ -22,28 +22,30 @@ import { membersRouter } from "./members.routes";
 import { galleryRouter } from "./gallery.routes";
 import { searchableImageRouter } from "./searchableImage.routes";
 import { reportsRouter } from "./reports.routes";
+import { contractsRouter } from "./contracts.routes";
 
 export const appRouter = router({
   account: accountsRouter,
+  contracts: contractsRouter,
   expenseReport: expenseReportsRouter,
+  expenseReturn: expenseReturnsRouter,
+  gallery: galleryRouter,
   greeting: greetingRouter,
   healthcheck: publicProcedure.query(() => "yay!"),
   imbursement: imbursementsRouter,
+  magicLinks: magicLinksRouter,
+  members: membersRouter,
   moneyAcc: moneyAccRouter,
   moneyApprovals: moneyApprovalRouter,
   moneyRequest: moneyRequestRouter,
+  notifications: notificationsRouter,
   org: orgRouter,
   preferences: preferencesRouter,
   project: projectRouter,
+  reports: reportsRouter,
+  searchableImage: searchableImageRouter,
   seed: seedRouter,
   taxPayer: taxPayerRouter,
   transaction: transactionsRouter,
-  magicLinks: magicLinksRouter,
-  expenseReturn: expenseReturnsRouter,
-  notifications: notificationsRouter,
-  members: membersRouter,
-  gallery: galleryRouter,
-  searchableImage: searchableImageRouter,
-  reports: reportsRouter,
 });
 export type AppRouter = typeof appRouter;

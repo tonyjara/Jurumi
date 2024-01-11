@@ -42,7 +42,7 @@ interface controllerProps<T extends FieldValues> {
 }
 
 const FormControlledDatePicker = <T extends FieldValues>(
-  props: controllerProps<T>
+  props: controllerProps<T>,
 ) => {
   const { name, control, errors, label, hidden, helperText, error } = props;
   const [selectedDate, setSelectedDate] = React.useState<Date>();
@@ -95,7 +95,11 @@ const FormControlledDatePicker = <T extends FieldValues>(
       display={hidden ? "none" : "block"}
       isInvalid={!!errors[name] || !!error?.length}
     >
-      <FormLabel fontSize={"md"} color={"gray.500"}>
+      <FormLabel
+        fontSize={"md"}
+        color={"gray.600"}
+        _dark={{ color: "gray.400" }}
+      >
         {label}
       </FormLabel>
       <Controller

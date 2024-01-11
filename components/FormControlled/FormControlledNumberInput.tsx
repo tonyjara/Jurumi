@@ -53,7 +53,11 @@ const FormControlledNumberInput = <T extends FieldValues>({
       display={hidden ? "none" : "block"}
       isInvalid={!!reduceErrors.message}
     >
-      <FormLabel fontSize={"md"} color={"gray.500"}>
+      <FormLabel
+        fontSize={"md"}
+        color={"gray.600"}
+        _dark={{ color: "gray.400" }}
+      >
         {label}
       </FormLabel>
       <Controller

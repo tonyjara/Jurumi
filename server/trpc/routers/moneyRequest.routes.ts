@@ -297,6 +297,7 @@ export const moneyRequestRouter = router({
       const MoneyReq = await prisma?.moneyRequest.create({
         data: {
           accountId: user.id,
+          contractsId: input.contractsId,
           amountRequested: new Prisma.Decimal(input.amountRequested),
           comments: input.comments,
           costCategoryId: input.costCategoryId,
@@ -305,7 +306,7 @@ export const moneyRequestRouter = router({
           facturaNumber: input.facturaNumber,
           moneyOrderNumber: input.moneyOrderNumber,
           moneyRequestType: input.moneyRequestType,
-          operationDate: new Date(),
+          operationDate: input.operationDate,
           organizationId: input.organizationId,
           projectId: input.projectId,
           rejectionMessage: input.rejectionMessage,
