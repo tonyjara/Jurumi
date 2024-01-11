@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Contracts" ADD COLUMN     "contractStartDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

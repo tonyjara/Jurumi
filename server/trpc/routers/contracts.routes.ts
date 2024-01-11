@@ -14,7 +14,7 @@ import { TRPCError } from "@trpc/server";
 import { getManyContractsArgs } from "@/pageContainers/mod/contracts/Contract.types";
 
 export const contractsRouter = router({
-  getManyWithLast6Requests: adminModObserverProcedure.query(async () => {
+  getManyWithLast100Requests: adminModObserverProcedure.query(async () => {
     return await prisma.contracts.findMany({
       where: {
         softDeleted: false,
@@ -43,6 +43,7 @@ export const contractsRouter = router({
         amount: input.amount,
         accountId: input.accountId,
         contratCategoriesId: input.contratCategoriesId,
+        contractStartDate: input.contractStartDate,
         costCategoryId: input.costCategoryId,
         currency: input.currency,
         description: input.description,
@@ -126,6 +127,7 @@ export const contractsRouter = router({
         amount: input.amount,
         accountId: input.accountId,
         contratCategoriesId: input.contratCategoriesId,
+        contractStartDate: input.contractStartDate,
         costCategoryId: input.costCategoryId,
         currency: input.currency,
         description: input.description,

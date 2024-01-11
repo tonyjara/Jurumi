@@ -68,10 +68,10 @@ const ContractAccordionOptions = ({
               e.stopPropagation();
               prefs?.selectedOrganization &&
                 setNewRequestData(
-                  transformContractToFormMoneyRequest(
+                  transformContractToFormMoneyRequest({
                     contract,
-                    prefs.selectedOrganization,
-                  ),
+                    organizationId: prefs.selectedOrganization,
+                  }),
                 );
             }}
           >

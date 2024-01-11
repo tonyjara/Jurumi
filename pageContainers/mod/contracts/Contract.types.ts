@@ -12,7 +12,7 @@ export const getManyContractsArgs =
         orderBy: {
           createdAt: "desc",
         },
-        take: 6,
+        take: 100,
       },
     },
   });

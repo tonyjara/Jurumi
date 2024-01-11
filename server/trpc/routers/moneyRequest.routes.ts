@@ -306,7 +306,7 @@ export const moneyRequestRouter = router({
           facturaNumber: input.facturaNumber,
           moneyOrderNumber: input.moneyOrderNumber,
           moneyRequestType: input.moneyRequestType,
-          operationDate: new Date(),
+          operationDate: input.operationDate,
           organizationId: input.organizationId,
           projectId: input.projectId,
           rejectionMessage: input.rejectionMessage,

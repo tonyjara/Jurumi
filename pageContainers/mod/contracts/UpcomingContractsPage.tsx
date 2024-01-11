@@ -9,6 +9,7 @@ import {
   Flex,
   Button,
   Heading,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { trpcClient } from "@/lib/utils/trpcClient";
@@ -21,9 +22,11 @@ import ContractsAccodrionItem from "./ContractsAccordionItem";
 import CreateMoneyRequestModal from "@/components/Modals/MoneyRequest.create.modal";
 import { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
 import ConnectRequestToContractModal from "@/components/Modals/ConnectRequestToContract.modal";
+import { contractFrequencyOptions } from "@/lib/utils/SelectOptions";
 
 const UpcomingContractsPage = () => {
   const [editData, setEditData] = useState<GetManyContractsType | null>(null);
+  const [sortBy, setSortBy] = useState<"category" | "frequency">("category");
   const [connectContractData, setConnectContractData] =
     useState<GetManyContractsType | null>(null);
   const [newRequestData, setNewRequestData] = useState<FormMoneyRequest | null>(
@@ -41,7 +44,7 @@ const UpcomingContractsPage = () => {
 
   const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery();
   const { data: contracts } =
-    trpcClient.contracts.getManyWithLast6Requests.useQuery();
+    trpcClient.contracts.getManyWithLast100Requests.useQuery();
 
   const { data: contractCategories } =
     trpcClient.contracts.getContractCategories.useQuery();
@@ -54,43 +57,91 @@ const UpcomingContractsPage = () => {
         <CardHeader>
           <Flex alignItems={"center"} gap={"20px"}>
             <Text fontWeight={"bold"} fontSize={{ base: "2xl", md: "3xl" }}>
-              Contratos por vencer o atrasados
+              Contratos
             </Text>
             <Button onClick={() => onCreateOpen()} size={"sm"}>
               Nuevo contrato
             </Button>
           </Flex>
+          <Flex mt={"10px"} alignItems={"center"} gap={"20px"}>
+            <ButtonGroup isAttached>
+              <Button
+                onClick={() => setSortBy("category")}
+                backgroundColor={sortBy === "category" ? "green" : undefined}
+                size={"sm"}
+              >
+                Categoría
+              </Button>
+              <Button
+                onClick={() => setSortBy("frequency")}
+                backgroundColor={sortBy === "frequency" ? "green" : undefined}
+                size={"sm"}
+              >
+                Frecuencia
+              </Button>
+            </ButtonGroup>
+          </Flex>
         </CardHeader>
         <CardBody>
           <Flex flexDir={"column"} gap="20px">
-            {contractCategories?.map((category) => (
-              <Flex flexDir={"column"} gap={"20px"} key={category.id}>
-                <Heading size={"md"}>{category.name}</Heading>
-                <Accordion
-                  borderRadius={"8px"}
-                  backgroundColor={bg}
-                  allowToggle
-                  display={"block"}
-                  css={customScrollbar}
-                  overflow={"auto"}
-                  w={"100%"}
-                >
-                  {contracts
-                    ?.filter((x) => x.contratCategoriesId === category.id)
-                    .map((contract) => {
-                      return (
-                        <ContractsAccodrionItem
-                          key={contract.id}
-                          contract={contract}
-                          setConnectContractData={setConnectContractData}
-                          setNewRequestData={setNewRequestData}
-                          setEditData={setEditData}
-                        />
-                      );
-                    })}
-                </Accordion>
-              </Flex>
-            ))}
+            {sortBy === "category" &&
+              contractCategories?.map((category) => (
+                <Flex flexDir={"column"} gap={"20px"} key={category.id}>
+                  <Heading size={"md"}>{category.name}</Heading>
+                  <Accordion
+                    borderRadius={"8px"}
+                    backgroundColor={bg}
+                    allowToggle
+                    display={"block"}
+                    /* css={customScrollbar} */
+                    overflow={"hidden"}
+                    w={"100%"}
+                  >
+                    {contracts
+                      ?.filter((x) => x.contratCategoriesId === category.id)
+                      .map((contract) => {
+                        return (
+                          <ContractsAccodrionItem
+                            key={contract.id}
+                            contract={contract}
+                            setConnectContractData={setConnectContractData}
+                            setNewRequestData={setNewRequestData}
+                            setEditData={setEditData}
+                          />
+                        );
+                      })}
+                  </Accordion>
+                </Flex>
+              ))}
+            {sortBy === "frequency" &&
+              contractFrequencyOptions?.map((freq) => (
+                <Flex flexDir={"column"} gap={"20px"} key={freq.value}>
+                  <Heading size={"md"}>{freq.label}</Heading>
+                  <Accordion
+                    borderRadius={"8px"}
+                    backgroundColor={bg}
+                    allowToggle
+                    display={"block"}
+                    css={customScrollbar}
+                    overflow={"auto"}
+                    w={"100%"}
+                  >
+                    {contracts
+                      ?.filter((x) => x.frequency === freq.value)
+                      .map((contract) => {
+                        return (
+                          <ContractsAccodrionItem
+                            key={contract.id}
+                            contract={contract}
+                            setConnectContractData={setConnectContractData}
+                            setNewRequestData={setNewRequestData}
+                            setEditData={setEditData}
+                          />
+                        );
+                      })}
+                  </Accordion>
+                </Flex>
+              ))}
           </Flex>
           {editData && (
             <ContractEditModal

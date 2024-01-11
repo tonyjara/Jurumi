@@ -5,14 +5,17 @@ const TextCell = ({
   text,
   hover,
   shortenString,
+  color,
 }: {
   text?: string;
   hover?: string | React.ReactNode;
+  color?: string;
   shortenString?: boolean;
 }) => {
   return (
     <Tooltip label={hover}>
       <Text
+        color={color}
         style={
           shortenString
             ? {

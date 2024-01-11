@@ -637,10 +637,11 @@ model Emails {
 }
 
 model Contracts {
-    id        Int               @id @default(autoincrement())
-    createdAt DateTime          @default(now())
-    updatedAt DateTime?         @updatedAt
-    frequency ContractFrequency
+    id                Int               @id @default(autoincrement())
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime?         @updatedAt
+    contractStartDate DateTime          @default(now())
+    frequency         ContractFrequency
 
     payments          ContractPayments[] //For VARIABLE
     paymentDate       DateTime? //For ONCE

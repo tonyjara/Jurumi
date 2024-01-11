@@ -88,15 +88,6 @@ const ContractsPaymentFrequency = ({
           setValue={setValue}
         />
       )}
-      <FormControlledNumberInput
-        name="remindDaysBefore"
-        control={control}
-        errors={errors}
-        hidden={frequency === "ONCE" || frequency === "VARIABLE"}
-        maxLength={3}
-        label="Días de anticipación para recordar"
-        helperText="Días de anticipación para recordar el pago. Si es 0, se recordará en la fecha del pago."
-      />
     </>
   );
 };

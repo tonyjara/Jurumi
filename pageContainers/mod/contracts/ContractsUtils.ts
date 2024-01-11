@@ -1,55 +1,49 @@
-import { $Enums, Prisma } from "@prisma/client";
 import { GetManyContractsType } from "./Contract.types";
 import { FormContract } from "@/lib/validations/createContract.validate";
-import { addMonths, format, setDate } from "date-fns";
 import { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
+import { handleMonthlyContractPaymentDayInfo } from "./ContractsUtils/MonthlyContractUtils";
+import { format } from "date-fns";
+import { MonthsInContract } from "./Monthly/ContractMonthlyRequestsTable";
 
 //Estado tiene que ser "Al dia" o "Atrasado"
 //Tiene que haber tambien fecha del proximo pago y ultimo pago
 
-export const calculateContractPaymentStatus = (
-  contract: GetManyContractsType,
-) => {
+export const formatContractPaymentDate = (contract: GetManyContractsType) => {
   const frequency = contract.frequency;
   if (frequency === "MONTHLY") {
-    if (contract.moneyRequests.length === 0) {
-      return { color: "orange", text: "Sin pagos" };
-    }
-
-    return { color: "green", text: "Al dia" };
+    return {
+      color: "gray",
+      text:
+        contract.monthlyPaymentDay === 0
+          ? "Fin de cada mes"
+          : `El ${contract.monthlyPaymentDay} de cada mes`,
+    };
   }
 
   return { color: "gray", text: "-" };
 };
 
-export const calculateNextContractPaymentDate = (
+export const handleContractPaymentDayInfo = (
   contract: GetManyContractsType,
+  testDate?: Date, // For testing purposes
 ) => {
-  const frequency = contract.frequency;
-  if (frequency === "MONTHLY" && contract.monthlyPaymentDay) {
-    if (contract.moneyRequests.length === 0) {
-      return {
-        color: "orange",
-        text: format(
-          addMonths(setDate(new Date(), contract.monthlyPaymentDay), 1),
-          "dd/MM/yyyy",
-        ),
-      };
-    }
-
-    return { color: "green", text: "Al dia" };
+  if (contract.frequency === "MONTHLY") {
+    return handleMonthlyContractPaymentDayInfo(contract, testDate);
   }
-
-  return { color: "gray", text: "-" };
+  return {
+    color: "gray",
+    text: "-",
+  };
 };
+
 export const calculateLastPaymentDate = (contract: GetManyContractsType) => {
   //Last request sorted by date
   const frequency = contract.frequency;
   if (frequency === "MONTHLY" && contract.monthlyPaymentDay) {
     const lastRequest = contract.moneyRequests.sort((a, b) => {
       return (
-        (a.operationDate ? a.operationDate.getTime() : a.createdAt.getTime()) -
-        (b.operationDate ? b.operationDate.getTime() : b.createdAt.getTime())
+        (b.operationDate ? b.operationDate.getTime() : b.createdAt.getTime()) -
+        (a.operationDate ? a.operationDate.getTime() : a.createdAt.getTime())
       );
     })[0];
     if (contract.moneyRequests.length === 0 || !lastRequest) {
@@ -61,7 +55,10 @@ export const calculateLastPaymentDate = (contract: GetManyContractsType) => {
     const lastRequestDate = lastRequest.operationDate
       ? lastRequest.operationDate
       : lastRequest.createdAt;
-    return { color: "gray", text: format(lastRequestDate, "dd/MM/yyyy") };
+    return {
+      color: "gray",
+      text: `Último pago: ${format(lastRequestDate, "dd/MM/yyyy")}`,
+    };
   }
 
   return { color: "gray", text: "-" };
@@ -73,6 +70,7 @@ export const transformContractForEdit = (contract: GetManyContractsType) => {
     amount: contract.amount,
     accountId: contract.accountId,
     contractUrl: contract.contractUrl,
+    contractStartDate: contract.contractStartDate,
     contratCategoriesId: contract.contratCategoriesId,
     costCategoryId: contract.costCategoryId,
     currency: contract.currency,
@@ -93,15 +91,20 @@ export const transformContractForEdit = (contract: GetManyContractsType) => {
   return formContract;
 };
 
-export const transformContractToFormMoneyRequest = (
-  contract: GetManyContractsType,
-  organizationId: string,
-) => {
+export const transformContractToFormMoneyRequest = ({
+  contract,
+  organizationId,
+  monthData,
+}: {
+  contract: GetManyContractsType;
+  organizationId: string;
+  monthData?: MonthsInContract;
+}) => {
   const formContract: FormMoneyRequest = {
     id: "",
     comments: "",
     createdAt: new Date(),
-    operationDate: new Date(),
+    operationDate: monthData ? monthData.contractStartInMonthDate : new Date(),
     updatedAt: null,
     description: `Pago de ${contract.name}`,
     status: "PENDING",

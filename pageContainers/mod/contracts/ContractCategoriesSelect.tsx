@@ -91,9 +91,7 @@ const ContractCategoriesSelect = ({
             control={control}
             errors={errors}
             name={"contratCategoriesId"}
-            /* label="Categoría de contrato" */
             options={contractCatOptions() ?? []}
-            /* disable={isEdit} */
             helperText={
               "Por ejemplo: 'Salarios', 'Internet', 'Contrato de suministro'"
             }

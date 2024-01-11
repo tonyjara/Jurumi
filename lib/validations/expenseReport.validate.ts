@@ -92,6 +92,13 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z
     }),
   )
   .superRefine((val, ctx) => {
+    if (val.amountSpent.toNumber() < 1) {
+      ctx.addIssue({
+        path: ["amountSpent"],
+        code: z.ZodIssueCode.custom,
+        message: "El monto debe al menos 1.",
+      });
+    }
     if (val.spentAmountIsGraterThanMoneyRequest) {
       if (
         !val.reimburseTo ||

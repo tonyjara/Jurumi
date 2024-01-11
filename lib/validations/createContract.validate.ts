@@ -41,6 +41,7 @@ export const validateContract: z.ZodType<FormContract> = z.lazy(() =>
     }),
     costCategoryId: z.string().nullable(),
     contractUrl: z.string().nullable(),
+    contractStartDate: z.date(),
     currency: z.nativeEnum(Currency),
     description: z
       .string()
@@ -96,6 +97,7 @@ export const defaultCreateContractsValues: FormContract = {
   accountId: null,
   contractUrl: null,
   contratCategoriesId: null,
+  contractStartDate: new Date(),
   costCategoryId: null,
   currency: "PYG",
   description: "",

@@ -7,17 +7,18 @@ import {
   AccordionButton,
   Flex,
   AccordionIcon,
-  HStack,
   Divider,
   AccordionPanel,
 } from "@chakra-ui/react";
 import ContractAccordionOptions from "./ContractAccordionOptions";
 import {
-  calculateContractPaymentStatus,
   calculateLastPaymentDate,
-  calculateNextContractPaymentDate,
+  formatContractPaymentDate,
+  handleContractPaymentDayInfo,
 } from "./ContractsUtils";
 import { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
+import ContractMonthlyRequestsTable from "./Monthly/ContractMonthlyRequestsTable";
+import { customScrollbar } from "styles/CssUtils";
 
 // Name | al dia, atrasado o por vencer | proximo pago | monto | opciones
 
@@ -32,8 +33,8 @@ const ContractsAccordionItem = ({
   setNewRequestData: React.Dispatch<FormMoneyRequest | null>;
   setConnectContractData: React.Dispatch<GetManyContractsType | null>;
 }) => {
-  const paymentStatus = calculateContractPaymentStatus(contract);
-  const nextPaymentDate = calculateNextContractPaymentDate(contract);
+  const formatPaymentDate = formatContractPaymentDate(contract);
+  const paymentDateInfo = handleContractPaymentDayInfo(contract);
   const lastPaymentDate = calculateLastPaymentDate(contract);
   return (
     <AccordionItem>
@@ -43,9 +44,12 @@ const ContractsAccordionItem = ({
         <Flex
           w="full"
           alignItems={"center"}
-          minW={"600px"}
+          overflowX={"auto"}
+          overflowY={"hidden"}
           h={"35px"}
-          pr="20px"
+          minH={"35px"}
+          /* pr="20px" */
+          css={customScrollbar}
         >
           <ContractAccordionOptions
             setConnectContractData={setConnectContractData}
@@ -57,49 +61,56 @@ const ContractsAccordionItem = ({
             N° {contract.id}
           </Text>
           <Divider mx={"10px"} orientation="vertical" />
+          {/* NOTE: Name */}
           <Text
             textOverflow={"ellipsis"}
             overflow="hidden"
             whiteSpace={"nowrap"}
-            w={"250px"}
+            w="full"
+            maxW={"200px"}
+            minW={"200px"}
             fontSize={"lg"}
           >
             {contract.name}
           </Text>
           <Divider mx={"10px"} orientation="vertical" />
-          <Text pl={"5px"} w={"150px"} fontSize={"lg"} whiteSpace="nowrap">
+          {/* NOTE: Amount */}
+          <Text pl={"5px"} minW={"150px"} fontSize={"lg"} whiteSpace="nowrap">
             {decimalFormat(contract.amount, contract.currency)}
           </Text>
           <Divider mx={"10px"} orientation="vertical" />
-          {/* NOTE: Payment status */}
+          {/* NOTE:  Payment info */}
+          <Text
+            textOverflow={"ellipsis"}
+            overflow="hidden"
+            whiteSpace={"nowrap"}
+            w="full"
+            minW={"150px"}
+            maxW={"150px"}
+            fontSize={"lg"}
+            color={paymentDateInfo.color}
+          >
+            {paymentDateInfo.text}
+          </Text>
+          <Divider mx={"10px"} orientation="vertical" />
+          {/* NOTE: Payment date */}
           <Text
             pl={"5px"}
-            w={"150px"}
+            w="full"
+            minW={"150px"}
+            maxW={"150px"}
             fontSize={"lg"}
             whiteSpace="nowrap"
-            color={paymentStatus.color}
+            color={formatPaymentDate.color}
           >
-            {paymentStatus.text}
+            {formatPaymentDate.text}
           </Text>
           <Divider mx={"10px"} orientation="vertical" />
           {/* NOTE: Last Payment */}
           <Text
-            textOverflow={"ellipsis"}
-            overflow="hidden"
             whiteSpace={"nowrap"}
-            w={"250px"}
-            fontSize={"lg"}
-            color={paymentStatus.color}
-          >
-            {nextPaymentDate.text}
-          </Text>
-          <Divider mx={"10px"} orientation="vertical" />
-          {/* NOTE: Next Payment */}
-          <Text
-            textOverflow={"ellipsis"}
-            overflow="hidden"
-            whiteSpace={"nowrap"}
-            w={"250px"}
+            minW={"200px"}
+            w="full"
             fontSize={"lg"}
             color={lastPaymentDate.color}
           >
@@ -108,8 +119,12 @@ const ContractsAccordionItem = ({
         </Flex>
       </AccordionButton>
 
-      <AccordionPanel pb={4}></AccordionPanel>
       <Divider ml={"10px"} w={"98%"} />
+      <AccordionPanel pb={4}>
+        {contract.frequency === "MONTHLY" && (
+          <ContractMonthlyRequestsTable contract={contract} />
+        )}
+      </AccordionPanel>
     </AccordionItem>
   );
 };

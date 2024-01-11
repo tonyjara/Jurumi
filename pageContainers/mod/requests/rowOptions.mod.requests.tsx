@@ -1,4 +1,4 @@
-import { MenuItem } from "@chakra-ui/react";
+import { MenuItem, useClipboard } from "@chakra-ui/react";
 import { MoneyRequest, Prisma } from "@prisma/client";
 import router from "next/router";
 import React from "react";
@@ -53,6 +53,7 @@ const RowOptionsModRequests = ({
   >;
 }) => {
   const context = trpcClient.useContext();
+  const { onCopy, hasCopied } = useClipboard(x.id);
   const isAdmin = useSession().data?.user.role === "ADMIN";
   const closeMenu = () => setMenuData((prev) => ({ ...prev, rowData: null }));
   const { mutate: deleteById } = trpcClient.moneyRequest.deleteById.useMutation(
@@ -232,6 +233,14 @@ const RowOptionsModRequests = ({
         onConfirm={() => deleteById({ id: x.id })}
       />
       <RowOptionsJsonView x={x} />
+      <MenuItem
+        onClick={(e) => {
+          e.stopPropagation();
+          onCopy();
+        }}
+      >
+        {hasCopied ? "Copiado!" : "Copiar ID"}
+      </MenuItem>
       <MoneyRequestPrintComponents
         x={x}
         isPrinting={isPrinting}

@@ -110,13 +110,32 @@ const ContractForm = ({
           <Heading size="md">Fechas y recordatorios</Heading>
           <Text color={"gray.500"}>
             Los contratos pueden ser en perpetuidad, como un pago de Internet, o
-            con distintas frecuencias. Asi como con distintas fechas de pago.
+            con distintas frecuencias. Asi como con distintas fechas de pago. Al
+            colocar una fecha de recordatorio se ajusta la fecha del próximo
+            pago. Al exceder la fecha del contrato se considera atrasado.
           </Text>
         </Flex>
+        <FormControlledDatePicker
+          name="contractStartDate"
+          hidden={frequency === "ONCE" || frequency === "VARIABLE"}
+          control={control}
+          errors={errors}
+          label="Fecha de inicio"
+          helperText="Fecha en que inicia el contrato."
+        />
         <ContractsPaymentFrequency
           control={control}
           errors={errors}
           setValue={setValue}
+        />
+        <FormControlledNumberInput
+          name="remindDaysBefore"
+          control={control}
+          errors={errors}
+          hidden={frequency === "ONCE" || frequency === "VARIABLE"}
+          maxLength={3}
+          label="Días de anticipación para recordar"
+          helperText='Días de anticipación para recordar el "Próximo pago". Si es 0, se recordará en la fecha del pago.'
         />
         <FormControlledDatePicker
           name="endDate"
