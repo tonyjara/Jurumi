@@ -60,6 +60,8 @@ const MoneyRequestForm = ({
   const moneyRequestType = useWatch({ control, name: "moneyRequestType" });
   const searchableImages = useWatch({ control, name: "searchableImages" });
 
+  const isAccepted = status === "ACCEPTED";
+
   const totalInPYG = decimalFormat(
     searchableImages.reduce((acc, val) => {
       if (val.currency !== "PYG") return acc;
@@ -176,6 +178,7 @@ const MoneyRequestForm = ({
           <FormControlledRadioButtons
             control={control}
             errors={errors}
+            disable={isEdit && isAccepted}
             name="currency"
             label="Moneda"
             options={currencyOptions}
@@ -183,6 +186,7 @@ const MoneyRequestForm = ({
           <FormControlledMoneyInput
             control={control}
             errors={errors}
+            disable={isEdit && isAccepted}
             name={"amountRequested"}
             label="Monto solicitado"
             prefix={translateCurrencyPrefix(currency)}

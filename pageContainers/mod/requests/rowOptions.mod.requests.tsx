@@ -54,7 +54,9 @@ const RowOptionsModRequests = ({
 }) => {
   const context = trpcClient.useContext();
   const { onCopy, hasCopied } = useClipboard(x.id);
-  const isAdmin = useSession().data?.user.role === "ADMIN";
+  const role = useSession().data?.user.role;
+  const isAdmin = role === "ADMIN";
+  const isAdminOrMod = role === "ADMIN" || role === "MODERATOR";
   const closeMenu = () => setMenuData((prev) => ({ ...prev, rowData: null }));
   const { mutate: deleteById } = trpcClient.moneyRequest.deleteById.useMutation(
     handleUseMutationAlerts({
@@ -136,7 +138,7 @@ const RowOptionsModRequests = ({
         Rechazar
       </MenuItem>
       <MenuItem
-        isDisabled={(!isAdmin && isAccepted) || isCancelled}
+        isDisabled={(!isAdminOrMod && isAccepted) || isCancelled}
         onClick={() => {
           setEditMoneyRequest(x);
           onEditOpen();

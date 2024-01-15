@@ -153,13 +153,13 @@ const ModMoneyRequestsPage = ({
   return (
     <>
       <DynamicTable
-        title={"Solicitudes"}
         enableColumnFilters={true}
-        whereFilterList={whereFilterList}
-        setWhereFilterList={setWhereFilterList}
+        exportEverythingToExcel
         extraFilters={extraFilters}
         rawValuesDictionary={rawValuesModMoneyRequests}
-        exportEverythingToExcel
+        setWhereFilterList={setWhereFilterList}
+        title={"Solicitudes"}
+        whereFilterList={whereFilterList}
         searchBar={
           <TableSearchbar
             type="text"
