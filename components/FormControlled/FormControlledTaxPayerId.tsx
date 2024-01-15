@@ -372,7 +372,7 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
                   : errors.taxPayer?.bankInfo?.ownerDoc?.message
               }
             />
-            <Divider />
+            <Divider pb={"10px"} />
           </Box>
         </>
       )}
