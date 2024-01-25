@@ -1,7 +1,7 @@
 //@ts-ignore
 const faker = (await import("@faker-js/faker")).faker;
 import type { MoneyRequest, TaxPayerBankInfo } from "@prisma/client";
-import { BankAccountType } from "@prisma/client";
+import { ApprovalStatus, BankAccountType } from "@prisma/client";
 import { BankDocType, BankNamesPy } from "@prisma/client";
 import { MoneyRequestStatus, MoneyRequestType } from "@prisma/client";
 import { Prisma } from "@prisma/client";
@@ -45,6 +45,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
         512,
       ),
       status: z.nativeEnum(MoneyRequestStatus),
+      approvalStatus: z.nativeEnum(ApprovalStatus),
       moneyRequestType: z.nativeEnum(MoneyRequestType),
       currency: z.nativeEnum(Currency),
       amountRequested: z.any().transform((value) => new Prisma.Decimal(value)),
@@ -225,6 +226,7 @@ export const defaultMoneyRequestData: FormMoneyRequest = {
   moneyRequestType: "FUND_REQUEST",
   currency: "PYG",
   amountRequested: new Prisma.Decimal(0),
+  approvalStatus: "PENDING",
   costCategoryId: null,
   accountId: "",
   projectId: null,
@@ -271,6 +273,7 @@ export const MockMoneyRequest = ({
     moneyOrderNumber: null,
     createdAt: new Date(),
     operationDate: new Date(),
+    approvalStatus: "PENDING",
     updatedAt: null,
     contractsId: contractsId ?? null,
     description: faker.commerce.productDescription().substring(0, 123),
