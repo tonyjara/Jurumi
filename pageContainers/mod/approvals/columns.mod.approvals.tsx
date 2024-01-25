@@ -4,7 +4,10 @@ import EnumTextCell from "@/components/DynamicTables/DynamicCells/EnumTextCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
 import { ApprovalUtils } from "@/lib/utils/ApprovalUtilts";
-import { translatedMoneyReqType } from "@/lib/utils/TranslatedEnums";
+import {
+  translatedMoneyReqStatus,
+  translatedMoneyReqType,
+} from "@/lib/utils/TranslatedEnums";
 import { MonyRequestCompleteWithApproval } from "./mod.approvals.types";
 import MoneyRequestOperationDateChangeCell from "@/components/DynamicTables/DynamicCells/MoneyRequestOperationDateChangeCell";
 
@@ -36,6 +39,16 @@ export const modApprovalsColumns = ({
     ),
     header: "Fecha de Operación",
     sortingFn: "datetime",
+  }),
+  columnHelper.accessor("status", {
+    header: "Estado de depósito",
+    cell: (x) => (
+      <EnumTextCell
+        text={x.getValue()}
+        enumFunc={translatedMoneyReqStatus}
+        hover={x.row.original.rejectionMessage}
+      />
+    ),
   }),
   columnHelper.display({
     header: "Aprobación",

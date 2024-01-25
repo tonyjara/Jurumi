@@ -23,10 +23,7 @@ import {
 } from "./utils/Cancelations.routeUtils";
 import { upsertTaxPayer } from "./utils/TaxPayer.routeUtils";
 import { createMoneyRequestSlackNotification } from "./notifications/slack/moneyRequestCreate.notification.slack";
-import {
-  beingReportedRawSqlShort,
-  executionPengingRawSql,
-} from "@/server/db/raw-sql";
+import { beingReportedRawSqlShort } from "@/server/db/raw-sql";
 import { moneyRequestCreatedApproversEmailNotification } from "./notifications/sendgrid/emailApproversOnRequest.sendgrid";
 import { completeMoneyRequestIncludeArgs } from "@/pageContainers/mod/requests/mod.requests.types";
 import { completeHomeMoneyRequestIncludeArgs } from "@/pageContainers/home/requests/home.requests.types";
@@ -118,7 +115,7 @@ export const moneyRequestRouter = router({
     )
     .query(async ({ input }) => {
       const getHasBeingReportedIds = await beingReportedRawSqlShort();
-      const getExecutionPendingIds = await executionPengingRawSql();
+      /* const getExecutionPendingIds = await executionPengingRawSql(); */
 
       return prisma?.moneyRequest.count({
         where: {
@@ -126,7 +123,7 @@ export const moneyRequestRouter = router({
             ...handleMoneyRequestExtraFilters({
               extraFilters: input.extraFilters,
               getHasBeingReportedIds,
-              getExecutionPendingIds,
+              /* getExecutionPendingIds, */
             }),
             ...(input?.whereFilterList ?? []),
           ],
@@ -152,7 +149,6 @@ export const moneyRequestRouter = router({
 
       //This handles raw sql queries
       const getHasBeingReportedIds = await beingReportedRawSqlShort();
-      const getExecutionPendingIds = await executionPengingRawSql();
 
       return await prisma?.moneyRequest.findMany({
         take: pageSize,
@@ -163,7 +159,6 @@ export const moneyRequestRouter = router({
             ...handleMoneyRequestExtraFilters({
               extraFilters: input.extraFilters,
               getHasBeingReportedIds,
-              getExecutionPendingIds,
             }),
             ...(input?.whereFilterList ?? []),
           ],
@@ -187,7 +182,6 @@ export const moneyRequestRouter = router({
     .mutation(async ({ input }) => {
       //This handles raw sql queries
       const getHasBeingReportedIds = await beingReportedRawSqlShort();
-      const getExecutionPendingIds = await executionPengingRawSql();
 
       return await prisma?.moneyRequest.findMany({
         orderBy: handleOrderBy({ input }),
@@ -196,7 +190,6 @@ export const moneyRequestRouter = router({
             ...handleMoneyRequestExtraFilters({
               extraFilters: input.extraFilters,
               getHasBeingReportedIds,
-              getExecutionPendingIds,
             }),
             ...(input?.whereFilterList ?? []),
           ],
@@ -218,7 +211,7 @@ export const moneyRequestRouter = router({
       if (!input.value.length || !input.filter.length) return null;
 
       const getHasBeingReportedIds = await beingReportedRawSqlShort();
-      const getExecutionPendingIds = await executionPengingRawSql();
+      /* const getExecutionPendingIds = await executionPengingRawSql(); */
 
       const handleWhere = () => {
         if (input.filter === "amountRequested") {
@@ -238,7 +231,7 @@ export const moneyRequestRouter = router({
             ...handleMoneyRequestExtraFilters({
               extraFilters: input.extraFilters,
               getHasBeingReportedIds,
-              getExecutionPendingIds,
+              /* getExecutionPendingIds, */
             }),
             handleWhere() ?? {},
             ...(input?.whereFilterList ?? []),
@@ -394,6 +387,7 @@ export const moneyRequestRouter = router({
           txCtx,
           transactions: moneyReq.transactions,
         });
+
         await cancelExpenseReports({
           txCtx,
           expenseReports: moneyReq.expenseReports,

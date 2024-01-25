@@ -98,7 +98,7 @@ export const moneyRequestsColumns = ({
     header: "Aprobación",
   }),
   columnHelper.accessor("status", {
-    header: "Estado",
+    header: "Estado de depósito",
     cell: (x) => (
       <EnumTextCell
         text={x.getValue()}

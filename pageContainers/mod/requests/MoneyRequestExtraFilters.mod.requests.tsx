@@ -13,11 +13,6 @@ const MoneyRequestExtraFilters = ({ extraFilters, setExtraFilters }: props) => {
       label: "Rendición pendiente",
     },
     {
-      value: "pendingExecution",
-      label: "Ejecución pendiente",
-    },
-
-    {
       value: "removeWasCancelled",
       label: "Remover anulados",
     },

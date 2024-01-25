@@ -12,6 +12,7 @@ import MoneyRequestStatusColumnFilter from "./ColumnFilters/MoneyRequestStatus.C
 import MoneyRequestTypeColumnFilter from "./ColumnFilters/MoneyRequestType.columnFilter";
 import MoneyOrderNumberColumnFilter from "./ColumnFilters/MonyOrderNumber.columnfilter";
 import TransactionTypeColumnFilter from "./ColumnFilters/TransactionType.columnFilter";
+import MoneyRequestApprovalStatusColumnFilter from "./ColumnFilters/MoneyRequestApprovalStatus.columnFilter";
 
 export interface ColumnFilterProps {
   keyName?: string;
@@ -47,6 +48,9 @@ const ColumnFilter = (props: ColumnFilterProps) => {
       )}
       {column.id === "Proyecto" && (
         <MoneyRequestProjectsColumnFilter {...props} />
+      )}{" "}
+      {column.id === "Aprobación" && (
+        <MoneyRequestApprovalStatusColumnFilter {...props} />
       )}{" "}
       {column.id === "Linea Presupuestaria" && (
         <MoneyRequestCostCategoriesColumnFilter {...props} />

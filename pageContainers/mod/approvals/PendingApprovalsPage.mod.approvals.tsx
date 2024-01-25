@@ -63,21 +63,15 @@ const ApprovalsPage = () => {
   });
 
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
-    const { needsApproval, hasBeenApproved, hasBeenRejected } = ApprovalUtils(
-      x as any,
-    );
-
     return (
       <RowOptionApprovals
         setMenuData={setMenuData}
-        hasBeenRejected={hasBeenRejected}
-        hasBeenApproved={hasBeenApproved()}
-        needsApproval={needsApproval()}
         x={x}
         setRequestId={setRequestId}
       />
     );
   };
+
   return (
     <>
       <DynamicTable

@@ -78,6 +78,7 @@ export const cancelTransactionsAndRevertBalance = async ({
         // do not need searchable image in a cancellation.
       },
     });
+
     // attach id to cancelled transaction
     await txCtx.transaction.update({
       where: { id: tx.id },

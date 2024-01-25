@@ -9,6 +9,7 @@ import {
   reduceExpenseReportsToSetCurrency,
 } from "@/lib/utils/TransactionUtils";
 import {
+  translatedApprovalStatus,
   translatedMoneyReqStatus,
   translatedMoneyReqType,
 } from "@/lib/utils/TranslatedEnums";
@@ -39,6 +40,16 @@ export const homeRequestsColumns = ({
     cell: (x) => <DateCell date={x.getValue()} />,
     header: "Fecha de Creación",
     sortingFn: "datetime",
+  }),
+  columnHelper.accessor("approvalStatus", {
+    header: "Aprobación",
+    cell: (x) => (
+      <EnumTextCell
+        text={x.getValue()}
+        enumFunc={translatedApprovalStatus}
+        hover={x.row.original.rejectionMessage}
+      />
+    ),
   }),
   columnHelper.accessor("status", {
     header: "Desembolso",

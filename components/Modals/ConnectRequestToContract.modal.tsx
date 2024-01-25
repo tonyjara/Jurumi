@@ -59,8 +59,6 @@ const ConnectRequestToContractModal = ({
     );
 
   const submitFunc = (data: FormValidateConnect) => {
-    console.log(data);
-
     connectRequests({
       contractId: contract.id,
       moneyRequestIds: data.moneyRequestIds,
