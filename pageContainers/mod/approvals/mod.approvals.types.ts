@@ -1,7 +1,9 @@
 import { Prisma } from "@prisma/client";
 
+const noLongerApprovers = ["clct5phci0000mj08hgkps3zj"];
+
 export const completeMoneyRequestWithApprovalIncludeArgs =
-  Prisma.validator<Prisma.MoneyRequestArgs>()({
+  Prisma.validator<Prisma.MoneyRequestDefaultArgs>()({
     include: {
       taxPayer: {
         select: { bankInfo: true, razonSocial: true, ruc: true, id: true },
@@ -22,8 +24,8 @@ export const completeMoneyRequestWithApprovalIncludeArgs =
       },
       searchableImages: true,
       moneyRequestApprovals: {
-        where: { wasCancelled: false },
-        include: { account: { select: { displayName: true } } },
+        where: { wasCancelled: false, accountId: { notIn: noLongerApprovers } },
+        include: { account: { select: { displayName: true, id: true } } },
       },
       expenseReports: {
         where: { wasCancelled: false },

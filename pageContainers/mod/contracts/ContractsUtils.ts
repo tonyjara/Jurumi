@@ -108,6 +108,7 @@ export const transformContractToFormMoneyRequest = ({
     updatedAt: null,
     description: `Pago de ${contract.name}`,
     status: "PENDING",
+    approvalStatus: "PENDING",
     moneyRequestType: contract.moneyRequestType,
     currency: contract.currency,
     amountRequested: contract.amount,

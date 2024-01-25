@@ -39,8 +39,6 @@ const RowOptionsMonthlyContractsTable = ({
         isDisabled={!!x.request}
         onClick={(e) => {
           e.stopPropagation();
-          console.log(x);
-
           prefs?.selectedOrganization &&
             setNewRequestData(
               transformContractToFormMoneyRequest({

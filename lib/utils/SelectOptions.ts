@@ -1,4 +1,5 @@
 import type {
+  ApprovalStatus,
   ContractFrequency,
   DaysOfTheWeek,
   MoneyRequestStatus,
@@ -55,6 +56,14 @@ export const moneyRequestStatusOptions: {
   { value: "REJECTED", label: "Rechazado" },
 ];
 
+export const approvalStatusOptions: {
+  value: ApprovalStatus;
+  label: string;
+}[] = [
+  { value: "ACCEPTED", label: "Aceptado" },
+  { value: "PENDING", label: "Pendiente" },
+  { value: "REJECTED", label: "Rechazado" },
+];
 export const moneyRequestTypeOptions: {
   value: MoneyRequestType;
   label: string;

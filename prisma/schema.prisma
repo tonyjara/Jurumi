@@ -437,6 +437,7 @@ model MoneyRequest {
     description      String
     comments         String             @default("")
     status           MoneyRequestStatus
+    approvalStatus   ApprovalStatus     @default(PENDING)
     moneyRequestType MoneyRequestType
     currency         Currency
     amountRequested  Decimal            @default(0) @db.Decimal(19, 4)
@@ -768,6 +769,12 @@ enum Currency {
 }
 
 enum MoneyRequestStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
+}
+
+enum ApprovalStatus {
     PENDING
     ACCEPTED
     REJECTED

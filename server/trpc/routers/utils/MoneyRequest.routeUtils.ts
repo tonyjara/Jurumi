@@ -1,6 +1,7 @@
 import type { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
+import { SessionUser } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/server/db/client";
-import { Prisma } from "@prisma/client";
+import { Account, Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const handleWhereImApprover = (
@@ -8,15 +9,21 @@ export const handleWhereImApprover = (
     status?: "PENDING" | "ACCEPTED" | "REJECTED" | undefined;
   },
   userId: string,
+  user: SessionUser,
 ) => {
-  if (input.status === "PENDING") {
-    return {
-      moneyRequestApprovals: {
-        none: {
-          accountId: userId,
-        },
-      },
-    };
+  const isAdmin = user.role === "ADMIN";
+
+  /* if (input.status === "PENDING") { */
+  /*   return { */
+  /*     moneyRequestApprovals: { */
+  /*       none: { */
+  /*         accountId: userId, */
+  /*       }, */
+  /*     }, */
+  /*   }; */
+  /* } */
+  if (isAdmin) {
+    return {};
   }
 
   return {
@@ -89,14 +96,14 @@ export const reimbursementOrderImageGuard = async ({
 export const handleMoneyRequestExtraFilters = ({
   extraFilters,
   getHasBeingReportedIds,
-  getExecutionPendingIds,
+  /* getExecutionPendingIds, */
 }: {
   getHasBeingReportedIds: any;
-  getExecutionPendingIds: any;
+  /* getExecutionPendingIds: any; */
   extraFilters: string[];
 }) => {
   const hasBeingReportedIds = getHasBeingReportedIds.map((r: any) => r.id);
-  const executionPendingIds = getExecutionPendingIds.map((r: any) => r.id);
+  /* const executionPendingIds = getExecutionPendingIds.map((r: any) => r.id); */
 
   /* const beingReportedFilter = extraFilters.includes("beingReported") */
   /*   ? { id: { in: hasBeingReportedIds } } */
@@ -118,9 +125,9 @@ export const handleMoneyRequestExtraFilters = ({
   if (extraFilters.includes("beingReported")) {
     extraFiltersArray.push({ id: { in: hasBeingReportedIds } });
   }
-  if (extraFilters.includes("pendingExecution")) {
-    extraFiltersArray.push({ id: { in: executionPendingIds } });
-  }
+  /* if (extraFilters.includes("pendingExecution")) { */
+  /*   extraFiltersArray.push({ id: { in: executionPendingIds } }); */
+  /* } */
   if (extraFilters.includes("removeWasCancelled")) {
     extraFiltersArray.push({ wasCancelled: false });
   }

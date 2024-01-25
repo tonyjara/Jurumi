@@ -1,11 +1,16 @@
-import NextAuth, { type NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 // Prisma adapter for NextAuth, optional and can be removed
-import bcrypt from 'bcryptjs';
-import prisma from '@/server/db/client';
-import type { Account } from '@prisma/client';
+import bcrypt from "bcryptjs";
+import prisma from "@/server/db/client";
+import type { Account } from "@prisma/client";
 
 // CALLBACKS GET EVERY TIME THE APP GETS REFRESHED
+export type SessionUser = Omit<Account, "password"> & {
+  profile: {
+    avatarUrl: string;
+  } | null;
+};
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
@@ -18,7 +23,7 @@ export const authOptions: NextAuthOptions = {
       - token holds the iat, exo and jti.
        */
 
-      if (account?.type === 'credentials') {
+      if (account?.type === "credentials") {
         token.user = user;
       }
 
@@ -32,11 +37,8 @@ export const authOptions: NextAuthOptions = {
       
       */
 
-      session.user = token.user as Omit<Account, 'password'> & {
-        profile: {
-          avatarUrl: string;
-        } | null;
-      };
+      session.user = token.user as SessionUser;
+
       return session;
     },
   },
@@ -44,7 +46,7 @@ export const authOptions: NextAuthOptions = {
 
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
         // keys added here will be part of the credentials type.
         email: {},
@@ -67,7 +69,7 @@ export const authOptions: NextAuthOptions = {
 
         const matchesHash = await bcrypt.compare(
           credentials.password,
-          prismaUser.password //hashed pass
+          prismaUser.password, //hashed pass
         );
         if (!matchesHash) return null;
         //@ts-ignore
@@ -80,7 +82,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     maxAge: 12 * 60 * 60, // 12 hours
     updateAge: 12 * 60 * 60, // 12 hours
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 };
 

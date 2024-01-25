@@ -1,4 +1,5 @@
 import type {
+  ApprovalStatus,
   BankAccountType,
   BankDocType,
   BankNamesPy,
@@ -116,7 +117,7 @@ export const translateBankNames = (bankName?: BankNamesPy) => {
 
 export const translatedMoneyReqStatus = (status: MoneyRequestStatus) => {
   const x: { [key in MoneyRequestStatus]?: string } = {
-    ACCEPTED: "🟩Aprobado",
+    ACCEPTED: "🟩Ejecutado",
     PENDING: "🟨 Pendiente",
     REJECTED: "🟥Rechazado",
   };
@@ -133,8 +134,17 @@ export const translatedMoneyReqType = (type: MoneyRequestType) => {
   return x[type] ?? "Error ";
 };
 
+export const translatedApprovalStatus = (status: ApprovalStatus) => {
+  const x: { [key in MoneyResquestApprovalStatus]?: string } = {
+    ACCEPTED: "🟩Aprobado",
+    PENDING: "🟨 Pendiente",
+    REJECTED: "🟥Rechazado",
+  };
+
+  return x[status] ?? "Error ";
+};
 export const translatedMoneyRequestApprovalStatus = (
-  status: MoneyResquestApprovalStatus
+  status: MoneyResquestApprovalStatus,
 ) => {
   const x: { [key in MoneyResquestApprovalStatus]?: string } = {
     ACCEPTED: "🟩Aceptadas",

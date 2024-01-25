@@ -9,3 +9,7 @@ Once the organization has money requests approvers all requests are locked until
 ## Money Administrators
 
 If an organization has designated money administrators, they are the only moderators than can handle transactions.
+
+## How a request gets approved
+
+For a request to get approved all approvers need to give their approval. When the last approval is given the requests determines that the approvalStatus can be changed to completed
