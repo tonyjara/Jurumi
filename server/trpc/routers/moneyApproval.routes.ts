@@ -10,7 +10,6 @@ import { reqApprovalApprovedSlackNotification } from "./notifications/slack/reqA
 import { reqApprovalRejectionSlackNotification } from "./notifications/slack/reqApprovalRejection.notification.slack";
 import { ApprovalStatus, MoneyResquestApprovalStatus } from "@prisma/client";
 import { handleOrderBy } from "./utils/Sorting.routeUtils";
-/* import { handleWhereImApprover } from "./utils/MoneyRequest.routeUtils"; */
 import { completeMoneyRequestWithApprovalIncludeArgs } from "@/pageContainers/mod/approvals/mod.approvals.types";
 
 export const moneyApprovalRouter = router({
@@ -37,11 +36,10 @@ export const moneyApprovalRouter = router({
         orderBy: handleOrderBy({ input }),
         where: {
           AND: [
-            /* handleWhereImApprover(input, user.id, user), */
+            ...(input?.whereFilterList ?? []),
             {
-              ...(input?.whereFilterList ?? []),
-              wasCancelled: false,
               approvalStatus: input.status,
+              wasCancelled: false,
             },
           ],
         },
@@ -62,7 +60,10 @@ export const moneyApprovalRouter = router({
           AND: [
             input.status ? { status: input.status } : {},
             ...(input?.whereFilterList ?? []),
-            { wasCancelled: false },
+            {
+              approvalStatus: input.status,
+              wasCancelled: false,
+            },
           ],
         },
       }),
@@ -123,6 +124,13 @@ export const moneyApprovalRouter = router({
             approvalStatus: "ACCEPTED",
           },
         });
+      } else {
+        await prisma?.moneyRequest.update({
+          where: { id: input.moneyRequestId },
+          data: {
+            approvalStatus: "PENDING",
+          },
+        });
       }
 
       const prevApprovalMadeByThisUser =
@@ -179,6 +187,14 @@ export const moneyApprovalRouter = router({
           moneyRequestApprovers: { some: { id: user.id } },
         },
       });
+
+      //Reject the money request
+      await prisma.moneyRequest.update({
+        where: { id: input.moneyRequestId },
+        data: {
+          approvalStatus: "REJECTED",
+        },
+      });
       const prevApproval = await prisma?.moneyRequestApproval.findFirst({
         where: { accountId: user.id, moneyRequestId: input.moneyRequestId },
       });
@@ -206,6 +222,7 @@ export const moneyApprovalRouter = router({
           moneyRequest: { select: { organizationId: true } },
         },
       });
+
       await reqApprovalRejectionSlackNotification({ input: approval });
       return approval;
     }),

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ColumnFilterProps } from "../ColumnFilter";
 import { Prisma } from "@prisma/client";
-import { Input } from "@chakra-ui/react";
+import { Button, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import useDebounce from "@/lib/hooks/useDebounce";
+import { MdClear } from "react-icons/md";
 
 const InputContainsColumnFilter = ({
   setWhereFilterList,
@@ -63,7 +64,28 @@ const InputContainsColumnFilter = ({
 
   return (
     <div style={{ minWidth: "130px" }} onClick={(e) => e.stopPropagation()}>
-      <Input value={searchValue} size={"sm"} onChange={handleChange} />
+      <InputGroup size="sm">
+        <Input value={searchValue} size={"sm"} onChange={handleChange} />
+        <InputRightElement
+        // backgroundColor={"white"}
+        // color={"black"}
+        // borderRadius={"md"}
+        >
+          {searchValue.length > 0 && (
+            <MdClear
+              style={{
+                cursor: "pointer",
+                backgroundColor: "gray",
+                color: "white",
+                borderRadius: "8px",
+                margin: "2px",
+                fontSize: "1rem",
+              }}
+              onClick={() => setSearchValue("")}
+            />
+          )}
+        </InputRightElement>
+      </InputGroup>
     </div>
   );
 };

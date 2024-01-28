@@ -1,4 +1,4 @@
-import { MenuItem } from "@chakra-ui/react";
+import { MenuItem, useClipboard } from "@chakra-ui/react";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
@@ -22,6 +22,7 @@ export const RowOptionApprovals = ({
   >;
 }) => {
   const context = trpcClient.useContext();
+  const { onCopy, hasCopied } = useClipboard(x.id);
   const session = useSession();
   const isAdmin = session?.data?.user.role === "ADMIN";
 
@@ -81,6 +82,14 @@ export const RowOptionApprovals = ({
         }}
       >
         Rechazar
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          onCopy();
+          closeMenu();
+        }}
+      >
+        {hasCopied ? "Copiado!" : "Copiar id de solicitud"}
       </MenuItem>
     </>
   );

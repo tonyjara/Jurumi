@@ -18,7 +18,6 @@ import { translatedMoneyRequestApprovalStatus } from "@/lib/utils/TranslatedEnum
 import { trpcClient } from "@/lib/utils/trpcClient";
 import { modApprovalsColumns } from "./columns.mod.approvals";
 import { RowOptionApprovals } from "./rowOptions.mod.approvals";
-import { ApprovalUtils } from "@/lib/utils/ApprovalUtilts";
 
 const ApprovalsPage = () => {
   const statusArray: MoneyResquestApprovalStatus[] = [
@@ -75,7 +74,7 @@ const ApprovalsPage = () => {
   return (
     <>
       <DynamicTable
-        title="Aprobación de solicitudes"
+        title={`Aprobación de solicitudes ( ${count ?? 0} )`}
         enableColumnFilters={true}
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}

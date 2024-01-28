@@ -40,16 +40,6 @@ export const modApprovalsColumns = ({
     header: "Fecha de Operación",
     sortingFn: "datetime",
   }),
-  columnHelper.accessor("status", {
-    header: "Estado de depósito",
-    cell: (x) => (
-      <EnumTextCell
-        text={x.getValue()}
-        enumFunc={translatedMoneyReqStatus}
-        hover={x.row.original.rejectionMessage}
-      />
-    ),
-  }),
   columnHelper.display({
     header: "Aprobación",
     cell: (x) => {
@@ -63,6 +53,16 @@ export const modApprovalsColumns = ({
         />
       );
     },
+  }),
+  columnHelper.accessor("status", {
+    header: "Estado de depósito",
+    cell: (x) => (
+      <EnumTextCell
+        text={x.getValue()}
+        enumFunc={translatedMoneyReqStatus}
+        hover={x.row.original.rejectionMessage}
+      />
+    ),
   }),
   columnHelper.accessor("moneyRequestType", {
     header: "Tipo",
