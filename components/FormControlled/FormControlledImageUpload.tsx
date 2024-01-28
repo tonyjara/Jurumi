@@ -1,3 +1,6 @@
+import * as pdfjsDist from "pdfjs-dist";
+
+pdfjsDist.GlobalWorkerOptions.workerSrc = "/assets/pdf.worker.min.mjs";
 import {
   FormControl,
   FormHelperText,
@@ -12,7 +15,7 @@ import {
   Flex,
   Image,
 } from "@chakra-ui/react";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useId, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type {
   Control,
@@ -27,6 +30,7 @@ import { compressCoverPhoto } from "../../lib/utils/ImageCompressor";
 import { myToast } from "../Toasts & Alerts/MyToast";
 import { v4 as uuidV4 } from "uuid";
 import axios from "axios";
+
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
@@ -60,6 +64,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
   const [uploading, setUploading] = useState(false);
   const pictureUrl = useWatch({ control, name: urlName }) as string;
   const imageUuid = uuidV4(); //This is set on purpose here so that if there is another upload it overwrites the same picture.
+  const [preview, setPreview] = useState<any>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     handleImageUpload(acceptedFiles);
@@ -67,9 +72,60 @@ const FormControlledImageUpload = <T extends FieldValues>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const readFileData = (file: File) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (!e.target) return;
+        resolve(e.target.result);
+      };
+      reader.onerror = (err) => {
+        reject(err);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const convertPdfToImages = async (file: File, fileName: string) => {
+    const images: any[] = [];
+    const data = (await readFileData(file)) as
+      | string
+      | ArrayBuffer
+      | URL
+      | null;
+    if (!data) return;
+
+    const pdf = await pdfjsDist.getDocument(data).promise;
+
+    const canvas = document.createElement("canvas");
+    for (let i = 0; i < pdf.numPages; i++) {
+      const page = await pdf.getPage(i + 1);
+      const viewport = page.getViewport({ scale: 1 });
+      const context = canvas.getContext("2d");
+      if (!context) return;
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      await page.render({ canvasContext: context, viewport: viewport }).promise;
+      // const blob = canvas.toBlob(function (blob) {
+      //   return blob;
+      // }, "image/png");
+      const blob = (await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/png", 0.8),
+      )) as any | null;
+      if (!blob) return;
+      blob.name = fileName;
+
+      images.push(blob);
+    }
+    canvas.remove();
+    return images[0] ?? null;
+  };
+
   const handleImageUpload = async (files: File[]) => {
     try {
       if (!files[0]) return;
+      const isPdf = files[0].type === "application/pdf";
+
       setUploading(true);
       setImageIsLoading && setImageIsLoading(true);
 
@@ -78,12 +134,22 @@ const FormControlledImageUpload = <T extends FieldValues>(
         type: getFile.type,
         lastModified: getFile.lastModified,
       });
-      const compressed = await compressCoverPhoto(file);
+
+      const processedFile = isPdf
+        ? await convertPdfToImages(file, imageUuid)
+        : await compressCoverPhoto(file);
+
+      // setPreview(processedFile);
+      // const compressed = await compressCoverPhoto(processedFile);
 
       const req = await axios("/api/get-connection-string");
       const { connectionString } = req.data;
 
-      const url = await uploadFileToBlob(compressed, userId, connectionString);
+      const url = await uploadFileToBlob(
+        processedFile,
+        userId,
+        connectionString,
+      );
 
       setValue(urlName, url);
       setValue(idName, imageUuid);
@@ -103,6 +169,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
     multiple: false,
     accept: {
       "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+      "application/pdf": [".pdf"],
     },
   });
   const activeBg = useColorModeValue("gray.100", "gray.600");
@@ -165,6 +232,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
           style={{ borderRadius: "8px" }}
           alt={"upload picture"}
           src={pictureUrl?.length ? pictureUrl : "/no-image.png"}
+          // src={preview ?? "/no-image.png"}
           width={100}
           height={100}
         />

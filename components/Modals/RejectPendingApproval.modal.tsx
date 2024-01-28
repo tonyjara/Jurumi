@@ -8,15 +8,15 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import FormControlledText from '../FormControlled/FormControlledText';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { knownErrors } from "../../lib/dictionaries/knownErrors";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import FormControlledText from "../FormControlled/FormControlledText";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 
 interface RejectForm {
   moneyRequestId: string;
@@ -33,7 +33,7 @@ const RejectPendingApprovalModal = ({
   requestId: string;
 }) => {
   const context = trpcClient.useContext();
-  const defValues = { rejectMessage: '', moneyRequestId: '' };
+  const defValues = { rejectMessage: "", moneyRequestId: "" };
   const {
     handleSubmit,
     control,
@@ -44,10 +44,10 @@ const RejectPendingApprovalModal = ({
     resolver: zodResolver(
       z.object({
         rejectMessage: z
-          .string({ required_error: 'Favor ingrese un mensaje' })
-          .min(6, 'Favor ingrese un mensaje'),
-        moneyRequestId: z.string().min(1, ''),
-      })
+          .string({ required_error: "Favor ingrese un mensaje" })
+          .min(6, "Favor ingrese un mensaje"),
+        moneyRequestId: z.string().min(1, ""),
+      }),
     ),
   });
 
@@ -63,13 +63,13 @@ const RejectPendingApprovalModal = ({
   const { error, mutate, isLoading } =
     trpcClient.moneyApprovals.reject.useMutation(
       handleUseMutationAlerts({
-        successText: 'La solicitud ha sido rechazada.',
+        successText: "La solicitud ha sido rechazada.",
         callback: () => {
           onClose();
           reset(defValues);
-          context.moneyRequest.invalidate();
+          context.invalidate();
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: RejectForm) => {
