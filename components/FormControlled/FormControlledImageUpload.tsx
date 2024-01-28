@@ -1,6 +1,7 @@
 import * as pdfjsDist from "pdfjs-dist";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs";
+pdfjsDist.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-pdfjsDist.GlobalWorkerOptions.workerSrc = "/assets/pdf.worker.min.mjs";
 import {
   FormControl,
   FormHelperText,
@@ -15,7 +16,7 @@ import {
   Flex,
   Image,
 } from "@chakra-ui/react";
-import React, { useCallback, useId, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type {
   Control,
@@ -106,9 +107,6 @@ const FormControlledImageUpload = <T extends FieldValues>(
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       await page.render({ canvasContext: context, viewport: viewport }).promise;
-      // const blob = canvas.toBlob(function (blob) {
-      //   return blob;
-      // }, "image/png");
       const blob = (await new Promise((resolve) =>
         canvas.toBlob(resolve, "image/png", 0.8),
       )) as any | null;
@@ -138,9 +136,6 @@ const FormControlledImageUpload = <T extends FieldValues>(
       const processedFile = isPdf
         ? await convertPdfToImages(file, imageUuid)
         : await compressCoverPhoto(file);
-
-      // setPreview(processedFile);
-      // const compressed = await compressCoverPhoto(processedFile);
 
       const req = await axios("/api/get-connection-string");
       const { connectionString } = req.data;
