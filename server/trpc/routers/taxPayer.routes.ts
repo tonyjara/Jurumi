@@ -77,24 +77,24 @@ export const taxPayerRouter = router({
       });
       return x;
     }),
-  createIfNotExist: protectedProcedure
-    .input(z.object({ razonSocial: z.string(), ruc: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      const user = ctx.session.user;
-
-      const x = await prisma?.taxPayer.upsert({
-        where: {
-          ruc: input.ruc,
-        },
-        create: {
-          createdById: user.id,
-          razonSocial: input.razonSocial,
-          ruc: input.ruc,
-        },
-        update: {},
-      });
-      return x;
-    }),
+  // createIfNotExist: protectedProcedure
+  //   .input(z.object({ razonSocial: z.string(), ruc: z.string() }))
+  //   .mutation(async ({ input, ctx }) => {
+  //     const user = ctx.session.user;
+  //
+  //     const x = await prisma?.taxPayer.upsert({
+  //       where: {
+  //         id: input.id,
+  //       },
+  //       create: {
+  //         createdById: user.id,
+  //         razonSocial: input.razonSocial,
+  //         ruc: input.ruc,
+  //       },
+  //       update: {},
+  //     });
+  //     return x;
+  //   }),
   edit: protectedProcedure
     .input(validateTaxPayer)
     .mutation(async ({ input, ctx }) => {

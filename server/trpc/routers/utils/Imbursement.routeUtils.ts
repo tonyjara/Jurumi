@@ -224,26 +224,26 @@ const createImbursement = async ({
   return imbursement;
 };
 
-const upsertTaxPayter = async ({
-  input,
-  userId,
-}: {
-  input: FormImbursement;
-  userId: string;
-}) => {
-  const taxPayer = await prisma?.taxPayer.upsert({
-    where: {
-      ruc: input.taxPayer.ruc,
-    },
-    create: {
-      createdById: userId,
-      razonSocial: input.taxPayer.razonSocial,
-      ruc: input.taxPayer.ruc,
-    },
-    update: {},
-  });
-  return taxPayer;
-};
+// const upsertTaxPayter = async ({
+//   input,
+//   userId,
+// }: {
+//   input: FormImbursement;
+//   userId: string;
+// }) => {
+//   const taxPayer = await prisma?.taxPayer.upsert({
+//     where: {
+//       id: input.taxPayer.ruc,
+//     },
+//     create: {
+//       createdById: userId,
+//       razonSocial: input.taxPayer.razonSocial,
+//       ruc: input.taxPayer.ruc,
+//     },
+//     update: {},
+//   });
+//   return taxPayer;
+// };
 
 export const imbursementCreateUtils = {
   createMoneyAccImbursementTx,
@@ -251,5 +251,4 @@ export const imbursementCreateUtils = {
   createInvoiceFromOrg,
   createImbursement,
   createImbursementProof,
-  upsertTaxPayter,
 };

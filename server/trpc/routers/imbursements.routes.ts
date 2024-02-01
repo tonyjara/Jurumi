@@ -11,6 +11,8 @@ import { handleOrderBy } from "./utils/Sorting.routeUtils";
 import prisma from "@/server/db/client";
 import { imbursementCreateUtils } from "./utils/Imbursement.routeUtils";
 import { cancelTransactionsAndRevertBalance } from "./utils/Cancelations.routeUtils";
+import { upsertTaxPayer } from "./utils/TaxPayer.routeUtils";
+import { getManyImbursementsArgs } from "@/pageContainers/mod/imbursements/Imbursements.types";
 
 const {
   createMoneyAccImbursementTx,
@@ -18,7 +20,6 @@ const {
   createInvoiceFromOrg,
   createImbursement,
   createImbursementProof,
-  upsertTaxPayter,
 } = imbursementCreateUtils;
 
 export const imbursementsRouter = router({
@@ -49,15 +50,16 @@ export const imbursementsRouter = router({
         skip: pageIndex * pageSize,
         orderBy: handleOrderBy({ input }),
         where: { AND: [...(input?.whereFilterList ?? [])] },
-        include: {
-          transactions: { select: { id: true } },
-          taxPayer: { select: { razonSocial: true, ruc: true, id: true } },
-          project: { select: { id: true, displayName: true } },
-          imbursementProof: { select: { imageName: true, url: true } },
-          invoiceFromOrg: { select: { imageName: true, url: true } },
-          moneyAccount: { select: { displayName: true } },
-          account: { select: { id: true, displayName: true } },
-        },
+        ...getManyImbursementsArgs,
+        // include: {
+        //   transactions: { select: { id: true } },
+        //   taxPayer: { select: { razonSocial: true, ruc: true, id: true } },
+        //   project: { select: { id: true, displayName: true } },
+        //   imbursementProof: { select: { imageName: true, url: true } },
+        //   invoiceFromOrg: { select: { imageName: true, url: true } },
+        //   moneyAccount: { select: { displayName: true } },
+        //   account: { select: { id: true, displayName: true } },
+        // },
       });
     }),
   count: adminModObserverProcedure
@@ -66,13 +68,12 @@ export const imbursementsRouter = router({
         whereFilterList: z.any().array().optional(),
       }),
     )
-    .query(
-      async ({ input }) =>
-        prisma?.imbursement.count({
-          where: {
-            AND: [...(input?.whereFilterList ?? [])],
-          },
-        }),
+    .query(async ({ input }) =>
+      prisma?.imbursement.count({
+        where: {
+          AND: [...(input?.whereFilterList ?? [])],
+        },
+      }),
     ),
 
   create: adminModProcedure
@@ -82,8 +83,8 @@ export const imbursementsRouter = router({
       input.accountId = user.id;
       // Creates imbursments, connects taxpayer, creates images and transactions for money accounts and for projects.
       return await prisma?.$transaction(async (txCtx) => {
-        const taxPayer = await upsertTaxPayter({
-          input,
+        const taxPayer = await upsertTaxPayer({
+          input: input.taxPayer,
           userId: user.id,
         });
 
@@ -132,18 +133,10 @@ export const imbursementsRouter = router({
       const user = ctx.session.user;
       input.accountId = user.id;
 
-      const taxPayer = await prisma?.taxPayer.upsert({
-        where: {
-          ruc: input.taxPayer.ruc,
-        },
-        create: {
-          createdById: user.id,
-          razonSocial: input.taxPayer.razonSocial,
-          ruc: input.taxPayer.ruc,
-        },
-        update: {},
+      const taxPayer = await upsertTaxPayer({
+        userId: user.id,
+        input: input.taxPayer,
       });
-
       if (!taxPayer || !input.imbursementProof || !input.moneyAccountId) {
         throw new TRPCError({
           code: "PRECONDITION_FAILED",

@@ -1,12 +1,12 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import DateCell from "@/components/DynamicTables/DynamicCells/DateCell";
 import MoneyCell from "@/components/DynamicTables/DynamicCells/MoneyCell";
-import type { imbursementComplete } from "./ImbursementsPage.mod.imbursements";
 import BooleanCell from "@/components/DynamicTables/DynamicCells/BooleanCell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
 import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModalCell";
+import { ImbursementComplete } from "./Imbursements.types";
 
-const columnHelper = createColumnHelper<imbursementComplete>();
+const columnHelper = createColumnHelper<ImbursementComplete>();
 
 export const imbursementsColumns = ({
   pageIndex,
