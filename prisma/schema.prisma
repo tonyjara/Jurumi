@@ -388,8 +388,8 @@ model TaxPayer {
     updatedAt   DateTime?         @updatedAt
     createdById String
     updatedById String?
-    razonSocial String            @unique
-    ruc         String            @unique
+    razonSocial String
+    ruc         String
     fantasyName String?
     archived    Boolean           @default(false)
     softDeleted Boolean           @default(false)

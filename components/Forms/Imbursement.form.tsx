@@ -1,28 +1,29 @@
-import { currencyOptions } from '@/lib/utils/SelectOptions';
-import { formatedAccountBalance } from '@/lib/utils/TransactionUtils';
-import { translateCurrencyPrefix } from '@/lib/utils/TranslatedEnums';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormImbursement } from '@/lib/validations/imbursement.validate';
-import { imbursementMock } from '@/__tests__/mocks/Mocks';
-import { Button, Divider, Text, VStack } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
-import React from 'react';
+import { currencyOptions } from "@/lib/utils/SelectOptions";
+import { formatedAccountBalance } from "@/lib/utils/TransactionUtils";
+import { translateCurrencyPrefix } from "@/lib/utils/TranslatedEnums";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import type { FormImbursement } from "@/lib/validations/imbursement.validate";
+import { imbursementMock } from "@/__tests__/mocks/Mocks";
+import { Button, Divider, Text, VStack } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import React from "react";
 import type {
   FieldValues,
   Control,
   UseFormSetValue,
   UseFormReset,
-} from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import SeedButton from '../DevTools/SeedButton';
-import FormControlledImageUpload from '../FormControlled/FormControlledImageUpload';
-import FormControlledMoneyInput from '../FormControlled/FormControlledMoneyInput';
-import FormControlledNumberInput from '../FormControlled/FormControlledNumberInput';
-import FormControlledRadioButtons from '../FormControlled/FormControlledRadioButtons';
-import FormControlledSelect from '../FormControlled/FormControlledSelect';
-import FormControlledSwitch from '../FormControlled/FormControlledSwitch';
-import FormControlledTaxPayerId from '../FormControlled/FormControlledTaxPayerId';
-import FormControlledText from '../FormControlled/FormControlledText';
+  UseFormGetValues,
+} from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import SeedButton from "../DevTools/SeedButton";
+import FormControlledImageUpload from "../FormControlled/FormControlledImageUpload";
+import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
+import FormControlledNumberInput from "../FormControlled/FormControlledNumberInput";
+import FormControlledRadioButtons from "../FormControlled/FormControlledRadioButtons";
+import FormControlledSelect from "../FormControlled/FormControlledSelect";
+import FormControlledSwitch from "../FormControlled/FormControlledSwitch";
+import FormControlledTaxPayerId from "../FormControlled/FormControlledTaxPayerId";
+import FormControlledText from "../FormControlled/FormControlledText";
 
 interface formProps<T extends FieldValues> {
   control: Control<T>;
@@ -30,6 +31,7 @@ interface formProps<T extends FieldValues> {
   setValue: UseFormSetValue<T>;
   isEditForm?: boolean;
   reset: UseFormReset<T>;
+  getValues: UseFormGetValues<T>;
 }
 
 const ImbursementForm = ({
@@ -38,23 +40,24 @@ const ImbursementForm = ({
   setValue,
   isEditForm,
   reset,
+  getValues,
 }: formProps<FormImbursement>) => {
   const { data: session } = useSession();
   const user = session?.user;
-  const otherCurrency = useWatch({ control, name: 'otherCurrency' });
-  const finalCurrency = useWatch({ control, name: 'finalCurrency' });
+  const otherCurrency = useWatch({ control, name: "otherCurrency" });
+  const finalCurrency = useWatch({ control, name: "finalCurrency" });
   const amountInOtherCurrency = useWatch({
     control,
-    name: 'amountInOtherCurrency',
+    name: "amountInOtherCurrency",
   });
-  const exchangeRate = useWatch({ control, name: 'exchangeRate' });
+  const exchangeRate = useWatch({ control, name: "exchangeRate" });
   const wasConvertedToOtherCurrency = useWatch({
     control,
-    name: 'wasConvertedToOtherCurrency',
+    name: "wasConvertedToOtherCurrency",
   });
 
   const handleConvert = () => {
-    setValue('finalAmount', amountInOtherCurrency * exchangeRate);
+    setValue("finalAmount", amountInOtherCurrency * exchangeRate);
   };
 
   //Data getters
@@ -75,7 +78,7 @@ const ImbursementForm = ({
     ?.filter(
       (x) =>
         x.currency ===
-        (wasConvertedToOtherCurrency ? finalCurrency : otherCurrency)
+        (wasConvertedToOtherCurrency ? finalCurrency : otherCurrency),
     )
     .map((acc) => ({
       value: acc.id,
@@ -90,7 +93,7 @@ const ImbursementForm = ({
       />
       <VStack spacing={5}>
         {isEditForm && (
-          <Text fontSize={'sm'} color={'red.500'}>
+          <Text fontSize={"sm"} color={"red.500"}>
             Algunos campos no pueden editarse, en caso que necesite modificarlos
             favor anular el desembolso y crear uno nuevo.
           </Text>
@@ -110,7 +113,7 @@ const ImbursementForm = ({
           options={currencyOptions}
           disable={isEditForm}
           //resets money account on change
-          onChangeMw={() => setValue('moneyAccountId', null)}
+          onChangeMw={() => setValue("moneyAccountId", null)}
         />
         <FormControlledMoneyInput
           control={control}
@@ -137,7 +140,7 @@ const ImbursementForm = ({
               name="exchangeRate"
               label="Tasa de cambio"
               helperText={`Un ${translateCurrencyPrefix(
-                otherCurrency
+                otherCurrency,
               )} es igual a tantos ${translateCurrencyPrefix(finalCurrency)}`}
               disable={isEditForm}
             />
@@ -149,7 +152,7 @@ const ImbursementForm = ({
               options={currencyOptions}
               disable={isEditForm}
               //resets money account on change
-              onChangeMw={() => setValue('moneyAccountId', null)}
+              onChangeMw={() => setValue("moneyAccountId", null)}
             />
             <FormControlledMoneyInput
               control={control}
@@ -159,7 +162,7 @@ const ImbursementForm = ({
               prefix={translateCurrencyPrefix(finalCurrency)}
               currency={finalCurrency}
               helperText={
-                'Ingresar manualmente o presiona el botón para convertir.'
+                "Ingresar manualmente o presiona el botón para convertir."
               }
               disable={isEditForm}
             />
@@ -172,7 +175,7 @@ const ImbursementForm = ({
         <FormControlledSelect
           control={control}
           errors={errors}
-          name={'moneyAccountId'}
+          name={"moneyAccountId"}
           label="Seleccione una cuenta para recibir el fondo."
           options={moneyAccOptions ?? []}
           isClearable={true}
@@ -188,6 +191,7 @@ const ImbursementForm = ({
         />
         <FormControlledTaxPayerId
           control={control}
+          getValues={getValues}
           errors={errors}
           razonSocialName="taxPayer.razonSocial"
           rucName="taxPayer.ruc"

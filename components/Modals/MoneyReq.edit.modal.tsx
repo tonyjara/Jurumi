@@ -16,7 +16,6 @@ import { useForm } from "react-hook-form";
 import { knownErrors } from "../../lib/dictionaries/knownErrors";
 import { trpcClient } from "../../lib/utils/trpcClient";
 import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
-import SeedButton from "../DevTools/SeedButton";
 import type { FormMoneyRequest } from "../../lib/validations/moneyRequest.validate";
 import {
   defaultMoneyRequestData,
@@ -40,6 +39,7 @@ const EditMoneyRequestModal = ({
     handleSubmit,
     control,
     reset,
+    getValues,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormMoneyRequest>({
@@ -91,6 +91,7 @@ const EditMoneyRequestModal = ({
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm
               isEdit={true}
+              getValues={getValues}
               setValue={setValue}
               control={control}
               errors={errors as any}

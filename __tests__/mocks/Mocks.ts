@@ -262,11 +262,13 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
     id: "cldagi67k005qpftt2ssd67m9",
     moneyOrderNumber: null,
     contractsId: null,
+    approvalStatus: "PENDING",
     comments: faker.commerce.productDescription().substring(0, 100),
     taxPayer: {
       id: "",
       razonSocial: faker.person.fullName(),
       ruc: faker.string.numeric(6),
+      fantasyName: faker.person.fullName(),
       bankInfo: {
         bankName: "ITAU",
         accountNumber: faker.finance.accountNumber(),

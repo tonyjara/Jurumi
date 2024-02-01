@@ -9,6 +9,7 @@ import type {
   FieldErrorsImpl,
   UseFormSetValue,
   UseFormReset,
+  UseFormGetValues,
 } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 import {
@@ -36,6 +37,7 @@ interface formProps<T extends FieldValues> {
   setValue: UseFormSetValue<T>;
   isEdit?: boolean;
   orgId: string | null;
+  getValues: UseFormGetValues<T>;
   reset: UseFormReset<T>;
   //To be able to hook in with contracts, we need to pass the incomingMoneyRequest
   incomingMoneyRequest?: FormMoneyRequest;
@@ -48,6 +50,7 @@ const MoneyRequestForm = ({
   isEdit,
   orgId,
   reset,
+  getValues,
   incomingMoneyRequest,
 }: formProps<FormMoneyRequest>) => {
   const { data: session } = useSession();
@@ -129,6 +132,7 @@ const MoneyRequestForm = ({
         moneyRequestType === "REIMBURSMENT_ORDER") && (
         <>
           <FormControlledTaxPayerId
+            getValues={getValues}
             label="A la orden de:"
             control={control}
             errors={errors}

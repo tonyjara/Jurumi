@@ -123,6 +123,7 @@ export const transformContractToFormMoneyRequest = ({
     contractsId: contract.id,
     wasCancelled: false,
     taxPayer: {
+      id: null,
       razonSocial: "",
       ruc: "",
       bankInfo: {

@@ -37,14 +37,13 @@ export const expenseReportsRouter = router({
         whereFilterList: z.any().array().optional(),
       }),
     )
-    .query(
-      async ({ input }) =>
-        prisma?.expenseReport.count({
-          where: {
-            searchableImage: { isNot: null },
-            AND: [...(input?.whereFilterList ?? [])],
-          },
-        }),
+    .query(async ({ input }) =>
+      prisma?.expenseReport.count({
+        where: {
+          searchableImage: { isNot: null },
+          AND: [...(input?.whereFilterList ?? [])],
+        },
+      }),
     ),
   getMyOwnComplete: protectedProcedure
     .input(
@@ -161,6 +160,7 @@ export const expenseReportsRouter = router({
 
       const taxPayer = await upsertTaxPayer({
         input: {
+          id: input.taxPayer.id,
           razonSocial: input.taxPayer.razonSocial,
           ruc: input.taxPayer.ruc,
           bankInfo: null,

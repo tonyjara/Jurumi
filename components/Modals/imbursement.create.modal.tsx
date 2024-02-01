@@ -8,19 +8,19 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import ImbursementForm from '../Forms/Imbursement.form';
-import type { FormImbursement } from '@/lib/validations/imbursement.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "../../lib/dictionaries/knownErrors";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import ImbursementForm from "../Forms/Imbursement.form";
+import type { FormImbursement } from "@/lib/validations/imbursement.validate";
 import {
   defaultImbursementData,
   validateImbursement,
-} from '@/lib/validations/imbursement.validate';
+} from "@/lib/validations/imbursement.validate";
 
 const ImbursementCreateModal = ({
   isOpen,
@@ -35,6 +35,7 @@ const ImbursementCreateModal = ({
     control,
     reset,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormImbursement>({
     defaultValues: defaultImbursementData,
@@ -48,13 +49,13 @@ const ImbursementCreateModal = ({
   const { error, mutate, isLoading } =
     trpcClient.imbursement.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su desembolso ha sido creado',
+        successText: "Su desembolso ha sido creado",
         callback: () => {
           handleOnClose();
           context.imbursement.invalidate();
           context.moneyAcc.invalidate();
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: FormImbursement) => {
@@ -71,6 +72,7 @@ const ImbursementCreateModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ImbursementForm
+              getValues={getValues}
               reset={reset}
               setValue={setValue}
               control={control}

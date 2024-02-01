@@ -40,6 +40,7 @@ const CreateExpenseReturnModal = ({
     control,
     reset,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormExpenseReturn>({
     defaultValues: defaultExpenseReturn,
@@ -103,6 +104,7 @@ const CreateExpenseReturnModal = ({
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ExpenseReturnForm
               reset={reset}
+              getValues={getValues}
               moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}

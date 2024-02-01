@@ -41,6 +41,7 @@ const CreateMoneyRequestModal = ({
     control,
     reset,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormMoneyRequest>({
     defaultValues: incomingMoneyRequest ?? defaultMoneyRequestData,
@@ -77,7 +78,10 @@ const CreateMoneyRequestModal = ({
 
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
-      <form onSubmit={handleSubmit(submitFunc)} noValidate>
+      <form
+        // onSubmit={handleSubmit(submitFunc)}
+        noValidate
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Crear una solicitud de fondos</ModalHeader>
@@ -85,6 +89,7 @@ const CreateMoneyRequestModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyRequestForm
+              getValues={getValues}
               incomingMoneyRequest={incomingMoneyRequest}
               setValue={setValue}
               control={control}
@@ -97,7 +102,8 @@ const CreateMoneyRequestModal = ({
           <ModalFooter>
             <Button
               isDisabled={isLoading || isSubmitting}
-              type="submit"
+              // type="submit"
+              onClick={() => handleSubmit(submitFunc)()}
               colorScheme="blue"
               mr={3}
             >

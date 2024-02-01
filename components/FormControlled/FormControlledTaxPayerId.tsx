@@ -31,20 +31,24 @@ import type {
   FieldValues,
   Path,
   SetFieldValue,
+  UseFormGetValues,
 } from "react-hook-form";
-import { useWatch } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { AiOutlineMinusSquare } from "react-icons/ai";
 import useDebounce from "../../lib/hooks/useDebounce";
 import { trpcClient } from "../../lib/utils/trpcClient";
-import CreateTaxPayerModal from "../Modals/taxPayer.create.modal";
+import CreateTaxPayerModal, {
+  CreateTaxPayerModalSetFuncProps,
+} from "../Modals/taxPayer.create.modal";
 import FormControlledSelect from "./FormControlledSelect";
 import FormControlledText from "./FormControlledText";
+import { defaultBankInfo } from "@/lib/validations/moneyRequest.validate";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
   rucName: Path<T>;
+  getValues: UseFormGetValues<T>;
   razonSocialName: Path<T>;
   autoFocus?: boolean;
   setValue: SetFieldValue<T>;
@@ -65,6 +69,13 @@ type FetctchedTaxPayers = (TaxPayer & {
   bankInfo: TaxPayerBankInfo | null;
 })[];
 
+interface TaxPayerSelectOption {
+  value: string;
+  label: string;
+  razonSocial: string;
+  id: string | null;
+}
+
 const FormControlledTaxPayerId = <T extends FieldValues>(
   props: InputProps<T>,
 ) => {
@@ -79,12 +90,13 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     label,
     showBankInfo,
     bankInfoName,
+    getValues,
   } = props;
   const [loading, setLoading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectInput, setSelectInput] = useState("");
   const [selectOptions, setSelectOptions] = useState<
-    { value: string; label: string }[] | null
+    TaxPayerSelectOption[] | null
   >([]);
   const [fetchedTaxPayers, setFetchedTaxPayers] = useState<FetctchedTaxPayers>(
     [],
@@ -109,9 +121,13 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             return getDataFromDatosPy(debouncedSearchValue);
           }
 
-          const convertToSelect = x.map((y) => ({
+          const convertToSelect: TaxPayerSelectOption[] = x.map((y) => ({
             value: y.ruc,
-            label: y.razonSocial,
+            label: y.fantasyName?.length
+              ? `(${y.fantasyName}) - ${y.razonSocial}`
+              : y.razonSocial,
+            razonSocial: y.razonSocial,
+            id: y.id,
           }));
           showBankInfo && setFetchedTaxPayers(x);
           setSelectOptions(convertToSelect);
@@ -134,9 +150,11 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
       if (status !== 200) throw "not 200";
       const datosFrompy = data as datosPyResponse[];
 
-      const options = datosFrompy.map((x) => ({
+      const options: TaxPayerSelectOption[] = datosFrompy.map((x) => ({
         label: startCase(x.razonsocial.toLowerCase()),
+        razonSocial: startCase(x.razonsocial.toLowerCase()),
         value: `${x.documento}-${x.dv}`,
+        id: null,
       }));
       setSelectOptions(options);
       setOpenDropdown(true);
@@ -167,16 +185,25 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
   };
 
   const handleOnSelect = (
-    e: any | { value: string; label: string } | undefined,
+    e: any | TaxPayerSelectOption | undefined,
     field: ControllerRenderProps<T, Path<T>>,
   ) => {
     field.onChange(e?.value ?? "");
     setValue(razonSocialName, e?.label ?? "");
-    if (showBankInfo && fetchedTaxPayers.length && e?.value) {
-      const foundBankInfo = fetchedTaxPayers.find((x) => x.ruc === e.value)
-        ?.bankInfo;
+    setValue("taxPayer.id", e?.id ?? "");
 
-      if (!foundBankInfo) return;
+    if (showBankInfo && fetchedTaxPayers.length && e?.value) {
+      const foundBankInfo = fetchedTaxPayers.find(
+        (x) => x.id === e.id,
+      )?.bankInfo;
+
+      if (!foundBankInfo) {
+        setValue(
+          bankInfoName ? `${bankInfoName}.bankInfo` : "taxPayer.bankInfo",
+          defaultBankInfo,
+        );
+        return;
+      }
       setValue(
         bankInfoName ? `${bankInfoName}.bankInfo` : "taxPayer.bankInfo",
         foundBankInfo,
@@ -184,30 +211,44 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
     }
   };
 
-  const handleSetRucAndRazonSocial = ({
+  const handleSetRucAndRazonSocialAfterCreate = ({
     ruc,
     razonSocial,
-  }: {
-    ruc: string;
-    razonSocial: string;
-  }) => {
+    id,
+    label,
+  }: CreateTaxPayerModalSetFuncProps) => {
     setValue(rucName, ruc);
+    setValue("taxPayer.id", id);
     setValue(razonSocialName, razonSocial);
-    setSelectOptions([{ value: ruc, label: razonSocial }]);
+    setSelectOptions([{ value: ruc, label, razonSocial, id }]);
   };
 
-  const ruc = useWatch({ control, name: rucName });
-  const razonSocial = useWatch({ control, name: razonSocialName });
+  // const ruc = useWatch({ control, name: rucName });
+  // const razonSocial = useWatch({ control, name: razonSocialName });
 
+  //This is used to set initial option on edit
+  //TODO: Make this tighter
   useEffect(() => {
-    setSelectOptions([
-      ...(selectOptions ?? []),
-      { value: ruc, label: razonSocial },
+    const values = getValues();
+    const taxPayer = values?.taxPayer;
+    if (!taxPayer) return;
+
+    setSelectOptions((prev) => [
+      ...(prev ?? []),
+      {
+        value: taxPayer?.ruc,
+        label: taxPayer?.fantasyName
+          ? `(${taxPayer.fantasyName}) - ${taxPayer.razonSocial}`
+          : taxPayer?.razonSocial,
+        razonSocial: taxPayer.razonSocial,
+        id: taxPayer.id,
+      },
     ]);
 
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const rucNameSplit = rucName.split(".");
   const taxPayerString = rucNameSplit[0];
   const rucString = rucNameSplit[1];
@@ -378,7 +419,9 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
       )}
       <CreateTaxPayerModal
         //sets ruc and razonsocial on success
-        handleSetRucAndRazonSocial={handleSetRucAndRazonSocial}
+        handleSetRucAndRazonSocialAfterCreate={
+          handleSetRucAndRazonSocialAfterCreate
+        }
         isOpen={isOpen}
         onClose={onClose}
       />

@@ -42,6 +42,7 @@ const EditExpenseReportModal = ({
     control,
     reset,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormExpenseReport>({
     defaultValues: defaultExpenseReportData,
@@ -54,6 +55,7 @@ const EditExpenseReportModal = ({
       const editExpenseReport: FormExpenseReport = {
         searchableImage: expenseReport.searchableImage,
         taxPayer: {
+          id: expenseReport.taxPayer.id,
           razonSocial: expenseReport.taxPayer.razonSocial,
           ruc: expenseReport.taxPayer.ruc,
         },
@@ -75,6 +77,7 @@ const EditExpenseReportModal = ({
         pendingAmount: 0,
         spentAmountIsGraterThanMoneyRequest: false,
         reimburseTo: {
+          id: null,
           razonSocial: "",
           ruc: "",
           bankInfo: {
@@ -104,7 +107,7 @@ const EditExpenseReportModal = ({
           reset();
           context.expenseReport.invalidate();
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: FormExpenseReport) => {
@@ -123,6 +126,7 @@ const EditExpenseReportModal = ({
 
             <ExpenseReportForm
               reset={reset}
+              getValues={getValues}
               setValue={setValue}
               control={control}
               errors={errors as any}

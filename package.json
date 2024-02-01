@@ -39,6 +39,7 @@
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@hookform/resolvers": "3.1.1",
+    "@napi-rs/canvas": "^0.1.44",
     "@prisma/client": "5.4.2",
     "@sendgrid/mail": "7.7.0",
     "@slack/web-api": "6.9.0",
