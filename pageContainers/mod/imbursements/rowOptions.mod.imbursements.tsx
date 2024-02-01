@@ -2,10 +2,10 @@ import { MenuItem } from "@chakra-ui/react";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
 import { trpcClient } from "@/lib/utils/trpcClient";
-import type { imbursementComplete } from "./ImbursementsPage.mod.imbursements";
 import type { FormImbursement } from "@/lib/validations/imbursement.validate";
 import { RowOptionDeleteDialog } from "@/components/Toasts & Alerts/RowOption.delete.dialog";
 import { RowOptionCancelDialog } from "@/components/Toasts & Alerts/RowOptions.cancel.dialog";
+import { ImbursementComplete } from "./Imbursements.types";
 
 const RowOptionsImbursements = ({
   x,
@@ -13,7 +13,7 @@ const RowOptionsImbursements = ({
   onEditOpen,
   setMenuData,
 }: {
-  x: imbursementComplete;
+  x: ImbursementComplete;
   setEditImbursement: React.Dispatch<
     React.SetStateAction<FormImbursement | null>
   >;
@@ -40,7 +40,7 @@ const RowOptionsImbursements = ({
         context.moneyAcc.invalidate();
         closeMenu();
       },
-    })
+    }),
   );
 
   const { mutate: cancelById } = trpcClient.imbursement.cancelById.useMutation(
@@ -52,7 +52,7 @@ const RowOptionsImbursements = ({
         context.transaction.invalidate();
         closeMenu();
       },
-    })
+    }),
   );
   return (
     <>

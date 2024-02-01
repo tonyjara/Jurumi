@@ -152,7 +152,12 @@ export const imbursementMock: (
       projectOptions && projectOptions[0]?.value
         ? projectOptions[0]?.value
         : "",
-    taxPayer: { razonSocial: "Antonio Jara", ruc: "3655944" },
+    taxPayer: {
+      razonSocial: "Antonio Jara",
+      ruc: "3655944",
+      id: null,
+      bankInfo: null,
+    },
     invoiceFromOrg: { url: "", imageName: "" },
     imbursementProof: {
       url: "https://statingstoragebrasil.blob.core.windows.net/clbmbqh3o00008x98b3v23a7e/2c96c577-01a6-4a42-8681-907593b087aa",

@@ -14,36 +14,6 @@ import ImbursementEditModal from "@/components/Modals/imbursement.edit.modal";
 import type { FormImbursement } from "@/lib/validations/imbursement.validate";
 import RowOptionsImbursements from "./rowOptions.mod.imbursements";
 
-export type imbursementComplete = Imbursement & {
-  transactions: {
-    id: number;
-  }[];
-  account: {
-    id: string;
-    displayName: string;
-  };
-  project: {
-    id: string;
-    displayName: string;
-  } | null;
-  taxPayer: {
-    id: string;
-    ruc: string;
-    razonSocial: string;
-  };
-  moneyAccount: {
-    displayName: string;
-  } | null;
-  imbursementProof: {
-    url: string;
-    imageName: string;
-  } | null;
-  invoiceFromOrg: {
-    url: string;
-    imageName: string;
-  } | null;
-};
-
 const ImbursementsPage = ({ taxPayerId }: { taxPayerId?: string }) => {
   const [editImbursement, setEditImbursement] =
     useState<FormImbursement | null>(null);
