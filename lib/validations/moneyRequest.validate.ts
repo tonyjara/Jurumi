@@ -11,6 +11,7 @@ import { stringReqMinMax } from "../utils/ValidationHelpers";
 import { v4 as uuidV4 } from "uuid";
 
 export type moneyReqTaxPayer = {
+  id: string | null;
   razonSocial: string;
   ruc: string;
   bankInfo: TaxPayerBankInfo | null;
@@ -67,6 +68,7 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           //Only make required through superRefine
           /* razonSocial: z.string(), */
           /* ruc: z.string(), */
+          id: z.string().nullable(),
           razonSocial: z.string({
             required_error: "Favor ingrese el documento del contribuyente.",
             invalid_type_error: "Favor ingrese el documento del contribuyente.",
@@ -215,6 +217,15 @@ export const defaultReimbursementOrderSearchableImage: MoneyReqSearchableImage =
     amount: new Prisma.Decimal(0),
     currency: "PYG",
   };
+export const defaultBankInfo: TaxPayerBankInfo = {
+  bankName: "BANCOP",
+  accountNumber: "",
+  ownerName: "",
+  ownerDocType: "CI",
+  ownerDoc: "",
+  taxPayerId: "",
+  type: "SAVINGS",
+};
 export const defaultMoneyRequestData: FormMoneyRequest = {
   id: "",
   comments: "",
@@ -238,17 +249,10 @@ export const defaultMoneyRequestData: FormMoneyRequest = {
   contractsId: null,
   wasCancelled: false,
   taxPayer: {
+    id: null,
     razonSocial: "",
     ruc: "",
-    bankInfo: {
-      bankName: "BANCOP",
-      accountNumber: "",
-      ownerName: "",
-      ownerDocType: "CI",
-      ownerDoc: "",
-      taxPayerId: "",
-      type: "SAVINGS",
-    },
+    bankInfo: defaultBankInfo,
   },
   facturaNumber: null,
   searchableImages: [defaultReimbursementOrderSearchableImage],
@@ -292,6 +296,7 @@ export const MockMoneyRequest = ({
     wasCancelled: false,
     organizationId,
     taxPayer: {
+      id: null,
       razonSocial: faker.company.name(),
       ruc: faker.string.numeric(6),
       bankInfo: {

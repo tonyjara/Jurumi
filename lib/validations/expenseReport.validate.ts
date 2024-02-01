@@ -19,7 +19,7 @@ type withMoney = Omit<ExpenseReport, "amountSpent" | "taxPayerId"> & {
 
 export interface FormExpenseReport extends withMoney {
   searchableImage: { imageName: string; url: string };
-  taxPayer: { razonSocial: string; ruc: string };
+  taxPayer: { razonSocial: string; ruc: string; id: string | null };
   //If present it will create a reimbursement req based on this expense report
   reimburseTo?: moneyReqTaxPayer | null;
   spentAmountIsGraterThanMoneyRequest?: boolean;
@@ -61,6 +61,7 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z
       /* .nullable(), */
       costCategoryId: z.string().nullable(),
       taxPayer: z.object({
+        id: z.string().nullable(),
         razonSocial: stringReqMinMax(
           "Favor ingrese la razon del contribuyente",
           2,
@@ -72,6 +73,7 @@ export const validateExpenseReport: z.ZodType<FormExpenseReport> = z
       spentAmountIsGraterThanMoneyRequest: z.boolean(),
       reimburseTo: z
         .object({
+          id: z.string().nullable(),
           razonSocial: z.string({
             required_error: "Favor ingrese el documento del contribuyente.",
           }),
@@ -164,7 +166,7 @@ export const defaultExpenseReportData: FormExpenseReport = {
   projectId: "",
   comments: "",
   accountId: "",
-  taxPayer: { razonSocial: "", ruc: "" },
+  taxPayer: { razonSocial: "", ruc: "", id: null },
   searchableImage: { url: "", imageName: "" },
   wasCancelled: false,
   costCategoryId: null,
@@ -172,6 +174,7 @@ export const defaultExpenseReportData: FormExpenseReport = {
   exchangeRate: 0,
   pendingAmount: new Prisma.Decimal(0),
   reimburseTo: {
+    id: null,
     razonSocial: "",
     ruc: "",
     bankInfo: {
@@ -193,8 +196,8 @@ export const MockExpenseReport = ({
   costCategoryId,
 }: {
   moneyReqId: string;
-  projectId: string;
-  costCategoryId: string;
+  projectId: string | null;
+  costCategoryId: string | null;
 }) => {
   const imageName = uuidV4();
   const x: FormExpenseReport = {
@@ -204,6 +207,7 @@ export const MockExpenseReport = ({
       imageName,
     },
     taxPayer: {
+      id: null,
       razonSocial: faker.person.fullName(),
       ruc: faker.string.numeric(6) + "-" + faker.string.numeric(1),
     },
@@ -225,6 +229,7 @@ export const MockExpenseReport = ({
     projectId,
     costCategoryId,
     reimburseTo: {
+      id: null,
       razonSocial: faker.company.name(),
       ruc: faker.string.numeric(6),
       bankInfo: {

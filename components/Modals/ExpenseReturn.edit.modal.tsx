@@ -38,6 +38,7 @@ const EditExpenseReturnModal = ({
     handleSubmit,
     control,
     reset,
+    getValues,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormExpenseReturn>({
@@ -80,7 +81,7 @@ const EditExpenseReturnModal = ({
           reset();
           context.invalidate();
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: FormExpenseReturn) => {
@@ -99,6 +100,7 @@ const EditExpenseReturnModal = ({
 
             <ExpenseReturnForm
               reset={reset}
+              getValues={getValues}
               setValue={setValue}
               control={control}
               errors={errors as any}

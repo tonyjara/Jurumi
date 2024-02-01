@@ -8,19 +8,19 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import ImbursementForm from '../Forms/Imbursement.form';
-import type { FormImbursement } from '@/lib/validations/imbursement.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "../../lib/dictionaries/knownErrors";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import ImbursementForm from "../Forms/Imbursement.form";
+import type { FormImbursement } from "@/lib/validations/imbursement.validate";
 import {
   defaultImbursementData,
   validateImbursement,
-} from '@/lib/validations/imbursement.validate';
+} from "@/lib/validations/imbursement.validate";
 
 const ImbursementEditModal = ({
   isOpen,
@@ -35,6 +35,7 @@ const ImbursementEditModal = ({
   const {
     handleSubmit,
     control,
+    getValues,
     reset,
     setValue,
     formState: { errors, isSubmitting },
@@ -59,12 +60,12 @@ const ImbursementEditModal = ({
 
   const { error, mutate, isLoading } = trpcClient.imbursement.edit.useMutation(
     handleUseMutationAlerts({
-      successText: 'Su desembolso ha sido editado',
+      successText: "Su desembolso ha sido editado",
       callback: () => {
         handleOnClose();
         context.imbursement.invalidate();
       },
-    })
+    }),
   );
 
   const submitFunc = async (data: FormImbursement) => {
@@ -81,6 +82,7 @@ const ImbursementEditModal = ({
           <ModalBody>
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <ImbursementForm
+              getValues={getValues}
               isEditForm={true}
               setValue={setValue}
               control={control}

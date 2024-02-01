@@ -7,6 +7,7 @@ import type {
   FieldErrorsImpl,
   UseFormSetValue,
   UseFormReset,
+  UseFormGetValues,
 } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 import { currencyOptions } from "../../lib/utils/SelectOptions";
@@ -37,6 +38,7 @@ interface formProps<T extends FieldValues> {
   reset: UseFormReset<FormExpenseReport>;
   /* isEdit?: boolean; */
   amountSpentIsBiggerThanPending: boolean;
+  getValues: UseFormGetValues<T>;
   pendingAmount: () => Decimal;
 }
 
@@ -48,6 +50,7 @@ const ExpenseReportForm = ({
   reset,
   amountSpentIsBiggerThanPending,
   pendingAmount,
+  getValues,
 }: formProps<FormExpenseReport>) => {
   const { data: session } = useSession();
   const user = session?.user;
@@ -88,14 +91,14 @@ const ExpenseReportForm = ({
 
   return (
     <VStack spacing={5}>
-      {projectId && moneyRequest && firstOption && (
+      {moneyRequest && (
         <SeedButton
           reset={reset}
           mock={() =>
             MockExpenseReport({
               moneyReqId: moneyRequest.id,
               projectId,
-              costCategoryId: firstOption.id,
+              costCategoryId: firstOption?.id ?? null,
             })
           }
         />
@@ -153,6 +156,7 @@ const ExpenseReportForm = ({
           <FormControlledTaxPayerId
             label="A la orden de:"
             control={control}
+            getValues={getValues}
             errors={errors}
             razonSocialName="reimburseTo.razonSocial"
             rucName="reimburseTo.ruc"
@@ -170,6 +174,7 @@ const ExpenseReportForm = ({
         razonSocialName="taxPayer.razonSocial"
         rucName="taxPayer.ruc"
         setValue={setValue}
+        getValues={getValues}
       />
       <FormControlledFacturaNumber
         control={control}

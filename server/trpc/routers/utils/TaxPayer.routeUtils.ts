@@ -1,7 +1,6 @@
 import type { moneyReqTaxPayer } from "@/lib/validations/moneyRequest.validate";
 import prisma from "@/server/db/client";
 import type { TaxPayer } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
 
 export const upsertTaxPayer = async ({
   input,
@@ -12,11 +11,39 @@ export const upsertTaxPayer = async ({
 }): Promise<TaxPayer> => {
   const bankInfo = input.bankInfo?.accountNumber.length ? input.bankInfo : null;
 
-  const taxPayer = await prisma?.taxPayer.upsert({
-    where: {
-      ruc: input.ruc,
-    },
-    create: {
+  if (input.id) {
+    return await prisma?.taxPayer.update({
+      where: { id: input.id },
+      data: {
+        bankInfo: bankInfo
+          ? {
+              upsert: {
+                create: {
+                  bankName: bankInfo.bankName ?? "BANCOP",
+                  accountNumber: bankInfo.accountNumber,
+                  ownerName: bankInfo.ownerName ?? "",
+                  ownerDocType: bankInfo.ownerDocType ?? "CI",
+                  ownerDoc: bankInfo.ownerDoc ?? "",
+                  type: bankInfo.type ?? "CURRENT",
+                },
+
+                update: {
+                  bankName: bankInfo.bankName,
+                  accountNumber: bankInfo.accountNumber,
+                  ownerName: bankInfo.ownerName,
+                  ownerDocType: bankInfo.ownerDocType,
+                  ownerDoc: bankInfo.ownerDoc,
+                  type: bankInfo.type,
+                },
+              },
+            }
+          : undefined,
+      },
+    });
+  }
+
+  return await prisma?.taxPayer.create({
+    data: {
       createdById: userId,
       razonSocial: input.razonSocial,
       ruc: input.ruc,
@@ -33,37 +60,5 @@ export const upsertTaxPayer = async ({
           }
         : undefined,
     },
-    update: {
-      bankInfo: bankInfo
-        ? {
-            upsert: {
-              create: {
-                bankName: bankInfo.bankName ?? "BANCOP",
-                accountNumber: bankInfo.accountNumber,
-                ownerName: bankInfo.ownerName ?? "",
-                ownerDocType: bankInfo.ownerDocType ?? "CI",
-                ownerDoc: bankInfo.ownerDoc ?? "",
-                type: bankInfo.type ?? "CURRENT",
-              },
-
-              update: {
-                bankName: bankInfo.bankName,
-                accountNumber: bankInfo.accountNumber,
-                ownerName: bankInfo.ownerName,
-                ownerDocType: bankInfo.ownerDocType,
-                ownerDoc: bankInfo.ownerDoc,
-                type: bankInfo.type,
-              },
-            },
-          }
-        : undefined,
-    },
   });
-  if (!taxPayer) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Taxpayer not created",
-    });
-  }
-  return taxPayer;
 };

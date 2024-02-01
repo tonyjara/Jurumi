@@ -10,22 +10,22 @@ import {
   Text,
   useClipboard,
   Container,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { Account, Role } from '@prisma/client';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { accountWithVerifyLink } from '../../lib/validations/account.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Account, Role } from "@prisma/client";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { knownErrors } from "../../lib/dictionaries/knownErrors";
+import { trpcClient } from "../../lib/utils/trpcClient";
+import type { accountWithVerifyLink } from "../../lib/validations/account.validate";
 import {
   defaultAccountData,
   validateAccount,
-} from '../../lib/validations/account.validate';
+} from "../../lib/validations/account.validate";
 
-import FormControlledSelect from '../FormControlled/FormControlledSelect';
-import FormControlledText from '../FormControlled/FormControlledText';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
+import FormControlledSelect from "../FormControlled/FormControlledSelect";
+import FormControlledText from "../FormControlled/FormControlledText";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 
 const CreateAccountModal = ({
   isOpen,
@@ -37,7 +37,7 @@ const CreateAccountModal = ({
   onSubmit?: any;
 }) => {
   const context = trpcClient.useContext();
-  const { onCopy, value, setValue, hasCopied } = useClipboard('');
+  const { onCopy, value, setValue, hasCopied } = useClipboard("");
 
   const {
     handleSubmit,
@@ -49,29 +49,29 @@ const CreateAccountModal = ({
     resolver: zodResolver(validateAccount),
   });
   const handleOnClose = () => {
-    setValue('');
+    setValue("");
     reset(defaultAccountData);
     onClose();
   };
   const { error, mutate, isLoading } =
     trpcClient.magicLinks.createWithSigendLink.useMutation(
       handleUseMutationAlerts({
-        successText: 'El usuario ha sido creado!',
-        callback: (returnedData: accountWithVerifyLink) => {
-          if (process.env.NODE_ENV === 'development') {
+        successText: "El usuario ha sido creado!",
+        callback: (returnedData) => {
+          if (process.env.NODE_ENV === "development") {
             const verifyLink =
-              returnedData.accountVerificationLinks[0]?.verificationLink;
+              returnedData?.accountVerificationLinks[0]?.verificationLink;
             if (!verifyLink) return;
             setValue(verifyLink);
           }
           reset(defaultAccountData);
           context.magicLinks.invalidate();
           context.account.invalidate();
-          if (process.env.NODE_ENV === 'production') {
+          if (process.env.NODE_ENV === "production") {
             handleOnClose();
           }
         },
-      })
+      }),
     );
 
   const submitFunc = async (data: Account) => {
@@ -79,10 +79,10 @@ const CreateAccountModal = ({
   };
 
   const roleOptions: { value: Role; label: string }[] = [
-    { value: 'USER', label: 'Usuario' },
-    { value: 'MODERATOR', label: 'Moderador' },
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'OBSERVER', label: 'Observaror' },
+    { value: "USER", label: "Usuario" },
+    { value: "MODERATOR", label: "Moderador" },
+    { value: "ADMIN", label: "Admin" },
+    { value: "OBSERVER", label: "Observaror" },
   ];
 
   return (
@@ -93,18 +93,18 @@ const CreateAccountModal = ({
           <ModalHeader>Crear un usuario</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text color={'gray.500'} mb={'20px'}>
+            <Text color={"gray.500"} mb={"20px"}>
               Obs: Las invitaciones generadas al crear un usuario tienen una
               validés de 1 hora. Pasado el tiempo de validés se puede generar un
               nuevo link desde Usuarios/Links de verificación
             </Text>
             {value.length > 0 && (
-              <Container textAlign={'center'}>
-                <Text fontWeight={'bold'} fontSize={'xl'}>
+              <Container textAlign={"center"}>
+                <Text fontWeight={"bold"} fontSize={"xl"}>
                   Comparte el link con la persona que quieres invitar.
                 </Text>
                 <Button onClick={onCopy} mb={10} mt={1}>
-                  {hasCopied ? 'Copiado!' : 'Copiar link de invitación'}
+                  {hasCopied ? "Copiado!" : "Copiar link de invitación"}
                 </Button>
               </Container>
             )}

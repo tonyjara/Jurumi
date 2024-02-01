@@ -18,16 +18,16 @@ export const myToast = {
           duration: 3000,
           icon: "🔥",
         },
-      }
+      },
     ),
 };
 
-export const handleUseMutationAlerts = ({
+export const handleUseMutationAlerts = <T>({
   successText,
   callback,
 }: {
   successText: string;
-  callback?: (x: any, y: any, z: any) => void;
+  callback?: (x: T, y: any, z: any) => void;
 }) => {
   const loadToast = () => toast.loading("Un momento porfavor...");
   return {
@@ -36,7 +36,7 @@ export const handleUseMutationAlerts = ({
       myToast.error(knownErrors(error.message));
     },
     //data is the return from the event
-    onSuccess: (data: any, variables: any, context: any) => {
+    onSuccess: (data: T, variables: any, context: any) => {
       toast.dismiss();
       myToast.success(successText);
       callback && callback(data, variables, context);

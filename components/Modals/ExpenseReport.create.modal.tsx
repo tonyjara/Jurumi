@@ -8,23 +8,23 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
-import { trpcClient } from '@/lib/utils/trpcClient';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import type { FormExpenseReport } from '@/lib/validations/expenseReport.validate';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
+import { trpcClient } from "@/lib/utils/trpcClient";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import type { FormExpenseReport } from "@/lib/validations/expenseReport.validate";
 import {
   defaultExpenseReportData,
   validateExpenseReport,
-} from '@/lib/validations/expenseReport.validate';
-import ExpenseReportForm from '../Forms/ExpenseReport.form';
-import { calculateMoneyReqPendingAmount } from '@/lib/utils/TransactionUtils';
-import { decimalFormat } from '@/lib/utils/DecimalHelpers';
-import { CompleteMoneyReqHome } from '@/pageContainers/home/requests/home.requests.types';
-import Decimal from 'decimal.js';
+} from "@/lib/validations/expenseReport.validate";
+import ExpenseReportForm from "../Forms/ExpenseReport.form";
+import { calculateMoneyReqPendingAmount } from "@/lib/utils/TransactionUtils";
+import { decimalFormat } from "@/lib/utils/DecimalHelpers";
+import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
+import Decimal from "decimal.js";
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -41,6 +41,7 @@ const CreateExpenseReportModal = ({
     control,
     reset,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormExpenseReport>({
     defaultValues: defaultExpenseReportData,
@@ -55,11 +56,11 @@ const CreateExpenseReportModal = ({
 
   useEffect(() => {
     if (moneyRequest && isOpen && org) {
-      setValue('projectId', moneyRequest.projectId);
-      setValue('moneyRequestId', moneyRequest.id);
-      setValue('exchangeRate', org.dolarToGuaraniExchangeRate);
+      setValue("projectId", moneyRequest.projectId);
+      setValue("moneyRequestId", moneyRequest.id);
+      setValue("exchangeRate", org.dolarToGuaraniExchangeRate);
       if (moneyRequest.currency !== defaultExpenseReportData.currency) {
-        setValue('wasConvertedToOtherCurrency', true);
+        setValue("wasConvertedToOtherCurrency", true);
       }
     }
     return () => {};
@@ -69,43 +70,43 @@ const CreateExpenseReportModal = ({
   const { error, mutate, isLoading } =
     trpcClient.expenseReport.create.useMutation(
       handleUseMutationAlerts({
-        successText: 'Su rendición ha sido creada!',
+        successText: "Su rendición ha sido creada!",
         callback: () => {
           handleOnClose();
           context.moneyRequest.invalidate();
         },
-      })
+      }),
     );
 
-  const currency = useWatch({ control, name: 'currency' });
-  const exchangeRate = useWatch({ control, name: 'exchangeRate' });
+  const currency = useWatch({ control, name: "currency" });
+  const exchangeRate = useWatch({ control, name: "exchangeRate" });
 
   const pendingAmount = () =>
     calculateMoneyReqPendingAmount({ moneyRequest, currency, exchangeRate });
   const formatedPendingAmount = () => decimalFormat(pendingAmount(), currency);
-  const amountSpent = useWatch({ control, name: 'amountSpent' }) as
+  const amountSpent = useWatch({ control, name: "amountSpent" }) as
     | Decimal
     | string
     | number;
 
   // When deleting the input field completely this solves error that crashes the app
   const amountSpentIsBiggerThanPending =
-    typeof amountSpent === 'object'
+    typeof amountSpent === "object"
       ? !!amountSpent.greaterThan(pendingAmount())
       : false;
 
   const watchAmountIsBigger = useWatch({
     control,
-    name: 'spentAmountIsGraterThanMoneyRequest',
+    name: "spentAmountIsGraterThanMoneyRequest",
   });
 
   useEffect(() => {
     if (amountSpentIsBiggerThanPending && !watchAmountIsBigger) {
-      setValue('spentAmountIsGraterThanMoneyRequest', true);
+      setValue("spentAmountIsGraterThanMoneyRequest", true);
     }
 
     if (!amountSpentIsBiggerThanPending && watchAmountIsBigger) {
-      setValue('spentAmountIsGraterThanMoneyRequest', false);
+      setValue("spentAmountIsGraterThanMoneyRequest", false);
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,6 +137,7 @@ const CreateExpenseReportModal = ({
             <ExpenseReportForm
               reset={reset}
               amountSpentIsBiggerThanPending={amountSpentIsBiggerThanPending}
+              getValues={getValues}
               moneyRequest={moneyRequest}
               setValue={setValue}
               control={control}

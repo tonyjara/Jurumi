@@ -1,6 +1,7 @@
-import * as pdfjsDist from "pdfjs-dist";
+// import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs";
+// GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-pdfjsDist.GlobalWorkerOptions.workerSrc = "/assets/pdf.worker.min.mjs";
 import {
   FormControl,
   FormHelperText,
@@ -15,7 +16,7 @@ import {
   Flex,
   Image,
 } from "@chakra-ui/react";
-import React, { useCallback, useId, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type {
   Control,
@@ -30,6 +31,7 @@ import { compressCoverPhoto } from "../../lib/utils/ImageCompressor";
 import { myToast } from "../Toasts & Alerts/MyToast";
 import { v4 as uuidV4 } from "uuid";
 import axios from "axios";
+import { Canvas } from "@napi-rs/canvas";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -86,45 +88,45 @@ const FormControlledImageUpload = <T extends FieldValues>(
     });
   };
 
-  const convertPdfToImages = async (file: File, fileName: string) => {
-    const images: any[] = [];
-    const data = (await readFileData(file)) as
-      | string
-      | ArrayBuffer
-      | URL
-      | null;
-    if (!data) return;
-
-    const pdf = await pdfjsDist.getDocument(data).promise;
-
-    const canvas = document.createElement("canvas");
-    for (let i = 0; i < pdf.numPages; i++) {
-      const page = await pdf.getPage(i + 1);
-      const viewport = page.getViewport({ scale: 1 });
-      const context = canvas.getContext("2d");
-      if (!context) return;
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      await page.render({ canvasContext: context, viewport: viewport }).promise;
-      // const blob = canvas.toBlob(function (blob) {
-      //   return blob;
-      // }, "image/png");
-      const blob = (await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/png", 0.8),
-      )) as any | null;
-      if (!blob) return;
-      blob.name = fileName;
-
-      images.push(blob);
-    }
-    canvas.remove();
-    return images[0] ?? null;
-  };
+  // const convertPdfToImages = async (file: File, fileName: string) => {
+  //   const images: any[] = [];
+  //   const data = (await readFileData(file)) as
+  //     | string
+  //     | ArrayBuffer
+  //     | URL
+  //     | null;
+  //   if (!data) return;
+  //
+  //   const pdf = await getDocument(data).promise;
+  //
+  //   // const canvas = document.createElement("canvas");
+  //   const canvas = new Canvas(200, 200);
+  //
+  //   for (let i = 0; i < pdf.numPages; i++) {
+  //     const page = await pdf.getPage(i + 1);
+  //     const viewport = page.getViewport({ scale: 1 });
+  //     const context = canvas.getContext("2d");
+  //     if (!context) return;
+  //     canvas.height = viewport.height;
+  //     canvas.width = viewport.width;
+  //
+  //     // await page.render({ canvasContext: context, viewport: viewport }).promise;
+  //     // const blob = (await new Promise((resolve) =>
+  //     //   canvas.toBlob(resolve, "image/png", 0.8),
+  //     // )) as any | null;
+  //     // if (!blob) return;
+  //     // blob.name = fileName;
+  //     //
+  //     // images.push(blob);
+  //   }
+  //   // canvas.remove();
+  //   return images[0] ?? null;
+  // };
 
   const handleImageUpload = async (files: File[]) => {
     try {
       if (!files[0]) return;
-      const isPdf = files[0].type === "application/pdf";
+      // const isPdf = files[0].type === "application/pdf";
 
       setUploading(true);
       setImageIsLoading && setImageIsLoading(true);
@@ -135,18 +137,16 @@ const FormControlledImageUpload = <T extends FieldValues>(
         lastModified: getFile.lastModified,
       });
 
-      const processedFile = isPdf
-        ? await convertPdfToImages(file, imageUuid)
-        : await compressCoverPhoto(file);
-
-      // setPreview(processedFile);
-      // const compressed = await compressCoverPhoto(processedFile);
+      const compressedImage = await compressCoverPhoto(file);
+      // const processedFile = isPdf
+      //   ? await convertPdfToImages(file, imageUuid)
+      //   : await compressCoverPhoto(file);
 
       const req = await axios("/api/get-connection-string");
       const { connectionString } = req.data;
 
       const url = await uploadFileToBlob(
-        processedFile,
+        compressedImage,
         userId,
         connectionString,
       );
@@ -169,7 +169,7 @@ const FormControlledImageUpload = <T extends FieldValues>(
     multiple: false,
     accept: {
       "image/*": [".png", ".gif", ".jpeg", ".jpg"],
-      "application/pdf": [".pdf"],
+      // "application/pdf": [".pdf"],
     },
   });
   const activeBg = useColorModeValue("gray.100", "gray.600");

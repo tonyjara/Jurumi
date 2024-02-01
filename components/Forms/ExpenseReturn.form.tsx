@@ -7,6 +7,7 @@ import type {
   FieldErrorsImpl,
   UseFormSetValue,
   UseFormReset,
+  UseFormGetValues,
 } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 import { currencyOptions } from "../../lib/utils/SelectOptions";
@@ -32,6 +33,7 @@ import Decimal from "decimal.js";
 interface formProps<T extends FieldValues> {
   control: Control<T>;
   errors: FieldErrorsImpl<T>;
+  getValues: UseFormGetValues<T>;
   setValue: UseFormSetValue<T>;
   moneyRequest?: CompleteMoneyReqHome;
   reset: UseFormReset<FormExpenseReturn>;
