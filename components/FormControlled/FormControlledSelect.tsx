@@ -26,6 +26,7 @@ interface InputProps<T extends FieldValues> {
   isClearable?: boolean;
   error?: string;
   onChangeMw?: () => void; //middlewarish func
+  onAfterChange?: (val: any) => void; //execute after change and receive the value
   isMulti?: boolean;
   optionLabel?: string;
   optionValue?: string;
@@ -50,6 +51,7 @@ const FormControlledSelect = <T extends FieldValues>({
   optionValue,
   disable,
   hidden,
+  onAfterChange,
 }: InputProps<T>) => {
   const handleOnChange = (e: any, field: ControllerRenderProps<T, Path<T>>) => {
     if (!isMulti) {
@@ -109,6 +111,7 @@ const FormControlledSelect = <T extends FieldValues>({
             onChange={(e) => {
               onChangeMw && onChangeMw();
               handleOnChange(e, field);
+              onAfterChange && onAfterChange(e);
             }}
             chakraStyles={chakraStyles}
             value={value ? handleValue({ value } as any) : handleValue(field)}

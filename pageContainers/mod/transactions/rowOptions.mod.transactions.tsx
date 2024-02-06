@@ -4,6 +4,8 @@ import type { Transaction } from "@prisma/client";
 import { useRouter } from "next/router";
 import React from "react";
 import { TransactionComplete } from "./transactions.types";
+import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import { trpcClient } from "@/lib/utils/trpcClient";
 
 const RowOptionsModTransactions = ({
   x,
@@ -23,6 +25,8 @@ const RowOptionsModTransactions = ({
   >;
 }) => {
   const router = useRouter();
+  const context = trpcClient.useContext();
+  const isDevEnv = process.env.NODE_ENV === "development";
   const closeMenu = () => {
     setMenuData({ x: 0, y: 0, rowData: null });
   };
@@ -35,6 +39,15 @@ const RowOptionsModTransactions = ({
     return null;
   };
 
+  const { mutate: deleteById } = trpcClient.transaction.deleteById.useMutation(
+    handleUseMutationAlerts({
+      successText: "Se ha eliminado la transacción correctamente",
+      callback: () => {
+        context.invalidate();
+        closeMenu();
+      },
+    }),
+  );
   return (
     <>
       {!!x.cancellationId ||
@@ -63,20 +76,21 @@ const RowOptionsModTransactions = ({
       >
         Editar
       </MenuItem>
-      {/* //DO NOT DELETE TRANSACTIONS DIRECTLY */}
-      {/**/}
-      {/* <MenuItem */}
-      {/*     isDisabled={!!x.cancellationId || x.isCancellation} */}
-      {/*     onClick={() => */}
-      {/*         deleteById({ */}
-      {/*             id: x.id, */}
-      {/*             moneyAccountId: x.moneyAccountId, */}
-      {/*             costCategoryId: x.costCategoryId, */}
-      {/*         }) */}
-      {/*     } */}
-      {/* > */}
-      {/*     Eliminar */}
-      {/* </MenuItem> */}
+      {/* //DO NOT DELETE TRANSACTIONS DIRECTLY IN PROD */}
+
+      {isDevEnv && (
+        <MenuItem
+          onClick={() =>
+            deleteById({
+              id: x.id,
+              moneyAccountId: x.moneyAccountId,
+              costCategoryId: x.costCategoryId,
+            })
+          }
+        >
+          Eliminar
+        </MenuItem>
+      )}
 
       <RowOptionsJsonView x={x} />
     </>

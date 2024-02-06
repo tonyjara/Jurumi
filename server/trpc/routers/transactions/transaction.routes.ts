@@ -3,12 +3,14 @@ import { validateTransactionEdit } from "@/lib/validations/transaction.edit.vali
 import {
   adminModObserverProcedure,
   adminModProcedure,
+  adminProcedure,
   router,
 } from "../../initTrpc";
 import { handleOrderBy } from "../utils/Sorting.routeUtils";
 import prisma from "@/server/db/client";
 import { createManyTransactionsForMoneyRequests } from "./createMany.transaction.routes";
 import { completeTransactionsArgs } from "@/pageContainers/mod/transactions/transactions.types";
+import { transactionRouteUtils } from "../utils/Transaction.routeUtils";
 
 export const transactionsRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
@@ -119,26 +121,30 @@ export const transactionsRouter = router({
     }),
 
   /* DO NOT DELETE TRANSACTIONS DIRECTLY */
-  /* deleteById: adminProcedure */
-  /*    .input( */
-  /*      z.object({ */
-  /*        id: z.number(), */
-  /*        moneyAccountId: z.string().nullable(), */
-  /*        costCategoryId: z.string().nullable(), */
-  /*      }) */
-  /*    ) */
-  /*    .mutation(async ({ input }) => { */
-  /*      //for the moment being it will only allow delete if it's the last transaction. */
-  /**/
-  /*      await transactionRouteUtils.checkIfIsLastTransaction({ */
-  /*        moneyAccountId: input.moneyAccountId, */
-  /*        costCategoryId: input.costCategoryId, */
-  /*        transactionId: input.id, */
-  /*      }); */
-  /**/
-  /*      const x = await prisma?.transaction.delete({ */
-  /*        where: { id: input.id }, */
-  /*      }); */
-  /*      return x; */
-  /*    }), */
+  deleteById: adminProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        moneyAccountId: z.string().nullable(),
+        costCategoryId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const isDevEnv = process.env.NODE_ENV === "development";
+      if (!isDevEnv)
+        throw new Error("You can't delete transactions in production");
+
+      //for the moment being it will only allow delete if it's the last transaction.
+
+      await transactionRouteUtils.checkIfIsLastTransaction({
+        moneyAccountId: input.moneyAccountId,
+        costCategoryId: input.costCategoryId,
+        transactionId: input.id,
+      });
+
+      const x = await prisma?.transaction.delete({
+        where: { id: input.id },
+      });
+      return x;
+    }),
 });

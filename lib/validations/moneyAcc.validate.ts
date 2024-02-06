@@ -1,15 +1,15 @@
-import type { BankInfo, MoneyAccount } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import type { BankInfo, MoneyAccount } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   BankAccountType,
   BankDocType,
   BankNamesPy,
   Currency,
-} from '@prisma/client';
-import { z } from 'zod';
-import { stringMinMax, stringReqMinMax } from '../utils/ValidationHelpers';
+} from "@prisma/client";
+import { z } from "zod";
+import { stringMinMax, stringReqMinMax } from "../utils/ValidationHelpers";
 
-export const BankInfoModel: z.ZodType<Omit<BankInfo, 'moneyAccountId'>> =
+export const BankInfoModel: z.ZodType<Omit<BankInfo, "moneyAccountId">> =
   z.lazy(() =>
     z.object({
       bankName: z.nativeEnum(BankNamesPy),
@@ -21,7 +21,7 @@ export const BankInfoModel: z.ZodType<Omit<BankInfo, 'moneyAccountId'>> =
       country: z.string(),
       city: z.string(),
       type: z.nativeEnum(BankAccountType),
-    })
+    }),
   );
 export type FormBankInfo = z.infer<typeof BankInfoModel>;
 
@@ -30,10 +30,10 @@ export interface FormMoneyAccWithBankInfo extends MoneyAccount {
 }
 export type FormMoneyAccount = Omit<
   FormMoneyAccWithBankInfo,
-  'initialBalance'
+  "initialBalance"
 > & {
   initialBalance?: any;
-  organizationId: string;
+  // organizationId: string;
 };
 
 export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
@@ -44,9 +44,9 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
       updatedAt: z.date().nullable(),
       createdById: z.string(),
       displayName: stringReqMinMax(
-        'Favor ingrese un nombre para su cuenta',
+        "Favor ingrese un nombre para su cuenta",
         3,
-        64
+        64,
       ),
       updatedById: z.string().nullable(),
       isCashAccount: z.boolean(),
@@ -55,7 +55,7 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
       archived: z.boolean(),
       softDeleted: z.boolean(),
       bankInfo: BankInfoModel.nullable(),
-      organizationId: z.string().min(2, 'Favor seleccione una organización.'),
+      // organizationId: z.string().min(2, 'Favor seleccione una organización.'),
     })
     .superRefine((val, ctx) => {
       if (
@@ -64,16 +64,16 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
         val.bankInfo?.country.length < 3
       ) {
         ctx.addIssue({
-          path: ['bankInfo.country'],
+          path: ["bankInfo.country"],
           code: z.ZodIssueCode.custom,
-          message: 'Favor ingrese el nombre de un país.',
+          message: "Favor ingrese el nombre de un país.",
         });
       }
       if (!val.isCashAccount && val.bankInfo && val.bankInfo?.city.length < 2) {
         ctx.addIssue({
-          path: ['bankInfo.city'],
+          path: ["bankInfo.city"],
           code: z.ZodIssueCode.custom,
-          message: 'Favor ingrese el nombre de una ciudad.',
+          message: "Favor ingrese el nombre de una ciudad.",
         });
       }
       if (
@@ -82,9 +82,9 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
         val.bankInfo?.ownerName.length < 3
       ) {
         ctx.addIssue({
-          path: ['bankInfo.ownerName'],
+          path: ["bankInfo.ownerName"],
           code: z.ZodIssueCode.custom,
-          message: 'Favor ingrese el nombre del titular.',
+          message: "Favor ingrese el nombre del titular.",
         });
       }
       if (
@@ -93,38 +93,38 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
         val.bankInfo?.accountNumber.length < 3
       ) {
         ctx.addIssue({
-          path: ['bankInfo.accountNumber'],
+          path: ["bankInfo.accountNumber"],
           code: z.ZodIssueCode.custom,
-          message: 'Favor ingrese el número de cuenta.',
+          message: "Favor ingrese el número de cuenta.",
         });
       }
-    })
+    }),
 );
 
 const defaultBankInfoData: FormBankInfo = {
-  bankName: 'ITAU',
-  type: 'SAVINGS',
-  accountNumber: '',
-  ownerName: '',
-  ownerDocType: 'CI',
-  ownerDoc: '',
-  country: '',
-  city: '',
+  bankName: "ITAU",
+  type: "SAVINGS",
+  accountNumber: "",
+  ownerName: "",
+  ownerDocType: "CI",
+  ownerDoc: "",
+  country: "",
+  city: "",
   ownerContactNumber: null,
 };
 
 export const defaultMoneyAccData: FormMoneyAccount = {
-  id: '',
+  id: "",
   createdAt: new Date(),
   updatedAt: null,
-  createdById: '',
+  createdById: "",
   updatedById: null,
   isCashAccount: false,
-  currency: 'PYG',
+  currency: "PYG",
   initialBalance: new Prisma.Decimal(0),
-  displayName: '',
+  displayName: "",
   archived: false,
   softDeleted: false,
   bankInfo: defaultBankInfoData,
-  organizationId: '',
+  // organizationId: "",
 };

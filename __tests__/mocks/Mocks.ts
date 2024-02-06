@@ -31,11 +31,7 @@ const bankInfo: () => FormBankInfo = () => {
   return x;
 };
 
-export const moneyAccMock = ({
-  organizationId,
-}: {
-  organizationId: string;
-}) => {
+export const moneyAccMock = () => {
   const x: FormMoneyAccount = {
     id: "",
     createdAt: new Date(),
@@ -51,7 +47,6 @@ export const moneyAccMock = ({
     archived: false,
     softDeleted: false,
     bankInfo: bankInfo(),
-    organizationId,
   };
   return x;
 };
@@ -179,6 +174,7 @@ export const TransactionCreateMock = () => {
     transactions: [
       {
         currency: "PYG",
+        concept: faker.lorem.sentence().substring(0, 50),
         transactionAmount: new Prisma.Decimal(0),
         moneyAccountId: "",
         exchangeRate: 7000,
@@ -376,6 +372,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
         wasConvertedToOtherCurrency: false,
         updatedById: null,
         currency: "PYG",
+        concept: "",
         openingBalance: new Prisma.Decimal(10000000),
         currentBalance: new Prisma.Decimal(8318932),
         transactionAmount: new Prisma.Decimal(1681068),
@@ -401,6 +398,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
       {
         id: 118,
         createdAt: new Date(),
+        concept: "",
         updatedAt: null,
         updatedById: null,
         exchangeRate: 7000,

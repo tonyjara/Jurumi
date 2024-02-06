@@ -22,6 +22,7 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
         createdAt: z.date(),
         updatedAt: z.date().nullable(),
         accountId: z.string(),
+        concept: z.string(),
         updatedById: z.string().nullable(),
         currency: z.nativeEnum(Currency),
         isCancellation: z.boolean(),
@@ -68,13 +69,14 @@ export const validateTransactionEdit: z.ZodType<FormTransactionEdit> = z.lazy(
               "La transacción debe estar relacionada con un desembolso, retorno o una solicitud.",
           });
         }
-      })
+      }),
 );
 
 export const defaultTransactionEditValues: FormTransactionEdit = {
   id: 0,
   createdAt: new Date(),
   updatedAt: null,
+  concept: "",
   accountId: "",
   updatedById: null,
   moneyAccountOffsetId: null,

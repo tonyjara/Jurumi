@@ -12,8 +12,12 @@ import {
 import prisma from "@/server/db/client";
 import { validateMoneyAccountOffset } from "@/lib/validations/moneyAccountOffset.validate";
 import { handleOrderBy } from "./utils/Sorting.routeUtils";
-import { cancelTransactionsAndRevertBalance } from "./utils/Cancelations.routeUtils";
 import { TRPCError } from "@trpc/server";
+import { validateMoneyTransfer } from "@/lib/validations/moneyTransfer.validate";
+import {
+  createSearchableImage,
+  getMoneyAccWithLastTx,
+} from "./utils/MoneyAcc.routeUtils";
 
 export const moneyAccRouter = router({
   getMany: adminModObserverProcedure.query(async () => {
@@ -43,8 +47,8 @@ export const moneyAccRouter = router({
     });
   }),
 
-  countccountOffsets: adminModObserverProcedure.query(
-    async () => prisma?.moneyAccountOffset.count(),
+  countccountOffsets: adminModObserverProcedure.query(async () =>
+    prisma?.moneyAccountOffset.count(),
   ),
   getManyAccountOffsets: adminModObserverProcedure
     .input(
@@ -101,6 +105,18 @@ export const moneyAccRouter = router({
   create: adminModProcedure
     .input(validateMoneyAccount)
     .mutation(async ({ input: i, ctx }) => {
+      const user = ctx.session.user;
+      const prefs = await prisma.preferences.findFirstOrThrow({
+        where: {
+          accountId: user.id,
+        },
+      });
+      if (!prefs.selectedOrganization) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "No organization selected",
+        });
+      }
       const bankInfo: FormBankInfo | undefined = i.bankInfo
         ? {
             bankName: i.bankInfo.bankName,
@@ -123,7 +139,7 @@ export const moneyAccRouter = router({
           currency: i.currency,
           initialBalance: new Prisma.Decimal(i.initialBalance),
           bankInfo: i.isCashAccount ? undefined : { create: bankInfo },
-          organization: { connect: { id: i.organizationId } },
+          organization: { connect: { id: prefs.selectedOrganization } },
         },
       });
       return x;
@@ -337,6 +353,102 @@ export const moneyAccRouter = router({
           where: { id: offsetTx.id },
           data: {
             cancellationId: cancellation.id,
+          },
+        });
+      });
+    }),
+  transferBetweenAcounts: adminModProcedure
+    .input(validateMoneyTransfer)
+    .mutation(async ({ input: i, ctx }) => {
+      await prisma.$transaction(async (txCtx) => {
+        const user = ctx.session.user;
+
+        const image = await createSearchableImage({
+          accountId: user.id,
+          imageName: i.searchableImage?.imageName,
+          url: i.searchableImage?.url,
+          txCtx,
+        });
+
+        const isDifferentCurrency = i.fromCurrency !== i.toCurrency;
+
+        //FROM DATA
+        const fromAccWithLastTx = await getMoneyAccWithLastTx({
+          txCtx,
+          moneyAccountId: i.fromAccountId,
+        });
+        const lastFromTx = fromAccWithLastTx.transactions[0];
+
+        const fromOpeningBalance = lastFromTx
+          ? lastFromTx.currentBalance
+          : fromAccWithLastTx.initialBalance;
+
+        const currentFromBalance = lastFromTx
+          ? lastFromTx.currentBalance.sub(i.amount)
+          : fromAccWithLastTx.initialBalance.sub(i.amount);
+
+        //FROM TRANSACTION
+        await txCtx.transaction.create({
+          data: {
+            transactionAmount: i.amount,
+            concept: `Transfer to ${i.toAccountId} with exchange rate ${i.exchangeRate} and amount ${i.amount} ${i.fromCurrency}`,
+            accountId: user.id,
+            currency: fromAccWithLastTx.currency,
+            openingBalance: fromOpeningBalance,
+            currentBalance: currentFromBalance,
+            transactionType: "MONEY_ACCOUNT",
+            wasConvertedToOtherCurrency: isDifferentCurrency,
+            exchangeRate: i.exchangeRate,
+            moneyAccountId: i.fromAccountId,
+            searchableImage: image
+              ? {
+                  connect: { id: image.id },
+                }
+              : {},
+          },
+        });
+        //TO DATA
+
+        const toAccWithLastTx = await getMoneyAccWithLastTx({
+          txCtx,
+          moneyAccountId: i.toAccountId,
+        });
+        const lastToTx = toAccWithLastTx.transactions[0];
+
+        const amountToDeposit = () => {
+          if (!isDifferentCurrency) return i.amount;
+          if (toAccWithLastTx.currency === "USD") {
+            return new Prisma.Decimal(i.amount).dividedBy(i.exchangeRate);
+          }
+          return new Prisma.Decimal(i.amount).mul(i.exchangeRate);
+        };
+
+        const toOpeningBalance = lastToTx
+          ? lastToTx.currentBalance
+          : toAccWithLastTx.initialBalance;
+
+        const currentToBalance = lastToTx
+          ? lastToTx.currentBalance.add(amountToDeposit())
+          : toAccWithLastTx.initialBalance.add(amountToDeposit());
+
+        //TO TRANSACTION
+        await txCtx.transaction.create({
+          data: {
+            transactionAmount: amountToDeposit(),
+            accountId: user.id,
+            concept: `Transfer from ${i.fromAccountId} with exchange rate ${i.exchangeRate} and amount ${i.amount} ${i.fromCurrency}`,
+            currency: toAccWithLastTx.currency,
+            openingBalance: toOpeningBalance,
+            currentBalance: currentToBalance,
+            transactionType: "MONEY_ACCOUNT",
+            wasConvertedToOtherCurrency: isDifferentCurrency,
+            exchangeRate: i.exchangeRate,
+            moneyAccountId: i.toAccountId,
+            searchableImage: image
+              ? {
+                  connect: { id: image.id },
+                }
+              : {},
           },
         });
       });

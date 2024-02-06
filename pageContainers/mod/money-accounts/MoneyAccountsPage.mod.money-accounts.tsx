@@ -33,6 +33,7 @@ import TransactionsTable from "../transactions/TransactionsTable";
 import AccordionOptionsMoneyAccountsPage from "./accordionOptions.mod.money-accounts";
 import { customScrollbar } from "styles/CssUtils";
 import CreateMoneyAccountOffsetModal from "@/components/Modals/MoneyAccountOffset.create.modal";
+import CreateMoneyAccTransferModal from "@/components/Modals/MoneyTransfer.create.modal";
 
 export type MoneyAccWithTransactions = MoneyAccount & {
   bankInfo: BankInfo | null;
@@ -89,6 +90,12 @@ const MoneyAccountsPage = () => {
     onClose: onMoneyAccClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isMoneyAccTransferOpen,
+    onOpen: onMoneyAccTransferOpen,
+    onClose: onMoneyAccTransferClose,
+  } = useDisclosure();
+
   useEffect(() => {
     if (editData && !isEditOpen) {
       onEditOpen();
@@ -107,6 +114,10 @@ const MoneyAccountsPage = () => {
     {
       onClick: onMoneyAccOpen,
       label: "Crear cuenta",
+    },
+    {
+      onClick: onMoneyAccTransferOpen,
+      label: "Transferir entre cuentas",
     },
   ];
 
@@ -199,6 +210,10 @@ const MoneyAccountsPage = () => {
         <CreateMoneyAccModal
           isOpen={isMoneyAccOpen}
           onClose={onMoneyAccClose}
+        />
+        <CreateMoneyAccTransferModal
+          isOpen={isMoneyAccTransferOpen}
+          onClose={onMoneyAccTransferClose}
         />
         <CreateMoneyAccountOffsetModal
           moneyAccount={offsetData}
