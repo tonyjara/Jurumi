@@ -73,6 +73,9 @@ const FormControlledMoneyInput = <T extends FieldValues>({
             <CurrencyInput
               disabled={disable}
               id="input-example"
+              onFocus={(e) => {
+                e.target.select();
+              }}
               customInput={Input}
               name={name}
               value={field.value}

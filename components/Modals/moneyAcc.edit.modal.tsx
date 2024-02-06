@@ -8,21 +8,21 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import { knownErrors } from '@/lib/dictionaries/knownErrors';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { knownErrors } from "@/lib/dictionaries/knownErrors";
 
-import { trpcClient } from '@/lib/utils/trpcClient';
-import type { FormMoneyAccount } from '@/lib/validations/moneyAcc.validate';
+import { trpcClient } from "@/lib/utils/trpcClient";
+import type { FormMoneyAccount } from "@/lib/validations/moneyAcc.validate";
 import {
   defaultMoneyAccData,
   validateMoneyAccount,
-} from '@/lib/validations/moneyAcc.validate';
-import { handleUseMutationAlerts } from '../Toasts & Alerts/MyToast';
-import EditMoneyAccForm from '../Forms/MoneyAcc.edit.form';
-import type { MoneyAccount } from '@prisma/client';
+} from "@/lib/validations/moneyAcc.validate";
+import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
+import EditMoneyAccForm from "../Forms/MoneyAcc.edit.form";
+import type { MoneyAccount } from "@prisma/client";
 
 const EditMoneyAccModal = ({
   isOpen,
@@ -58,16 +58,16 @@ const EditMoneyAccModal = ({
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
-  const isCashAccount = useWatch({ control, name: 'isCashAccount' });
+  const isCashAccount = useWatch({ control, name: "isCashAccount" });
 
   const { error, mutate, isLoading } = trpcClient.moneyAcc.edit.useMutation(
     handleUseMutationAlerts({
-      successText: 'Su cuenta ha sido editada!',
+      successText: "Su cuenta ha sido editada!",
       callback: () => {
         handleOnClose();
         context.moneyAcc.invalidate();
       },
-    })
+    }),
   );
 
   const submitFunc = async (data: FormMoneyAccount) => {

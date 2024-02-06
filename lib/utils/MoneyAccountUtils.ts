@@ -1,11 +1,11 @@
-import type { BankAccsWithLastTx } from '@/components/OrgCharts/CardGroups/BankAcc.cardGroup';
-import type { CashAccsWithLastTx } from '@/components/OrgCharts/CardGroups/PettyCash.cardGroup';
-import type { Currency } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import type { BankAccsWithLastTx } from "@/components/OrgCharts/CardGroups/BankAcc.cardGroup";
+import type { CashAccsWithLastTx } from "@/components/OrgCharts/CardGroups/PettyCash.cardGroup";
+import type { Currency } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export const reduceBankAccValues = (
   moneyAccs: BankAccsWithLastTx[],
-  currency: Currency
+  currency: Currency,
 ) => {
   return moneyAccs.reduce((acc, moneyAcc) => {
     if (moneyAcc.currency === currency) {
@@ -19,7 +19,7 @@ export const reduceBankAccValues = (
 };
 export const reduceCashAccValues = (
   moneyAccs: CashAccsWithLastTx[],
-  currency: Currency
+  currency: Currency,
 ) => {
   return moneyAccs.reduce((acc, moneyAcc) => {
     if (moneyAcc.currency === currency) {

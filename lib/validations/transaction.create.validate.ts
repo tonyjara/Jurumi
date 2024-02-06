@@ -11,6 +11,7 @@ type withMoney = Omit<
   Transaction,
   | "openingBalance"
   | "transactionAmount"
+  | "concept"
   | "currentBalance"
   | "currency"
   | "moneyAccountId"
@@ -26,6 +27,7 @@ export interface TransactionField {
   currency: Currency;
   transactionAmount?: any;
   moneyAccountId: string;
+  concept: string;
   wasConvertedToOtherCurrency: boolean;
   exchangeRate: number;
 }
@@ -40,6 +42,7 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         transactions: z.array(
           z.object({
             currency: z.nativeEnum(Currency),
+            concept: z.string(),
             transactionAmount: z
               .any()
               .transform((value) => new Prisma.Decimal(value)),
@@ -123,6 +126,7 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   transactions: [
     {
       currency: "PYG",
+      concept: "",
       transactionAmount: new Prisma.Decimal(0),
       moneyAccountId: "",
       exchangeRate: 7000,
@@ -167,6 +171,7 @@ export const transactionMock: (
         //@ts-ignore
         moneyAccountId: moneyAccOptions(currency)[0]?.value ?? "",
         currency,
+        concept: faker.lorem.sentence().substring(0, 50),
         exchangeRate: 7000,
         wasConvertedToOtherCurrency: false,
       },

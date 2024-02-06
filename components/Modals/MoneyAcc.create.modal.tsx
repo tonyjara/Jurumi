@@ -8,22 +8,22 @@ import {
   ModalFooter,
   Button,
   Text,
-} from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import { knownErrors } from '../../lib/dictionaries/knownErrors';
+} from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { knownErrors } from "../../lib/dictionaries/knownErrors";
 
-import { trpcClient } from '../../lib/utils/trpcClient';
-import type { FormMoneyAccount } from '../../lib/validations/moneyAcc.validate';
+import { trpcClient } from "../../lib/utils/trpcClient";
+import type { FormMoneyAccount } from "../../lib/validations/moneyAcc.validate";
 import {
   defaultMoneyAccData,
   validateMoneyAccount,
-} from '../../lib/validations/moneyAcc.validate';
-import { handleUseMutationAlerts, myToast } from '../Toasts & Alerts/MyToast';
-import SeedButton from '../DevTools/SeedButton';
-import { moneyAccMock } from '../../__tests__/mocks/Mocks';
-import MoneyAccForm from '../Forms/MoneyAcc.form';
+} from "../../lib/validations/moneyAcc.validate";
+import { handleUseMutationAlerts, myToast } from "../Toasts & Alerts/MyToast";
+import SeedButton from "../DevTools/SeedButton";
+import { moneyAccMock } from "../../__tests__/mocks/Mocks";
+import MoneyAccForm from "../Forms/MoneyAcc.form";
 
 const CreateMoneyAccModal = ({
   isOpen,
@@ -56,33 +56,33 @@ const CreateMoneyAccModal = ({
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
-  const isCashAccount = useWatch({ control, name: 'isCashAccount' });
+  const isCashAccount = useWatch({ control, name: "isCashAccount" });
 
-  const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery(
-    undefined,
-    {
-      onSuccess: (data) => {
-        data?.selectedOrganization &&
-          setValue('organizationId', data?.selectedOrganization);
-      },
-    }
-  );
+  // const { data: prefs } = trpcClient.preferences.getMyPreferences.useQuery(
+  //   undefined,
+  //   {
+  //     onSuccess: (data) => {
+  //       data?.selectedOrganization &&
+  //         setValue('organizationId', data?.selectedOrganization);
+  //     },
+  //   }
+  // );
   const { error, mutate, isLoading } = trpcClient.moneyAcc.create.useMutation(
     handleUseMutationAlerts({
-      successText: 'Su cuenta bancaria ha sido creada! 🔥',
+      successText: "Su cuenta bancaria ha sido creada! 🔥",
       callback: () => {
         handleOnClose();
 
         context.moneyAcc.invalidate();
       },
-    })
+    }),
   );
 
   const submitFunc = async (data: FormMoneyAccount) => {
-    if (!prefs?.selectedOrganization) {
-      return myToast.error('Seleccione una organización');
-    }
-    data.organizationId = prefs.selectedOrganization;
+    // if (!prefs?.selectedOrganization) {
+    //   return myToast.error('Seleccione una organización');
+    // }
+    // data.organizationId = prefs.selectedOrganization;
     mutate(data);
   };
 
@@ -98,14 +98,7 @@ const CreateMoneyAccModal = ({
           )}
           <ModalCloseButton />
           <ModalBody>
-            {prefs?.selectedOrganization && (
-              <SeedButton
-                reset={reset}
-                mock={() =>
-                  moneyAccMock({ organizationId: prefs?.selectedOrganization })
-                }
-              />
-            )}
+            <SeedButton reset={reset} mock={() => moneyAccMock()} />
             {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
             <MoneyAccForm control={control} errors={errors} />
           </ModalBody>

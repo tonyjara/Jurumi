@@ -563,6 +563,7 @@ model Transaction {
 
     wasConvertedToOtherCurrency Boolean @default(false)
     exchangeRate                Float   @default(0)
+    concept                     String  @default("")
 
     // Id present on both the cancellation and the transaction that was cancelled. They are linked together.
     cancellationId Int?         @unique
