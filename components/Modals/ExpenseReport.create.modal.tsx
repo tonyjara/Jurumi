@@ -155,7 +155,7 @@ const CreateExpenseReportModal = ({
     <>
       <ConfirmDialog
         dialogTitle="¿Estas seguro que deseas crear esta rendición?"
-        dialogText={`Encontramos una rendición con id ${confirmData?.conflictingDataId} existente con el mismo número de factura y el mismo contribuyente. ¿Deseas sobreescribir esta rendición?`}
+        dialogText={`Encontramos una rendición con id ${confirmData?.conflictingDataId} existente con el mismo número de factura y el mismo contribuyente. ¿Aún asi deseas crear esta rendición?`}
         isOpen={!!confirmData}
         onClose={handleCloseConfirm}
         onConfirm={handleConfirmWithConflict}
