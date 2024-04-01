@@ -65,6 +65,14 @@ export const transactionsRouter = router({
       });
     }),
 
+  changeOperationDate: adminModProcedure
+    .input(z.object({ date: z.date(), id: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.transaction.update({
+        where: { id: input.id },
+        data: { operationDate: input.date },
+      });
+    }),
   createMany: createManyTransactionsForMoneyRequests,
   edit: adminModProcedure
     .input(validateTransactionEdit)

@@ -1,6 +1,9 @@
 import { GetManyContractsType } from "./Contract.types";
 import { FormContract } from "@/lib/validations/createContract.validate";
-import { FormMoneyRequest } from "@/lib/validations/moneyRequest.validate";
+import {
+  FormMoneyRequest,
+  moneyOrderNamingType,
+} from "@/lib/validations/moneyRequest.validate";
 import { handleMonthlyContractPaymentDayInfo } from "./ContractsUtils/MonthlyContractUtils";
 import { format } from "date-fns";
 import { MonthsInContract } from "./Monthly/ContractMonthlyRequestsTable";
@@ -102,6 +105,7 @@ export const transformContractToFormMoneyRequest = ({
 }) => {
   const formContract: FormMoneyRequest = {
     id: "",
+    namingType: moneyOrderNamingType.withTaxPayer,
     comments: "",
     createdAt: new Date(),
     operationDate: monthData ? monthData.contractStartInMonthDate : new Date(),

@@ -62,6 +62,7 @@ export const validateTransactionCreate: z.ZodType<FormTransactionCreate> =
         id: z.number().int(),
         createdAt: z.date(),
         updatedAt: z.date().nullable(),
+        operationDate: z.date().nullable(),
         accountId: z.string(),
         moneyAccountOffsetId: z.string().nullable(),
         isCancellation: z.boolean(),
@@ -121,6 +122,7 @@ export const defaultTransactionCreateData: FormTransactionCreate = {
   id: 0,
   createdAt: new Date(),
   updatedAt: null,
+  operationDate: null,
   accountId: "",
   updatedById: null,
   transactions: [
@@ -180,6 +182,7 @@ export const transactionMock: (
     createdAt: new Date(),
     updatedAt: null,
     accountId,
+    operationDate: null,
     updatedById: null,
     moneyAccountOffsetId: null,
     openingBalance: new Prisma.Decimal(

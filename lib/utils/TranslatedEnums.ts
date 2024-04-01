@@ -21,7 +21,9 @@ export const translateProjectType = (type: ProjectType) => {
   return types[type] ?? "Error";
 };
 
-export const translatedBankAccountType = (type: BankAccountType) => {
+export const translatedBankAccountType = (type: BankAccountType | null) => {
+  if (!type) return "";
+
   const types: { [key in BankAccountType]?: string } = {
     CURRENT: "Cuenta corriente",
     SAVINGS: "Caja de ahorro",
@@ -79,7 +81,8 @@ export const translateCurrencyShort = (currency: Currency) => {
   return prefixes[currency] ?? "Guaranies ";
 };
 
-export const translateBankDocTypes = (docType: BankDocType) => {
+export const translateBankDocTypes = (docType: BankDocType | null) => {
+  if (!docType) return "";
   const docTypes: { [key in BankDocType]?: string } = {
     CI: "Cédula de identidad. ",
     CRC: "Crc",
@@ -89,7 +92,7 @@ export const translateBankDocTypes = (docType: BankDocType) => {
 
   return docTypes[docType] ?? "Cédula de identidad. ";
 };
-export const translateBankNames = (bankName?: BankNamesPy) => {
+export const translateBankNames = (bankName?: BankNamesPy | null) => {
   if (!bankName) return "";
   const bankNames: { [key in BankNamesPy]?: string } = {
     BANCOP: "Bancop",

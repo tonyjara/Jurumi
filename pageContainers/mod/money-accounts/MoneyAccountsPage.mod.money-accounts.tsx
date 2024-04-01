@@ -161,7 +161,7 @@ const MoneyAccountsPage = () => {
                       <Divider orientation="vertical" />
                       <Text pl={"5px"} w={"150px"} fontSize={"lg"}>
                         {moneyAcc.bankInfo
-                          ? translateBankNames(moneyAcc.bankInfo?.bankName)
+                          ? translateBankNames(moneyAcc?.bankInfo?.bankName)
                           : "Caja chica"}
                       </Text>
                       <Divider orientation="vertical" />

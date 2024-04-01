@@ -26,68 +26,109 @@ export type FormImbursement = Omit<
 };
 
 export const validateImbursement: z.ZodType<FormImbursement> = z.lazy(() =>
-  z.object({
-    id: z.string(),
-    wasCancelled: z.boolean(),
-    createdAt: z.date(),
-    updatedAt: z.date().nullable(),
-    accountId: z.string(),
-    updatedById: z.string().nullable(),
-    concept: stringReqMinMax("Favor ingrese concepto del desembolso.", 2, 128),
-    wasConvertedToOtherCurrency: z.boolean(),
-    exchangeRate: z.number(),
-    otherCurrency: z.nativeEnum(Currency),
-    amountInOtherCurrency: z
-      .any()
-      .transform((value) => new Prisma.Decimal(value)),
-    finalAmount: z.any().transform((value) => new Prisma.Decimal(value)),
-    softDeleted: z.boolean(),
-    archived: z.boolean(),
-    finalCurrency: z.nativeEnum(Currency),
-    projectId: z.string().nullable(),
-    moneyAccountId: z
-      .string({ invalid_type_error: "Favor seleccione una cuenta." })
-      .min(2, "Favor seleccione una cuenta."),
-    imbursementProof: z
-      .object({
-        imageName: z.string().min(1, "Favor suba la imágen de su comprobante"),
-        url: z.string().min(1, "Favor suba la imágen de su comprobante"),
-      })
-      .nullable(),
-    invoiceFromOrg: z
-      .object({
-        imageName: z.string(),
-        url: z.string(),
-      })
-      .nullable(),
-    taxPayer: z.object({
-      //Only make required through superRefine
-      /* razonSocial: z.string(), */
-      /* ruc: z.string(), */
-      id: z.string().nullable(),
-      razonSocial: z.string({
-        required_error: "Favor ingrese el documento del contribuyente.",
-        invalid_type_error: "Favor ingrese el documento del contribuyente.",
-      }),
-      ruc: z.string({
-        required_error: "Favor ingrese el documento del contribuyente.",
-        invalid_type_error: "Favor ingrese el documento del contribuyente.",
-      }),
-      bankInfo: z
+  z
+    .object({
+      id: z.string(),
+      wasCancelled: z.boolean(),
+      createdAt: z.date(),
+      updatedAt: z.date().nullable(),
+      accountId: z.string(),
+      updatedById: z.string().nullable(),
+      concept: stringReqMinMax(
+        "Favor ingrese concepto del desembolso.",
+        2,
+        128,
+      ),
+      wasConvertedToOtherCurrency: z.boolean(),
+      exchangeRate: z.number(),
+      otherCurrency: z.nativeEnum(Currency),
+      amountInOtherCurrency: z
+        .any()
+        .transform((value) => new Prisma.Decimal(value)),
+      finalAmount: z.any().transform((value) => new Prisma.Decimal(value)),
+      softDeleted: z.boolean(),
+      archived: z.boolean(),
+      finalCurrency: z.nativeEnum(Currency),
+      projectId: z.string().nullable(),
+      moneyAccountId: z
+        .string({ invalid_type_error: "Favor seleccione una cuenta." })
+        .min(2, "Favor seleccione una cuenta."),
+      imbursementProof: z
         .object({
-          bankName: z.nativeEnum(BankNamesPy, {
-            invalid_type_error: "Favor ingrese el banco.",
-          }),
-          accountNumber: z.string(),
-          ownerName: z.string(),
-          ownerDocType: z.nativeEnum(BankDocType),
-          ownerDoc: z.string(),
-          taxPayerId: z.string(),
-          type: z.nativeEnum(BankAccountType),
+          imageName: z
+            .string()
+            .min(1, "Favor suba la imágen de su comprobante"),
+          url: z.string().min(1, "Favor suba la imágen de su comprobante"),
         })
         .nullable(),
+      invoiceFromOrg: z
+        .object({
+          imageName: z.string(),
+          url: z.string(),
+        })
+        .nullable(),
+      taxPayer: z.object({
+        //Only make required through superRefine
+        /* razonSocial: z.string(), */
+        /* ruc: z.string(), */
+        id: z.string().nullable(),
+        razonSocial: z.string({
+          required_error: "Favor ingrese el documento del contribuyente.",
+          invalid_type_error: "Favor ingrese el documento del contribuyente.",
+        }),
+        ruc: z.string({
+          required_error: "Favor ingrese el documento del contribuyente.",
+          invalid_type_error: "Favor ingrese el documento del contribuyente.",
+        }),
+        bankInfo: z
+          .object({
+            bankName: z.nativeEnum(BankNamesPy, {
+              invalid_type_error: "Favor ingrese el banco.",
+            }),
+            accountNumber: z.string(),
+            ownerName: z.string(),
+            ownerDocType: z.nativeEnum(BankDocType),
+            ownerDoc: z.string(),
+            taxPayerId: z.string(),
+            type: z.nativeEnum(BankAccountType),
+          })
+          .nullable(),
+      }),
+    })
+    .superRefine((val, ctx) => {
+      if (val.wasConvertedToOtherCurrency && val.exchangeRate <= 0) {
+        ctx.addIssue({
+          path: ["exchangeRate"],
+          code: z.ZodIssueCode.custom,
+          message: "El cambio debe ser mayor a 0.",
+        });
+      }
+      if (val.finalAmount.lte(0)) {
+        ctx.addIssue({
+          path: ["finalAmount"],
+          code: z.ZodIssueCode.custom,
+          message: "El monto debe ser mayor a 0.",
+        });
+      }
+      if (val.amountInOtherCurrency.lte(0)) {
+        ctx.addIssue({
+          path: ["amountInOtherCurrency"],
+          code: z.ZodIssueCode.custom,
+          message: "El monto debe ser mayor a 0.",
+        });
+      }
+      if (
+        !val.taxPayer ||
+        !val.taxPayer.razonSocial?.length ||
+        !val.taxPayer?.ruc?.length
+      ) {
+        ctx.addIssue({
+          path: ["taxPayer.ruc"],
+          code: z.ZodIssueCode.custom,
+          message: "Favor ingrese los datos del beneficiario.",
+        });
+      }
     }),
-  }),
 );
 
 export const defaultImbursementData: FormImbursement = {

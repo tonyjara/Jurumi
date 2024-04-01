@@ -18,6 +18,7 @@ import {
   translatedBankAccountType,
   translateMemberTypes,
 } from "./TranslatedEnums";
+import { moneyOrderNamingType } from "../validations/moneyRequest.validate";
 
 export const projectTypeOptions = Object.values(ProjectType).map((type) => ({
   value: type,
@@ -109,4 +110,12 @@ export const daysOfTheWeekOptions: {
   { value: "FRIDAY", label: "Viernes" },
   { value: "SATURDAY", label: "Sábado" },
   { value: "SUNDAY", label: "Domingo" },
+];
+
+export const alPortadorOptions: {
+  value: moneyOrderNamingType;
+  label: string;
+}[] = [
+  { value: moneyOrderNamingType.alPortador, label: "Al portador" },
+  { value: moneyOrderNamingType.withTaxPayer, label: "Con nombre" },
 ];

@@ -286,17 +286,17 @@ model MoneyAccount {
 }
 
 model BankInfo {
-    bankName           BankNamesPy
-    accountNumber      String          @unique
-    ownerName          String
-    ownerDocType       BankDocType     @default(RUC)
-    ownerDoc           String
+    bankName           BankNamesPy?
+    accountNumber      String?
+    ownerName          String?
+    ownerDocType       BankDocType?     @default(RUC)
+    ownerDoc           String?
     ownerContactNumber String?
     country            String
     city               String
-    type               BankAccountType @default(SAVINGS)
-    moneyAccountId     String          @unique
-    moneyAccount       MoneyAccount    @relation(fields: [moneyAccountId], references: [id], onDelete: Cascade)
+    type               BankAccountType? @default(SAVINGS)
+    moneyAccountId     String           @unique
+    moneyAccount       MoneyAccount     @relation(fields: [moneyAccountId], references: [id], onDelete: Cascade)
 
     @@unique([bankName, accountNumber])
 }
@@ -406,7 +406,7 @@ model TaxPayer {
 
 model TaxPayerBankInfo {
     bankName      BankNamesPy
-    accountNumber String          @unique
+    accountNumber String
     ownerName     String
     ownerDocType  BankDocType     @default(RUC)
     ownerDoc      String
@@ -552,6 +552,7 @@ model Transaction {
     id                Int              @id @default(autoincrement())
     createdAt         DateTime         @default(now())
     updatedAt         DateTime?        @updatedAt
+    operationDate     DateTime?        @default(now())
     updatedById       String?
     currency          Currency
     openingBalance    Decimal          @default(0) @db.Decimal(19, 4)

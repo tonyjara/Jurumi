@@ -169,6 +169,7 @@ export const TransactionCreateMock = () => {
     id: 0,
     createdAt: new Date(),
     updatedAt: null,
+    operationDate: null,
     accountId: "",
     updatedById: null,
     transactions: [
@@ -368,6 +369,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
         id: 116,
         createdAt: new Date(),
         updatedAt: null,
+        operationDate: null,
         exchangeRate: 7000,
         wasConvertedToOtherCurrency: false,
         updatedById: null,
@@ -397,6 +399,7 @@ export const moneyReqCompleteMock = (userId: string | undefined) => {
       },
       {
         id: 118,
+        operationDate: null,
         createdAt: new Date(),
         concept: "",
         updatedAt: null,
