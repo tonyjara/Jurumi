@@ -8,9 +8,10 @@ import {
   ModalFooter,
   Button,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { knownErrors } from "@/lib/dictionaries/knownErrors";
 import { trpcClient } from "@/lib/utils/trpcClient";
@@ -25,6 +26,7 @@ import { calculateMoneyReqPendingAmount } from "@/lib/utils/TransactionUtils";
 import { decimalFormat } from "@/lib/utils/DecimalHelpers";
 import { CompleteMoneyReqHome } from "@/pageContainers/home/requests/home.requests.types";
 import Decimal from "decimal.js";
+import { ConfirmDialog } from "../Toasts & Alerts/ConfirmDialog";
 
 const CreateExpenseReportModal = ({
   isOpen,
@@ -36,6 +38,12 @@ const CreateExpenseReportModal = ({
   moneyRequest: CompleteMoneyReqHome;
 }) => {
   const context = trpcClient.useContext();
+  const [confirmData, setConfirmData] = useState<{
+    showAlert: boolean;
+    data: FormExpenseReport;
+    conflictingDataId: string | null;
+  } | null>(null);
+
   const {
     handleSubmit,
     control,
@@ -78,6 +86,25 @@ const CreateExpenseReportModal = ({
       }),
     );
 
+  const { mutate: checkData, isLoading: isLoadingCheckData } =
+    trpcClient.expenseReport.checkIfFacturaNumberAndTaxPayerAreTheSame.useMutation(
+      {
+        onSuccess: (data) => {
+          if (data.showAlert) {
+            return setConfirmData(data);
+          }
+          mutate(data.data);
+        },
+      },
+    );
+  const handleConfirmWithConflict = () => {
+    if (!confirmData) return;
+    mutate(confirmData.data);
+  };
+  const handleCloseConfirm = () => {
+    setConfirmData(null);
+  };
+
   const currency = useWatch({ control, name: "currency" });
   const exchangeRate = useWatch({ control, name: "exchangeRate" });
 
@@ -119,49 +146,62 @@ const CreateExpenseReportModal = ({
       data.spentAmountIsGraterThanMoneyRequest = true;
     }
 
-    mutate(data);
+    checkData(data);
+
+    // mutate(data);
   };
 
   return (
-    <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
-      <form onSubmit={handleSubmit(submitFunc)} noValidate>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            Crear una rendición. <br /> Pendiente: {formatedPendingAmount()}
-          </ModalHeader>
+    <>
+      <ConfirmDialog
+        dialogTitle="¿Estas seguro que deseas crear esta rendición?"
+        dialogText={`Encontramos una rendición con id ${confirmData?.conflictingDataId} existente con el mismo número de factura y el mismo contribuyente. ¿Deseas sobreescribir esta rendición?`}
+        isOpen={!!confirmData}
+        onClose={handleCloseConfirm}
+        onConfirm={handleConfirmWithConflict}
+      />
+      <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
+        <form onSubmit={handleSubmit(submitFunc)} noValidate>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              Crear una rendición. <br /> Pendiente: {formatedPendingAmount()}
+            </ModalHeader>
 
-          <ModalCloseButton />
-          <ModalBody>
-            {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
-            <ExpenseReportForm
-              reset={reset}
-              amountSpentIsBiggerThanPending={amountSpentIsBiggerThanPending}
-              getValues={getValues}
-              moneyRequest={moneyRequest}
-              setValue={setValue}
-              control={control}
-              errors={errors as any}
-              pendingAmount={pendingAmount}
-            />
-          </ModalBody>
+            <ModalCloseButton />
+            <ModalBody>
+              {error && (
+                <Text color="red.300">{knownErrors(error.message)}</Text>
+              )}
+              <ExpenseReportForm
+                reset={reset}
+                amountSpentIsBiggerThanPending={amountSpentIsBiggerThanPending}
+                getValues={getValues}
+                moneyRequest={moneyRequest}
+                setValue={setValue}
+                control={control}
+                errors={errors as any}
+                pendingAmount={pendingAmount}
+              />
+            </ModalBody>
 
-          <ModalFooter>
-            <Button
-              isDisabled={isLoading || isSubmitting}
-              type="submit"
-              colorScheme="blue"
-              mr={3}
-            >
-              Guardar
-            </Button>
-            <Button colorScheme="gray" mr={3} onClick={handleOnClose}>
-              Cerrar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </form>
-    </Modal>
+            <ModalFooter>
+              <Button
+                isDisabled={isLoading || isSubmitting || isLoadingCheckData}
+                type="submit"
+                colorScheme="blue"
+                mr={3}
+              >
+                Guardar
+              </Button>
+              <Button colorScheme="gray" mr={3} onClick={handleOnClose}>
+                Cerrar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
+      </Modal>
+    </>
   );
 };
 

@@ -8,6 +8,7 @@ import { translateTransactionType } from "@/lib/utils/TranslatedEnums";
 import { TransactionComplete } from "./transactions.types";
 import { handleTransactionConcept } from "@/lib/utils/TransactionUtils";
 import FacturaNumberCell from "@/components/DynamicTables/DynamicCells/FacturaNumberCell";
+import TransactionOperationDateChangeCell from "@/components/DynamicTables/DynamicCells/TransactionOperationDateChangeCell";
 
 const columnHelper = createColumnHelper<TransactionComplete>();
 
@@ -29,6 +30,16 @@ export const modTransactionsColumns = ({
   columnHelper.accessor("createdAt", {
     cell: (x) => <DateCell date={x.getValue()} />,
     header: "Fecha de Creación",
+    sortingFn: "datetime",
+  }),
+  columnHelper.accessor("operationDate", {
+    cell: (x) => (
+      <TransactionOperationDateChangeCell
+        date={x.getValue()}
+        id={x.row.original.id}
+      />
+    ),
+    header: "Fecha de Operación",
     sortingFn: "datetime",
   }),
   columnHelper.display({

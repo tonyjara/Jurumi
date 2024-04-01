@@ -19,10 +19,13 @@ import { handleUseMutationAlerts } from "../Toasts & Alerts/MyToast";
 import type { FormMoneyRequest } from "../../lib/validations/moneyRequest.validate";
 import {
   defaultMoneyRequestData,
+  moneyOrderNamingType,
   validateMoneyRequest,
 } from "@/lib/validations/moneyRequest.validate";
 import MoneyRequestForm from "../Forms/MoneyRequest.form";
 import { useRouter } from "next/router";
+import { MoneyRequestComplete } from "@/pageContainers/mod/requests/mod.requests.types";
+import { isDataForTaxPayerValid } from "@/server/trpc/routers/utils/TaxPayer.routeUtils";
 
 const EditMoneyRequestModal = ({
   isOpen,
@@ -31,7 +34,7 @@ const EditMoneyRequestModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  moneyRequest: MoneyRequest;
+  moneyRequest: MoneyRequest; //Solo para mantener compatibilidad con otros componentes, en realidad es un complete
 }) => {
   const router = useRouter();
   const context = trpcClient.useContext();
@@ -49,7 +52,13 @@ const EditMoneyRequestModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      reset(moneyRequest);
+      const complete = moneyRequest as MoneyRequestComplete;
+      reset({
+        ...complete,
+        namingType: complete?.taxPayer?.id
+          ? moneyOrderNamingType.withTaxPayer
+          : moneyOrderNamingType.alPortador,
+      });
     }
 
     return () => {};
@@ -76,7 +85,6 @@ const EditMoneyRequestModal = ({
     if (moneyRequest.status === "REJECTED" && route === "/home/requests") {
       data.status = "PENDING";
     }
-
     mutate(data);
   };
 

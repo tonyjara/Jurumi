@@ -10,33 +10,58 @@ import { z } from "zod";
 import { stringReqMinMax } from "../utils/ValidationHelpers";
 import { v4 as uuidV4 } from "uuid";
 
-export type moneyReqTaxPayer = {
+interface UNSAFE_TaxPayerBankInfoCopy {
+  bankName?: BankNamesPy | null;
+  accountNumber?: string | null;
+  taxPayerId?: string | null;
+  ownerName?: string | null;
+  ownerDocType?: BankDocType | null;
+  ownerDoc?: string | null;
+  type?: BankAccountType | null;
+}
+
+//Existe para validar upserTaxPayer en moneyRequest
+export interface ValidMoneyReqTaxPayer {
   id: string | null;
   razonSocial: string;
   ruc: string;
   bankInfo: TaxPayerBankInfo | null;
-};
-export type MoneyReqSearchableImage = {
+}
+export interface moneyReqTaxPayer {
+  id?: string | null;
+  razonSocial?: string;
+  ruc?: string | null;
+  bankInfo?: UNSAFE_TaxPayerBankInfoCopy | null;
+}
+export interface MoneyReqSearchableImage {
   imageName: string;
   url: string;
   facturaNumber: string | null;
   amount?: any;
   currency: Currency;
-};
+}
+export enum moneyOrderNamingType {
+  alPortador = "alPortador",
+  withTaxPayer = "withTaxPayer",
+}
 
 export type FormMoneyRequest = Omit<
   MoneyRequest,
-  "amountRequested" | "taxPayerId"
+  "amountRequested" | "taxPayerId" | "taxPayer"
 > & {
   amountRequested?: any;
-  taxPayer: moneyReqTaxPayer | null;
+  taxPayer?: moneyReqTaxPayer | null;
   searchableImages: MoneyReqSearchableImage[];
+  namingType: moneyOrderNamingType; //For moneyOrders when no tax payer data is required. Otherwhise bank data is required in the superRefine
 };
 
 export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
   z
     .object({
       id: z.string(),
+      namingType: z.nativeEnum(moneyOrderNamingType, {
+        required_error: "Favor seleccione un tipo de orden.",
+      }),
       createdAt: z.date(),
       updatedAt: z.date().nullable(),
       operationDate: z.date().nullable(),
@@ -65,33 +90,24 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
       contractsId: z.number().nullable(),
       taxPayer: z
         .object({
-          //Only make required through superRefine
-          /* razonSocial: z.string(), */
-          /* ruc: z.string(), */
-          id: z.string().nullable(),
-          razonSocial: z.string({
-            required_error: "Favor ingrese el documento del contribuyente.",
-            invalid_type_error: "Favor ingrese el documento del contribuyente.",
-          }),
-          ruc: z.string({
-            required_error: "Favor ingrese el documento del contribuyente.",
-            invalid_type_error: "Favor ingrese el documento del contribuyente.",
-          }),
+          id: z.string().nullable().optional(),
+          razonSocial: z.string().optional(),
+          ruc: z.string().nullable().optional(),
           bankInfo: z
             .object({
-              bankName: z.nativeEnum(BankNamesPy, {
-                invalid_type_error: "Favor ingrese el banco.",
-              }),
-              accountNumber: z.string(),
-              ownerName: z.string(),
-              ownerDocType: z.nativeEnum(BankDocType),
-              ownerDoc: z.string(),
-              taxPayerId: z.string(),
-              type: z.nativeEnum(BankAccountType),
+              bankName: z.nativeEnum(BankNamesPy).nullable(),
+              accountNumber: z.string().nullable(),
+              taxPayerId: z.string().nullable().optional(),
+              ownerName: z.string().nullable(), //denominación
+              ownerDocType: z.nativeEnum(BankDocType).nullable(),
+              ownerDoc: z.string().nullable(),
+              type: z.nativeEnum(BankAccountType).optional().nullable(),
             })
-            .nullable(),
+            .nullable()
+            .optional(),
         })
-        .nullable(),
+        .nullable()
+        .optional(),
       // For reimbursement order creation.
       facturaNumber: z.string().nullable(),
       searchableImages: z
@@ -112,12 +128,15 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           message: "Favor justifique el rechazo en al menos 6 caractéres.",
         });
       }
-      //INFO: when NOT Fund request Require taxPayer and bank info
-      if (val.moneyRequestType !== "FUND_REQUEST") {
+
+      if (
+        val.moneyRequestType === "MONEY_ORDER" &&
+        val.namingType === "withTaxPayer"
+      ) {
         if (
           !val.taxPayer ||
           !val.taxPayer.razonSocial?.length ||
-          !val.taxPayer.ruc.length
+          !val.taxPayer?.ruc?.length
         ) {
           ctx.addIssue({
             path: ["taxPayer.ruc"],
@@ -125,19 +144,15 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
             message: "Favor ingrese los datos del beneficiario.",
           });
         }
-
-        if (
-          !val.taxPayer?.bankInfo?.accountNumber.length ||
-          val.taxPayer.bankInfo.accountNumber.length < 3
-        ) {
+        if (!val.taxPayer?.bankInfo?.bankName?.length) {
           ctx.addIssue({
-            path: ["taxPayer.bankInfo.accountNumber"],
+            path: ["taxPayer.bankInfo.bankName"],
             code: z.ZodIssueCode.custom,
-            message: "Favor ingrese el número de la cuenta bancaria.",
+            message: "Favor seleccione un banco",
           });
         }
         if (
-          !val.taxPayer?.bankInfo?.ownerName.length ||
+          !val.taxPayer?.bankInfo?.ownerName?.length ||
           val.taxPayer.bankInfo.ownerName.length < 3
         ) {
           ctx.addIssue({
@@ -147,7 +162,24 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
           });
         }
         if (
-          !val.taxPayer?.bankInfo?.ownerDoc.length ||
+          !val.taxPayer?.bankInfo?.accountNumber?.length ||
+          val.taxPayer.bankInfo.accountNumber.length < 3
+        ) {
+          ctx.addIssue({
+            path: ["taxPayer.bankInfo.accountNumber"],
+            code: z.ZodIssueCode.custom,
+            message: "Favor ingrese el número de la cuenta bancaria.",
+          });
+        }
+        if (!val.taxPayer?.bankInfo?.ownerDocType?.length) {
+          ctx.addIssue({
+            path: ["taxPayer.bankInfo.ownerDocType"],
+            code: z.ZodIssueCode.custom,
+            message: "Favor selecciones el tipo de documento",
+          });
+        }
+        if (
+          !val.taxPayer?.bankInfo?.ownerDoc?.length ||
           val.taxPayer.bankInfo.ownerDoc.length < 3
         ) {
           ctx.addIssue({
@@ -156,7 +188,8 @@ export const validateMoneyRequest: z.ZodType<FormMoneyRequest> = z.lazy(() =>
             message: "Favor ingrese el documento del titular.",
           });
         }
-
+      }
+      if (val.moneyRequestType !== "FUND_REQUEST") {
         if (val.moneyRequestType === "REIMBURSMENT_ORDER") {
           const currencySet = new Set();
           val.searchableImages.forEach((image, index) => {
@@ -229,6 +262,7 @@ export const defaultBankInfo: TaxPayerBankInfo = {
 export const defaultMoneyRequestData: FormMoneyRequest = {
   id: "",
   comments: "",
+  namingType: moneyOrderNamingType.withTaxPayer,
   createdAt: new Date(),
   operationDate: new Date(),
   updatedAt: null,
@@ -273,6 +307,7 @@ export const MockMoneyRequest = ({
   const imageName2 = uuidV4();
   const x: FormMoneyRequest = {
     id: "",
+    namingType: moneyOrderNamingType.withTaxPayer,
     comments: faker.commerce.productDescription().substring(0, 200),
     moneyOrderNumber: null,
     createdAt: new Date(),

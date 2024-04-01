@@ -10,6 +10,7 @@ import prisma from "@/server/db/client";
 import {
   FormMoneyRequest,
   MoneyReqSearchableImage,
+  moneyOrderNamingType,
 } from "@/lib/validations/moneyRequest.validate";
 import { appRouter } from "../router";
 import { Session } from "next-auth";
@@ -155,6 +156,7 @@ export const createReimbursementRequestBasedOnExpenseReport = async ({
   const reimbursementRequest: FormMoneyRequest = {
     id: "",
     comments: "",
+    namingType: moneyOrderNamingType.withTaxPayer,
     createdAt: new Date(),
     operationDate: new Date(),
     contractsId: null,

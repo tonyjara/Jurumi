@@ -152,6 +152,29 @@ export const expenseReportsRouter = router({
         ...completeModExpenseReportsArgs,
       });
     }),
+  checkIfFacturaNumberAndTaxPayerAreTheSame: protectedProcedure
+    .input(validateExpenseReport)
+    .mutation(async ({ input }) => {
+      if (!input.taxPayer.id)
+        return { showAlert: false, data: input, conflictingDataId: null };
+
+      const expenseReport = await prisma.expenseReport.findFirst({
+        where: {
+          taxPayerId: input.taxPayer.id,
+          facturaNumber: input.facturaNumber,
+        },
+      });
+
+      if (expenseReport) {
+        return {
+          showAlert: true,
+          data: input,
+          conflictingDataId: expenseReport.id,
+        };
+      }
+
+      return { showAlert: false, data: input, conflictingDataId: null };
+    }),
   create: protectedProcedure
     .input(validateExpenseReport)
     .mutation(async ({ input, ctx }) => {

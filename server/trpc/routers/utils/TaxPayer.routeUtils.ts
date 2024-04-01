@@ -1,6 +1,39 @@
-import type { moneyReqTaxPayer } from "@/lib/validations/moneyRequest.validate";
+import type {
+  ValidMoneyReqTaxPayer,
+  moneyReqTaxPayer,
+} from "@/lib/validations/moneyRequest.validate";
 import prisma from "@/server/db/client";
-import type { TaxPayer } from "@prisma/client";
+import {
+  BankAccountType,
+  BankDocType,
+  BankNamesPy,
+  TaxPayerBankInfo,
+  type TaxPayer,
+} from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+
+export const ValidMoneyReqTaxPayerSchema: z.ZodType<ValidMoneyReqTaxPayer> =
+  z.lazy(() =>
+    z.object({
+      id: z.string().nullable(),
+      razonSocial: z.string(),
+      ruc: z.string(),
+      bankInfo: z
+        .object({
+          bankName: z.nativeEnum(BankNamesPy),
+          accountNumber: z.string(),
+          taxPayerId: z.string(),
+          ownerName: z.string(),
+          ownerDocType: z.nativeEnum(BankDocType),
+          ownerDoc: z.string(),
+          type: z.nativeEnum(BankAccountType),
+        })
+        .nullable(),
+    }),
+  );
+export const isDataForTaxPayerValid = (input: moneyReqTaxPayer) =>
+  ValidMoneyReqTaxPayerSchema.safeParse(input);
 
 export const upsertTaxPayer = async ({
   input,
@@ -9,7 +42,10 @@ export const upsertTaxPayer = async ({
   input: moneyReqTaxPayer;
   userId: string;
 }): Promise<TaxPayer> => {
-  const bankInfo = input.bankInfo?.accountNumber.length ? input.bankInfo : null;
+  if (!isDataForTaxPayerValid(input)) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "invalid data" });
+  }
+  const bankInfo = input?.bankInfo as TaxPayerBankInfo | null;
 
   if (input.id) {
     return await prisma?.taxPayer.update({
@@ -19,12 +55,12 @@ export const upsertTaxPayer = async ({
           ? {
               upsert: {
                 create: {
-                  bankName: bankInfo.bankName ?? "BANCOP",
+                  bankName: bankInfo.bankName,
                   accountNumber: bankInfo.accountNumber,
-                  ownerName: bankInfo.ownerName ?? "",
-                  ownerDocType: bankInfo.ownerDocType ?? "CI",
-                  ownerDoc: bankInfo.ownerDoc ?? "",
-                  type: bankInfo.type ?? "CURRENT",
+                  ownerName: bankInfo?.ownerName,
+                  ownerDocType: bankInfo.ownerDocType,
+                  ownerDoc: bankInfo.ownerDoc,
+                  type: bankInfo.type,
                 },
 
                 update: {
@@ -45,8 +81,8 @@ export const upsertTaxPayer = async ({
   return await prisma?.taxPayer.create({
     data: {
       createdById: userId,
-      razonSocial: input.razonSocial,
-      ruc: input.ruc,
+      razonSocial: input.razonSocial ?? "",
+      ruc: input.ruc ?? "",
       bankInfo: bankInfo
         ? {
             create: {

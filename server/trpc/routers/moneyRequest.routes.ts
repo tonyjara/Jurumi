@@ -342,17 +342,25 @@ export const moneyRequestRouter = router({
       const x = await prisma?.moneyRequest.update({
         where: { id: input.id },
         data: {
-          taxPayerId: taxPayer?.id,
+          taxPayer: taxPayer?.id
+            ? {
+                connect: {
+                  id: taxPayer?.id,
+                },
+              }
+            : {
+                disconnect: true,
+              },
           amountRequested: new Prisma.Decimal(input.amountRequested),
           currency: input.currency,
           comments: input.comments,
           description: input.description,
           moneyRequestType: input.moneyRequestType,
           moneyOrderNumber: input.moneyOrderNumber,
-          projectId: input.projectId,
           status: input.status,
           rejectionMessage: input.rejectionMessage,
-          organizationId: input.organizationId,
+          // projectId: input.projectId,
+          // organizationId: input.organizationId,
           searchableImages: uploadedImages?.length
             ? {
                 connect: input.searchableImages.map((x) => ({

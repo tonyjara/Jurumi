@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "BankInfo" ALTER COLUMN "bankName" DROP NOT NULL,
+ALTER COLUMN "ownerDocType" DROP NOT NULL,
+ALTER COLUMN "type" DROP NOT NULL;

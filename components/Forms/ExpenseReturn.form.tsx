@@ -152,16 +152,18 @@ const ExpenseReturnForm = ({
           <Flex justifyContent={"space-between"}>
             <Text>Numero de cuenta:</Text>{" "}
             <Text>
-              {isNaN(parseInt(moneyAccount.bankInfo.accountNumber))
+              {isNaN(parseInt(moneyAccount?.bankInfo?.accountNumber ?? ""))
                 ? moneyAccount.bankInfo.accountNumber
                 : parseInt(
-                    moneyAccount.bankInfo.accountNumber,
+                    moneyAccount?.bankInfo?.accountNumber ?? "",
                   ).toLocaleString()}
             </Text>
           </Flex>
           <Flex justifyContent={"space-between"}>
             <Text>Tipo de cuenta: </Text>
-            <Text>{translatedBankAccountType(moneyAccount.bankInfo.type)}</Text>
+            <Text>
+              {translatedBankAccountType(moneyAccount?.bankInfo?.type)}
+            </Text>
           </Flex>
           <Flex justifyContent={"space-between"}>
             <Text>Banco: </Text>
@@ -170,15 +172,17 @@ const ExpenseReturnForm = ({
           <Flex justifyContent={"space-between"}>
             <Text>Tipo de documento: </Text>
             <Text>
-              {translateBankDocTypes(moneyAccount.bankInfo?.ownerDocType)}
+              {translateBankDocTypes(moneyAccount?.bankInfo?.ownerDocType)}
             </Text>
           </Flex>
           <Flex justifyContent={"space-between"}>
             <Text>Documento:</Text>
             <Text>
-              {isNaN(parseInt(moneyAccount.bankInfo.ownerDoc))
+              {isNaN(parseInt(moneyAccount?.bankInfo?.ownerDoc ?? ""))
                 ? moneyAccount.bankInfo.ownerDoc
-                : parseInt(moneyAccount.bankInfo?.ownerDoc).toLocaleString()}
+                : parseInt(
+                    moneyAccount?.bankInfo?.ownerDoc ?? "",
+                  ).toLocaleString()}
             </Text>
           </Flex>
         </Flex>

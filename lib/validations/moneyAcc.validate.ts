@@ -79,7 +79,8 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
       if (
         !val.isCashAccount &&
         val.bankInfo &&
-        val.bankInfo?.ownerName.length < 3
+        val.bankInfo.ownerName &&
+        val.bankInfo.ownerName.length < 3
       ) {
         ctx.addIssue({
           path: ["bankInfo.ownerName"],
@@ -90,6 +91,7 @@ export const validateMoneyAccount: z.ZodType<FormMoneyAccount> = z.lazy(() =>
       if (
         !val.isCashAccount &&
         val.bankInfo &&
+        val.bankInfo.accountNumber &&
         val.bankInfo?.accountNumber.length < 3
       ) {
         ctx.addIssue({

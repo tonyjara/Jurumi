@@ -13,6 +13,7 @@ import type {
 } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 import {
+  alPortadorOptions,
   currencyOptions,
   moneyRequestStatusOptions,
   moneyRequestTypeOptions,
@@ -22,6 +23,7 @@ import { trpcClient } from "../../lib/utils/trpcClient";
 import {
   FormMoneyRequest,
   MockMoneyRequest,
+  moneyOrderNamingType,
 } from "../../lib/validations/moneyRequest.validate";
 import SeedButton from "../DevTools/SeedButton";
 import FormControlledMoneyInput from "../FormControlled/FormControlledMoneyInput";
@@ -62,6 +64,9 @@ const MoneyRequestForm = ({
   const projectId = useWatch({ control, name: "projectId" });
   const moneyRequestType = useWatch({ control, name: "moneyRequestType" });
   const searchableImages = useWatch({ control, name: "searchableImages" });
+  const isAlPortador =
+    useWatch({ control, name: "namingType" }) ===
+    moneyOrderNamingType.alPortador;
 
   const isAccepted = status === "ACCEPTED";
 
@@ -128,20 +133,38 @@ const MoneyRequestForm = ({
         disable={isEdit}
         options={moneyRequestTypeOptions ?? []}
       />
+      {moneyRequestType === "MONEY_ORDER" && isAdminOrMod && (
+        <FormControlledRadioButtons
+          control={control}
+          onChangeMw={(e: moneyOrderNamingType) => {
+            if (e === moneyOrderNamingType.alPortador) {
+              setValue("taxPayer", null);
+            }
+          }}
+          errors={errors}
+          disable={isEdit && isAccepted}
+          name="namingType"
+          label="Al portador o con nombre"
+          options={alPortadorOptions}
+        />
+      )}
+
       {(moneyRequestType === "MONEY_ORDER" ||
         moneyRequestType === "REIMBURSMENT_ORDER") && (
         <>
-          <FormControlledTaxPayerId
-            getValues={getValues}
-            label="A la orden de:"
-            control={control}
-            errors={errors}
-            razonSocialName="taxPayer.razonSocial"
-            rucName="taxPayer.ruc"
-            setValue={setValue}
-            helperText="Ingresar ruc o C.I."
-            showBankInfo={true}
-          />
+          {!isAlPortador && (
+            <FormControlledTaxPayerId
+              getValues={getValues}
+              label="A la orden de:"
+              control={control}
+              errors={errors}
+              razonSocialName="taxPayer.razonSocial"
+              rucName="taxPayer.ruc"
+              setValue={setValue}
+              helperText="Ingresar ruc o C.I."
+              showBankInfo={true}
+            />
+          )}
           {isEdit && isAdmin && (
             <FormControlledNumberInput
               control={control}

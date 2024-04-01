@@ -340,6 +340,11 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             <FormControlledSelect
               control={control}
               errors={errors}
+              error={
+                bankInfoName
+                  ? errors[bankInfoName]?.bankInfo?.bankName?.message
+                  : errors.taxPayer?.bankInfo?.bankName?.message
+              }
               //@ts-ignore
               name={
                 bankInfoName
@@ -387,6 +392,11 @@ const FormControlledTaxPayerId = <T extends FieldValues>(
             <FormControlledSelect
               control={control}
               errors={errors}
+              error={
+                bankInfoName
+                  ? errors[bankInfoName]?.bankInfo?.ownerDocType?.message
+                  : errors.taxPayer?.bankInfo?.ownerDocType?.message
+              }
               //@ts-ignore
               name={
                 bankInfoName
