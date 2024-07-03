@@ -1,4 +1,4 @@
-import { trpcClient } from '@/lib/utils/trpcClient';
+import { trpcClient } from "@/lib/utils/trpcClient";
 import {
   Text,
   Modal,
@@ -8,9 +8,9 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-} from '@chakra-ui/react';
-import Link from 'next/link';
-import React from 'react';
+} from "@chakra-ui/react";
+import Link from "next/link";
+import React from "react";
 const WelcomeScreenModal = ({
   isOpen,
   onClose,
@@ -34,18 +34,18 @@ const WelcomeScreenModal = ({
     <Modal size="xl" isOpen={isOpen} onClose={() => {}}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader fontSize={'3xl'}>Bienvenido a Jurumi!</ModalHeader>
+        <ModalHeader fontSize={"3xl"}>Bienvenido a Jurumi!</ModalHeader>
 
         <ModalBody>
           <Text>
             Estamos super contentos de que te sumes a la plataforma. Puedes
-            encontrar ayuda y tutoriales en{' '}
-            <Link target={'_blank'} href="http://docs.opades.org.py">
+            encontrar ayuda y tutoriales en{" "}
+            <Link target={"_blank"} href="http://docs.opades.org.py">
               <span
                 style={{
-                  fontSize: '20px',
-                  color: '#007bff',
-                  fontWeight: 'bold',
+                  fontSize: "20px",
+                  color: "#007bff",
+                  fontWeight: "bold",
                 }}
               >
                 este link
@@ -57,7 +57,7 @@ const WelcomeScreenModal = ({
 
         <ModalFooter>
           <Button
-            whiteSpace={'break-spaces'}
+            whiteSpace={"break-spaces"}
             p="30px"
             colorScheme="blue"
             mr={3}

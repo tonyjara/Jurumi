@@ -11,12 +11,12 @@
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
+    "noErrorTruncation": true,
     "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2015",
-    "noErrorTruncation": true,
     "plugins": [
       {
         "name": "next"
