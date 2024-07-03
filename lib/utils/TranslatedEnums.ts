@@ -108,6 +108,7 @@ export const translateBankNames = (bankName?: BankNamesPy | null) => {
     BANCO_RIO: "Banco Rio",
     CITIBANK: "Citibank",
     COOMECIPAR: "Cooperativa Coomecipar",
+    COOPEDUC: "Coopeduc",
     INTERFISA_BANCO: "Interfisa Banco",
     ITAU: "Itau",
     SUDAMERIS: "Sudameris",
