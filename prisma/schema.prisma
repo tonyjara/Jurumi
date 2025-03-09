@@ -746,6 +746,7 @@ enum BankNamesPy {
     BANCO_DE_LA_NACION_ARGENTINA
     UENO
     COOMECIPAR
+    FINANCIERA_PARAGUAYO_JAPONESA
 }
 
 enum BankDocType {
