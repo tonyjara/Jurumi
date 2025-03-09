@@ -114,6 +114,7 @@ export const translateBankNames = (bankName?: BankNamesPy | null) => {
     SUDAMERIS: "Sudameris",
     UENO: "Ueno",
     VISION_BANCO: "Visión Banco",
+    FINANCIERA_PARAGUAYO_JAPONESA: "Financiera Paraguaya Japonesa",
   };
 
   return bankNames[bankName] ?? "Itau";

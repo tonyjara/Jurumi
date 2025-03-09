@@ -23,6 +23,7 @@ import { galleryRouter } from "./gallery.routes";
 import { searchableImageRouter } from "./searchableImage.routes";
 import { reportsRouter } from "./reports.routes";
 import { contractsRouter } from "./contracts.routes";
+import { odooRouter } from "./odoo.routes";
 
 export const appRouter = router({
   account: accountsRouter,
@@ -39,6 +40,7 @@ export const appRouter = router({
   moneyApprovals: moneyApprovalRouter,
   moneyRequest: moneyRequestRouter,
   notifications: notificationsRouter,
+  odoo: odooRouter,
   org: orgRouter,
   preferences: preferencesRouter,
   project: projectRouter,

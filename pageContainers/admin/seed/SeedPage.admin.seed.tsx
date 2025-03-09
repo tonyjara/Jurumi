@@ -25,6 +25,22 @@ const SeedPage = () => {
   const { mutate } =
     trpcClient.notifications.sendSlackChannelMessage.useMutation();
 
+  const { mutate: getOdooVersion } = trpcClient.odoo.getVersion.useMutation({
+    onSuccess: (x) => {
+      console.log(x);
+    },
+  });
+  const { mutate: getUserUuid } = trpcClient.odoo.getUserUuid.useMutation({
+    onSuccess: (x) => {
+      console.log(x);
+    },
+  });
+
+  const { mutate: queryOdoo } = trpcClient.odoo.query.useMutation({
+    onSuccess: (x) => {
+      console.log(x);
+    },
+  });
   return (
     <Card>
       <CardHeader>
@@ -70,6 +86,44 @@ const SeedPage = () => {
               Send text to slackChannelId
             </Button>
           </Flex>
+        </Stack>
+
+        <Text
+          fontSize={"2xl"}
+          sx={{
+            pt: 4,
+          }}
+        >
+          Odoo tests
+        </Text>
+        <Stack
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            onClick={() => {
+              getOdooVersion();
+            }}
+          >
+            Get odoo version
+          </Button>
+          <Button
+            onClick={() => {
+              getUserUuid();
+            }}
+          >
+            Get user uuid
+          </Button>
+          <Button
+            onClick={() => {
+              queryOdoo();
+            }}
+          >
+            Query odoo
+          </Button>
         </Stack>
       </CardBody>
     </Card>
